@@ -1,0 +1,186 @@
+<section data-ng-controller="MytaoController">
+
+    <!-- BREADCRUMB -->
+    <br>
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="panel-heading">
+                <ol class="breadcrumb">
+                    <li class="active">My taoApp</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+
+	<div class="row">
+			<div class="col-md-6">
+				<div class="panel panel-default">
+					<div class="panel-heading">
+						<h6 class="panel-title text-center">My Account</h6>
+					</div>
+					<div class="panel-body" style="overflow-y: auto; max-height: 250px; min-height: 250px">
+						<div class="row">
+							<div class="col-md-4">
+								<p class="thumbnail">
+									<img src="http://placehold.it/250x250">
+								</p>
+							</div>
+							<div class="col-md-8">
+								<table>
+									<tr>
+										<th>First name: &nbsp </th>
+										<td>{{currentUser.userData.firstName}}</td>
+									</tr>
+									<tr>
+										<th>Last name: &nbsp </th>
+										<td>{{currentUser.userData.lastName}}</td>
+									</tr>
+									<tr>
+										<th>Job title: &nbsp </th>
+										<td>{{currentUser.userData.jobTitle}}</td>
+									</tr>
+									<tr>
+										<th>Email: &nbsp </th>
+										<td>{{currentUser.userData.email}}</td>
+									</tr>
+								</table>
+							</div>
+						</div>
+						<div class="row">
+							<div class="col-md-12 form-group-sm">
+								<label>Server token</label>
+								<p>{{currentUser.token}}</p>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="col-md-6">
+				<div class="panel panel-default">
+					<div class="panel-heading">
+						<h6 class="panel-title text-center">Portfolio Definition</h6>
+					</div>
+					<div class="panel-body" style="overflow-y: auto; max-height: 250px; min-height: 250px">
+						<div class="row">
+							<div class="col-md-12">
+								<table class="table table-responsive small">
+									<caption>Top 3 portfolios</caption>
+									<tr>
+										<th>Portfolio</th>
+										<th>Total project funds</th>
+										<th>Portfolio funds</th>
+										<th>Funds difference</th>
+									</tr>
+									<tr>
+										<td>{{topDefinitionPortfolios[0].nodeName}}</td>
+										<td>{{topDefinitionPortfolios[0].totalProjectEarmarkedFunds | currency:currentUser.userData.currency+"&nbsp":0}}</td>
+										<td>{{topDefinitionPortfolios[0].portfolioFunds | currency:currentUser.userData.currency+"&nbsp":0}}</td>
+										<td>{{topDefinitionPortfolios[0].fundsDifference | currency:currentUser.userData.currency+"&nbsp":0}}</td>
+									</tr>
+									<tr>
+										<td>{{topDefinitionPortfolios[1].nodeName}}</td>
+										<td>{{topDefinitionPortfolios[1].totalProjectEarmarkedFunds | currency:currentUser.userData.currency+"&nbsp":0}}</td>
+										<td>{{topDefinitionPortfolios[1].portfolioFunds | currency:currentUser.userData.currency+"&nbsp":0}}</td>
+										<td>{{topDefinitionPortfolios[1].fundsDifference | currency:currentUser.userData.currency+"&nbsp":0}}</td>
+									</tr>
+									<tr>
+										<td>{{topDefinitionPortfolios[2].nodeName}}</td>
+										<td>{{topDefinitionPortfolios[2].totalProjectEarmarkedFunds | currency:currentUser.userData.currency+"&nbsp":0}}</td>
+										<td>{{topDefinitionPortfolios[2].portfolioFunds | currency:currentUser.userData.currency+"&nbsp":0}}</td>
+										<td>{{topDefinitionPortfolios[2].fundsDifference | currency:currentUser.userData.currency+"&nbsp":0}}</td>
+									</tr>
+								</table>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	<div class="row">
+			<div class="col-md-6">
+				<div class="panel panel-default">
+					<div class="panel-heading">
+						<h6 class="panel-title text-center">Portfolio Evaluation</h6>
+					</div>
+					<div class="panel-body" style="overflow-y: auto; max-height: 250px; min-height: 250px">
+						<div class="row">
+							<div class="col-md-12">
+								<table class="table table-responsive small">
+									<caption>Top 3 largest projects - business case</caption>
+									<tr>
+										<th>Project</th>
+										<th>Costs</th>
+										<th>Benefits</th>
+										<th>NPV</th>
+										<th>Benefit/Cost Ratio</th>
+									</tr>
+									<tr>
+										<td>{{topEvaluationProjects[0].identificationData.projectName}}</td>
+										<td>{{topEvaluationProjects[0].totalCosts | currency:currentUser.userData.currency+"&nbsp":0}}</td>
+										<td>{{topEvaluationProjects[0].totalBenefits | currency:currentUser.userData.currency+"&nbsp":0}}</td>
+										<td>{{topEvaluationProjects[0].NPV}}</td>
+										<td>{{topEvaluationProjects[0].BCR}}</td>
+									</tr>
+									<tr>
+										<td>{{topEvaluationProjects[1].identificationData.projectName}}</td>
+										<td>{{topEvaluationProjects[1].totalCosts | currency:currentUser.userData.currency+"&nbsp":0}}</td>
+										<td>{{topEvaluationProjects[1].totalBenefits | currency:currentUser.userData.currency+"&nbsp":0}}</td>
+										<td>{{topEvaluationProjects[1].NPV}}</td>
+										<td>{{topEvaluationProjects[1].BCR}}</td>
+									</tr>
+									<tr>
+										<td>{{topEvaluationProjects[2].identificationData.projectName}}</td>
+										<td>{{topEvaluationProjects[2].totalCosts | currency:currentUser.userData.currency+"&nbsp":0}}</td>
+										<td>{{topEvaluationProjects[2].totalBenefits | currency:currentUser.userData.currency+"&nbsp":0}}</td>
+										<td>{{topEvaluationProjects[2].NPV}}</td>
+										<td>{{topEvaluationProjects[2].BCR}}</td>
+									</tr>
+								</table>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="col-md-6">
+				<div class="panel panel-default">
+					<div class="panel-heading">
+						<h6 class="panel-title text-center">Portfolio Delivery</h6>
+					</div>
+					<div class="panel-body" style="overflow-y: auto; max-height: 250px; min-height: 250px">
+						<div class="row">
+							<div class="col-md-12">
+								<table class="table table-responsive small">
+									<caption>Top 3 largest projects - delivery status</caption>
+									<tr>
+										<th> </th>
+										<td><i>{{topEvaluationProjects[0].identificationData.projectName}}</i></td>
+										<td><i>{{topEvaluationProjects[1].identificationData.projectName}}</i></td>
+										<td><i>{{topEvaluationProjects[2].identificationData.projectName}}</i></td>
+									</tr>
+									<tr>
+										<td>Gate:&nbsp</td>
+										<td>{{createDeliveryDataForProject(topEvaluationProjects[0]).currentGate.gateName}}</td>
+										<td>{{createDeliveryDataForProject(topEvaluationProjects[1]).currentGate.gateName}}</td>
+										<td>{{createDeliveryDataForProject(topEvaluationProjects[2]).currentGate.gateName}}</td>
+									</tr>
+									<tr>
+										<td>End date:&nbsp</td>
+										<td>{{displayDate(createDeliveryDataForProject(topEvaluationProjects[0]).estimatedEndDate)}}</td>
+										<td>{{displayDate(createDeliveryDataForProject(topEvaluationProjects[1]).estimatedEndDate)}}</td>
+										<td>{{displayDate(createDeliveryDataForProject(topEvaluationProjects[2]).estimatedEndDate)}}</td>
+									</tr>
+									<tr>
+										<td>Status:&nbsp</td>
+										<td>{{createDeliveryDataForProject(topEvaluationProjects[0]).currentStatus.overallIndicator.indicatorName}}</td>
+										<td>{{createDeliveryDataForProject(topEvaluationProjects[1]).currentStatus.overallIndicator.indicatorName}}</td>
+										<td>{{createDeliveryDataForProject(topEvaluationProjects[2]).currentStatus.overallIndicator.indicatorName}}</td>
+									</tr>
+								</table>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+</section>

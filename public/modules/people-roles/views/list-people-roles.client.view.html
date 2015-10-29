@@ -1,0 +1,99 @@
+<section data-ng-controller="PeopleRolesController" data-ng-init="init()">
+    <br>
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="panel-heading">
+                <ol class="breadcrumb">
+                    <li>Setup</li>
+                    <li>Stakeholders</li>
+                    <li class="active">Roles</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-3">
+            <br>
+            <button class="btn btn-primary" ng-click="createRole()">
+                Create new role
+            </button>
+            <div data-ng-show="error" class="text-danger">
+                <strong data-ng-bind="error"></strong>
+            </div>
+        </div>
+    </div>
+    <hr>
+    <div class="row">
+        <div class="col-md-12" data-ng-repeat="role in peopleRoles track by $index" data-ng-switch="switchRoleForm[role._id]">
+            <div ng-switch-default="view">
+                <div class="panel panel-info" title="Last updated on {{role.created | date:'medium'}} by {{role.user.displayName}}">
+                    <div class="panel-heading">
+                        <div class="row">
+                            <div class="col-md-7">
+                                <h6 class="panel-title"><b data-ng-bind="role.name"></b></h6>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group pull-right">
+                                    <button class="btn btn-primary" data-ng-click="viewRoleDetails = !viewRoleDetails">Details</button>
+                                    <button class="btn btn-success" data-ng-click="selectRole(role)">Edit</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="panel-body" data-ng-show="viewRoleDetails">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <textarea disabled data-ng-model="role.description" id="description" class="form-control" placeholder="No description yet"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div ng-switch-when="edit">
+                <div class="panel panel-info" title="Last updated on {{role.created | date:'medium'}} by {{role.user.displayName}}">
+                    <div class="panel-heading">
+                        <div class="row">
+                            <div class="col-md-7">
+                                <h6 class="panel-title"><b data-ng-bind="role.name"></b></h6>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group pull-right">
+                                    <button type="button" class="btn btn-success" ng-click="updateRole(role)">
+                                        Save
+                                    </button>
+                                    <a class="btn btn-danger" data-ng-click="removeRole(role)">
+                                        <i class="glyphicon glyphicon-trash"></i>
+                                    </a>
+                                    <button type="button" class="btn btn-info" ng-click="cancelEditRole(role)">
+                                        Cancel
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="panel-body">
+                        <form name="editRoleForm" novalidate>
+                            <fieldset>
+                                <div class="row">
+                                    <div class="col-md-3 form-group">
+                                        <label for="roleName" class="control-label">Role name</label>
+                                        <input id="roleName" type="text" class="form-control" data-ng-model="role.name">
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-8 form-group">
+                                        <label for="roleDescription" class="control-label">Role description</label>
+                                        <textarea id="roleDescription" data-ng-model="role.description" class="form-control" placeholder="No description yet"></textarea>
+                                    </div>
+                                </div>
+                            </fieldset>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="alert alert-warning text-center" data-ng-hide="!peopleRoles.$resolved || peopleRoles.length">
+        No roles yet, why don't you create one?
+    </div>
+</section>

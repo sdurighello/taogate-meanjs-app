@@ -1,0 +1,28 @@
+<section data-ng-controller="SubusersController" data-ng-init="find()">
+    <!-- BREADCRUMB -->
+    <br>
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="panel-heading">
+                <ol class="breadcrumb">
+                    <li>Admin</li>
+                    <li class="active">Subusers</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+    <div class="list-group">
+        <a data-ng-repeat="subuser in subusers" data-ng-href="#!/subusers/{{subuser._id}}" class="list-group-item">
+			<small class="list-group-item-text">
+				Posted on
+				<span data-ng-bind="subuser.created | date:'medium'"></span>
+				by
+				<span data-ng-bind="subuser.user.displayName"></span>
+			</small>
+			<h4 class="list-group-item-heading" data-ng-bind="subuser.displayName"></h4>
+        </a>
+    </div>
+    <div class="alert alert-warning text-center" data-ng-hide="!subusers.$resolved || subusers.length">
+    	No Subusers yet, why don't you <a href="/#!/subusers/create">create one</a>?
+    </div>
+</section>

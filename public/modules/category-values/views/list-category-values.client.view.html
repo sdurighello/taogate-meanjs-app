@@ -1,0 +1,19 @@
+<section data-ng-controller="CategoryValuesController" data-ng-init="find()">
+    <div class="page-header">
+        <h1>Category values</h1>
+    </div>
+    <div class="list-group">
+        <a data-ng-repeat="categoryValue in categoryValues" data-ng-href="#!/category-values/{{categoryValue._id}}" class="list-group-item">
+			<small class="list-group-item-text">
+				Posted on
+				<span data-ng-bind="categoryValue.created | date:'medium'"></span>
+				by
+				<span data-ng-bind="categoryValue.user.displayName"></span>
+			</small>
+			<h4 class="list-group-item-heading" data-ng-bind="categoryValue.name"></h4>
+        </a>
+    </div>
+    <div class="alert alert-warning text-center" data-ng-hide="!categoryValues.$resolved || categoryValues.length">
+    	No Category values yet, why don't you <a href="/#!/category-values/create">create one</a>?
+    </div>
+</section>
