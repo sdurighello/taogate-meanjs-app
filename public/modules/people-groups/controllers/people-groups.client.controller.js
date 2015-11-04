@@ -2,16 +2,19 @@
 
 // People groups controller
 angular.module('people-groups').controller('PeopleGroupsController', ['$scope', '$stateParams', '$location',
-    'Authentication', 'PeopleGroups','PeopleRoles','$q','_',
-	function($scope, $stateParams, $location, Authentication, PeopleGroups, PeopleRoles, $q, _) {
+    'Authentication','People', 'PeopleGroups','PeopleRoles','$q','_',
+	function($scope, $stateParams, $location, Authentication, People, PeopleGroups, PeopleRoles, $q, _) {
 
         // ------------- INIT -------------
 
         $scope.init = function(){
             PeopleRoles.query(function(roles){
                 PeopleGroups.query(function(groups){
-					$scope.peopleRoles = roles;
-					$scope.peopleGroups = groups;
+                    People.query(function(people){
+                        $scope.people = people;
+                        $scope.peopleRoles = roles;
+                        $scope.peopleGroups = groups;
+                    });
 				});
             });
         };
@@ -21,14 +24,95 @@ angular.module('people-groups').controller('PeopleGroupsController', ['$scope', 
 		var d = $q.defer();
 		d.resolve(Authentication);
 
-		d.promise.then(function(data){
-			var obj = _.clone(data);
-			_.map(_.get(obj,'user.roles'), function(role){
-				obj[role] = true;
-			});
-			$scope.authentication = obj;
+        d.promise.then(function(data){
+            var obj = _.clone(data);
+            $scope.userHasAuthorization = _.some(obj.user.roles, function(role){
+                return role === 'superAdmin' || role === 'admin' || role === 'pmo';
+            });
+        });
 
-		});
+
+// ------------------------------------------------------  PEOPLE ---------------------------------------------
+
+
+
+        // ------------------- NG-SWITCH ---------------------
+
+        $scope.switchPersonForm = {};
+
+        $scope.selectPersonForm = function(person, string){
+            if(string === 'view'){ $scope.switchPersonForm[person._id] = 'view';}
+            if(string === 'new'){$scope.switchPersonForm[person._id] = 'new';}
+            if(string === 'edit'){$scope.switchPersonForm[person._id] = 'edit';}
+        };
+
+        // ------------------- LIST OF PEOPLE -----------------
+
+        $scope.findPeople = function() {
+            People.query(function(people){
+                $scope.people = _.clone(people);
+            },function(errorResponse) {
+                $scope.error = errorResponse.data.message;
+            });
+        };
+
+        // ------------------- EDIT -----------------
+
+
+        $scope.selectPerson = function(person){
+            $scope.selectPersonForm(person, 'edit');
+        };
+
+        $scope.updatePerson = function(person) {
+            person.$update(function(response) {
+                $scope.findPeople();
+                $scope.selectPersonForm(person, 'view');
+            }, function(errorResponse) {
+                $scope.error = errorResponse.data.message;
+            });
+        };
+
+        $scope.cancelEditPerson = function(person){
+            $scope.findPeople();
+            $scope.selectPersonForm(person, 'view');
+        };
+
+        // ------------------- DELETE -----------------
+
+        $scope.removePerson = function(person) {
+            person.$remove(function(response) {
+                $scope.findPeople();
+            }, function(errorResponse) {
+                $scope.error = errorResponse.data.message;
+            });
+        };
+
+        // ------------------- NEW -----------------
+
+        $scope.createPerson = function() {
+            var person = new People ({
+                name: 'New person',
+                title: '',
+                email: '',
+                phone: ''
+            });
+            person.$save(function(response) {
+                $scope.findPeople();
+                $scope.selectPersonForm(response._id, 'view');
+
+            }, function(errorResponse) {
+                $scope.error = errorResponse.data.message;
+            });
+        };
+
+
+
+
+
+
+// ------------------------------------------------------ GROUPS & ROLES --------------------------------------
+
+
 
         // ------------------- NG-SWITCH ---------------------
 

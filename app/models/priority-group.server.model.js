@@ -35,4 +35,4 @@ var PriorityGroupSchema = new Schema({
 });
 
 PriorityGroupSchema.plugin(deepPopulate);
-mongoose.model('PriorityGroup', PriorityGroupSchema);
+mongoose.mtModel('PriorityGroup', PriorityGroupSchema);

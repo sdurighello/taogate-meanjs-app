@@ -5,99 +5,120 @@
             <div class="panel-heading">
                 <ol class="breadcrumb">
                     <li>Setup</li>
-                    <li>Stakeholders</li>
-                    <li class="active">Groups</li>
+                    <li>Portfolio definition</li>
+                    <li class="active">Stakeholders</li>
                 </ol>
             </div>
         </div>
     </div>
     <div class="row">
-        <div class="col-md-3">
-            <br>
-            <button class="btn btn-primary" ng-click="createGroup()">
-                Create new group
-            </button>
-            <div data-ng-show="error" class="text-danger">
-                <strong data-ng-bind="error"></strong>
-            </div>
-        </div>
-    </div>
-    <hr>
-    <div class="row">
-        <div class="col-md-12 form-group" data-ng-repeat="group in peopleGroups track by $index">
-            <button class="btn btn-default btn-lg btn-block" data-ng-bind="group.name" data-ng-click="viewGroupDetails = !viewGroupDetails"
-                    title="Last updated on {{group.created | date:'medium'}} by {{group.user.displayName}}"></button>
-            <div data-ng-show="viewGroupDetails">
-                <div class="panel panel-default" >
-                    <div class="panel-body">
+        <div class="col-md-12">
+            <tabset>
+                <tab heading="People">
+                    <br>
+                    <div ng-show="userHasAuthorization">
                         <div class="row">
-                            <div class="col-md-12">
-                                <div class="panel panel-default" data-ng-switch="switchGroupForm[group._id]">
-                                    <div class="panel-body" ng-switch-default="view">
-                                        <div class="row">
-                                            <div class="col-md-7 form-group">
-                                                <label for="groupName" class="control-label">Group name</label>
-                                                <input disabled id="groupName" type="text" class="form-control" data-ng-model="group.name">
-                                            </div>
-                                            <div class=" col-md-offset-1 col-md-4 form-group">
-                                                <label for="groupType" class="control-label">Group type</label>
-                                                <input disabled id="groupType" type="text" class="form-control" data-ng-model="group.type">
-                                            </div>
-                                        </div>
-                                        <div class="row">
-                                            <div class="col-md-12 form-group">
-                                                <label for="groupDescription" class="control-label">Group description</label>
-                                                <textarea disabled id="groupDescription" data-ng-model="group.description" class="form-control" placeholder="No description yet"></textarea>
-                                            </div>
-                                        </div>
-                                        <div class="row">
-                                            <div class="col-md-12">
-                                                <div class="form-group pull-right">
-                                                    <button class="btn btn-success" data-ng-click="selectGroup(group)">Edit</button>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="panel-body" ng-switch-when="edit">
-                                        <form name="editGroupForm" novalidate>
+                            <div class="col-md-3">
+                                <br>
+                                <button class="btn btn-primary"
+                                        ng-click="createPerson()">
+                                    New person
+                                </button>
+                            </div>
+                        </div>
+                        <hr>
+                    </div>
+                    <div class="row">
+                        <div class="alert alert-warning text-center" data-ng-hide="people.length">
+                            No people yet, why don't you create one?
+                        </div>
+                        <div class="col-md-4" data-ng-repeat="person in people" data-ng-switch="switchPersonForm[person._id]" >
+                            <div class="panel panel-default" title="Last updated on {{person.created | date:'medium'}} by {{person.user.displayName}}">
+                                <div class="panel-body">
+                                    <div ng-switch-default="view">
+                                        <form class="form">
                                             <fieldset>
                                                 <div class="row">
                                                     <div class="col-md-12">
-                                                        <div class="panel-body">
-                                                            <div class="row">
-                                                                <div class="col-md-7 form-group">
-                                                                    <label for="groupName" class="control-label">Group name</label>
-                                                                    <input id="groupName" type="text" class="form-control" data-ng-model="group.name">
-                                                                </div>
-                                                                <div class="col-md-offset-1 col-md-4 form-group">
-                                                                    <label for="groupType" class="control-label">Group type</label>
-                                                                    <select id="groupType" class="form-control" data-ng-model = "group.type"
-                                                                            ng-options="groupType for groupType in groupTypes">
-                                                                        <option value="">--choose type</option>
-                                                                    </select>
-                                                                </div>
+                                                        <div class="form-group">
+                                                            <label class="control-label" for="name">Name</label>
+                                                            <div class="controls">
+                                                                <input id="name" disabled type="text" class="form-control" ng-model="person.name">
                                                             </div>
-                                                            <div class="row">
-                                                                <div class="col-md-12 form-group">
-                                                                    <label for="groupDescription" class="control-label">Group description</label>
-                                                                    <textarea id="groupDescription" data-ng-model="group.description" class="form-control" placeholder="No description yet"></textarea>
-                                                                </div>
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label class="control-label" for="title">Title</label>
+                                                            <div class="controls">
+                                                                <input id="title" disabled type="text" class="form-control" ng-model="person.title">
+                                                            </div>
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label class="control-label" for="email">Email</label>
+                                                            <div class="controls">
+                                                                <input id="email" disabled type="email" class="form-control" ng-model="person.email">
+                                                            </div>
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label class="control-label" for="phone">Phone</label>
+                                                            <div class="controls">
+                                                                <input id="phone" disabled type="text" class="form-control" ng-model="person.phone">
+                                                            </div>
+                                                        </div>
+                                                        <div class="form-group center-block" ng-show="userHasAuthorization">
+                                                            <button type="button" class="btn btn-success" ng-click="selectPerson(person)">
+                                                                Edit
+                                                            </button>
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <div data-ng-show="error" class="text-danger">
+                                                                <strong data-ng-bind="error"></strong>
                                                             </div>
                                                         </div>
                                                     </div>
                                                 </div>
+                                            </fieldset>
+                                        </form>
+                                    </div>
+                                    <div data-ng-switch-when="edit">
+                                        <form class="form" name="editPersonForm" data-ng-submit="updatePerson(person)" novalidate>
+                                            <fieldset>
                                                 <div class="row">
                                                     <div class="col-md-12">
-                                                        <div class="form-group pull-right">
-                                                            <button type="button" class="btn btn-success" data-ng-click="updateGroup(group)">
-                                                                Save
-                                                            </button>
-                                                            <button type="button" class="btn btn-danger" data-ng-click="removeGroup(group)">
-                                                                Delete group
-                                                            </button>
-                                                            <button type="button" class="btn btn-info" data-ng-click="cancelEditGroup(group)">
+                                                        <div class="form-group">
+                                                            <label class="control-label" for="nameEdit">Name</label>
+                                                            <div class="controls">
+                                                                <input id="nameEdit" type="text" class="form-control" ng-model="person.name">
+                                                            </div>
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label class="control-label" for="titleEdit">Title</label>
+                                                            <div class="controls">
+                                                                <input id="titleEdit" type="text" class="form-control" ng-model="person.title">
+                                                            </div>
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label class="control-label" for="emailEdit">Email</label>
+                                                            <div class="controls">
+                                                                <input id="emailEdit" name="emailEdit" type="email" class="form-control" ng-model="person.email">
+                                                            </div>
+                                                            <span class="error" ng-show="editPersonForm.emailEdit.$error.email">Not a valid email address</span>
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label class="control-label" for="phoneEdit">Phone</label>
+                                                            <div class="controls">
+                                                                <input id="phoneEdit" type="text" class="form-control" ng-model="person.phone">
+                                                            </div>
+                                                        </div>
+                                                        <div class="form-group center-block">
+                                                            <input type="submit" value="Save" class="btn btn-success" ng-disabled="editPersonForm.$error.email">
+                                                            <a class="btn btn-danger" data-ng-click="removePerson(person)">
+                                                                <i class="glyphicon glyphicon-trash"></i>
+                                                            </a>
+                                                            <button type="button" class="btn btn-info" ng-click="cancelEditPerson(person)">
                                                                 Cancel
                                                             </button>
+                                                        </div>
+                                                        <div class="form-group">
                                                             <div data-ng-show="error" class="text-danger">
                                                                 <strong data-ng-bind="error"></strong>
                                                             </div>
@@ -110,115 +131,224 @@
                                 </div>
                             </div>
                         </div>
+                    </div>
+                </tab>
+                <tab heading="Groups and Roles">
+                    <br>
+                    <div ng-show="userHasAuthorization">
                         <div class="row">
-                            <div class="col-md-12">
-                                <div class="panel panel-default">
+                            <div class="col-md-3">
+                                <br>
+                                <button class="btn btn-primary" ng-click="createGroup()">
+                                    Create new group
+                                </button>
+                                <div data-ng-show="error" class="text-danger">
+                                    <strong data-ng-bind="error"></strong>
+                                </div>
+                            </div>
+                        </div>
+                        <hr>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12 form-group" data-ng-repeat="group in peopleGroups track by $index">
+                            <button class="btn btn-default btn-lg btn-block" data-ng-bind="group.name" data-ng-click="viewGroupDetails = !viewGroupDetails"
+                                    title="Last updated on {{group.created | date:'medium'}} by {{group.user.displayName}}"></button>
+                            <div data-ng-show="viewGroupDetails">
+                                <div class="panel panel-default" >
                                     <div class="panel-body">
                                         <div class="row">
-                                            <div class="col-md-3">
-                                                <div class="form-group">
-                                                    <button type="button" class="btn btn-primary" ng-click="createRole(group)">
-                                                        New role
-                                                    </button>
-                                                </div>
-                                                <div data-ng-show="error" class="text-danger">
-                                                    <strong data-ng-bind="error"></strong>
+                                            <div class="col-md-12">
+                                                <div class="panel panel-default" data-ng-switch="switchGroupForm[group._id]">
+                                                    <div class="panel-body" ng-switch-default="view">
+                                                        <div class="row">
+                                                            <div class="col-md-7 form-group">
+                                                                <label for="groupName" class="control-label">Group name</label>
+                                                                <input disabled id="groupName" type="text" class="form-control" data-ng-model="group.name">
+                                                            </div>
+                                                            <div class=" col-md-offset-1 col-md-4 form-group">
+                                                                <label for="groupType" class="control-label">Group type</label>
+                                                                <input disabled id="groupType" type="text" class="form-control" data-ng-model="group.type">
+                                                            </div>
+                                                        </div>
+                                                        <div class="row">
+                                                            <div class="col-md-12 form-group">
+                                                                <label for="groupDescription" class="control-label">Group description</label>
+                                                                <textarea disabled id="groupDescription" data-ng-model="group.description" class="form-control" placeholder="No description yet"></textarea>
+                                                            </div>
+                                                        </div>
+                                                        <div class="row" ng-show="userHasAuthorization">
+                                                            <div class="col-md-12">
+                                                                <div class="form-group pull-right">
+                                                                    <button class="btn btn-success" data-ng-click="selectGroup(group)">Edit</button>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="panel-body" ng-switch-when="edit">
+                                                        <form name="editGroupForm" novalidate>
+                                                            <fieldset>
+                                                                <div class="row">
+                                                                    <div class="col-md-12">
+                                                                        <div class="panel-body">
+                                                                            <div class="row">
+                                                                                <div class="col-md-7 form-group">
+                                                                                    <label for="groupName" class="control-label">Group name</label>
+                                                                                    <input id="groupName" type="text" class="form-control" data-ng-model="group.name">
+                                                                                </div>
+                                                                                <div class="col-md-offset-1 col-md-4 form-group">
+                                                                                    <label for="groupType" class="control-label">Group type</label>
+                                                                                    <select id="groupType" class="form-control" data-ng-model = "group.type"
+                                                                                            ng-options="groupType for groupType in groupTypes">
+                                                                                        <option value="">--choose type</option>
+                                                                                    </select>
+                                                                                </div>
+                                                                            </div>
+                                                                            <div class="row">
+                                                                                <div class="col-md-12 form-group">
+                                                                                    <label for="groupDescription" class="control-label">Group description</label>
+                                                                                    <textarea id="groupDescription" data-ng-model="group.description" class="form-control" placeholder="No description yet"></textarea>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="row">
+                                                                    <div class="col-md-12">
+                                                                        <div class="form-group pull-right">
+                                                                            <button type="button" class="btn btn-success" data-ng-click="updateGroup(group)">
+                                                                                Save
+                                                                            </button>
+                                                                            <button type="button" class="btn btn-danger" data-ng-click="removeGroup(group)">
+                                                                                Delete group
+                                                                            </button>
+                                                                            <button type="button" class="btn btn-info" data-ng-click="cancelEditGroup(group)">
+                                                                                Cancel
+                                                                            </button>
+                                                                            <div data-ng-show="error" class="text-danger">
+                                                                                <strong data-ng-bind="error"></strong>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </fieldset>
+                                                        </form>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
                                         <div class="row">
-                                            <div class="col-md-4 form-group" data-ng-repeat="role in group.roles track by $index" data-ng-switch="switchRoleForm[role._id]">
-                                                <button class="btn btn-default btn-lg btn-block" data-ng-bind="role.name" data-ng-click="viewRoleDetails = !viewRoleDetails"
-                                                        title="Last updated on {{role.created | date:'medium'}} by {{role.user.displayName}}"></button>
-                                                <div data-ng-show="viewRoleDetails">
-                                                    <div class="panel panel-default">
-                                                        <div class="panel-body" ng-switch-default="view">
-                                                            <div class="row">
-                                                                <div class="col-md-12">
-                                                                    <form>
-                                                                        <fieldset>
+                                            <div class="col-md-12">
+                                                <div class="panel panel-default">
+                                                    <div class="panel-body">
+                                                        <div class="row" ng-show="userHasAuthorization">
+                                                            <div class="col-md-3">
+                                                                <div class="form-group">
+                                                                    <button type="button" class="btn btn-primary" ng-click="createRole(group)">
+                                                                        New role
+                                                                    </button>
+                                                                </div>
+                                                                <div data-ng-show="error" class="text-danger">
+                                                                    <strong data-ng-bind="error"></strong>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="row">
+                                                            <div class="col-md-4 form-group" data-ng-repeat="role in group.roles track by $index" data-ng-switch="switchRoleForm[role._id]">
+                                                                <button class="btn btn-default btn-lg btn-block" data-ng-bind="role.name" data-ng-click="viewRoleDetails = !viewRoleDetails"
+                                                                        title="Last updated on {{role.created | date:'medium'}} by {{role.user.displayName}}"></button>
+                                                                <div data-ng-show="viewRoleDetails">
+                                                                    <div class="panel panel-default">
+                                                                        <div class="panel-body" ng-switch-default="view">
                                                                             <div class="row">
-                                                                                <div class="form-group col-md-12">
-                                                                                    <label for="roleName" class="control-label">Role name</label>
-                                                                                    <input disabled id="roleName" type="text" class="form-control" data-ng-model="role.name">
+                                                                                <div class="col-md-12">
+                                                                                    <form>
+                                                                                        <fieldset>
+                                                                                            <div class="row">
+                                                                                                <div class="form-group col-md-12">
+                                                                                                    <label for="roleName" class="control-label">Role name</label>
+                                                                                                    <input disabled id="roleName" type="text" class="form-control" data-ng-model="role.name">
+                                                                                                </div>
+                                                                                            </div>
+                                                                                            <div class="row">
+                                                                                                <div class="form-group col-md-12">
+                                                                                                    <label for="roleDescription" class="control-label">Role description</label>
+                                                                                                    <textarea disabled id="roleDescription" data-ng-model="role.description" class="form-control" placeholder="No description yet"></textarea>
+                                                                                                </div>
+                                                                                            </div>
+                                                                                        </fieldset>
+                                                                                    </form>
+                                                                                    <div class="row" ng-show="userHasAuthorization">
+                                                                                        <div class="form-group col-md-12 pull-right">
+                                                                                            <button type="button" class="btn btn-success pull-right"
+                                                                                                    data-ng-click="selectEditRole(group, role)">
+                                                                                                Edit
+                                                                                            </button>
+                                                                                        </div>
+                                                                                    </div>
                                                                                 </div>
                                                                             </div>
-                                                                            <div class="row">
-                                                                                <div class="form-group col-md-12">
-                                                                                    <label for="roleDescription" class="control-label">Role description</label>
-                                                                                    <textarea disabled id="roleDescription" data-ng-model="role.description" class="form-control" placeholder="No description yet"></textarea>
+                                                                        </div>
+                                                                        <div class="panel-body" ng-switch-when="edit">
+                                                                            <div class="row" >
+                                                                                <div class="col-md-12">
+                                                                                    <form name="editRoleForm" novalidate>
+                                                                                        <fieldset>
+                                                                                            <div class="row">
+                                                                                                <div class="form-group col-md-12">
+                                                                                                    <label for="roleName" class="control-label">Role name</label>
+                                                                                                    <input id="roleName" type="text" class="form-control" data-ng-model="role.name">
+                                                                                                </div>
+                                                                                            </div>
+                                                                                            <div class="row">
+                                                                                                <div class="form-group col-md-12">
+                                                                                                    <label for="roleDescription" class="control-label">Role description</label>
+                                                                                                    <textarea id="roleDescription" data-ng-model="role.description" class="form-control" placeholder="No description yet"></textarea>
+                                                                                                </div>
+                                                                                            </div>
+                                                                                            <div class="row">
+                                                                                                <div class="col-md-12">
+                                                                                                    <div class="form-group pull-right">
+                                                                                                        <button type="button" class="btn btn-success" ng-click="updateRole(group, role)">
+                                                                                                            Save
+                                                                                                        </button>
+                                                                                                        <a class="btn btn-danger" data-ng-click="removeRole(group, role)">
+                                                                                                            <i class="glyphicon glyphicon-trash"></i>
+                                                                                                        </a>
+                                                                                                        <button type="button" class="btn btn-info" ng-click="cancelEditRole(role)">
+                                                                                                            Cancel
+                                                                                                        </button>
+                                                                                                    </div>
+                                                                                                </div>
+                                                                                            </div>
+                                                                                            <div data-ng-show="error" class="text-danger">
+                                                                                                <strong data-ng-bind="error"></strong>
+                                                                                            </div>
+                                                                                        </fieldset>
+                                                                                    </form>
                                                                                 </div>
                                                                             </div>
-                                                                        </fieldset>
-                                                                    </form>
-                                                                    <div class="row">
-                                                                        <div class="form-group col-md-12 pull-right">
-                                                                            <button type="button" class="btn btn-success pull-right"
-                                                                                    data-ng-click="selectEditRole(group, role)">
-                                                                                Edit
-                                                                            </button>
                                                                         </div>
                                                                     </div>
                                                                 </div>
                                                             </div>
                                                         </div>
-                                                        <div class="panel-body" ng-switch-when="edit">
-                                                            <div class="row" >
-                                                                <div class="col-md-12">
-                                                                    <form name="editRoleForm" novalidate>
-                                                                        <fieldset>
-                                                                            <div class="row">
-                                                                                <div class="form-group col-md-12">
-                                                                                    <label for="roleName" class="control-label">Role name</label>
-                                                                                    <input id="roleName" type="text" class="form-control" data-ng-model="role.name">
-                                                                                </div>
-                                                                            </div>
-                                                                            <div class="row">
-                                                                                <div class="form-group col-md-12">
-                                                                                    <label for="roleDescription" class="control-label">Role description</label>
-                                                                                    <textarea id="roleDescription" data-ng-model="role.description" class="form-control" placeholder="No description yet"></textarea>
-                                                                                </div>
-                                                                            </div>
-                                                                            <div class="row">
-                                                                                <div class="col-md-12">
-                                                                                    <div class="form-group pull-right">
-                                                                                        <button type="button" class="btn btn-success" ng-click="updateRole(group, role)">
-                                                                                            Save
-                                                                                        </button>
-                                                                                        <a class="btn btn-danger" data-ng-click="removeRole(group, role)">
-                                                                                            <i class="glyphicon glyphicon-trash"></i>
-                                                                                        </a>
-                                                                                        <button type="button" class="btn btn-info" ng-click="cancelEditRole(role)">
-                                                                                            Cancel
-                                                                                        </button>
-                                                                                    </div>
-                                                                                </div>
-                                                                            </div>
-                                                                            <div data-ng-show="error" class="text-danger">
-                                                                                <strong data-ng-bind="error"></strong>
-                                                                            </div>
-                                                                        </fieldset>
-                                                                    </form>
-                                                                </div>
-                                                            </div>
+                                                        <div class="alert alert-warning text-center" data-ng-show="peopleGroup.roles.length === 0">
+                                                            No roles added to this group yet
                                                         </div>
                                                     </div>
                                                 </div>
                                             </div>
-                                        </div>
-                                        <div class="alert alert-warning text-center" data-ng-show="peopleGroup.roles.length === 0">
-                                            No roles added to this group yet
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                </div>
-            </div>
+                    <div class="alert alert-warning text-center" data-ng-hide="!peopleGroups.$resolved || peopleGroups.length">
+                        No People groups yet, why don't you create one?
+                    </div>
+                </tab>
+            </tabset>
         </div>
-    </div>
-    <div class="alert alert-warning text-center" data-ng-hide="!peopleGroups.$resolved || peopleGroups.length">
-    	No People groups yet, why don't you create one?
     </div>
 </section>

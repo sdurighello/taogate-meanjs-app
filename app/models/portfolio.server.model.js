@@ -21,7 +21,7 @@ var PortfolioSchema = new Schema({
 	},
 	portfolioManager : {type: Schema.Types.ObjectId, ref: 'User', default:null},
 	backupPortfolioManager : {type: Schema.Types.ObjectId, ref: 'User', default:null},
-	type : {type: Schema.Types.ObjectId, ref: 'Portfoliotype', default:null, $tenant:true},
+	type : {type: Schema.Types.ObjectId, ref: 'PortfolioType', default:null, $tenant:true},
 	parent : {type: Schema.Types.ObjectId, ref: 'Portfolio', default:null, $tenant:true},
 	ancestors : [{type: Schema.Types.ObjectId, ref: 'Portfolio', default:null, $tenant:true}],
 	funds : {type: Number, default:null},

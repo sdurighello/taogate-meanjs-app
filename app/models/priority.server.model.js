@@ -32,4 +32,4 @@ var PrioritySchema = new Schema({
 	}
 });
 
-mongoose.model('Priority', PrioritySchema);
+mongoose.mtModel('Priority', PrioritySchema);

@@ -78,7 +78,7 @@ exports.delete = function(req, res) {
  */
 exports.list = function(req, res) {
 	var PriorityValue = mongoose.mtModel(req.user.tenantId + '.' + 'PriorityValue');
-	PriorityValue.find().populate('user', 'displayName').exec(function(err, priorityValues) {
+	PriorityValue.find().sort('position').populate('user', 'displayName').exec(function(err, priorityValues) {
 		if (err) {
 			return res.status(400).send({
 				message: errorHandler.getErrorMessage(err)

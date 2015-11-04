@@ -27,6 +27,10 @@ var PriorityValueSchema = new Schema({
         default: '',
         trim: true
     },
+	position:{
+		type: Number,
+		required: 'Property "position" of PriorityValueSchema not filled'
+	},
 	created: {
 		type: Date,
 		default: Date.now

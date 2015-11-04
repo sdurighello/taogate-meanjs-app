@@ -2,19 +2,19 @@
 
 // Portfolios controller
 angular.module('portfolios').controller('PortfoliosController', ['$scope', '$stateParams', '$location', 'Authentication',
-    'Portfolios','Portfoliotypes','Subusers','_','$q',
-	function($scope, $stateParams, $location, Authentication, Portfolios, Portfoliotypes, Subusers, _ , $q) {
+    'Portfolios','PortfolioTypes','Subusers','_','$q',
+	function($scope, $stateParams, $location, Authentication, Portfolios, PortfolioTypes, Subusers, _ , $q) {
 
         // ----------- INIT ---------------
 
         $scope.init = function(){
             Subusers.query(function(users){
                 Portfolios.query(function(portfolios){
-                    Portfoliotypes.query(function(portfolioTypes){
+                    PortfolioTypes.query(function(portfolioTypes){
                         $scope.users = users;
                         $scope.portfolios = portfolios;
                         $scope.portfolioTrees = createNodeTrees($scope.portfolios);
-                        $scope.portfolioTypes = portfolioTypes;
+                        $scope.portfolioTypes = _.clone(portfolioTypes);
                         $scope.portfolioManagers = _.filter(users, function(user){
                             return _.find(_.get(user,'roles'), function(role){
                                 return role === 'portfolioManager';
@@ -33,12 +33,84 @@ angular.module('portfolios').controller('PortfoliosController', ['$scope', '$sta
 
         d.promise.then(function(data){
             var obj = _.clone(data);
-            _.map(_.get(obj,'user.roles'), function(role){
-                obj[role] = true;
+            $scope.userHasAuthorization = _.some(obj.user.roles, function(role){
+                return role === 'superAdmin' || role === 'admin' || role === 'pmo';
             });
-            $scope.authentication = obj;
-
         });
+
+
+// ----------------------------------------------- PORTFOLIO TYPES ---------------------------------------
+
+
+
+        // ------------------- NG-SWITCH ---------------------
+
+        $scope.switchTypeForm = {};
+
+        $scope.selectTypeForm = function(type, string){
+            if(string === 'view'){ $scope.switchTypeForm[type._id] = 'view';}
+            if(string === 'new'){$scope.switchTypeForm[type._id] = 'new';}
+            if(string === 'edit'){$scope.switchTypeForm[type._id] = 'edit';}
+        };
+
+        // ------------------- LIST OF TYPES -----------------
+
+        $scope.findTypes = function() {
+            PortfolioTypes.query(function(types){
+                $scope.portfolioTypes = _.clone(types);
+            });
+        };
+
+        // ------------------- EDIT -----------------
+
+        $scope.selectType = function(type){
+            $scope.selectTypeForm(type, 'edit');
+        };
+
+        $scope.updateType = function(type) {
+            type.$update(function(response) {
+                $scope.findTypes();
+                $scope.selectTypeForm(type, 'view');
+            }, function(errorResponse) {
+                $scope.error = errorResponse.data.message;
+            });
+        };
+
+        $scope.cancelEditType = function(type){
+            $scope.findTypes();
+            $scope.selectTypeForm(type, 'view');
+        };
+
+        // ------------------- DELETE -----------------
+
+        $scope.removeType = function(type) {
+            type.$remove(function(response) {
+                $scope.findTypes();
+            }, function(errorResponse) {
+                $scope.error = errorResponse.data.message;
+            });
+        };
+
+        // ------------------- NEW -----------------
+
+        $scope.createType = function() {
+            var portfolioType = new PortfolioTypes ({
+                name: 'New portfolio type'
+            });
+            portfolioType.$save(function(response) {
+                $scope.findTypes();
+                $scope.selectTypeForm(response._id, 'view');
+
+            }, function(errorResponse) {
+                $scope.error = errorResponse.data.message;
+            });
+        };
+
+
+
+
+// ----------------------------------------------- PORTFOLIOS --------------------------------------------
+
 
         // ------ TREE RECURSIONS -----------
 

@@ -5,209 +5,373 @@
             <div class="panel-heading">
                 <ol class="breadcrumb">
                     <li>Setup</li>
-                    <li>Prioritization</li>
+                    <li>Portfolio definition</li>
                     <li class="active">Priorities</li>
                 </ol>
             </div>
         </div>
     </div>
     <div class="row">
-        <div class="col-md-3">
-            <br>
-            <button class="btn btn-primary" ng-click="createGroup()">
-                New priority group
-            </button>
-            <div data-ng-show="error" class="text-danger">
-                <strong data-ng-bind="error"></strong>
-            </div>
-        </div>
-    </div>
-    <hr>
-    <div class="row">
-        <div class="col-md-12 form-group" data-ng-repeat="group in priorityGroups track by $index">
-            <button class="btn btn-default btn-lg btn-block" data-ng-bind="group.name" data-ng-click="viewGroupDetails = !viewGroupDetails"
-                    title="Last updated on {{group.created | date:'medium'}} by {{group.user.displayName}}"></button>
-            <div data-ng-show="viewGroupDetails">
-                <div class="panel panel-default" >
-                    <div class="panel-body">
-                        <div class="row">
-                            <div class="col-md-12">
-                                <div class="panel panel-default" data-ng-switch="switchGroupForm[group._id]">
-                                    <div class="panel-body" ng-switch-default="view">
-                                        <div class="row">
-                                            <div class="col-md-7 form-group">
-                                                <label for="groupName" class="control-label">Priority Group name</label>
-                                                <input disabled id="groupName" type="text" class="form-control" data-ng-model="group.name">
-                                            </div>
-                                        </div>
-                                        <div class="row">
-                                            <div class="col-md-12 form-group">
-                                                <label for="groupDescription" class="control-label">Priority Group description</label>
-                                                <textarea disabled id="groupDescription" data-ng-model="group.description" class="form-control" placeholder="No description yet"></textarea>
-                                            </div>
-                                        </div>
-                                        <div class="row">
-                                            <div class="col-md-12">
-                                                <div class="form-group pull-right">
-                                                    <button class="btn btn-success" data-ng-click="selectGroup(group)">Edit</button>
-                                                </div>
-                                            </div>
-                                        </div>
+        <div class="col-md-12">
+            <tabset>
+                <tab heading="Priority Values">
+                    <br>
+                    <div class="row">
+                        <div class="col-md-5">
+                            <div class="panel panel-default">
+                                <div class="panel-heading" data-ng-hide="priorityValue">
+                                    <div class="text-center">
+                                        <em>Drag and drop to order by importance. Top is most important.</em>
                                     </div>
-                                    <div class="panel-body" ng-switch-when="edit">
-                                        <form name="editGroupForm" novalidate>
-                                            <fieldset>
-                                                <div class="row">
-                                                    <div class="col-md-12">
-                                                        <div class="panel-body">
-                                                            <div class="row">
-                                                                <div class="col-md-7 form-group">
-                                                                    <label for="groupName" class="control-label">Priority Group name</label>
-                                                                    <input id="groupName" type="text" class="form-control" data-ng-model="group.name">
-                                                                </div>
-                                                            </div>
-                                                            <div class="row">
-                                                                <div class="col-md-12 form-group">
-                                                                    <label for="groupDescription" class="control-label">Priority Group description</label>
-                                                                    <textarea id="groupDescription" data-ng-model="group.description" class="form-control" placeholder="No description yet"></textarea>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div class="row">
-                                                    <div class="col-md-12">
-                                                        <div class="form-group pull-right">
-                                                            <button type="button" class="btn btn-success" data-ng-click="updateGroup(group)">
-                                                                Save
-                                                            </button>
-                                                            <button type="button" class="btn btn-danger" data-ng-click="removeGroup(group)">
-                                                                Delete priority group
-                                                            </button>
-                                                            <button type="button" class="btn btn-info" data-ng-click="cancelEditGroup(group)">
-                                                                Cancel
-                                                            </button>
-                                                            <div data-ng-show="error" class="text-danger">
-                                                                <strong data-ng-bind="error"></strong>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </fieldset>
-                                        </form>
+                                </div>
+                                <div class="panel-body" data-as-sortable="dragControlListeners" data-ng-model="priorityValues"
+                                     style="overflow-y: auto; max-height: 500px; min-height: 500px;">
+                                    <div class="alert alert-warning text-center" data-ng-hide="priorityValues.length">
+                                        No priority values yet, why don't you create one?
                                     </div>
+                                    <button data-ng-repeat="value in priorityValues" data-as-sortable-item data-ng-click="selectValue(value)"
+                                            class="btn btn-default btn-lg btn-block center-block" style="overflow: hidden;">
+                                        <div data-as-sortable-item-handle>
+                                            <div class="row">
+                                                <div class="col-md-2">
+                                                    <span class="badge">{{(priorityValues.indexOf(value))+1}}</span>
+                                                </div>
+                                                <div class="col-md-10 text-center">
+                                                    {{value.name}}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </button>
                                 </div>
                             </div>
                         </div>
-                        <div class="row">
-                            <div class="col-md-12">
-                                <div class="panel panel-default">
-                                    <div class="panel-body">
-                                        <div class="row">
-                                            <div class="col-md-3">
-                                                <div class="form-group">
-                                                    <button type="button" class="btn btn-primary" ng-click="createPriority(group)">
-                                                        New priority
-                                                    </button>
-                                                </div>
-                                                <div data-ng-show="error" class="text-danger">
-                                                    <strong data-ng-bind="error"></strong>
-                                                </div>
+                        <div class="col-md-4" data-ng-switch="switchValueForm">
+                            <div class="row" ng-show="userHasAuthorization" ng-switch-default="view">
+                                <div class="col-md-12">
+                                    <button class="btn btn-primary" data-ng-click="createValue()">
+                                        New value
+                                    </button>
+                                    <button class="btn btn-success" data-ng-click="selectValueForm('edit')" data-ng-show="priorityValue">
+                                        Edit value
+                                    </button>
+                                    <div data-ng-show="error" class="text-danger">
+                                        <strong data-ng-bind="error"></strong>
+                                    </div>
+                                </div>
+                            </div>
+                            <br>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="panel panel-default">
+                                        <div class="panel-heading">
+                                            <h6 class="panel-title" data-ng-bind="priorityValue.name"></h6>
+                                            <div class="text-center" data-ng-hide="priorityValue">
+                                                <em>Please select a priority value to see the details</em>
                                             </div>
                                         </div>
-                                        <div class="row">
-                                            <div class="col-md-4 form-group" data-ng-repeat="priority in group.priorities track by $index" data-ng-switch="switchPriorityForm[priority._id]">
-                                                <button class="btn btn-default btn-lg btn-block" data-ng-bind="priority.name" data-ng-click="viewPriorityDetails = !viewPriorityDetails"
-                                                        title="Last updated on {{priority.created | date:'medium'}} by {{priority.user.displayName}}"></button>
-                                                <div data-ng-show="viewPriorityDetails">
-                                                    <div class="panel panel-default">
-                                                        <div class="panel-body" ng-switch-default="view">
-                                                            <div class="row">
-                                                                <div class="col-md-12">
-                                                                    <form>
-                                                                        <fieldset>
-                                                                            <div class="row">
-                                                                                <div class="form-group col-md-12">
-                                                                                    <label for="priorityName" class="control-label">Priority name</label>
-                                                                                    <input disabled id="priorityName" type="text" class="form-control" data-ng-model="priority.name">
-                                                                                </div>
-                                                                            </div>
-                                                                            <div class="row">
-                                                                                <div class="form-group col-md-12">
-                                                                                    <label for="priorityDescription" class="control-label">Priority description</label>
-                                                                                    <textarea disabled id="priorityDescription" data-ng-model="priority.description" class="form-control" placeholder="No description yet"></textarea>
-                                                                                </div>
-                                                                            </div>
-                                                                        </fieldset>
-                                                                    </form>
-                                                                    <div class="row">
-                                                                        <div class="form-group col-md-12 pull-right">
-                                                                            <button type="button" class="btn btn-success pull-right"
-                                                                                    data-ng-click="selectEditPriority(group, priority)">
-                                                                                Edit
-                                                                            </button>
-                                                                        </div>
+                                        <div class="panel-body" data-ng-show="priorityValue">
+                                            <div ng-switch-default="view">
+                                                <form class="form">
+                                                    <fieldset>
+                                                        <div class="row">
+                                                            <div class="col-md-12">
+                                                                <div class="form-group">
+                                                                    <label class="control-label">Value name</label>
+                                                                    <div class="controls">
+                                                                        <input disabled type="text" class="form-control" ng-model="priorityValue.name">
+                                                                    </div>
+                                                                </div>
+                                                                <div class="form-group">
+                                                                    <label class="control-label">Numerical value</label>
+                                                                    <div class="controls">
+                                                                        <input disabled type="number" class="form-control" ng-model="priorityValue.numericalValue">
+                                                                    </div>
+                                                                </div>
+                                                                <div class="form-group">
+                                                                    <label class="control-label">Value description</label>
+                                                                    <div class="controls">
+                                                        <textarea disabled class="form-control"
+                                                                  ng-model="priorityValue.description">
+                                                        </textarea>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="form-group">
+                                                                    <div data-ng-show="error" class="text-danger">
+                                                                        <strong data-ng-bind="error"></strong>
                                                                     </div>
                                                                 </div>
                                                             </div>
                                                         </div>
-                                                        <div class="panel-body" ng-switch-when="edit">
-                                                            <div class="row" >
-                                                                <div class="col-md-12">
-                                                                    <form name="editPriorityForm" novalidate>
-                                                                        <fieldset>
-                                                                            <div class="row">
-                                                                                <div class="form-group col-md-12">
-                                                                                    <label for="priorityName" class="control-label">Priority name</label>
-                                                                                    <input id="priorityName" type="text" class="form-control" data-ng-model="priority.name">
-                                                                                </div>
-                                                                            </div>
-                                                                            <div class="row">
-                                                                                <div class="form-group col-md-12">
-                                                                                    <label for="priorityDescription" class="control-label">Priority description</label>
-                                                                                    <textarea id="priorityDescription" data-ng-model="priority.description" class="form-control" placeholder="No description yet"></textarea>
-                                                                                </div>
-                                                                            </div>
-                                                                            <div class="row">
-                                                                                <div class="col-md-12">
-                                                                                    <div class="form-group pull-right">
-                                                                                        <button type="button" class="btn btn-success" ng-click="updatePriority(group, priority)">
-                                                                                            Save
-                                                                                        </button>
-                                                                                        <a class="btn btn-danger" data-ng-click="removePriority(group, priority)">
-                                                                                            <i class="glyphicon glyphicon-trash"></i>
-                                                                                        </a>
-                                                                                        <button type="button" class="btn btn-info" ng-click="cancelEditPriority(priority)">
-                                                                                            Cancel
-                                                                                        </button>
-                                                                                    </div>
-                                                                                </div>
-                                                                            </div>
-                                                                            <div data-ng-show="error" class="text-danger">
-                                                                                <strong data-ng-bind="error"></strong>
-                                                                            </div>
-                                                                        </fieldset>
-                                                                    </form>
-                                                                </div>
-                                                            </div>
-                                                        </div>
+                                                    </fieldset>
+                                                </form>
+                                                <div class="row">
+                                                    <div class="col-md-12">
+                                                        <small>
+                                                            <em class="text-muted">
+                                                                Last updated on
+                                                                <span data-ng-bind="priorityValue.created | date:'mediumDate'"></span>
+                                                                by
+                                                                <span data-ng-bind="priorityValue.user.displayName"></span>
+                                                            </em>
+                                                        </small>
                                                     </div>
                                                 </div>
                                             </div>
-                                        </div>
-                                        <div class="alert alert-warning text-center" data-ng-show="group.priorities.length === 0">
-                                            No priorities added to this group yet
+                                            <div data-ng-switch-when="edit">
+                                                <form class="form" data-ng-submit="updateValue(priorityValue)" novalidate>
+                                                    <fieldset>
+                                                        <div class="row">
+                                                            <div class="col-md-12">
+                                                                <div class="form-group">
+                                                                    <label class="control-label" for="name">Value name</label>
+                                                                    <div class="controls">
+                                                                        <input type="text" id="name" class="form-control"
+                                                                               data-ng-model="priorityValue.name" placeholder="Name" required>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="form-group">
+                                                                    <label class="control-label" for="numerical">Numerical value</label>
+                                                                    <div class="controls">
+                                                                        <input type="number" id="numerical" class="form-control" min="0" step="1" onkeyup="this.value=this.value.replace(/[^0-9]/g,'');"
+                                                                               data-ng-model="priorityValue.numericalValue" placeholder="Enter positive integer" required>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="form-group">
+                                                                    <label class="control-label" for="description">Value description</label>
+                                                                    <div class="controls">
+                                                        <textarea id="description" class="form-control"
+                                                                  data-ng-model="priorityValue.description" placeholder="Description">
+                                                        </textarea>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="form-group center-block">
+                                                                    <input type="submit" value="Save" class="btn btn-success">
+                                                                    <a class="btn btn-danger" data-ng-click="removeValue(priorityValue)">
+                                                                        <i class="glyphicon glyphicon-trash"></i>
+                                                                    </a>
+                                                                    <button type="button" class="btn btn-info" data-ng-click="cancelEditValue(priorityValue)">
+                                                                        Cancel
+                                                                    </button>
+                                                                </div>
+                                                                <div class="form-group">
+                                                                    <div data-ng-show="error" class="text-danger">
+                                                                        <strong data-ng-bind="error"></strong>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </fieldset>
+                                                </form>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                </div>
-            </div>
+                </tab>
+                <tab heading="Priority Groups">
+                    <br>
+                    <div class="row">
+                        <div class="col-md-3">
+                            <br>
+                            <button class="btn btn-primary" ng-click="createGroup()">
+                                New priority group
+                            </button>
+                            <div data-ng-show="error" class="text-danger">
+                                <strong data-ng-bind="error"></strong>
+                            </div>
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="row">
+                        <div class="col-md-12 form-group" data-ng-repeat="group in priorityGroups track by $index">
+                            <button class="btn btn-default btn-lg btn-block" data-ng-bind="group.name" data-ng-click="viewGroupDetails = !viewGroupDetails"
+                                    title="Last updated on {{group.created | date:'medium'}} by {{group.user.displayName}}"></button>
+                            <div data-ng-show="viewGroupDetails">
+                                <div class="panel panel-default" >
+                                    <div class="panel-body">
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                <div class="panel panel-default" data-ng-switch="switchGroupForm[group._id]">
+                                                    <div class="panel-body" ng-switch-default="view">
+                                                        <div class="row">
+                                                            <div class="col-md-7 form-group">
+                                                                <label for="groupName" class="control-label">Priority Group name</label>
+                                                                <input disabled id="groupName" type="text" class="form-control" data-ng-model="group.name">
+                                                            </div>
+                                                        </div>
+                                                        <div class="row">
+                                                            <div class="col-md-12 form-group">
+                                                                <label for="groupDescription" class="control-label">Priority Group description</label>
+                                                                <textarea disabled id="groupDescription" data-ng-model="group.description" class="form-control" placeholder="No description yet"></textarea>
+                                                            </div>
+                                                        </div>
+                                                        <div class="row">
+                                                            <div class="col-md-12">
+                                                                <div class="form-group pull-right">
+                                                                    <button class="btn btn-success" data-ng-click="selectGroup(group)">Edit</button>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="panel-body" ng-switch-when="edit">
+                                                        <form name="editGroupForm" novalidate>
+                                                            <fieldset>
+                                                                <div class="row">
+                                                                    <div class="col-md-12">
+                                                                        <div class="panel-body">
+                                                                            <div class="row">
+                                                                                <div class="col-md-7 form-group">
+                                                                                    <label for="groupName" class="control-label">Priority Group name</label>
+                                                                                    <input id="groupName" type="text" class="form-control" data-ng-model="group.name">
+                                                                                </div>
+                                                                            </div>
+                                                                            <div class="row">
+                                                                                <div class="col-md-12 form-group">
+                                                                                    <label for="groupDescription" class="control-label">Priority Group description</label>
+                                                                                    <textarea id="groupDescription" data-ng-model="group.description" class="form-control" placeholder="No description yet"></textarea>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="row">
+                                                                    <div class="col-md-12">
+                                                                        <div class="form-group pull-right">
+                                                                            <button type="button" class="btn btn-success" data-ng-click="updateGroup(group)">
+                                                                                Save
+                                                                            </button>
+                                                                            <button type="button" class="btn btn-danger" data-ng-click="removeGroup(group)">
+                                                                                Delete priority group
+                                                                            </button>
+                                                                            <button type="button" class="btn btn-info" data-ng-click="cancelEditGroup(group)">
+                                                                                Cancel
+                                                                            </button>
+                                                                            <div data-ng-show="error" class="text-danger">
+                                                                                <strong data-ng-bind="error"></strong>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </fieldset>
+                                                        </form>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                <div class="panel panel-default">
+                                                    <div class="panel-body">
+                                                        <div class="row">
+                                                            <div class="col-md-3">
+                                                                <div class="form-group">
+                                                                    <button type="button" class="btn btn-primary" ng-click="createPriority(group)">
+                                                                        New priority
+                                                                    </button>
+                                                                </div>
+                                                                <div data-ng-show="error" class="text-danger">
+                                                                    <strong data-ng-bind="error"></strong>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="row">
+                                                            <div class="col-md-4 form-group" data-ng-repeat="priority in group.priorities track by $index" data-ng-switch="switchPriorityForm[priority._id]">
+                                                                <button class="btn btn-default btn-lg btn-block" data-ng-bind="priority.name" data-ng-click="viewPriorityDetails = !viewPriorityDetails"
+                                                                        title="Last updated on {{priority.created | date:'medium'}} by {{priority.user.displayName}}"></button>
+                                                                <div data-ng-show="viewPriorityDetails">
+                                                                    <div class="panel panel-default">
+                                                                        <div class="panel-body" ng-switch-default="view">
+                                                                            <div class="row">
+                                                                                <div class="col-md-12">
+                                                                                    <form>
+                                                                                        <fieldset>
+                                                                                            <div class="row">
+                                                                                                <div class="form-group col-md-12">
+                                                                                                    <label for="priorityName" class="control-label">Priority name</label>
+                                                                                                    <input disabled id="priorityName" type="text" class="form-control" data-ng-model="priority.name">
+                                                                                                </div>
+                                                                                            </div>
+                                                                                            <div class="row">
+                                                                                                <div class="form-group col-md-12">
+                                                                                                    <label for="priorityDescription" class="control-label">Priority description</label>
+                                                                                                    <textarea disabled id="priorityDescription" data-ng-model="priority.description" class="form-control" placeholder="No description yet"></textarea>
+                                                                                                </div>
+                                                                                            </div>
+                                                                                        </fieldset>
+                                                                                    </form>
+                                                                                    <div class="row">
+                                                                                        <div class="form-group col-md-12 pull-right">
+                                                                                            <button type="button" class="btn btn-success pull-right"
+                                                                                                    data-ng-click="selectEditPriority(group, priority)">
+                                                                                                Edit
+                                                                                            </button>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                        <div class="panel-body" ng-switch-when="edit">
+                                                                            <div class="row" >
+                                                                                <div class="col-md-12">
+                                                                                    <form name="editPriorityForm" novalidate>
+                                                                                        <fieldset>
+                                                                                            <div class="row">
+                                                                                                <div class="form-group col-md-12">
+                                                                                                    <label for="priorityName" class="control-label">Priority name</label>
+                                                                                                    <input id="priorityName" type="text" class="form-control" data-ng-model="priority.name">
+                                                                                                </div>
+                                                                                            </div>
+                                                                                            <div class="row">
+                                                                                                <div class="form-group col-md-12">
+                                                                                                    <label for="priorityDescription" class="control-label">Priority description</label>
+                                                                                                    <textarea id="priorityDescription" data-ng-model="priority.description" class="form-control" placeholder="No description yet"></textarea>
+                                                                                                </div>
+                                                                                            </div>
+                                                                                            <div class="row">
+                                                                                                <div class="col-md-12">
+                                                                                                    <div class="form-group pull-right">
+                                                                                                        <button type="button" class="btn btn-success" ng-click="updatePriority(group, priority)">
+                                                                                                            Save
+                                                                                                        </button>
+                                                                                                        <a class="btn btn-danger" data-ng-click="removePriority(group, priority)">
+                                                                                                            <i class="glyphicon glyphicon-trash"></i>
+                                                                                                        </a>
+                                                                                                        <button type="button" class="btn btn-info" ng-click="cancelEditPriority(priority)">
+                                                                                                            Cancel
+                                                                                                        </button>
+                                                                                                    </div>
+                                                                                                </div>
+                                                                                            </div>
+                                                                                            <div data-ng-show="error" class="text-danger">
+                                                                                                <strong data-ng-bind="error"></strong>
+                                                                                            </div>
+                                                                                        </fieldset>
+                                                                                    </form>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="alert alert-warning text-center" data-ng-show="group.priorities.length === 0">
+                                                            No priorities added to this group yet
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="alert alert-warning text-center" data-ng-hide="!priorityGroups.$resolved || priorityGroups.length">
+                        No priority groups yet, why don't you create one?
+                    </div>                </tab>
+            </tabset>
         </div>
-    </div>
-    <div class="alert alert-warning text-center" data-ng-hide="!priorityGroups.$resolved || priorityGroups.length">
-        No priority groups yet, why don't you create one?
     </div>
 </section>
