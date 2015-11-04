@@ -1,0 +1,440 @@
+<section data-ng-controller="QualitativeAnalysisSetupController" data-ng-init="init()">
+	<br>
+	<div class="row">
+		<div class="col-sm-12">
+			<div class="panel-heading">
+				<ol class="breadcrumb">
+					<li>Setup</li>
+					<li>Portfolio evaluation</li>
+					<li class="active">Qualitative analysis</li>
+				</ol>
+			</div>
+		</div>
+	</div>
+	<div class="row">
+		<div class="col-md-12">
+			<tabset>
+				<tab heading="Impact Groups">
+					<br>
+					<div class="row">
+						<div class="col-md-3" data-ng-show="userHasAuthorization">
+							<br>
+							<button class="btn btn-primary" data-ng-click="createGroup()">
+								New impact group
+							</button>
+							<div data-ng-show="error" class="text-danger">
+								<strong data-ng-bind="error"></strong>
+							</div>
+						</div>
+                        <div class="col-md-9">
+                            <br>
+                            <span><b>Total group weights: </b></span>
+                            <span data-ng-bind="totalGroupWeights+' %'"></span>
+                            <span data-ng-show="totalGroupWeights !== 100" class="alert alert-warning text-center">Warning: total should add up to 100%</span>
+                        </div>
+					</div>
+					<hr>
+					<div class="row">
+						<div class="col-md-12 form-group" data-ng-repeat="group in impactGroups track by $index">
+							<button class="btn btn-default btn-lg btn-block" data-ng-click="viewGroupDetails = !viewGroupDetails; calculateTotalImpactWeights(group);"
+									title="Last updated on {{group.created | date:'medium'}} by {{group.user.displayName}}">
+                                <span class="text-center" data-ng-bind="group.name"></span>
+                                <span class="badge pull-right" data-ng-bind="group.weight+' %'"></span>
+                            </button>
+							<div data-ng-show="viewGroupDetails">
+								<div class="panel panel-default" >
+									<div class="panel-body">
+										<div class="row">
+											<div class="col-md-12">
+												<div class="panel panel-default" data-ng-switch="switchGroupForm[group._id]">
+													<div class="panel-body" ng-switch-default="view">
+														<div class="row">
+															<div class="col-md-7 form-group">
+																<label for="groupName" class="control-label">Impact Group name</label>
+																<input disabled id="groupName" type="text" class="form-control" data-ng-model="group.name">
+															</div>
+														</div>
+                                                        <div class="row">
+                                                            <div class="col-md-3 form-group">
+                                                                <label for="groupWeight" class="control-label">Weight</label>
+                                                                <div class="input-group">
+                                                                    <input disabled id="groupWeight" type="number" class="form-control" data-ng-model="group.weight">
+                                                                    <span class="input-group-addon" id="basic-addon1">%</span>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+														<div class="row">
+															<div class="col-md-12 form-group">
+																<label for="groupDescription" class="control-label">Impact Group description</label>
+																<textarea disabled id="groupDescription" data-ng-model="group.description" class="form-control" placeholder="No description yet"></textarea>
+															</div>
+														</div>
+														<div class="row" data-ng-show="userHasAuthorization">
+															<div class="col-md-12">
+																<div class="form-group pull-right">
+																	<button class="btn btn-success" data-ng-click="selectGroup(group)">Edit</button>
+																</div>
+															</div>
+														</div>
+													</div>
+													<div class="panel-body" ng-switch-when="edit">
+														<form name="editGroupForm" novalidate>
+															<fieldset>
+																<div class="row">
+																	<div class="col-md-12">
+																		<div class="panel-body">
+																			<div class="row">
+																				<div class="col-md-7 form-group">
+																					<label for="groupNameEdit" class="control-label">Impact Group name</label>
+																					<input id="groupNameEdit" name="groupNameEdit" type="text" class="form-control" data-ng-model="group.name" required>
+                                                                                    <span data-ng-show="editGroupForm.groupNameEdit.$error.required">
+                                                                                        <em style="color: red">Name is required</em>
+                                                                                    </span>
+																				</div>
+																			</div>
+                                                                            <div class="row">
+                                                                                <div class="col-md-3 form-group">
+                                                                                    <label for="groupWeightEdit" class="control-label">Impact Group weight</label>
+                                                                                    <div class="input-group">
+                                                                                        <input type="number" id="groupWeightEdit" name="groupWeightEdit" class="form-control" min="0" step="1" max="100" onkeyup="this.value=this.value.replace(/[^0-9]/g,'');"
+                                                                                               data-ng-model="group.weight" placeholder="Enter integer between 0 and 100" required>
+                                                                                        <span class="input-group-addon" id="basic-addon1">%</span>
+                                                                                    </div>
+                                                                                    <span data-ng-show="editGroupForm.groupWeightEdit.$error.min || editGroupForm.groupWeightEdit.$error.max">
+                                                                                        <em style="color: red">Enter integer between 0 and 100</em>
+                                                                                    </span>
+                                                                                </div>
+                                                                            </div>
+																			<div class="row">
+																				<div class="col-md-12 form-group">
+																					<label for="groupDescriptionEdit" class="control-label">Impact Group description</label>
+																					<textarea id="groupDescriptionEdit" data-ng-model="group.description" class="form-control" placeholder="No description yet"></textarea>
+																				</div>
+																			</div>
+																		</div>
+																	</div>
+																</div>
+																<div class="row">
+																	<div class="col-md-12">
+																		<div class="form-group pull-right">
+																			<button type="button" class="btn btn-success" data-ng-click="updateGroup(group)" data-ng-disabled="editGroupForm.$invalid">
+																				Save
+																			</button>
+																			<button type="button" class="btn btn-danger" data-ng-click="removeGroup(group)">
+																				Delete impact group
+																			</button>
+																			<button type="button" class="btn btn-info" data-ng-click="cancelEditGroup(group)">
+																				Cancel
+																			</button>
+																			<div data-ng-show="error" class="text-danger">
+																				<strong data-ng-bind="error"></strong>
+																			</div>
+																		</div>
+																	</div>
+																</div>
+															</fieldset>
+														</form>
+													</div>
+												</div>
+											</div>
+										</div>
+										<div class="row">
+											<div class="col-md-12">
+												<div class="panel panel-default">
+													<div class="panel-body">
+														<div class="row">
+															<div class="col-md-3" data-ng-show="userHasAuthorization">
+																<div class="form-group">
+																	<button type="button" class="btn btn-primary" ng-click="createImpact(group)">
+																		New impact
+																	</button>
+																</div>
+																<div data-ng-show="error" class="text-danger">
+																	<strong data-ng-bind="error"></strong>
+																</div>
+															</div>
+                                                            <div class="col-md-9">
+                                                                <div class="form-group panel">
+                                                                    <span><b>Total impact weights: </b></span>
+                                                                    <span data-ng-bind="totalImpactWeights[group._id]+' %'"></span>
+                                                                    <span data-ng-show="totalImpactWeights[group._id] !== 100" class="alert alert-warning text-center">Warning: total should add up to 100%</span>
+                                                                </div>
+                                                            </div>
+														</div>
+														<div class="row">
+															<div class="col-md-4 form-group" data-ng-repeat="impact in group.impacts track by $index" data-ng-switch="switchImpactForm[impact._id]">
+																<button class="btn btn-default btn-lg btn-block" data-ng-click="viewImpactDetails = !viewImpactDetails"
+																		title="Last updated on {{impact.created | date:'medium'}} by {{impact.user.displayName}}">
+                                                                    <span class="text-center" data-ng-bind="impact.name" ></span>
+                                                                    <span class="badge pull-right" data-ng-bind="impact.weight+' %'"></span>
+                                                                </button>
+																<div data-ng-show="viewImpactDetails">
+																	<div class="panel panel-default">
+																		<div class="panel-body" ng-switch-default="view">
+																			<div class="row">
+																				<div class="col-md-12">
+																					<form>
+																						<fieldset>
+																							<div class="row">
+																								<div class="form-group col-md-12">
+																									<label for="impactName" class="control-label">Impact name</label>
+																									<input disabled id="impactName" type="text" class="form-control" data-ng-model="impact.name">
+																								</div>
+																							</div>
+                                                                                            <div class="row">
+                                                                                                <div class="form-group col-md-12">
+                                                                                                    <label for="impactWeight" class="control-label">Weight</label>
+                                                                                                    <div class="input-group">
+                                                                                                        <input disabled id="impactWeight" type="number" class="form-control" data-ng-model="impact.weight">
+                                                                                                        <span class="input-group-addon" id="basic-addon1">%</span>
+                                                                                                    </div>
+                                                                                                </div>
+                                                                                            </div>
+                                                                                            <div class="row">
+																								<div class="form-group col-md-12">
+																									<label for="impactDescription" class="control-label">Impact description</label>
+																									<textarea disabled id="impactDescription" data-ng-model="impact.description" class="form-control" placeholder="No description yet"></textarea>
+																								</div>
+																							</div>
+																						</fieldset>
+																					</form>
+																					<div class="row" data-ng-show="userHasAuthorization">
+																						<div class="form-group col-md-12 pull-right">
+																							<button type="button" class="btn btn-success pull-right"
+																									data-ng-click="selectEditImpact(group, impact)">
+																								Edit
+																							</button>
+																						</div>
+																					</div>
+																				</div>
+																			</div>
+																		</div>
+																		<div class="panel-body" ng-switch-when="edit">
+																			<div class="row" >
+																				<div class="col-md-12">
+																					<form name="editImpactForm" novalidate>
+																						<fieldset>
+																							<div class="row">
+																								<div class="form-group col-md-12">
+																									<label for="impactNameEdit" class="control-label">Impact name</label>
+																									<input id="impactNameEdit" name="impactNameEdit" type="text" class="form-control" data-ng-model="impact.name" required>
+                                                                                                    <span data-ng-show="editImpactForm.impactNameEdit.$error.required">
+                                                                                                        <em style="color: red">Name is required</em>
+                                                                                                    </span>
+																								</div>
+																							</div>
+                                                                                            <div class="row">
+                                                                                                <div class="form-group col-md-12">
+                                                                                                    <label for="impactWeightEdit" class="control-label">Impact weight</label>
+                                                                                                    <div class="input-group">
+                                                                                                        <input type="number" id="impactWeightEdit" name="impactWeightEdit" class="form-control" min="0" step="1" max="100" onkeyup="this.value=this.value.replace(/[^0-9]/g,'');"
+                                                                                                               data-ng-model="impact.weight" placeholder="Enter integer between 0 and 100" required>
+                                                                                                        <span class="input-group-addon" id="basic-addon1">%</span>
+                                                                                                    </div>
+                                                                                                    <span data-ng-show="editImpactForm.impactWeightEdit.$error.min || editImpactForm.impactWeightEdit.$error.max">
+                                                                                                        <em style="color: red">Enter integer between 0 and 100</em>
+                                                                                                    </span>
+                                                                                                </div>
+                                                                                            </div>
+																							<div class="row">
+																								<div class="form-group col-md-12">
+																									<label for="impactDescription" class="control-label">Impact description</label>
+																									<textarea id="impactDescription" data-ng-model="impact.description" class="form-control" placeholder="No description yet"></textarea>
+																								</div>
+																							</div>
+																							<div class="row">
+																								<div class="col-md-12">
+																									<div class="form-group pull-right">
+																										<button type="button" class="btn btn-success" ng-click="updateImpact(group, impact)" data-ng-disabled="editImpactForm.$invalid">
+																											Save
+																										</button>
+																										<a class="btn btn-danger" data-ng-click="removeImpact(group, impact)">
+																											<i class="glyphicon glyphicon-trash"></i>
+																										</a>
+																										<button type="button" class="btn btn-info" ng-click="cancelEditImpact(impact)">
+																											Cancel
+																										</button>
+																									</div>
+																								</div>
+																							</div>
+																							<div data-ng-show="error" class="text-danger">
+																								<strong data-ng-bind="error"></strong>
+																							</div>
+																						</fieldset>
+																					</form>
+																				</div>
+																			</div>
+																		</div>
+																	</div>
+																</div>
+															</div>
+														</div>
+														<div class="alert alert-warning text-center" data-ng-show="group.impacts.length === 0">
+															No impacts added to this group yet
+														</div>
+													</div>
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="alert alert-warning text-center" data-ng-hide="!impactGroups.$resolved || impactGroups.length">
+						No impact groups yet
+					</div>                </tab>
+				<tab heading="Impact Scores">
+					<br>
+					<div class="row">
+						<div class="col-md-5">
+							<div class="panel panel-default">
+								<div class="panel-body" style="overflow-y: auto; max-height: 500px; min-height: 500px;">
+									<div class="alert alert-warning text-center" data-ng-hide="impactScores.length">
+										No impact scores yet, why don't you create one?
+									</div>
+									<button data-ng-repeat="score in impactScores" data-ng-click="selectScore(score)"
+											class="btn btn-default btn-lg btn-block center-block" style="overflow: hidden;">
+                                        <div class="row">
+                                            <div class="col-md-2">
+                                                <span class="badge" data-ng-bind="score.numericalValue"></span>
+                                            </div>
+                                            <div class="col-md-10 text-center">
+                                                <span data-ng-bind="score.name"></span>
+                                            </div>
+                                        </div>
+									</button>
+								</div>
+							</div>
+						</div>
+						<div class="col-md-4" data-ng-switch="switchScoreForm">
+							<div class="row" ng-show="userHasAuthorization" ng-switch-default="view">
+								<div class="col-md-12">
+									<button class="btn btn-primary" data-ng-click="createScore()">
+										New score
+									</button>
+									<button class="btn btn-success" data-ng-click="selectScoreForm('edit')" data-ng-show="impactScore">
+										Edit Score
+									</button>
+									<div data-ng-show="error" class="text-danger">
+										<strong data-ng-bind="error"></strong>
+									</div>
+								</div>
+							</div>
+							<br>
+							<div class="row">
+								<div class="col-md-12">
+									<div class="panel panel-default">
+										<div class="panel-heading">
+											<h6 class="panel-title" data-ng-bind="impactScore.name"></h6>
+											<div class="text-center" data-ng-hide="impactScore">
+												<em>Please select a impact score to see the details</em>
+											</div>
+										</div>
+										<div class="panel-body" data-ng-show="impactScore">
+											<div ng-switch-default="view">
+												<form class="form">
+													<fieldset>
+														<div class="row">
+															<div class="col-md-12">
+																<div class="form-group">
+																	<label class="control-label">Score name</label>
+																	<div class="controls">
+																		<input disabled type="text" class="form-control" ng-model="impactScore.name">
+																	</div>
+																</div>
+																<div class="form-group">
+																	<label class="control-label">Numerical value</label>
+																	<div class="controls">
+																		<input disabled type="number" class="form-control" ng-model="impactScore.numericalValue">
+																	</div>
+																</div>
+																<div class="form-group">
+																	<label class="control-label"> description</label>
+																	<div class="controls">
+                                                                        <textarea disabled class="form-control" ng-model="impactScore.description"></textarea>
+																	</div>
+																</div>
+																<div class="form-group">
+																	<div data-ng-show="error" class="text-danger">
+																		<strong data-ng-bind="error"></strong>
+																	</div>
+																</div>
+															</div>
+														</div>
+													</fieldset>
+												</form>
+												<div class="row">
+													<div class="col-md-12">
+														<small>
+															<em class="text-muted">
+																Last updated on
+																<span data-ng-bind="impactScore.created | date:'mediumDate'"></span>
+																by
+																<span data-ng-bind="impactScore.user.displayName"></span>
+															</em>
+														</small>
+													</div>
+												</div>
+											</div>
+											<div data-ng-switch-when="edit">
+												<form class="form" name="EditScoreForm" data-ng-submit="updateScore(impactScore)" novalidate>
+													<fieldset>
+														<div class="row">
+															<div class="col-md-12">
+																<div class="form-group">
+																	<label class="control-label" for="scoreNameEdit">Score name</label>
+																	<div class="controls">
+																		<input type="text" id="scoreNameEdit" name="scoreNameEdit" class="form-control"
+																			   data-ng-model="impactScore.name" placeholder="Name" required>
+																	</div>
+                                                                    <span data-ng-show="EditScoreForm.scoreNameEdit.$error.required">
+                                                                        <em style="color: red">Name is required</em>
+                                                                    </span>
+																</div>
+																<div class="form-group">
+																	<label class="control-label" for="scoreNumericalEdit">Numerical value</label>
+																	<div class="controls">
+																		<input type="number" id="scoreNumericalEdit" name="scoreNumericalEdit" class="form-control" min="0" step="1" max="100" onkeyup="this.value=this.value.replace(/[^0-9]/g,'');"
+																			   data-ng-model="impactScore.numericalValue" placeholder="Enter positive integer" required>
+																	</div>
+                                                                    <span data-ng-show="EditScoreForm.scoreNumericalEdit.$error.min || EditScoreForm.scoreNumericalEdit.$error.max">
+                                                                        <em style="color: red">Enter integer between 0 and 100</em>
+                                                                    </span>
+																</div>
+																<div class="form-group">
+																	<label class="control-label" for="description">Score description</label>
+																	<div class="controls">
+                                                                        <textarea id="description" class="form-control" data-ng-model="impactScore.description" placeholder="Description"></textarea>
+																	</div>
+																</div>
+																<div class="form-group center-block">
+																	<input type="submit" value="Save" class="btn btn-success" data-ng-disabled="EditScoreForm.$invalid">
+																	<a class="btn btn-danger" data-ng-click="removeScore(impactScore)">
+																		<i class="glyphicon glyphicon-trash"></i>
+																	</a>
+																	<button type="button" class="btn btn-info" data-ng-click="cancelEditScore(impactScore)">
+																		Cancel
+																	</button>
+																</div>
+																<div class="form-group">
+																	<div data-ng-show="error" class="text-danger">
+																		<strong data-ng-bind="error"></strong>
+																	</div>
+																</div>
+															</div>
+														</div>
+													</fieldset>
+												</form>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</tab>
+			</tabset>
+		</div>
+	</div>
+</section>
