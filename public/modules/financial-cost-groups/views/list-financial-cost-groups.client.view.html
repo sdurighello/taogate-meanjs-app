@@ -1,0 +1,19 @@
+<section data-ng-controller="FinancialCostGroupsController" data-ng-init="find()">
+    <div class="page-header">
+        <h1>Financial cost groups</h1>
+    </div>
+    <div class="list-group">
+        <a data-ng-repeat="financialCostGroup in financialCostGroups" data-ng-href="#!/financial-cost-groups/{{financialCostGroup._id}}" class="list-group-item">
+			<small class="list-group-item-text">
+				Posted on
+				<span data-ng-bind="financialCostGroup.created | date:'medium'"></span>
+				by
+				<span data-ng-bind="financialCostGroup.user.displayName"></span>
+			</small>
+			<h4 class="list-group-item-heading" data-ng-bind="financialCostGroup.name"></h4>
+        </a>
+    </div>
+    <div class="alert alert-warning text-center" data-ng-hide="!financialCostGroups.$resolved || financialCostGroups.length">
+    	No Financial cost groups yet, why don't you <a href="/#!/financial-cost-groups/create">create one</a>?
+    </div>
+</section>

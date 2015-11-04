@@ -1,0 +1,424 @@
+<section data-ng-controller="FinancialAnalysisSetupController" data-ng-init="init()">
+	<br>
+	<div class="row">
+		<div class="col-sm-12">
+			<div class="panel-heading">
+				<ol class="breadcrumb">
+					<li>Setup</li>
+					<li>Portfolio evaluation</li>
+					<li class="active">Financial analysis</li>
+				</ol>
+			</div>
+		</div>
+	</div>
+	<div class="row">
+		<div class="col-md-12">
+			<tabset>
+                <tab heading="Costs">
+                    <br>
+                    <div class="row">
+                        <div class="col-md-3">
+                            <br>
+                            <button class="btn btn-primary" ng-click="createCostGroup()">
+                                New cost group
+                            </button>
+                            <div data-ng-show="error" class="text-danger">
+                                <strong data-ng-bind="error"></strong>
+                            </div>
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="row">
+                        <div class="col-md-12 form-group" data-ng-repeat="group in costGroups track by $index">
+                            <button class="btn btn-default btn-lg btn-block" data-ng-bind="group.name" data-ng-click="viewCostGroupDetails = !viewCostGroupDetails"
+                                    title="Last updated on {{group.created | date:'medium'}} by {{group.user.displayName}}"></button>
+                            <div data-ng-show="viewCostGroupDetails">
+                                <div class="panel panel-default" >
+                                    <div class="panel-body">
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                <div class="panel panel-default" data-ng-switch="switchCostGroupForm[group._id]">
+                                                    <div class="panel-body" ng-switch-default="view">
+                                                        <div class="row">
+                                                            <div class="col-md-7 form-group">
+                                                                <label for="groupName" class="control-label">Cost Group name</label>
+                                                                <input disabled id="groupName" type="text" class="form-control" data-ng-model="group.name">
+                                                            </div>
+                                                        </div>
+                                                        <div class="row">
+                                                            <div class="col-md-12 form-group">
+                                                                <label for="groupDescription" class="control-label">Cost Group description</label>
+                                                                <textarea disabled id="groupDescription" data-ng-model="group.description" class="form-control" placeholder="No description yet"></textarea>
+                                                            </div>
+                                                        </div>
+                                                        <div class="row">
+                                                            <div class="col-md-12">
+                                                                <div class="form-group pull-right">
+                                                                    <button class="btn btn-success" data-ng-click="selectCostGroup(group)">Edit</button>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="panel-body" ng-switch-when="edit">
+                                                        <form name="editCostGroupForm" novalidate>
+                                                            <fieldset>
+                                                                <div class="row">
+                                                                    <div class="col-md-12">
+                                                                        <div class="panel-body">
+                                                                            <div class="row">
+                                                                                <div class="col-md-7 form-group">
+                                                                                    <label for="groupName" class="control-label">Cost Group name</label>
+                                                                                    <input id="groupName" type="text" class="form-control" data-ng-model="group.name">
+                                                                                </div>
+                                                                            </div>
+                                                                            <div class="row">
+                                                                                <div class="col-md-12 form-group">
+                                                                                    <label for="groupDescription" class="control-label">Cost Group description</label>
+                                                                                    <textarea id="groupDescription" data-ng-model="group.description" class="form-control" placeholder="No description yet"></textarea>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="row">
+                                                                    <div class="col-md-12">
+                                                                        <div class="form-group pull-right">
+                                                                            <button type="button" class="btn btn-success" data-ng-click="updateCostGroup(group)">
+                                                                                Save
+                                                                            </button>
+                                                                            <button type="button" class="btn btn-danger" data-ng-click="removeCostGroup(group)">
+                                                                                Delete cost group
+                                                                            </button>
+                                                                            <button type="button" class="btn btn-info" data-ng-click="cancelEditCostGroup(group)">
+                                                                                Cancel
+                                                                            </button>
+                                                                            <div data-ng-show="error" class="text-danger">
+                                                                                <strong data-ng-bind="error"></strong>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </fieldset>
+                                                        </form>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                <div class="panel panel-default">
+                                                    <div class="panel-body">
+                                                        <div class="row">
+                                                            <div class="col-md-3">
+                                                                <div class="form-group">
+                                                                    <button type="button" class="btn btn-primary" ng-click="createCost(group)">
+                                                                        New cost
+                                                                    </button>
+                                                                </div>
+                                                                <div data-ng-show="error" class="text-danger">
+                                                                    <strong data-ng-bind="error"></strong>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="row">
+                                                            <div class="col-md-4 form-group" data-ng-repeat="cost in group.costs track by $index" data-ng-switch="switchCostForm[cost._id]">
+                                                                <button class="btn btn-default btn-lg btn-block" data-ng-bind="cost.name" data-ng-click="viewCostDetails = !viewCostDetails"
+                                                                        title="Last updated on {{cost.created | date:'medium'}} by {{cost.user.displayName}}"></button>
+                                                                <div data-ng-show="viewCostDetails">
+                                                                    <div class="panel panel-default">
+                                                                        <div class="panel-body" ng-switch-default="view">
+                                                                            <div class="row">
+                                                                                <div class="col-md-12">
+                                                                                    <form>
+                                                                                        <fieldset>
+                                                                                            <div class="row">
+                                                                                                <div class="form-group col-md-12">
+                                                                                                    <label for="costName" class="control-label">Cost name</label>
+                                                                                                    <input disabled id="costName" type="text" class="form-control" data-ng-model="cost.name">
+                                                                                                </div>
+                                                                                            </div>
+                                                                                            <div class="row">
+                                                                                                <div class="form-group col-md-12">
+                                                                                                    <label for="costDescription" class="control-label">Cost description</label>
+                                                                                                    <textarea disabled id="costDescription" data-ng-model="cost.description" class="form-control" placeholder="No description yet"></textarea>
+                                                                                                </div>
+                                                                                            </div>
+                                                                                        </fieldset>
+                                                                                    </form>
+                                                                                    <div class="row">
+                                                                                        <div class="form-group col-md-12 pull-right">
+                                                                                            <button type="button" class="btn btn-success pull-right"
+                                                                                                    data-ng-click="selectEditCost(group, cost)">
+                                                                                                Edit
+                                                                                            </button>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                        <div class="panel-body" ng-switch-when="edit">
+                                                                            <div class="row" >
+                                                                                <div class="col-md-12">
+                                                                                    <form name="editCostForm" novalidate>
+                                                                                        <fieldset>
+                                                                                            <div class="row">
+                                                                                                <div class="form-group col-md-12">
+                                                                                                    <label for="costNameEdit" class="control-label">Cost name</label>
+                                                                                                    <input id="costNameEdit" type="text" class="form-control" data-ng-model="cost.name">
+                                                                                                </div>
+                                                                                            </div>
+                                                                                            <div class="row">
+                                                                                                <div class="form-group col-md-12">
+                                                                                                    <label for="costDescriptionEdit" class="control-label">Cost description</label>
+                                                                                                    <textarea id="costDescriptionEdit" data-ng-model="cost.description" class="form-control" placeholder="No description yet"></textarea>
+                                                                                                </div>
+                                                                                            </div>
+                                                                                            <div class="row">
+                                                                                                <div class="col-md-12">
+                                                                                                    <div class="form-group pull-right">
+                                                                                                        <button type="button" class="btn btn-success" ng-click="updateCost(group, cost)">
+                                                                                                            Save
+                                                                                                        </button>
+                                                                                                        <a class="btn btn-danger" data-ng-click="removeCost(group, cost)">
+                                                                                                            <i class="glyphicon glyphicon-trash"></i>
+                                                                                                        </a>
+                                                                                                        <button type="button" class="btn btn-info" ng-click="cancelEditCost(cost)">
+                                                                                                            Cancel
+                                                                                                        </button>
+                                                                                                    </div>
+                                                                                                </div>
+                                                                                            </div>
+                                                                                            <div data-ng-show="error" class="text-danger">
+                                                                                                <strong data-ng-bind="error"></strong>
+                                                                                            </div>
+                                                                                        </fieldset>
+                                                                                    </form>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="alert alert-warning text-center" data-ng-show="group.costs.length === 0">
+                                                            No costs added to this group yet
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="alert alert-warning text-center" data-ng-hide="!costGroups.$resolved || costGroups.length">
+                        No cost groups yet, why don't you create one?
+                    </div>
+                </tab>
+				<tab heading="Benefits">
+					<br>
+					<div class="row">
+						<div class="col-md-3">
+							<br>
+							<button class="btn btn-primary" ng-click="createBenefitGroup()">
+								New benefit group
+							</button>
+							<div data-ng-show="error" class="text-danger">
+								<strong data-ng-bind="error"></strong>
+							</div>
+						</div>
+					</div>
+					<hr>
+					<div class="row">
+						<div class="col-md-12 form-group" data-ng-repeat="group in benefitGroups track by $index">
+							<button class="btn btn-default btn-lg btn-block" data-ng-bind="group.name" data-ng-click="viewBenefitGroupDetails = !viewBenefitGroupDetails"
+									title="Last updated on {{group.created | date:'medium'}} by {{group.user.displayName}}"></button>
+							<div data-ng-show="viewBenefitGroupDetails">
+								<div class="panel panel-default" >
+									<div class="panel-body">
+										<div class="row">
+											<div class="col-md-12">
+												<div class="panel panel-default" data-ng-switch="switchBenefitGroupForm[group._id]">
+													<div class="panel-body" ng-switch-default="view">
+														<div class="row">
+															<div class="col-md-7 form-group">
+																<label for="groupName" class="control-label">Benefit Group name</label>
+																<input disabled id="groupName" type="text" class="form-control" data-ng-model="group.name">
+															</div>
+														</div>
+														<div class="row">
+															<div class="col-md-12 form-group">
+																<label for="groupDescription" class="control-label">Benefit Group description</label>
+																<textarea disabled id="groupDescription" data-ng-model="group.description" class="form-control" placeholder="No description yet"></textarea>
+															</div>
+														</div>
+														<div class="row">
+															<div class="col-md-12">
+																<div class="form-group pull-right">
+																	<button class="btn btn-success" data-ng-click="selectBenefitGroup(group)">Edit</button>
+																</div>
+															</div>
+														</div>
+													</div>
+													<div class="panel-body" ng-switch-when="edit">
+														<form name="editBenefitGroupForm" novalidate>
+															<fieldset>
+																<div class="row">
+																	<div class="col-md-12">
+																		<div class="panel-body">
+																			<div class="row">
+																				<div class="col-md-7 form-group">
+																					<label for="groupName" class="control-label">Benefit Group name</label>
+																					<input id="groupName" type="text" class="form-control" data-ng-model="group.name">
+																				</div>
+																			</div>
+																			<div class="row">
+																				<div class="col-md-12 form-group">
+																					<label for="groupDescription" class="control-label">Benefit Group description</label>
+																					<textarea id="groupDescription" data-ng-model="group.description" class="form-control" placeholder="No description yet"></textarea>
+																				</div>
+																			</div>
+																		</div>
+																	</div>
+																</div>
+																<div class="row">
+																	<div class="col-md-12">
+																		<div class="form-group pull-right">
+																			<button type="button" class="btn btn-success" data-ng-click="updateBenefitGroup(group)">
+																				Save
+																			</button>
+																			<button type="button" class="btn btn-danger" data-ng-click="removeBenefitGroup(group)">
+																				Delete benefit group
+																			</button>
+																			<button type="button" class="btn btn-info" data-ng-click="cancelEditBenefitGroup(group)">
+																				Cancel
+																			</button>
+																			<div data-ng-show="error" class="text-danger">
+																				<strong data-ng-bind="error"></strong>
+																			</div>
+																		</div>
+																	</div>
+																</div>
+															</fieldset>
+														</form>
+													</div>
+												</div>
+											</div>
+										</div>
+										<div class="row">
+											<div class="col-md-12">
+												<div class="panel panel-default">
+													<div class="panel-body">
+														<div class="row">
+															<div class="col-md-3">
+																<div class="form-group">
+																	<button type="button" class="btn btn-primary" ng-click="createBenefit(group)">
+																		New benefit
+																	</button>
+																</div>
+																<div data-ng-show="error" class="text-danger">
+																	<strong data-ng-bind="error"></strong>
+																</div>
+															</div>
+														</div>
+														<div class="row">
+															<div class="col-md-4 form-group" data-ng-repeat="benefit in group.benefits track by $index" data-ng-switch="switchBenefitForm[benefit._id]">
+																<button class="btn btn-default btn-lg btn-block" data-ng-bind="benefit.name" data-ng-click="viewBenefitDetails = !viewBenefitDetails"
+																		title="Last updated on {{benefit.created | date:'medium'}} by {{benefit.user.displayName}}"></button>
+																<div data-ng-show="viewBenefitDetails">
+																	<div class="panel panel-default">
+																		<div class="panel-body" ng-switch-default="view">
+																			<div class="row">
+																				<div class="col-md-12">
+																					<form>
+																						<fieldset>
+																							<div class="row">
+																								<div class="form-group col-md-12">
+																									<label for="benefitName" class="control-label">Benefit name</label>
+																									<input disabled id="benefitName" type="text" class="form-control" data-ng-model="benefit.name">
+																								</div>
+																							</div>
+																							<div class="row">
+																								<div class="form-group col-md-12">
+																									<label for="benefitDescription" class="control-label">Benefit description</label>
+																									<textarea disabled id="benefitDescription" data-ng-model="benefit.description" class="form-control" placeholder="No description yet"></textarea>
+																								</div>
+																							</div>
+																						</fieldset>
+																					</form>
+																					<div class="row">
+																						<div class="form-group col-md-12 pull-right">
+																							<button type="button" class="btn btn-success pull-right"
+																									data-ng-click="selectEditBenefit(group, benefit)">
+																								Edit
+																							</button>
+																						</div>
+																					</div>
+																				</div>
+																			</div>
+																		</div>
+																		<div class="panel-body" ng-switch-when="edit">
+																			<div class="row" >
+																				<div class="col-md-12">
+																					<form name="editBenefitForm" novalidate>
+																						<fieldset>
+																							<div class="row">
+																								<div class="form-group col-md-12">
+																									<label for="benefitNameEdit" class="control-label">Benefit name</label>
+																									<input id="benefitNameEdit" type="text" class="form-control" data-ng-model="benefit.name">
+																								</div>
+																							</div>
+																							<div class="row">
+																								<div class="form-group col-md-12">
+																									<label for="benefitDescriptionEdit" class="control-label">Benefit description</label>
+																									<textarea id="benefitDescriptionEdit" data-ng-model="benefit.description" class="form-control" placeholder="No description yet"></textarea>
+																								</div>
+																							</div>
+																							<div class="row">
+																								<div class="col-md-12">
+																									<div class="form-group pull-right">
+																										<button type="button" class="btn btn-success" ng-click="updateBenefit(group, benefit)">
+																											Save
+																										</button>
+																										<a class="btn btn-danger" data-ng-click="removeBenefit(group, benefit)">
+																											<i class="glyphicon glyphicon-trash"></i>
+																										</a>
+																										<button type="button" class="btn btn-info" ng-click="cancelEditBenefit(benefit)">
+																											Cancel
+																										</button>
+																									</div>
+																								</div>
+																							</div>
+																							<div data-ng-show="error" class="text-danger">
+																								<strong data-ng-bind="error"></strong>
+																							</div>
+																						</fieldset>
+																					</form>
+																				</div>
+																			</div>
+																		</div>
+																	</div>
+																</div>
+															</div>
+														</div>
+														<div class="alert alert-warning text-center" data-ng-show="group.benefits.length === 0">
+															No benefits added to this group yet
+														</div>
+													</div>
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="alert alert-warning text-center" data-ng-hide="!benefitGroups.$resolved || benefitGroups.length">
+						No benefit groups yet, why don't you create one?
+					</div>
+				</tab>
+			</tabset>
+		</div>
+	</div>
+</section>
