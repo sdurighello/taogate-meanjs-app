@@ -86,7 +86,7 @@ angular.module('priority-setup').controller('PrioritySetupController', ['$scope'
 
 		$scope.findValues = function() {
 			PriorityValues.query(function(values){
-				$scope.priorityValues = _.clone(values);
+				$scope.priorityValues = values;
 			});
 		};
 
@@ -112,6 +112,7 @@ angular.module('priority-setup').controller('PrioritySetupController', ['$scope'
 
 		$scope.cancelEditValue = function(value){
 			value.name = originalValue.name;
+			value.numericalValue = originalValue.numericalValue;
 			value.description = originalValue.description;
 			$scope.selectValueForm('view');
 		};

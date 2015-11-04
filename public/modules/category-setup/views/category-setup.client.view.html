@@ -21,7 +21,7 @@
 					<h6 class="panel-title text-center">Category Groups</h6>
 				</div>
 				<div class="panel-body">
-					<div class="row">
+					<div class="row" data-ng-show="userHasAuthorization">
 						<div class="col-md-12">
 							<br>
 							<button class="btn btn-primary btn-sm" ng-click="createCategoryGroup()">
@@ -78,7 +78,7 @@
 													<textarea disabled id="categoryDescription" data-ng-model="selectedCategoryGroup.description" class="form-control" placeholder="No description yet"></textarea>
 												</div>
 											</div>
-											<div class="row">
+											<div class="row" data-ng-show="userHasAuthorization">
 												<div class="col-md-12">
 													<div class="form-group pull-right">
 														<button class="btn btn-sm btn-success" data-ng-click="selectCategoryGroupForm(selectedCategoryGroup, 'edit')">Edit</button>
@@ -93,8 +93,11 @@
 										<fieldset>
 											<div class="row">
 												<div class="col-md-7 form-group">
-													<label for="categoryName" class="control-label">Category name</label>
-													<input id="categoryName" type="text" class="form-control" data-ng-model="selectedCategoryGroup.name">
+													<label for="categoryNameEdit" class="control-label">Category name</label>
+													<input id="categoryNameEdit" name="categoryNameEdit" type="text" class="form-control" data-ng-model="selectedCategoryGroup.name" required>
+													<span data-ng-show="editCategoryGroupForm.categoryNameEdit.$error.required">
+														<em style="color: red">Name is required</em>
+													</span>
 												</div>
 											</div>
 											<div class="row">
@@ -106,7 +109,7 @@
 											<div class="row">
 												<div class="col-md-12">
 													<div class="form-group pull-right">
-														<button type="button" class="btn btn-sm btn-success" data-ng-click="updateCategoryGroup(selectedCategoryGroup)">
+														<button type="button" class="btn btn-sm btn-success" data-ng-click="updateCategoryGroup(selectedCategoryGroup)" data-ng-disabled="editImpactForm.$invalid">
 															Save
 														</button>
 														<button type="button" class="btn btn-sm btn-danger" data-ng-click="removeCategoryGroup(selectedCategoryGroup)">
@@ -128,7 +131,7 @@
 						</div>
 					</div>
 				</div>
-				<div class="row">
+				<div class="row" data-ng-show="userHasAuthorization">
 					<div class="col-md-3">
 						<br>
 						<button class="btn btn-primary btn-sm" ng-click="createCategory(selectedCategoryGroup)">
@@ -163,7 +166,7 @@
 															<textarea disabled id="categoryDescription" data-ng-model="category.description" class="form-control" placeholder="No description yet"></textarea>
 														</div>
 													</div>
-													<div class="row">
+													<div class="row" data-ng-show="userHasAuthorization">
 														<div class="col-md-12">
 															<div class="form-group pull-right">
 																<button class="btn btn-success btn-sm" data-ng-click="selectCategory(category)">Edit</button>
@@ -179,8 +182,11 @@
 																	<div class="panel-body">
 																		<div class="row">
 																			<div class="col-md-7 form-group">
-																				<label for="categoryName" class="control-label">Category name</label>
-																				<input id="categoryName" type="text" class="form-control" data-ng-model="category.name">
+																				<label for="categoryNameEdit" class="control-label">Category name</label>
+																				<input id="categoryNameEdit" name="categoryNameEdit" type="text" class="form-control" data-ng-model="category.name" required>
+																				<span data-ng-show="editCategoryForm.categoryNameEdit.$error.required">
+																					<em style="color: red">Name is required</em>
+																				</span>
 																			</div>
 																		</div>
 																		<div class="row">
@@ -195,7 +201,7 @@
 															<div class="row">
 																<div class="col-md-12">
 																	<div class="form-group pull-right">
-																		<button type="button" class="btn btn-sm btn-success" data-ng-click="updateCategory(category)">
+																		<button type="button" class="btn btn-sm btn-success" data-ng-click="updateCategory(category)" data-ng-disabled="editCategoryForm.$invalid">
 																			Save
 																		</button>
 																		<button type="button" class="btn btn-sm btn-danger" data-ng-click="removeCategory(selectedCategoryGroup, category)">
@@ -220,7 +226,7 @@
 										<div class="col-md-12">
 											<div class="panel panel-default">
 												<div class="panel-body">
-													<div class="row">
+													<div class="row" data-ng-show="userHasAuthorization">
 														<div class="col-md-3">
 															<div class="form-group">
 																<button type="button" class="btn btn-primary btn-sm" ng-click="createCategoryValue(category)">
@@ -258,7 +264,7 @@
 																						</div>
 																					</fieldset>
 																				</form>
-																				<div class="row">
+																				<div class="row" data-ng-show="userHasAuthorization">
 																					<div class="form-group col-md-12 pull-right">
 																						<button type="button" class="btn btn-success btn-sm pull-right"
 																								data-ng-click="selectEditCategoryValue(category, categoryValue)">
@@ -276,20 +282,23 @@
 																					<fieldset>
 																						<div class="row">
 																							<div class="form-group col-md-12">
-																								<label for="categoryValueName" class="control-label">Category Value name</label>
-																								<input id="CategoryValueName" type="text" class="form-control" data-ng-model="categoryValue.name">
+																								<label for="categoryValueNameEdit" class="control-label">Category Value name</label>
+																								<input id="categoryValueNameEdit" name="categoryValueNameEdit" type="text" class="form-control" data-ng-model="categoryValue.name" required>
+																								<span data-ng-show="editCategoryValueForm.categoryValueNameEdit.$error.required">
+																									<em style="color: red">Name is required</em>
+																								</span>
 																							</div>
 																						</div>
 																						<div class="row">
 																							<div class="form-group col-md-12">
-																								<label for="CategoryValueDescription" class="control-label">Category Value description</label>
+																								<label for="categoryValueDescription" class="control-label">Category Value description</label>
 																								<textarea id="categoryValueDescription" data-ng-model="categoryValue.description" class="form-control" placeholder="No description yet"></textarea>
 																							</div>
 																						</div>
 																						<div class="row">
 																							<div class="col-md-12">
 																								<div class="form-group pull-right btn-group-xs">
-																									<button type="button" class="btn btn-success" ng-click="updateCategoryValue(category, categoryValue)">
+																									<button type="button" class="btn btn-success" ng-click="updateCategoryValue(category, categoryValue)" data-ng-disabled="editCategoryValueForm.$invalid">
 																										Save
 																									</button>
 																									<button type="button" class="btn btn-info" ng-click="cancelEditCategoryValue(categoryValue)">
@@ -326,7 +335,7 @@
 					</div>
 				</div>
 				<div class="alert alert-warning text-center" data-ng-hide="!categories.$resolved || categories.length">
-					No categories yet, why don't you create one?
+					No categories yet
 				</div>
 			</div>
 		</div>

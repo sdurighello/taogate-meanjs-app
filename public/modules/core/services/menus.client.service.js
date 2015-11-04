@@ -195,6 +195,9 @@ angular.module('core').service('Menus', [
                 // Financial analysis
         this.addSubMenuItem('topbar', 'setup', 'Financial analysis', 'financial-analysis-setup','financial-analysis-setup',false,
             ['superAdmin','admin','PMO','projectManager','portfolioManager','executive'],8);
+                // Qualitative analysis
+        this.addSubMenuItem('topbar', 'setup', 'Qualitative analysis', 'qualitative-analysis-setup','qualitative-analysis-setup',false,
+            ['superAdmin','admin','PMO','projectManager','portfolioManager','executive'],9);
 
 
 		this.addMenuItem('topbar','Definition','definition','dropdown','definition',false,['superAdmin','admin','PMO','projectManager','portfolioManager','executive'],3);

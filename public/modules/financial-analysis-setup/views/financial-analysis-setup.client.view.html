@@ -16,7 +16,7 @@
 			<tabset>
                 <tab heading="Costs">
                     <br>
-                    <div class="row">
+                    <div class="row" data-ng-show="userHasAuthorization">
                         <div class="col-md-3">
                             <br>
                             <button class="btn btn-primary" ng-click="createCostGroup()">
@@ -51,7 +51,7 @@
                                                                 <textarea disabled id="groupDescription" data-ng-model="group.description" class="form-control" placeholder="No description yet"></textarea>
                                                             </div>
                                                         </div>
-                                                        <div class="row">
+                                                        <div class="row" data-ng-show="userHasAuthorization">
                                                             <div class="col-md-12">
                                                                 <div class="form-group pull-right">
                                                                     <button class="btn btn-success" data-ng-click="selectCostGroup(group)">Edit</button>
@@ -67,8 +67,11 @@
                                                                         <div class="panel-body">
                                                                             <div class="row">
                                                                                 <div class="col-md-7 form-group">
-                                                                                    <label for="groupName" class="control-label">Cost Group name</label>
-                                                                                    <input id="groupName" type="text" class="form-control" data-ng-model="group.name">
+                                                                                    <label for="groupNameEdit" class="control-label">Cost Group name</label>
+                                                                                    <input id="groupNameEdit" name="groupNameEdit" type="text" class="form-control" data-ng-model="group.name" required>
+                                                                                    <span data-ng-show="editCostGroupForm.groupNameEdit.$error.required">
+                                                                                        <em style="color: red">Name is required</em>
+                                                                                    </span>
                                                                                 </div>
                                                                             </div>
                                                                             <div class="row">
@@ -83,7 +86,7 @@
                                                                 <div class="row">
                                                                     <div class="col-md-12">
                                                                         <div class="form-group pull-right">
-                                                                            <button type="button" class="btn btn-success" data-ng-click="updateCostGroup(group)">
+                                                                            <button type="button" class="btn btn-success" data-ng-click="updateCostGroup(group)" data-ng-disabled="editCostGroupForm.$invalid">
                                                                                 Save
                                                                             </button>
                                                                             <button type="button" class="btn btn-danger" data-ng-click="removeCostGroup(group)">
@@ -108,7 +111,7 @@
                                             <div class="col-md-12">
                                                 <div class="panel panel-default">
                                                     <div class="panel-body">
-                                                        <div class="row">
+                                                        <div class="row" data-ng-show="userHasAuthorization">
                                                             <div class="col-md-3">
                                                                 <div class="form-group">
                                                                     <button type="button" class="btn btn-primary" ng-click="createCost(group)">
@@ -145,7 +148,7 @@
                                                                                             </div>
                                                                                         </fieldset>
                                                                                     </form>
-                                                                                    <div class="row">
+                                                                                    <div class="row" data-ng-show="userHasAuthorization">
                                                                                         <div class="form-group col-md-12 pull-right">
                                                                                             <button type="button" class="btn btn-success pull-right"
                                                                                                     data-ng-click="selectEditCost(group, cost)">
@@ -164,7 +167,10 @@
                                                                                             <div class="row">
                                                                                                 <div class="form-group col-md-12">
                                                                                                     <label for="costNameEdit" class="control-label">Cost name</label>
-                                                                                                    <input id="costNameEdit" type="text" class="form-control" data-ng-model="cost.name">
+                                                                                                    <input id="costNameEdit" name="costNameEdit" type="text" class="form-control" data-ng-model="cost.name" required>
+                                                                                                    <span data-ng-show="editCostForm.costNameEdit.$error.required">
+                                                                                                        <em style="color: red">Name is required</em>
+                                                                                                    </span>
                                                                                                 </div>
                                                                                             </div>
                                                                                             <div class="row">
@@ -176,7 +182,7 @@
                                                                                             <div class="row">
                                                                                                 <div class="col-md-12">
                                                                                                     <div class="form-group pull-right">
-                                                                                                        <button type="button" class="btn btn-success" ng-click="updateCost(group, cost)">
+                                                                                                        <button type="button" class="btn btn-success" ng-click="updateCost(group, cost)" data-ng-disabled="editCostForm.$invalid">
                                                                                                             Save
                                                                                                         </button>
                                                                                                         <a class="btn btn-danger" data-ng-click="removeCost(group, cost)">
@@ -213,12 +219,12 @@
                         </div>
                     </div>
                     <div class="alert alert-warning text-center" data-ng-hide="!costGroups.$resolved || costGroups.length">
-                        No cost groups yet, why don't you create one?
+                        No cost groups yet
                     </div>
                 </tab>
 				<tab heading="Benefits">
 					<br>
-					<div class="row">
+					<div class="row" data-ng-show="userHasAuthorization">
 						<div class="col-md-3">
 							<br>
 							<button class="btn btn-primary" ng-click="createBenefitGroup()">
@@ -253,7 +259,7 @@
 																<textarea disabled id="groupDescription" data-ng-model="group.description" class="form-control" placeholder="No description yet"></textarea>
 															</div>
 														</div>
-														<div class="row">
+														<div class="row" data-ng-show="userHasAuthorization">
 															<div class="col-md-12">
 																<div class="form-group pull-right">
 																	<button class="btn btn-success" data-ng-click="selectBenefitGroup(group)">Edit</button>
@@ -269,8 +275,11 @@
 																		<div class="panel-body">
 																			<div class="row">
 																				<div class="col-md-7 form-group">
-																					<label for="groupName" class="control-label">Benefit Group name</label>
-																					<input id="groupName" type="text" class="form-control" data-ng-model="group.name">
+																					<label for="benefitGroupNameEdit" class="control-label">Benefit Group name</label>
+																					<input id="benefitGroupNameEdit" name="benefitGroupNameEdit" type="text" class="form-control" data-ng-model="group.name" required>
+                                                                                    <span data-ng-show="editBenefitGroupForm.benefitGroupNameEdit.$error.required">
+                                                                                        <em style="color: red">Name is required</em>
+                                                                                    </span>
 																				</div>
 																			</div>
 																			<div class="row">
@@ -285,7 +294,7 @@
 																<div class="row">
 																	<div class="col-md-12">
 																		<div class="form-group pull-right">
-																			<button type="button" class="btn btn-success" data-ng-click="updateBenefitGroup(group)">
+																			<button type="button" class="btn btn-success" data-ng-click="updateBenefitGroup(group)" data-ng-disabled="editBenefitGroupForm.$invalid">
 																				Save
 																			</button>
 																			<button type="button" class="btn btn-danger" data-ng-click="removeBenefitGroup(group)">
@@ -310,7 +319,7 @@
 											<div class="col-md-12">
 												<div class="panel panel-default">
 													<div class="panel-body">
-														<div class="row">
+														<div class="row" data-ng-show="userHasAuthorization">
 															<div class="col-md-3">
 																<div class="form-group">
 																	<button type="button" class="btn btn-primary" ng-click="createBenefit(group)">
@@ -347,7 +356,7 @@
 																							</div>
 																						</fieldset>
 																					</form>
-																					<div class="row">
+																					<div class="row" data-ng-show="userHasAuthorization">
 																						<div class="form-group col-md-12 pull-right">
 																							<button type="button" class="btn btn-success pull-right"
 																									data-ng-click="selectEditBenefit(group, benefit)">
@@ -366,7 +375,10 @@
 																							<div class="row">
 																								<div class="form-group col-md-12">
 																									<label for="benefitNameEdit" class="control-label">Benefit name</label>
-																									<input id="benefitNameEdit" type="text" class="form-control" data-ng-model="benefit.name">
+																									<input id="benefitNameEdit" name="benefitNameEdit" type="text" class="form-control" data-ng-model="benefit.name" required>
+                                                                                                    <span data-ng-show="editBenefitForm.benefitNameEdit.$error.required">
+                                                                                                        <em style="color: red">Name is required</em>
+                                                                                                    </span>
 																								</div>
 																							</div>
 																							<div class="row">
@@ -378,7 +390,7 @@
 																							<div class="row">
 																								<div class="col-md-12">
 																									<div class="form-group pull-right">
-																										<button type="button" class="btn btn-success" ng-click="updateBenefit(group, benefit)">
+																										<button type="button" class="btn btn-success" ng-click="updateBenefit(group, benefit)" data-ng-disabled="editBenefitForm.$invalid">
 																											Save
 																										</button>
 																										<a class="btn btn-danger" data-ng-click="removeBenefit(group, benefit)">
@@ -415,7 +427,7 @@
 						</div>
 					</div>
 					<div class="alert alert-warning text-center" data-ng-hide="!benefitGroups.$resolved || benefitGroups.length">
-						No benefit groups yet, why don't you create one?
+						No benefit groups yet
 					</div>
 				</tab>
 			</tabset>

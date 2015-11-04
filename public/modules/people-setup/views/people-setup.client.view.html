@@ -30,7 +30,7 @@
 					</div>
 					<div class="row">
 						<div class="alert alert-warning text-center" data-ng-hide="people.length">
-							No people yet, why don't you create one?
+							No people yet
 						</div>
 						<div class="col-md-4" data-ng-repeat="person in people" data-ng-switch="switchPersonForm[person._id]" >
 							<div class="panel panel-default" title="Last updated on {{person.created | date:'medium'}} by {{person.user.displayName}}">
@@ -85,9 +85,12 @@
 												<div class="row">
 													<div class="col-md-12">
 														<div class="form-group">
-															<label class="control-label" for="nameEdit">Name</label>
+															<label class="control-label" for="personNameEdit">Name</label>
 															<div class="controls">
-																<input id="nameEdit" type="text" class="form-control" ng-model="person.name">
+																<input id="personNameEdit" name="personNameEdit" type="text" class="form-control" ng-model="person.name" required>
+																<span data-ng-show="editPersonForm.personNameEdit.$error.required">
+																	<em style="color: red">Name is required</em>
+																</span>
 															</div>
 														</div>
 														<div class="form-group">
@@ -110,7 +113,7 @@
 															</div>
 														</div>
 														<div class="form-group center-block">
-															<input type="submit" value="Save" class="btn btn-success" ng-disabled="editPersonForm.$error.email">
+															<input type="submit" value="Save" class="btn btn-success" ng-disabled="editPersonForm.$invalid">
 															<a class="btn btn-danger" data-ng-click="removePerson(person)">
 																<i class="glyphicon glyphicon-trash"></i>
 															</a>
@@ -192,8 +195,11 @@
 																		<div class="panel-body">
 																			<div class="row">
 																				<div class="col-md-7 form-group">
-																					<label for="groupName" class="control-label">Group name</label>
-																					<input id="groupName" type="text" class="form-control" data-ng-model="group.name">
+																					<label for="groupNameEdit" class="control-label">Group name</label>
+																					<input id="groupNameEdit" name="groupNameEdit" type="text" class="form-control" data-ng-model="group.name" required>
+																					<span data-ng-show="editGroupForm.groupNameEdit.$error.required">
+																						<em style="color: red">Name is required</em>
+																					</span>
 																				</div>
 																				<div class="col-md-offset-1 col-md-4 form-group">
 																					<label for="groupType" class="control-label">Group type</label>
@@ -215,7 +221,7 @@
 																<div class="row">
 																	<div class="col-md-12">
 																		<div class="form-group pull-right">
-																			<button type="button" class="btn btn-success" data-ng-click="updateGroup(group)">
+																			<button type="button" class="btn btn-success" data-ng-click="updateGroup(group)" data-ng-disabled="editGroupForm.$invalid">
 																				Save
 																			</button>
 																			<button type="button" class="btn btn-danger" data-ng-click="removeGroup(group)">
@@ -295,8 +301,11 @@
 																						<fieldset>
 																							<div class="row">
 																								<div class="form-group col-md-12">
-																									<label for="roleName" class="control-label">Role name</label>
-																									<input id="roleName" type="text" class="form-control" data-ng-model="role.name">
+																									<label for="roleNameEdit" class="control-label">Role name</label>
+																									<input id="roleNameEdit" name="roleNameEdit" type="text" class="form-control" data-ng-model="role.name" required>
+																									<span data-ng-show="editRoleForm.roleNameEdit.$error.required">
+                                                                                                        <em style="color: red">Name is required</em>
+                                                                                                    </span>
 																								</div>
 																							</div>
 																							<div class="row">
@@ -308,7 +317,7 @@
 																							<div class="row">
 																								<div class="col-md-12">
 																									<div class="form-group pull-right">
-																										<button type="button" class="btn btn-success" ng-click="updateRole(group, role)">
+																										<button type="button" class="btn btn-success" ng-click="updateRole(group, role)" data-ng-disabled="editRoleForm.$invalid">
 																											Save
 																										</button>
 																										<a class="btn btn-danger" data-ng-click="removeRole(group, role)">
@@ -345,7 +354,7 @@
 						</div>
 					</div>
 					<div class="alert alert-warning text-center" data-ng-hide="!peopleGroups.$resolved || peopleGroups.length">
-						No People groups yet, why don't you create one?
+						No People groups yet
 					</div>
 				</tab>
 			</tabset>

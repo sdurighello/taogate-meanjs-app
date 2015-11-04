@@ -46,7 +46,7 @@ angular.module('strategy-node-setup').controller('StrategyNodeSetupController', 
 
 		$scope.findTypes = function() {
 			StrategyNodeTypes.query(function(types){
-				$scope.strategyNodeTypes = _.clone(types);
+				$scope.strategyNodeTypes = types;
 			});
 		};
 

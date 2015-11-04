@@ -16,7 +16,7 @@
 			<tabset>
 				<tab heading="Strategy node types">
 					<br>
-					<div class="row">
+					<div class="row" data-ng-show="userHasAuthorization">
 						<div class="col-md-3">
 							<br>
 							<button class="btn btn-primary"
@@ -28,9 +28,9 @@
 					<hr>
 					<div class="row">
 						<div class="alert alert-warning text-center" data-ng-hide="strategyNodeTypes.length">
-							No portfolio types yet, why don't you create one?
+							No portfolio types yet
 						</div>
-						<div class="col-md-4" data-ng-repeat="type in strategyNodeTypes" data-ng-switch="switchTypeForm[type._id]" >
+						<div class="col-md-4" data-ng-repeat="type in strategyNodeTypes track by $index" data-ng-switch="switchTypeForm[type._id]" >
 							<div class="panel panel-default" title="Last updated on {{type.created | date:'medium'}} by {{type.user.displayName}}">
 								<div class="panel-body">
 									<div ng-switch-default="view">
@@ -51,7 +51,7 @@
                                                 </textarea>
 															</div>
 														</div>
-														<div class="form-group center-block">
+														<div class="form-group center-block" data-ng-show="userHasAuthorization">
 															<button type="button" class="btn btn-success" ng-click="selectType(type)">
 																Edit
 															</button>
@@ -67,14 +67,17 @@
 										</form>
 									</div>
 									<div data-ng-switch-when="edit">
-										<form class="form" data-ng-submit="updateType(type)" novalidate>
+										<form class="form" data-ng-submit="updateType(type)" novalidate name="editTypeForm">
 											<fieldset>
 												<div class="row">
 													<div class="col-md-12">
 														<div class="form-group">
 															<div class="controls">
-																<input type="text" id="name" class="form-control"
+																<input type="text" id="typeNameEdit" name="typeNameEdit" class="form-control"
 																	   data-ng-model="type.name" placeholder="Name" required>
+																<span data-ng-show="editTypeForm.typeNameEdit.$error.required">
+																	<em style="color: red">Name is required</em>
+																</span>
 															</div>
 														</div>
 														<div class="form-group">
@@ -86,7 +89,7 @@
 															</div>
 														</div>
 														<div class="form-group center-block">
-															<input type="submit" value="Save" class="btn btn-success">
+															<input type="submit" value="Save" class="btn btn-success" data-ng-disabled="editTypeForm.$invalid">
 															<a class="btn btn-danger" data-ng-click="removeType(type)">
 																<i class="glyphicon glyphicon-trash"></i>
 															</a>
@@ -119,7 +122,7 @@
 								</div>
 								<div class="panel-body" style="min-height: 560px;  max-height: 610px; overflow-y: auto;">
 									<div class="alert alert-warning text-center" data-ng-hide="!strategyNodes.$resolved || strategyNodes.length">
-										No strategy nodes yet, why don't you create a new one?
+										No strategy nodes yet
 									</div>
 									<script type="text/ng-template" id="portfolioTree">
 										<hr>
@@ -127,17 +130,17 @@
 											{{tree.node.name}}
 										</button>
 										<ul data-ng-if="tree.nodeTrees" class="">
-											<li data-ng-repeat="tree in tree.nodeTrees" data-ng-include="'portfolioTree'"></li>
+											<li data-ng-repeat="tree in tree.nodeTrees track by $index" data-ng-include="'portfolioTree'"></li>
 										</ul>
 									</script>
 									<ul class="">
-										<li data-ng-repeat="tree in strategyTrees" data-ng-include="'portfolioTree'"></li>
+										<li data-ng-repeat="tree in strategyTrees track by $index" data-ng-include="'portfolioTree'"></li>
 									</ul>
 								</div>
 							</div>
 						</div>
 						<div class="col-md-4" data-ng-switch="switchStrategyNodeForm">
-							<div class="row"><!-- Here put role control -->
+							<div class="row" data-ng-show="userHasAuthorization"><!-- Here put role control -->
 								<div class="col-md-12">
 									<button class="btn btn-primary" data-ng-click="selectNewStrategyNode();"
 											data-ng-switch-when="view">
@@ -159,12 +162,16 @@
 											</div>
 											<div class="panel-body">
 												<div class="col-md-12">
-													<form class="form-horizontal" data-ng-submit="create()" novalidate>
+													<form class="form-horizontal" data-ng-submit="create()" novalidate name="newNodeForm">
 														<fieldset>
 															<div class="form-group">
 																<label class="control-label" for="name">Strategy node name</label>
 																<div class="controls">
-																	<input type="text" data-ng-model="newStrategyNode.name" id="name" class="form-control" placeholder="Name" required>
+																	<input type="text" data-ng-model="newStrategyNode.name" id="name" name="name"
+																		   class="form-control" placeholder="Name" required>
+																	<span data-ng-show="newNodeForm.name.$error.required">
+																		<em style="color: red">Name is required</em>
+																	</span>
 																</div>
 															</div>
 															<div class="form-group">
@@ -182,7 +189,7 @@
 																</select>
 															</div>
 															<div class="form-group pull-right">
-																<input type="submit" class="btn btn-success">
+																<input type="submit" class="btn btn-success" data-ng-disabled="newNodeForm.$invalid">
 																<button type="reset" class="btn btn-info" ng-click="selectStrategyNodeForm('view')">
 																	Cancel
 																</button>
@@ -260,13 +267,17 @@
 											<div class="panel-body" ng-show="editStrategyNode">
 												<div>
 													<div class="row">
-														<form class="form" data-ng-submit="update()" novalidate>
+														<form class="form" data-ng-submit="update()" novalidate name="editNodeForm">
 															<fieldset>
 																<div class="col-md-12">
 																	<div class="form-group">
-																		<label class="control-label" for="name">Strategy node name</label>
+																		<label class="control-label" for="nameEdit">Strategy node name</label>
 																		<div class="controls">
-																			<input type="text" data-ng-model="editStrategyNode.name" id="name" class="form-control" placeholder="Name" required>
+																			<input type="text" data-ng-model="editStrategyNode.name" id="nameEdit" name="nameEdit"
+																				   class="form-control" placeholder="Name" required>
+																			<span data-ng-show="editNodeForm.nameEdit.$error.required">
+																				<em style="color: red">Name is required</em>
+																			</span>
 																		</div>
 																	</div>
 																	<div class="form-group">
@@ -284,7 +295,7 @@
 																		</select>
 																	</div>
 																	<div class="form-group pull-right">
-																		<input type="submit" value="Save" class="btn btn-success">
+																		<input type="submit" value="Save" class="btn btn-success" data-ng-disabled="editNodeForm.$invalid">
 																		<a class="btn btn-danger" data-ng-click="remove()">
 																			<i class="glyphicon glyphicon-trash"></i>
 																		</a>

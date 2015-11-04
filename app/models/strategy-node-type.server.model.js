@@ -3,9 +3,9 @@
 /**
  * Module dependencies.
  */
-var mongoose = require('mongoose');
+var mongoose = require('mongoose'),
+    Schema = mongoose.Schema;
 require('mongoose-multitenant');
-var	Schema = mongoose.Schema;
 
 /**
  * Strategy node type Schema

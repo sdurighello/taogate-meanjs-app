@@ -19,7 +19,7 @@
 					<div class="row">
 						<div class="col-md-5">
 							<div class="panel panel-default">
-								<div class="panel-heading" data-ng-hide="priorityValue">
+								<div class="panel-heading" data-ng-hide="priorityValue || !userHasAuthorization">
 									<div class="text-center">
 										<em>Drag and drop to order by importance. Top is most important.</em>
 									</div>
@@ -27,7 +27,7 @@
 								<div class="panel-body" data-as-sortable="dragControlListeners" data-ng-model="priorityValues"
 									 style="overflow-y: auto; max-height: 500px; min-height: 500px;">
 									<div class="alert alert-warning text-center" data-ng-hide="priorityValues.length">
-										No priority values yet, why don't you create one?
+										No priority values yet
 									</div>
 									<button data-ng-repeat="value in priorityValues" data-as-sortable-item data-ng-click="selectValue(value)"
 											class="btn btn-default btn-lg btn-block center-block" style="overflow: hidden;">
@@ -118,16 +118,19 @@
 												</div>
 											</div>
 											<div data-ng-switch-when="edit">
-												<form class="form" data-ng-submit="updateValue(priorityValue)" novalidate>
+												<form class="form" data-ng-submit="updateValue(priorityValue)" novalidate name="editPriorityValueForm">
 													<fieldset>
 														<div class="row">
 															<div class="col-md-12">
 																<div class="form-group">
-																	<label class="control-label" for="name">Value name</label>
+																	<label class="control-label" for="editValueName">Value name</label>
 																	<div class="controls">
-																		<input type="text" id="name" class="form-control"
+																		<input type="text" id="editValueName" class="form-control" name="editValueName"
 																			   data-ng-model="priorityValue.name" placeholder="Name" required>
 																	</div>
+                                                                    <span data-ng-show="editPriorityValueForm.editValueName.$error.required">
+                                                                        <em style="color: red">Name is required</em>
+                                                                    </span>
 																</div>
 																<div class="form-group">
 																	<label class="control-label" for="numerical">Numerical value</label>
@@ -145,7 +148,7 @@
 																	</div>
 																</div>
 																<div class="form-group center-block">
-																	<input type="submit" value="Save" class="btn btn-success">
+																	<input type="submit" value="Save" class="btn btn-success" data-ng-disabled="editPriorityValueForm.$invalid">
 																	<a class="btn btn-danger" data-ng-click="removeValue(priorityValue)">
 																		<i class="glyphicon glyphicon-trash"></i>
 																	</a>
@@ -172,7 +175,7 @@
 				</tab>
 				<tab heading="Priority Groups">
 					<br>
-					<div class="row">
+					<div class="row" data-ng-show="userHasAuthorization">
 						<div class="col-md-3">
 							<br>
 							<button class="btn btn-primary" ng-click="createGroup()">
@@ -207,7 +210,7 @@
 																<textarea disabled id="groupDescription" data-ng-model="group.description" class="form-control" placeholder="No description yet"></textarea>
 															</div>
 														</div>
-														<div class="row">
+														<div class="row" data-ng-show="userHasAuthorization">
 															<div class="col-md-12">
 																<div class="form-group pull-right">
 																	<button class="btn btn-success" data-ng-click="selectGroup(group)">Edit</button>
@@ -223,8 +226,11 @@
 																		<div class="panel-body">
 																			<div class="row">
 																				<div class="col-md-7 form-group">
-																					<label for="groupName" class="control-label">Priority Group name</label>
-																					<input id="groupName" type="text" class="form-control" data-ng-model="group.name">
+																					<label for="groupNameEdit" class="control-label">Priority Group name</label>
+																					<input id="groupNameEdit" name="groupNameEdit" type="text" class="form-control" data-ng-model="group.name" required>
+                                                                                    <span data-ng-show="editGroupForm.groupNameEdit.$error.required">
+                                                                                        <em style="color: red">Name is required</em>
+                                                                                    </span>
 																				</div>
 																			</div>
 																			<div class="row">
@@ -239,7 +245,7 @@
 																<div class="row">
 																	<div class="col-md-12">
 																		<div class="form-group pull-right">
-																			<button type="button" class="btn btn-success" data-ng-click="updateGroup(group)">
+																			<button type="button" class="btn btn-success" data-ng-click="updateGroup(group)" data-ng-disabled="editGroupForm.$invalid">
 																				Save
 																			</button>
 																			<button type="button" class="btn btn-danger" data-ng-click="removeGroup(group)">
@@ -265,7 +271,7 @@
 												<div class="panel panel-default">
 													<div class="panel-body">
 														<div class="row">
-															<div class="col-md-3">
+															<div class="col-md-3" data-ng-show="userHasAuthorization">
 																<div class="form-group">
 																	<button type="button" class="btn btn-primary" ng-click="createPriority(group)">
 																		New priority
@@ -301,7 +307,7 @@
 																							</div>
 																						</fieldset>
 																					</form>
-																					<div class="row">
+																					<div class="row" data-ng-show="userHasAuthorization">
 																						<div class="form-group col-md-12 pull-right">
 																							<button type="button" class="btn btn-success pull-right"
 																									data-ng-click="selectEditPriority(group, priority)">
@@ -319,8 +325,11 @@
 																						<fieldset>
 																							<div class="row">
 																								<div class="form-group col-md-12">
-																									<label for="priorityName" class="control-label">Priority name</label>
-																									<input id="priorityName" type="text" class="form-control" data-ng-model="priority.name">
+																									<label for="priorityNameEdit" class="control-label">Priority name</label>
+																									<input id="priorityNameEdit" type="text" class="form-control" data-ng-model="priority.name" required>
+                                                                                                    <span data-ng-show="editPriorityForm.priorityNameEdit.$error.required">
+                                                                                                        <em style="color: red">Name is required</em>
+                                                                                                    </span>
 																								</div>
 																							</div>
 																							<div class="row">
@@ -332,7 +341,7 @@
 																							<div class="row">
 																								<div class="col-md-12">
 																									<div class="form-group pull-right">
-																										<button type="button" class="btn btn-success" ng-click="updatePriority(group, priority)">
+																										<button type="button" class="btn btn-success" ng-click="updatePriority(group, priority)" data-ng-disabled="editPriorityForm.$invalid">
 																											Save
 																										</button>
 																										<a class="btn btn-danger" data-ng-click="removePriority(group, priority)">
@@ -369,8 +378,9 @@
 						</div>
 					</div>
 					<div class="alert alert-warning text-center" data-ng-hide="!priorityGroups.$resolved || priorityGroups.length">
-						No priority groups yet, why don't you create one?
-					</div>                </tab>
+						No priority groups yet
+					</div>
+				</tab>
 			</tabset>
 		</div>
 	</div>

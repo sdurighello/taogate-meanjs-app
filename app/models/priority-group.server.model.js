@@ -23,7 +23,9 @@ var PriorityGroupSchema = new Schema({
 		default: '',
 		trim: true
 	},
-	priorities : [{type: Schema.Types.ObjectId, ref: 'Priority', $tenant:true}],
+	priorities : [
+		{type: Schema.Types.ObjectId, ref: 'Priority', $tenant:true}
+	],
 	created: {
 		type: Date,
 		default: Date.now

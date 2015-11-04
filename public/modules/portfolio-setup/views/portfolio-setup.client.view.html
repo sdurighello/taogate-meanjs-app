@@ -28,7 +28,7 @@
 					<hr>
 					<div class="row">
 						<div class="alert alert-warning text-center" data-ng-hide="portfolioTypes.length">
-							No portfolio types yet, why don't you create one?
+							No portfolio types yet
 						</div>
 						<div class="col-md-4" data-ng-repeat="type in portfolioTypes" data-ng-switch="switchTypeForm[type._id]" >
 							<div class="panel panel-default" title="Last updated on {{type.created | date:'medium'}} by {{type.user.displayName}}">
@@ -64,14 +64,17 @@
 										</form>
 									</div>
 									<div data-ng-switch-when="edit">
-										<form class="form" data-ng-submit="updateType(type)" novalidate>
+										<form class="form" name="editPortfolioTypeForm" data-ng-submit="updateType(type)" novalidate>
 											<fieldset>
 												<div class="row">
 													<div class="col-md-12">
 														<div class="form-group">
 															<div class="controls">
-																<input type="text" id="name" class="form-control"
+																<input type="text" id="typeNameEdit" class="form-control" name="typeNameEdit"
 																	   data-ng-model="type.name" placeholder="Name" required>
+																<span data-ng-show="editPortfolioTypeForm.typeNameEdit.$error.required">
+																	<em style="color: red">Name is required</em>
+																</span>
 															</div>
 														</div>
 														<div class="form-group">
@@ -81,7 +84,7 @@
 															</div>
 														</div>
 														<div class="form-group center-block">
-															<input type="submit" value="Save" class="btn btn-success">
+															<input type="submit" value="Save" class="btn btn-success" data-ng-disabled="editPortfolioTypeForm.$invalid">
 															<a class="btn btn-danger" data-ng-click="removeType(type)" data-ng-show="userHasAuthorization">
 																<i class="glyphicon glyphicon-trash"></i>
 															</a>
@@ -132,7 +135,7 @@
 							</div>
 						</div>
 						<div class="col-md-4" data-ng-switch="switchPortfolioForm">
-							<div class="row"><!-- Here put role control -->
+							<div class="row" data-ng-show="userHasAuthorization"><!-- Here put role control -->
 								<div class="col-md-12">
 									<button class="btn btn-primary" data-ng-click="selectNewPortfolio();"
 											data-ng-switch-when="view">
@@ -154,13 +157,17 @@
 											</div>
 											<div class="panel-body">
 												<div class="col-md-12">
-													<form class="form-horizontal" data-ng-submit="create()" novalidate>
+													<form class="form-horizontal" data-ng-submit="create()" novalidate name="newPortfolioForm">
 														<fieldset>
 															<div class="form-group">
-																<label class="control-label" for="name">Portfolio name</label>
+																<label class="control-label" for="newPortfolioName">Portfolio name</label>
 																<div class="controls">
-																	<input type="text" data-ng-model="newPortfolio.name" id="name" class="form-control" placeholder="Name" required>
+																	<input type="text" data-ng-model="newPortfolio.name" id="newPortfolioName" name="newPortfolioName"
+																		   class="form-control" placeholder="Name" required>
 																</div>
+																<span data-ng-show="newPortfolioForm.newPortfolioName.$error.required">
+																	<em style="color: red">Name is required</em>
+																</span>
 															</div>
 															<div class="form-group">
 																<label class="control-label" for="type">Portfolio type</label>
@@ -197,7 +204,7 @@
 																</div>
 															</div>
 															<div class="form-group pull-right">
-																<input type="submit" class="btn btn-success">
+																<input type="submit" class="btn btn-success" data-ng-disabled="newPortfolioForm.$invalid">
 																<button type="reset" class="btn btn-info" ng-click="selectPortfolioForm('view')">
 																	Cancel
 																</button>
@@ -287,14 +294,18 @@
 											<div class="panel-body" ng-show="editPortfolio">
 												<div>
 													<div class="row">
-														<form class="form" data-ng-submit="update()" novalidate>
+														<form class="form" data-ng-submit="update()" novalidate name="editPortfolioForm">
 															<fieldset>
 																<div class="col-md-12">
 																	<div class="form-group">
-																		<label class="control-label" for="name">Portfolio name</label>
+																		<label class="control-label" for="editPortfolioName">Portfolio name</label>
 																		<div class="controls">
-																			<input type="text" data-ng-model="editPortfolio.name" id="name" class="form-control" placeholder="Name" required>
+																			<input type="text" data-ng-model="editPortfolio.name" id="editPortfolioName" name="editPortfolioName"
+																				   class="form-control" placeholder="Name" required>
 																		</div>
+																		<span data-ng-show="editPortfolioForm.editPortfolioName.$error.required">
+																			<em style="color: red">Name is required</em>
+																		</span>
 																	</div>
 																	<div class="form-group">
 																		<label class="control-label" for="type">Portfolio type</label>
@@ -331,7 +342,7 @@
 																		</div>
 																	</div>
 																	<div class="form-group pull-right">
-																		<input type="submit" value="Save" class="btn btn-success">
+																		<input type="submit" value="Save" class="btn btn-success" data-ng-disabled="editPortfolioForm.$invalid">
 																		<a class="btn btn-danger" data-ng-click="remove()">
 																			<i class="glyphicon glyphicon-trash"></i>
 																		</a>
