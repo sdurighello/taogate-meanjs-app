@@ -142,14 +142,6 @@ angular.module('strategy-node-setup').controller('StrategyNodeSetupController', 
 			} else {return [];}
 		};
 
-		// allow the moving of children back to root
-		var editParent = function(parent){
-			if(parent){
-				return _.get($scope.editStrategyNode,'parent._id');
-			} else {
-				return null;
-			}
-		};
 
 		// ------------- REFRESH NODES LIST ------------
 
@@ -173,13 +165,13 @@ angular.module('strategy-node-setup').controller('StrategyNodeSetupController', 
 
 		// ------------- VIEW ONE NODE ---------------------
 
-		var masterStrategyNode;
+		var masterStrategyNode = {};
 
 		$scope.selectStrategyNode = function(strategyNodeId){
+			$scope.editParents = [];
 			$scope.selectStrategyNodeForm('view');
 			StrategyNodes.get({strategyNodeId:strategyNodeId}, function(strategyNode){
 				masterStrategyNode = strategyNode;
-				$scope.viewStrategyNode = _.clone(strategyNode);
 				$scope.editStrategyNode = _.clone(strategyNode);
 
 				// Only nodes without children can be moved
@@ -213,11 +205,29 @@ angular.module('strategy-node-setup').controller('StrategyNodeSetupController', 
 
 		// ------------ EDIT ONE NODE ---------------
 
+		// allow the moving of children back to root
+		var editParent = function(parent){
+			if(parent){
+				return _.get($scope.editStrategyNode,'parent._id');
+			} else {
+				return null;
+			}
+		};
+
+		// allow assigning no type to node
+		var editType = function(type){
+			if(type){
+				return _.get($scope.editStrategyNode,'type._id');
+			} else {
+				return null;
+			}
+		};
+
 		$scope.update = function() {
 
 			masterStrategyNode.name = _.get($scope.editStrategyNode,'name');
 			masterStrategyNode.parent = editParent(_.get($scope.editStrategyNode,'parent'));
-			masterStrategyNode.type = _.get($scope.editStrategyNode,'type._id');
+			masterStrategyNode.type = editType(_.get($scope.editStrategyNode,'type'));
 			masterStrategyNode.ancestors = ancestorsArray(_.get($scope.editStrategyNode,'parent'));
 
 			masterStrategyNode.$update(function() {

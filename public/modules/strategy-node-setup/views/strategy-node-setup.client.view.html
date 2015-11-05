@@ -217,19 +217,19 @@
 												<div>
 													<div class="row">
 														<form>
-															<fieldset ng-disabled = true>
+															<fieldset data-ng-disabled = true>
 																<div class="col-md-12">
 																	<div class="form-group">
 																		<label for="nodeName">Strategy node Name</label>
-																		<input id="nodeName" class="form-control" ng-model="viewStrategyNode.name">
+																		<input id="nodeName" class="form-control" ng-model="editStrategyNode.name">
 																	</div>
 																	<div class="form-group">
 																		<label for="nodeType">Strategy node type</label>
-																		<input id="nodeType" class="form-control"  ng-model="viewStrategyNode.type.name">
+																		<input id="nodeType" class="form-control"  ng-model="editStrategyNode.type.name">
 																	</div>
 																	<div class="form-group">
 																		<label for="parent">Parent node</label>
-																		<input id="parent" class="form-control"  ng-model="viewStrategyNode.parent.name">
+																		<input id="parent" class="form-control"  ng-model="editStrategyNode.parent.name">
 																	</div>
 																	<div data-ng-show="error" class="text-danger">
 																		<strong data-ng-bind="error"></strong>
@@ -283,7 +283,7 @@
 																	<div class="form-group">
 																		<label class="control-label" for="type">Strategy node type</label>
 																		<select id="type" class="form-control" data-ng-model = "editStrategyNode.type"
-																				ng-options="strategyNodeType as strategyNodeType.name for strategyNodeType in strategyNodeType track by strategyNodeType._id">
+																				ng-options="strategyNodeType as strategyNodeType.name for strategyNodeType in strategyNodeTypes track by strategyNodeType._id">
 																			<option value="">--choose type</option>
 																		</select>
 																	</div>

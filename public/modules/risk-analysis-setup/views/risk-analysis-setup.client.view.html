@@ -1,0 +1,655 @@
+<section data-ng-controller="RiskAnalysisSetupController" data-ng-init="init()">
+	<br>
+	<div class="row">
+		<div class="col-sm-12">
+			<div class="panel-heading">
+				<ol class="breadcrumb">
+					<li>Setup</li>
+					<li>Portfolio evaluation</li>
+					<li class="active">Risk analysis</li>
+				</ol>
+			</div>
+		</div>
+	</div>
+	<div class="row">
+		<div class="col-md-12">
+			<tabset>
+				<tab heading="Risks">
+					<br>
+					<div class="row" data-ng-show="userHasAuthorization">
+						<div class="col-md-3">
+							<br>
+							<button class="btn btn-primary" ng-click="createRiskCategory()">
+								New risk category
+							</button>
+							<div data-ng-show="error" class="text-danger">
+								<strong data-ng-bind="error"></strong>
+							</div>
+						</div>
+					</div>
+					<hr>
+					<div class="row">
+						<div class="col-md-12 form-group" data-ng-repeat="category in riskCategories track by $index">
+							<button class="btn btn-default btn-lg btn-block" data-ng-bind="category.name" data-ng-click="viewRiskCategoryDetails = !viewRiskCategoryDetails"
+									title="Last updated on {{category.created | date:'medium'}} by {{category.user.displayName}}"></button>
+							<div data-ng-show="viewRiskCategoryDetails">
+								<div class="panel panel-default" >
+									<div class="panel-body">
+										<div class="row">
+											<div class="col-md-12">
+												<div class="panel panel-default" data-ng-switch="switchRiskCategoryForm[category._id]">
+													<div class="panel-body" ng-switch-default="view">
+														<div class="row">
+															<div class="col-md-7 form-group">
+																<label for="categoryName" class="control-label">Risk Category name</label>
+																<input disabled id="categoryName" type="text" class="form-control" data-ng-model="category.name">
+															</div>
+														</div>
+														<div class="row">
+															<div class="col-md-12 form-group">
+																<label for="categoryDescription" class="control-label">Risk Category description</label>
+																<textarea disabled id="categoryDescription" data-ng-model="category.description" class="form-control" placeholder="No description yet"></textarea>
+															</div>
+														</div>
+														<div class="row" data-ng-show="userHasAuthorization">
+															<div class="col-md-12">
+																<div class="form-group pull-right">
+																	<button class="btn btn-success" data-ng-click="selectRiskCategory(category)">Edit</button>
+																</div>
+															</div>
+														</div>
+													</div>
+													<div class="panel-body" ng-switch-when="edit">
+														<form name="editRiskCategoryForm" novalidate>
+															<fieldset>
+																<div class="row">
+																	<div class="col-md-12">
+																		<div class="panel-body">
+																			<div class="row">
+																				<div class="col-md-7 form-group">
+																					<label for="riskCategoryNameEdit" class="control-label">Risk Category name</label>
+																					<input id="riskCategoryNameEdit" name="riskCategoryNameEdit" type="text" class="form-control" data-ng-model="category.name" required>
+                                                                                    <span data-ng-show="editRiskCategoryForm.riskCategoryNameEdit.$error.required">
+                                                                                        <em style="color: red">Name is required</em>
+                                                                                    </span>
+																				</div>
+																			</div>
+																			<div class="row">
+																				<div class="col-md-12 form-group">
+																					<label for="categoryDescription" class="control-label">Risk Category description</label>
+																					<textarea id="categoryDescription" data-ng-model="category.description" class="form-control" placeholder="No description yet"></textarea>
+																				</div>
+																			</div>
+																		</div>
+																	</div>
+																</div>
+																<div class="row">
+																	<div class="col-md-12">
+																		<div class="form-group pull-right">
+																			<button type="button" class="btn btn-success" data-ng-click="updateRiskCategory(category)" data-ng-disabled="editRiskCategoryForm.$invalid">
+																				Save
+																			</button>
+																			<button type="button" class="btn btn-danger" data-ng-click="removeRiskCategory(category)">
+																				Delete risk category
+																			</button>
+																			<button type="button" class="btn btn-info" data-ng-click="cancelEditRiskCategory(category)">
+																				Cancel
+																			</button>
+																			<div data-ng-show="error" class="text-danger">
+																				<strong data-ng-bind="error"></strong>
+																			</div>
+																		</div>
+																	</div>
+																</div>
+															</fieldset>
+														</form>
+													</div>
+												</div>
+											</div>
+										</div>
+										<div class="row">
+											<div class="col-md-12">
+												<div class="panel panel-default">
+													<div class="panel-body">
+														<div class="row" data-ng-show="userHasAuthorization">
+															<div class="col-md-3">
+																<div class="form-group">
+																	<button type="button" class="btn btn-primary" ng-click="createRisk(category)">
+																		New risk
+																	</button>
+																</div>
+																<div data-ng-show="error" class="text-danger">
+																	<strong data-ng-bind="error"></strong>
+																</div>
+															</div>
+														</div>
+														<div class="row">
+															<div class="col-md-4 form-group" data-ng-repeat="risk in category.risks track by $index" data-ng-switch="switchRiskForm[risk._id]">
+																<button class="btn btn-default btn-lg btn-block" data-ng-bind="risk.name" data-ng-click="viewRiskDetails = !viewRiskDetails"
+																		title="Last updated on {{risk.created | date:'medium'}} by {{risk.user.displayName}}"></button>
+																<div data-ng-show="viewRiskDetails">
+																	<div class="panel panel-default">
+																		<div class="panel-body" ng-switch-default="view">
+																			<div class="row">
+																				<div class="col-md-12">
+																					<form>
+																						<fieldset>
+																							<div class="row">
+																								<div class="form-group col-md-12">
+																									<label for="riskName" class="control-label">Risk name</label>
+																									<input disabled id="riskName" type="text" class="form-control" data-ng-model="risk.name">
+																								</div>
+																							</div>
+																							<div class="row">
+																								<div class="form-group col-md-12">
+																									<label for="riskDescription" class="control-label">Risk description</label>
+																									<textarea disabled id="riskDescription" data-ng-model="risk.description" class="form-control" placeholder="No description yet"></textarea>
+																								</div>
+																							</div>
+																						</fieldset>
+																					</form>
+																					<div class="row" data-ng-show="userHasAuthorization">
+																						<div class="form-group col-md-12 pull-right">
+																							<button type="button" class="btn btn-success pull-right"
+																									data-ng-click="selectEditRisk(category, risk)">
+																								Edit
+																							</button>
+																						</div>
+																					</div>
+																				</div>
+																			</div>
+																		</div>
+																		<div class="panel-body" ng-switch-when="edit">
+																			<div class="row" >
+																				<div class="col-md-12">
+																					<form name="editRiskForm" novalidate>
+																						<fieldset>
+																							<div class="row">
+																								<div class="form-group col-md-12">
+																									<label for="riskNameEdit" class="control-label">Risk name</label>
+																									<input id="riskNameEdit" name="riskNameEdit" type="text" class="form-control" data-ng-model="risk.name" required>
+                                                                                                    <span data-ng-show="editRiskForm.riskNameEdit.$error.required">
+                                                                                                        <em style="color: red">Name is required</em>
+                                                                                                    </span>
+																								</div>
+																							</div>
+																							<div class="row">
+																								<div class="form-group col-md-12">
+																									<label for="riskDescriptionEdit" class="control-label">Risk description</label>
+																									<textarea id="riskDescriptionEdit" data-ng-model="risk.description" class="form-control" placeholder="No description yet"></textarea>
+																								</div>
+																							</div>
+																							<div class="row">
+																								<div class="col-md-12">
+																									<div class="form-group pull-right">
+																										<button type="button" class="btn btn-success" ng-click="updateRisk(category, risk)" data-ng-disabled="editRiskForm.$invalid">
+																											Save
+																										</button>
+																										<a class="btn btn-danger" data-ng-click="removeRisk(category, risk)">
+																											<i class="glyphicon glyphicon-trash"></i>
+																										</a>
+																										<button type="button" class="btn btn-info" ng-click="cancelEditRisk(risk)">
+																											Cancel
+																										</button>
+																									</div>
+																								</div>
+																							</div>
+																							<div data-ng-show="error" class="text-danger">
+																								<strong data-ng-bind="error"></strong>
+																							</div>
+																						</fieldset>
+																					</form>
+																				</div>
+																			</div>
+																		</div>
+																	</div>
+																</div>
+															</div>
+														</div>
+														<div class="alert alert-warning text-center" data-ng-show="category.risks.length === 0">
+															No risks added to this category yet
+														</div>
+													</div>
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="alert alert-warning text-center" data-ng-hide="!riskCategories.$resolved || riskCategories.length">
+						No risk categories yet
+					</div>
+				</tab>
+				<tab heading="Impacts">
+					<br>
+					<div ng-show="userHasAuthorization">
+						<div class="row">
+							<div class="col-md-3">
+								<br>
+								<button class="btn btn-primary"
+										ng-click="createImpact()">
+									New impact
+								</button>
+							</div>
+						</div>
+						<hr>
+					</div>
+					<div class="row">
+						<div class="col-md-3" data-ng-repeat="impact in impacts" data-ng-switch="switchImpactForm[impact._id]" >
+							<div class="panel panel-default" title="Last updated on {{impact.created | date:'medium'}} by {{impact.user.displayName}}">
+								<div class="panel-body">
+									<div ng-switch-default="view">
+										<form class="form">
+											<fieldset>
+												<div class="row">
+													<div class="col-md-12">
+														<div class="form-group">
+															<label class="control-label" for="name">Name</label>
+                                                            <div class="controls">
+																<input id="name" disabled type="text" class="form-control" ng-model="impact.name">
+															</div>
+														</div>
+														<div class="form-group">
+															<label class="control-label" for="Description">Description</label>
+															<div class="controls">
+																<textarea id="Description" disabled type="text" class="form-control" ng-model="impact.description"></textarea>
+															</div>
+														</div>
+                                                        <div class="form-group">
+                                                            <label class="control-label">Value</label>
+                                                            <div class="controls">
+                                                                <input disabled type="number" class="form-control" ng-model="impact.impactValue">
+                                                            </div>
+                                                        </div>
+                                                        <div class="form-group pull-right" data-ng-show="userHasAuthorization">
+                                                            <button class="btn btn-success" data-ng-click="selectImpact(impact)">Edit</button>
+                                                        </div>
+													</div>
+												</div>
+											</fieldset>
+										</form>
+									</div>
+									<div data-ng-switch-when="edit">
+										<form class="form" name="editImpactForm" data-ng-submit="updateImpact(impact)" novalidate>
+											<fieldset>
+												<div class="row">
+													<div class="col-md-12">
+														<div class="form-group">
+															<label class="control-label" for="impactNameEdit">Name</label>
+															<div class="controls">
+																<input id="impactNameEdit" name="impactNameEdit" type="text" class="form-control" ng-model="impact.name" required>
+																<span data-ng-show="editImpactForm.impactNameEdit.$error.required">
+																	<em style="color: red">Name is required</em>
+																</span>
+															</div>
+														</div>
+                                                        <div class="form-group">
+                                                            <label class="control-label" for="description">Description</label>
+                                                            <div class="controls">
+                                                                <textarea id="description" class="form-control" data-ng-model="impact.description" placeholder="Description"></textarea>
+                                                            </div>
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label class="control-label" for="numericalEdit">Value</label>
+                                                            <div class="controls">
+                                                                <input type="number" id="numericalEdit" class="form-control" min="0" step="1" onkeyup="this.value=this.value.replace(/[^0-9]/g,'');"
+                                                                       data-ng-model="impact.impactValue" placeholder="Enter positive integer" required name="numericalEdit">
+                                                            </div>
+                                                            <span data-ng-show="editImpactForm.numericalEdit.$error.required">
+																	<em style="color: red">Impact value is required</em>
+                                                            </span>
+                                                        </div>
+														<div class="form-group pull-right">
+															<input type="submit" value="Save" class="btn btn-success" ng-disabled="editImpactForm.$invalid">
+															<a class="btn btn-danger" data-ng-click="removeImpact(impact)">
+																<i class="glyphicon glyphicon-trash"></i>
+															</a>
+															<button type="button" class="btn btn-info" ng-click="cancelEditImpact(impact)">
+																Cancel
+															</button>
+														</div>
+														<div class="form-group">
+															<div data-ng-show="error" class="text-danger">
+																<strong data-ng-bind="error"></strong>
+															</div>
+														</div>
+													</div>
+												</div>
+											</fieldset>
+										</form>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+                    <div class="alert alert-warning text-center" data-ng-hide="impacts.length">
+                        No impacts yet
+                    </div>
+				</tab>
+                <tab heading="Probabilities">
+                    <br>
+                    <div ng-show="userHasAuthorization">
+                        <div class="row">
+                            <div class="col-md-3">
+                                <br>
+                                <button class="btn btn-primary"
+                                        ng-click="createProbability()">
+                                    New probability
+                                </button>
+                            </div>
+                        </div>
+                        <hr>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-3" data-ng-repeat="probability in probabilities" data-ng-switch="switchProbabilityForm[probability._id]" >
+                            <div class="panel panel-default" title="Last updated on {{probability.created | date:'medium'}} by {{probability.user.displayName}}">
+                                <div class="panel-body">
+                                    <div ng-switch-default="view">
+                                        <form class="form">
+                                            <fieldset>
+                                                <div class="row">
+                                                    <div class="col-md-12">
+                                                        <div class="form-group">
+                                                            <label class="control-label" for="name">Name</label>
+                                                            <div class="controls">
+                                                                <input id="name" disabled type="text" class="form-control" ng-model="probability.name">
+                                                            </div>
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label class="control-label" for="Description">Description</label>
+                                                            <div class="controls">
+                                                                <textarea id="Description" disabled type="text" class="form-control" ng-model="probability.description"></textarea>
+                                                            </div>
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label class="control-label">Value</label>
+                                                            <div class="controls">
+                                                                <input disabled type="number" class="form-control" ng-model="probability.value">
+                                                            </div>
+                                                        </div>
+                                                        <div class="form-group pull-right" data-ng-show="userHasAuthorization">
+                                                            <button class="btn btn-success" data-ng-click="selectProbability(probability)">Edit</button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </fieldset>
+                                        </form>
+                                    </div>
+                                    <div data-ng-switch-when="edit">
+                                        <form class="form" name="editProbabilityForm" data-ng-submit="updateProbability(probability)" novalidate>
+                                            <fieldset>
+                                                <div class="row">
+                                                    <div class="col-md-12">
+                                                        <div class="form-group">
+                                                            <label class="control-label" for="probabilityNameEdit">Name</label>
+                                                            <div class="controls">
+                                                                <input id="probabilityNameEdit" name="probabilityNameEdit" type="text" class="form-control" ng-model="probability.name" required>
+																<span data-ng-show="editProbabilityForm.probabilityNameEdit.$error.required">
+																	<em style="color: red">Name is required</em>
+																</span>
+                                                            </div>
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label class="control-label" for="description">Description</label>
+                                                            <div class="controls">
+                                                                <textarea id="description" class="form-control" data-ng-model="probability.description" placeholder="Description"></textarea>
+                                                            </div>
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label class="control-label" for="numericalEdit">Value</label>
+                                                            <div class="controls">
+                                                                <input type="number" id="numericalEdit" class="form-control" min="0" step="1" onkeyup="this.value=this.value.replace(/[^0-9]/g,'');"
+                                                                       data-ng-model="probability.value" placeholder="Enter positive integer" required name="numericalEdit">
+                                                            </div>
+                                                            <span data-ng-show="editProbabilityForm.numericalEdit.$error.required">
+																	<em style="color: red">Probability value is required</em>
+                                                            </span>
+                                                        </div>
+                                                        <div class="form-group pull-right">
+                                                            <input type="submit" value="Save" class="btn btn-success" ng-disabled="editProbabilityForm.$invalid">
+                                                            <a class="btn btn-danger" data-ng-click="removeProbability(probability)">
+                                                                <i class="glyphicon glyphicon-trash"></i>
+                                                            </a>
+                                                            <button type="button" class="btn btn-info" ng-click="cancelEditProbability(probability)">
+                                                                Cancel
+                                                            </button>
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <div data-ng-show="error" class="text-danger">
+                                                                <strong data-ng-bind="error"></strong>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </fieldset>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="alert alert-warning text-center" data-ng-hide="probabilities.length">
+                        No probabilities yet
+                    </div>
+                </tab>
+                <tab heading="Severities">
+                    <br>
+                    <div class="row">
+                        <div class="col-md-5">
+                            <div class="panel panel-default">
+                                <div class="panel-heading" data-ng-hide="severity || !userHasAuthorization">
+                                    <div class="text-center">
+                                        <em>Drag and drop to order by severity. Top is most severe.</em>
+                                    </div>
+                                </div>
+                                <div class="panel-body" data-as-sortable="dragControlListeners" data-ng-model="severities"
+                                     style="overflow-y: auto; max-height: 500px; min-height: 500px;">
+                                    <div class="alert alert-warning text-center" data-ng-hide="severities.length">
+                                        No severities yet
+                                    </div>
+                                    <button data-ng-repeat="severity in severities" data-as-sortable-item data-ng-click="selectSeverity(severity)"
+                                            class="btn btn-default btn-lg btn-block center-block" style="overflow: hidden;">
+                                        <div data-as-sortable-item-handle>
+                                            <div class="row">
+                                                <div class="col-md-2">
+                                                    <span class="badge" data-ng-bind="severity.position"></span>
+                                                </div>
+                                                <div class="col-md-10 text-center" data-ng-bind="severity.name"></div>
+                                            </div>
+                                        </div>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4" data-ng-switch="switchSeverityForm">
+                            <div class="row" ng-show="userHasAuthorization" ng-switch-default="view">
+                                <div class="col-md-12">
+                                    <button class="btn btn-primary" data-ng-click="createSeverity()">
+                                        New severity
+                                    </button>
+                                    <button class="btn btn-success" data-ng-click="selectSeverityForm('edit')" data-ng-show="severity">
+                                        Edit severity
+                                    </button>
+                                    <div data-ng-show="error" class="text-danger">
+                                        <strong data-ng-bind="error"></strong>
+                                    </div>
+                                </div>
+                            </div>
+                            <br>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="panel panel-default">
+                                        <div class="panel-heading">
+                                            <h6 class="panel-title" data-ng-bind="severity.name"></h6>
+                                            <div class="text-center" data-ng-hide="severity">
+                                                <em>Please select a severity to see the details</em>
+                                            </div>
+                                        </div>
+                                        <div class="panel-body" data-ng-show="severity">
+                                            <div ng-switch-default="view">
+                                                <form class="form">
+                                                    <fieldset>
+                                                        <div class="row">
+                                                            <div class="col-md-12">
+                                                                <div class="form-group">
+                                                                    <label class="control-label">Name</label>
+                                                                    <div class="controls">
+                                                                        <input disabled type="text" class="form-control" ng-model="severity.name">
+                                                                    </div>
+                                                                </div>
+                                                                <div class="form-group">
+                                                                    <label class="control-label">Description</label>
+                                                                    <div class="controls">
+                                                                        <textarea disabled class="form-control" ng-model="severity.description"></textarea>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="form-group">
+                                                                    <label class="control-label">Value</label>
+                                                                    <div class="controls">
+                                                                        <input disabled type="number" class="form-control" ng-model="severity.value">
+                                                                    </div>
+                                                                </div>
+                                                                <div class="form-group">
+                                                                    <div data-ng-show="error" class="text-danger">
+                                                                        <strong data-ng-bind="error"></strong>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </fieldset>
+                                                </form>
+                                                <div class="row">
+                                                    <div class="col-md-12">
+                                                        <small>
+                                                            <em class="text-muted">
+                                                                Last updated on
+                                                                <span data-ng-bind="severity.created | date:'mediumDate'"></span>
+                                                                by
+                                                                <span data-ng-bind="severity.user.displayName"></span>
+                                                            </em>
+                                                        </small>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div data-ng-switch-when="edit">
+                                                <form class="form" data-ng-submit="updateSeverity(severity)" novalidate name="editSeverityForm">
+                                                    <fieldset>
+                                                        <div class="row">
+                                                            <div class="col-md-12">
+                                                                <div class="form-group">
+                                                                    <label class="control-label" for="editSeverityName">Name</label>
+                                                                    <div class="controls">
+                                                                        <input type="text" id="editSeverityName" class="form-control" name="editSeverityName"
+                                                                               data-ng-model="severity.name" placeholder="Name" required>
+                                                                    </div>
+                                                                    <span data-ng-show="editSeverityForm.editSeverityName.$error.required">
+                                                                        <em style="color: red">Name is required</em>
+                                                                    </span>
+                                                                </div>
+                                                                <div class="form-group">
+                                                                    <label class="control-label" for="description">Description</label>
+                                                                    <div class="controls">
+                                                        <textarea id="description" class="form-control"
+                                                                  data-ng-model="severity.description" placeholder="Description">
+                                                        </textarea>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="form-group">
+                                                                    <label class="control-label" for="numerical">Value</label>
+                                                                    <div class="controls">
+                                                                        <input type="number" id="numerical" class="form-control" min="0" step="1" onkeyup="this.value=this.value.replace(/[^0-9]/g,'');"
+                                                                               data-ng-model="severity.value" placeholder="Enter positive integer" required>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="form-group center-block">
+                                                                    <input type="submit" value="Save" class="btn btn-success" data-ng-disabled="editSeverityForm.$invalid">
+                                                                    <a class="btn btn-danger" data-ng-click="removeSeverity(severity)">
+                                                                        <i class="glyphicon glyphicon-trash"></i>
+                                                                    </a>
+                                                                    <button type="button" class="btn btn-info" data-ng-click="cancelEditSeverity(severity)">
+                                                                        Cancel
+                                                                    </button>
+                                                                </div>
+                                                                <div class="form-group">
+                                                                    <div data-ng-show="error" class="text-danger">
+                                                                        <strong data-ng-bind="error"></strong>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </fieldset>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </tab>
+                <tab heading="Severity Matrix">
+                    <br>
+                    <div class="row">
+                        <div class="col-md-3" ng-repeat="assignment in severityAssignments">
+                            <div class="panel panel-default">
+                                <div class="panel-heading">
+                                    <div class="row">
+                                        <div class="col-md-4">
+                                            <i>Impact</i>
+                                        </div>
+                                        <div class="col-md-8">
+                                            <b><input type="text" class="form-control input-sm" ng-model="assignment.impact.impactName" disabled></b>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="panel-body">
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <i>Probability</i>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <i>Severity</i>
+                                        </div>
+                                    </div>
+                                    <br>
+                                    <div class="row" ng-repeat="combination in assignment.riskCombinations">
+                                        <div class="col-md-6 form-group">
+                                            <input type="text" class="form-control input-sm" ng-model="combination.probability.probabilityName" disabled>
+                                        </div>
+                                        <div class="col-md-6 form-group">
+                                            <select id="" class="form-control input-sm" ng-model = "combination.severity._id"
+                                                    ng-options="severity._id as severity.severityName for severity in severities">
+                                                <option value="">--choose severity</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <br>
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <div class="btn-group-xs center-block">
+                                                <button type="button" class="btn btn-success btn-sm" ng-click="updateCategory(category)">
+                                                    <span class="glyphicon glyphicon-ok"></span>
+                                                </button>
+                                                <button type="button" class="btn btn-danger btn-sm" ng-click="deleteCategory(category)">
+                                                    <span class="glyphicon glyphicon-trash"></span>
+                                                </button>
+                                                <button type="button" class="btn btn-info btn-sm" ng-click="cancelCategoryChanges()">
+                                                    <span class="glyphicon glyphicon-remove"></span>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="alert alert-warning text-center" data-ng-hide="severityAssignments.length">
+                        No severity assignments yet
+                    </div>
+                </tab>
+			</tabset>
+		</div>
+	</div>
+</section>

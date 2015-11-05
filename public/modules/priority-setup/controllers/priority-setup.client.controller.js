@@ -44,16 +44,9 @@ angular.module('priority-setup').controller('PrioritySetupController', ['$scope'
 			//
 			//},
 			orderChanged: function(event) {
-				if(event.source.index < event.dest.index){
-					for(var i=event.source.index; i<=event.dest.index; i++){
-						$scope.updateValue($scope.priorityValues[i]);
-					}
-				}
-				if(event.source.index > event.dest.index){
-					for(var j=event.dest.index; j<=event.source.index; j++){
-						$scope.updateValue($scope.priorityValues[j]);
-					}
-				}
+                for(var i = 0; i < $scope.priorityValues.length; i++){
+                    $scope.updateValue($scope.priorityValues[i]);
+                }
 			}
 			//containment: '#board',//optional param.
 			//clone: true //optional param for clone feature.
@@ -121,13 +114,18 @@ angular.module('priority-setup').controller('PrioritySetupController', ['$scope'
 
 		$scope.removeValue = function(value) {
 			$scope.error = null;
-			value.$remove(function(response) {
-				$scope.priorityValue = null;
-				$scope.findValues();
-				$scope.selectValueForm('view');
-			}, function(errorResponse) {
-				$scope.error = errorResponse.data.message;
-			});
+            value.$remove(function(response) {
+                $scope.priorityValues = _.without($scope.priorityValues, value);
+                for(var i = 0; i < $scope.priorityValues.length; i++){
+                    if($scope.priorityValues[i].position > value.position){
+                        $scope.updateValue($scope.priorityValues[i]);
+                    }
+                }
+                $scope.priorityValue = null;
+                $scope.selectValueForm('view');
+            }, function(errorResponse) {
+                $scope.error = errorResponse.data.message;
+            });
 		};
 
 		// ------------------- NEW -----------------

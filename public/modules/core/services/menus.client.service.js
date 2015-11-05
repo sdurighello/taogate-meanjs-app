@@ -198,6 +198,9 @@ angular.module('core').service('Menus', [
                 // Qualitative analysis
         this.addSubMenuItem('topbar', 'setup', 'Qualitative analysis', 'qualitative-analysis-setup','qualitative-analysis-setup',false,
             ['superAdmin','admin','PMO','projectManager','portfolioManager','executive'],9);
+                // Risk analysis
+        this.addSubMenuItem('topbar', 'setup', 'Risk analysis', 'risk-analysis-setup','risk-analysis-setup',false,
+            ['superAdmin','admin','PMO','projectManager','portfolioManager','executive'],10);
 
 
 		this.addMenuItem('topbar','Definition','definition','dropdown','definition',false,['superAdmin','admin','PMO','projectManager','portfolioManager','executive'],3);
