@@ -20,31 +20,42 @@ Make sure you have installed all these prerequisites on your development machine
 ## PORTFOLIO DEFINITION
 
 	### Identification
-The identification of the required projects is based on a business strategy decomposition process. The system will allow the user to identify as many levels of hierarchical decomposition as required called strategy nodes. Strategy nodes can be of different strategy type.
-At any node of the hierarchy, projects that map directly to that node are identified. Key identification data for each project includes: start/end date, earmarked funds, company’s identification number, project name and description.
+The identification of the required projects is based on a business strategy decomposition process. 
+The system will allow the user to identify as many levels of hierarchical decomposition as required called strategy nodes. 
+Strategy nodes can be of different strategy type.
+At any node of the hierarchy, projects that map directly to that node are identified. 
+Key identification data for each project includes: start/end date, earmarked funds, company’s identification number, project name and description.
 If the strategy decomposition structure identifies the business strategy area that owns a project, the portfolio decomposition structure identifies its delivery accountability. Each project identi- fied during the strategy decomposition exercise should be assigned to a portfolio. Portfolio can be categorized by portfolio type.
 
 	### Stakeholders & project organization
-Projects are managed within a matrix organization where project organization’s reporting lines are superimposed to the business as usual functional lines. Project stakeholders play roles in the organizational units, generalized in stakeholder groups, which make up the project organi- zation. Minimum information required for a stakeholder is name, title and email/phone.
+Projects are managed within a matrix organization where project organization’s reporting lines are superimposed to the business as usual functional lines. 
+Project stakeholders play roles in the organizational units, generalized in stakeholder groups, which make up the project organization. 
+Minimum information required for a stakeholder is name, title and email/phone.
 
 	### Dependencies
-This process entails the management of dependencies among projects. When a project requires a deliverable/milestone to be achieved or provided by another project, this constraint should be captured as a dependency. A dependency should identify the source project expected to pro- duce the deliverable, the target project that requires that deliverable in order to properly progress with its own delivery. The deliverable will be expected on a certain date and, if not delivered on time or as expected, it will have a dependency impact on the target project.
+This process entails the management of dependencies among projects. 
+When a project requires a deliverable/milestone to be achieved or provided by another project, this constraint should be captured as a dependency. 
+A dependency should identify the source project expected to pro- duce the deliverable, the target project that requires that deliverable in order to properly progress with its own delivery.
+The deliverable will be expected on a certain date and, if not delivered on time or as expected, it will have a dependency impact on the target project.
 
 	### Categorization
-Categorization is the process of classifying projects based on categories that represent, for example, different project characteristics or any meaningful grouping of projects. These cate- gories are then used as the basis for decision-making, comparison or management.
+Categorization is the process of classifying projects based on categories that represent, for example, different project characteristics or any meaningful grouping of projects. 
+These categories are then used as the basis for decision-making, comparison or management.
 Within each category, project will have different category values. Multiple categories can be grouped in category types.
 
 	### Prioritization
 Prioritization of projects can be based on qualitative priorities or rankings.
 A priority is the level of delivery importance or precedence a project has compared to other projects, as judged by a relevant stakeholder.
 Stakeholders can base their judgement on a number of factors, including categorization values assigned to the project or outcomes of the project evaluation process.
-Projects with higher priority will be preferred to projects of lower priority when either fi- nite resources are not sufficient for all projects or temporal precedence has to be given to specific projects since not all projects can be delivered at the same time.
-A qualitative priority assigns a non-exclusive priority value to a project based on how it fares in a specific priority compared to other projects. Valid priority values for this category are any text. Value indicated with numbers will treated as text and won't be available for math- ematical calculations.
-A ranking assigns a priority value based on an ordinal scale that, once assigned, is exclu- sive to the assigned project. The ranking level represents a unique position in the ordinal scale.
+Projects with higher priority will be preferred to projects of lower priority when either finite resources are not sufficient for all projects or temporal precedence has to be given to specific projects since not all projects can be delivered at the same time.
+A qualitative priority assigns a non-exclusive priority value to a project based on how it fares in a specific priority compared to other projects. 
+Valid priority values for this category are any text. Value indicated with numbers will treated as text and won't be available for mathematical calculations.
+A ranking assigns a priority value based on an ordinal scale that, once assigned, is exclusive to the assigned project. 
+The ranking level represents a unique position in the ordinal scale.
 Priorities and rankings can be grouped in priority and ranking types.
 A project can have multiple priorities and rankings at the same time.
-Stakeholders will follow a process of successive prioritization refinement, identified as pri- oritization steps, where the results of the previous prioritization are further negotiated and adjusted till arriving to a final prioritization decision.
-To ensure comparability between projects, qualitative prioritization will use the same quali- tative scale across all different priorities.	
+Stakeholders will follow a process of successive prioritization refinement, identified as prioritization steps, where the results of the previous prioritization are further negotiated and adjusted till arriving to a final prioritization decision.
+To ensure comparability between projects, qualitative prioritization will use the same qualitative scale across all different priorities.	
 
 ## PORTFOLIO EVALUATION
 
@@ -107,9 +118,9 @@ The history of all changes to milestones’ delivery dates and issues’ resolut
 This process allows the periodic reporting of the delivery status of each project at each gate.
 Each project status document should report the period it refers to and a standardized status indicator (e.g. red/amber/green) with a status comment.
 Detailed status information should include:
-o Standardized status areas, with status indicator and status comment, to provide a higher level of granularity to the report
-o Status about the current achievement of the expected gate outcomes
-o New estimate values for any gate performance as applicable
+* Standardized status areas, with status indicator and status comment, to provide a higher level of granularity to the report
+* Status about the current achievement of the expected gate outcomes
+* New estimate values for any gate performance as applicable
 Similarly to the project status, portfolio status documents should be used to report the sta-
 tus at portfolio level.
 
@@ -117,11 +128,11 @@ tus at portfolio level.
 
 First user subscribes as "Super Admin" and it is responsible for the entire account.
 It can create #subusers# for its organization and attach the following roles:
-o Admin
-o PMO
-o Portfolio Manager
-o Project Manager
-o Executive
+* Admin
+* PMO
+* Portfolio Manager
+* Project Manager
+* Executive
 	
 
 All rights reserved - taoPortfolio
