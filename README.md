@@ -1,4 +1,4 @@
-			# **taoPortfolio.com - Project Portfolio Management**
+			# taoPortfolio.com - Project Portfolio Management
 
 MEAN.JS application: 
 * MongoDB - [MongoDB Official Website](http://mongodb.org/) and proceed to their [Official Manual](http://docs.mongodb.org/manual/)
@@ -14,7 +14,7 @@ Make sure you have installed all these prerequisites on your development machine
 * Bower - You're going to use the [Bower Package Manager](http://bower.io/) to manage your front-end packages, in order to install it make sure you've installed Node.js and npm, then install bower globally using npm:
 
 
-			# *PRODUCT FUNCTIONALITY*
+			# PRODUCT FUNCTIONALITY
 
 
 ## PORTFOLIO DEFINITION
