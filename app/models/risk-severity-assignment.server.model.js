@@ -4,8 +4,10 @@
  * Module dependencies.
  */
 var mongoose = require('mongoose'),
-	Schema = mongoose.Schema;
+	Schema = mongoose.Schema,
+    deepPopulate = require('mongoose-deep-populate');
 require('mongoose-multitenant');
+
 
 /**
  * Risk severity assignment Schema
@@ -13,10 +15,9 @@ require('mongoose-multitenant');
 
 
 var riskCombinationSchema = new Schema({
-    probability : {type: Schema.Types.ObjectId, ref: 'RiskProbability'},
-    severity : {type: Schema.Types.ObjectId, ref: 'RiskSeverity'}
+    probability : {type: Schema.Types.ObjectId, ref: 'RiskProbability', $tenant:true},
+    severity : {type: Schema.Types.ObjectId, ref: 'RiskSeverity', $tenant:true}
 });
-mongoose.model('RiskCombination', riskCombinationSchema);
 
 
 var RiskSeverityAssignmentSchema = new Schema({
@@ -32,4 +33,5 @@ var RiskSeverityAssignmentSchema = new Schema({
 	}
 });
 
+RiskSeverityAssignmentSchema.plugin(deepPopulate);
 mongoose.mtModel('RiskSeverityAssignment', RiskSeverityAssignmentSchema);

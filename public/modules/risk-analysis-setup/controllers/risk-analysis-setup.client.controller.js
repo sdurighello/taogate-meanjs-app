@@ -216,6 +216,7 @@ angular.module('risk-analysis-setup').controller('RiskAnalysisSetupController', 
 
             impact.$save(function(response) {
                 $scope.impactList();
+                $scope.assignmentsList();
             }, function(errorResponse) {
                 $scope.error = errorResponse.data.message;
             });
@@ -253,6 +254,7 @@ angular.module('risk-analysis-setup').controller('RiskAnalysisSetupController', 
             $scope.error = null;
             impact.$remove(function(response) {
                 $scope.impactList();
+                $scope.assignmentsList();
             }, function(errorResponse) {
                 $scope.error = errorResponse.data.message;
             });
@@ -293,6 +295,7 @@ angular.module('risk-analysis-setup').controller('RiskAnalysisSetupController', 
 
             probability.$save(function(response) {
                 $scope.probabilityList();
+                $scope.assignmentsList();
             }, function(errorResponse) {
                 $scope.error = errorResponse.data.message;
             });
@@ -330,6 +333,7 @@ angular.module('risk-analysis-setup').controller('RiskAnalysisSetupController', 
             $scope.error = null;
             probability.$remove(function(response) {
                 $scope.probabilityList();
+                $scope.assignmentsList();
             }, function(errorResponse) {
                 $scope.error = errorResponse.data.message;
             });
@@ -456,9 +460,66 @@ angular.module('risk-analysis-setup').controller('RiskAnalysisSetupController', 
         };
 
 
+// ------------------------------------------------------  SEVERITY ASSIGNMENTS ---------------------------------------------
 
 
 
+        // ------------------- NG-SWITCH ---------------------
+
+        $scope.switchAssignmentForm = {};
+
+        $scope.selectAssignmentForm = function(assignment, string){
+            if(string === 'view'){ $scope.switchAssignmentForm[assignment._id] = 'view';}
+            if(string === 'new'){$scope.switchAssignmentForm[assignment._id] = 'new';}
+            if(string === 'edit'){$scope.switchAssignmentForm[assignment._id] = 'edit';}
+        };
+
+        // ------------------- LIST OF ASSIGNMENTS -----------------
+
+        $scope.assignmentsList = function() {
+            RiskSeverityAssignments.query(function(assignments){
+                $scope.severityAssignments = assignments;
+            },function(errorResponse) {
+                $scope.error = errorResponse.data.message;
+            });
+        };
+
+        // ------------------- EDIT -----------------
+
+        var originalAssignment = {};
+        $scope.selectAssignment = function(assignment){
+            $scope.error = null;
+            originalAssignment[assignment._id] = _.clone(assignment);
+            console.log(originalAssignment[assignment._id].riskCombinations[0]);
+            $scope.selectAssignmentForm(assignment, 'edit');
+        };
+
+        // Allow null severity
+        var createCopySeverityProperty = function(severity){
+            if(severity){return severity._id} else {return null;}
+        };
+
+        $scope.updateAssignment = function(assignment) {
+            var copyAssignment = _.clone(assignment);
+            copyAssignment.impact = copyAssignment.impact._id;
+            copyAssignment.riskCombinations = _.map(copyAssignment.riskCombinations, function(combination){
+                combination.probability = combination.probability._id;
+                combination.severity = createCopySeverityProperty(assignment.severity);
+                return combination;
+            });
+            RiskSeverityAssignments.update(copyAssignment, function(response) {
+                $scope.selectAssignmentForm(assignment, 'view');
+            }, function(errorResponse) {
+                $scope.error = errorResponse.data.message;
+            });
+        };
+
+        $scope.cancelEditAssignment = function(assignment){
+            $scope.error = null;
+            assignment.riskCombinations = originalAssignment[assignment._id].riskCombinations;
+            console.log(originalAssignment[assignment._id].riskCombinations[0]);
+            $scope.selectAssignmentForm(assignment, 'view');
+        };
 
     }
 ]);

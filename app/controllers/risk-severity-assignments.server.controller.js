@@ -75,7 +75,9 @@ exports.delete = function(req, res) {
  */
 exports.list = function(req, res) {
 	var RiskSeverityAssignment = mongoose.mtModel(req.user.tenantId + '.' + 'RiskSeverityAssignment');
-	RiskSeverityAssignment.find().sort('-created').populate('user', 'displayName').exec(function(err, riskSeverityAssignments) {
+	RiskSeverityAssignment.find().deepPopulate([
+        'impact', 'riskCombinations.probability','riskCombinations.severity'
+    ]).exec(function(err, riskSeverityAssignments) {
 		if (err) {
 			return res.status(400).send({
 				message: errorHandler.getErrorMessage(err)

@@ -592,7 +592,7 @@
                 <tab heading="Severity Matrix">
                     <br>
                     <div class="row">
-                        <div class="col-md-3" ng-repeat="assignment in severityAssignments">
+                        <div class="col-md-4" data-ng-repeat="assignment in severityAssignments track by $index" data-ng-switch="switchAssignmentForm[assignment._id]">
                             <div class="panel panel-default">
                                 <div class="panel-heading">
                                     <div class="row">
@@ -600,47 +600,75 @@
                                             <i>Impact</i>
                                         </div>
                                         <div class="col-md-8">
-                                            <b><input type="text" class="form-control input-sm" ng-model="assignment.impact.impactName" disabled></b>
+                                            <b data-ng-bind="assignment.impact.name"></b>
                                         </div>
                                     </div>
                                 </div>
-                                <div class="panel-body">
-                                    <div class="row">
-                                        <div class="col-md-6">
-                                            <i>Probability</i>
-                                        </div>
-                                        <div class="col-md-6">
-                                            <i>Severity</i>
-                                        </div>
-                                    </div>
-                                    <br>
-                                    <div class="row" ng-repeat="combination in assignment.riskCombinations">
-                                        <div class="col-md-6 form-group">
-                                            <input type="text" class="form-control input-sm" ng-model="combination.probability.probabilityName" disabled>
-                                        </div>
-                                        <div class="col-md-6 form-group">
-                                            <select id="" class="form-control input-sm" ng-model = "combination.severity._id"
-                                                    ng-options="severity._id as severity.severityName for severity in severities">
-                                                <option value="">--choose severity</option>
-                                            </select>
-                                        </div>
-                                    </div>
-                                    <br>
-                                    <div class="row">
-                                        <div class="col-md-12">
-                                            <div class="btn-group-xs center-block">
-                                                <button type="button" class="btn btn-success btn-sm" ng-click="updateCategory(category)">
-                                                    <span class="glyphicon glyphicon-ok"></span>
-                                                </button>
-                                                <button type="button" class="btn btn-danger btn-sm" ng-click="deleteCategory(category)">
-                                                    <span class="glyphicon glyphicon-trash"></span>
-                                                </button>
-                                                <button type="button" class="btn btn-info btn-sm" ng-click="cancelCategoryChanges()">
-                                                    <span class="glyphicon glyphicon-remove"></span>
+                                <div class="panel-body" data-ng-switch-default="view">
+                                    <form>
+                                        <fieldset>
+                                            <div class="row">
+                                                <div class="col-md-6">
+                                                    <i>Probability</i>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <i>Severity</i>
+                                                </div>
+                                            </div>
+                                            <br>
+                                            <div class="row" ng-repeat="combination in assignment.riskCombinations track by $index">
+                                                <div class="col-md-6 form-group">
+                                                    <input type="text" class="form-control input-sm" data-ng-model="combination.probability.name" disabled>
+                                                </div>
+                                                <div class="col-md-6 form-group">
+                                                    <input type="text" class="form-control input-sm" data-ng-model="combination.severity.name" disabled>
+                                                </div>
+                                            </div>
+                                            <div class="form-group pull-right" ng-show="userHasAuthorization">
+                                                <button type="button" class="btn btn-success" ng-click="selectAssignment(assignment)">
+                                                    Edit
                                                 </button>
                                             </div>
-                                        </div>
-                                    </div>
+                                        </fieldset>
+                                    </form>
+                                </div>
+                                <div class="panel-body" data-ng-switch-when="edit">
+                                    <form class="form" name="editAssignmentForm" data-ng-submit="updateAssignment(assignment)" novalidate>
+                                        <fieldset>
+                                            <div class="row">
+                                                <div class="col-md-6">
+                                                    <i>Probability</i>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <i>Severity</i>
+                                                </div>
+                                            </div>
+                                            <br>
+                                            <div class="row" ng-repeat="combination in assignment.riskCombinations track by $index">
+                                                <div class="col-md-6 form-group">
+                                                    <input type="text" class="form-control input-sm" data-ng-model="combination.probability.name" disabled>
+                                                </div>
+                                                <div class="col-md-6 form-group">
+                                                    <select id="" class="form-control input-sm" data-ng-model = "combination.severity"
+                                                            data-ng-options="severity as severity.name for severity in severities track by severity._id">
+                                                        <option value="">--choose severity</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <br>
+                                            <div class="form-group center-block">
+                                                <input type="submit" value="Save" class="btn btn-success">
+                                                <button type="button" class="btn btn-info" ng-click="cancelEditAssignment(assignment)">
+                                                    Cancel
+                                                </button>
+                                            </div>
+                                            <div class="form-group">
+                                                <div data-ng-show="error" class="text-danger">
+                                                    <strong data-ng-bind="error"></strong>
+                                                </div>
+                                            </div>
+                                        </fieldset>
+                                    </form>
                                 </div>
                             </div>
                         </div>

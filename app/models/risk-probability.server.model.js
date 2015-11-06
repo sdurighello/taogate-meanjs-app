@@ -37,4 +37,4 @@ var RiskProbabilitySchema = new Schema({
 	}
 });
 
-mongoose.model('RiskProbability', RiskProbabilitySchema);
+mongoose.mtModel('RiskProbability', RiskProbabilitySchema);

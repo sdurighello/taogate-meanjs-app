@@ -12,19 +12,53 @@ var mongoose = require('mongoose'),
  * Create a Risk impact
  */
 exports.create = function(req, res) {
+    var RiskSeverityAssignment = mongoose.mtModel(req.user.tenantId + '.' + 'RiskSeverityAssignment');
+    var RiskProbability = mongoose.mtModel(req.user.tenantId + '.' + 'RiskProbability');
 	var RiskImpact = mongoose.mtModel(req.user.tenantId + '.' + 'RiskImpact');
-	var riskImpact = new RiskImpact(req.body);
+    var riskImpact = new RiskImpact(req.body);
 	riskImpact.user = req.user;
 
-	riskImpact.save(function(err) {
-		if (err) {
-			return res.status(400).send({
-				message: errorHandler.getErrorMessage(err)
-			});
-		} else {
-			res.jsonp(riskImpact);
-		}
-	});
+    async.waterfall([
+        // Save new impact
+        function(callback) {
+            riskImpact.save();
+            callback(null, riskImpact);
+        },
+        // Create entry in severity matrix
+        function(impact, callback) {
+            var severityAssignment = new RiskSeverityAssignment({
+                impact : impact,
+                riskCombinations : []
+            });
+            severityAssignment.save();
+            RiskProbability.find().exec(function(err, probabilities){
+                if (err) {
+                    return res.status(400).send({
+                        message: errorHandler.getErrorMessage(err)
+                    });
+                } else {
+                    async.each(probabilities, function(probability, callback){
+                        severityAssignment.riskCombinations.push({
+                            probability : probability,
+                            severity : null
+                        });
+                        severityAssignment.save();
+                        callback();
+                    });
+                }
+            });
+            callback(null, impact);
+        }
+    ], function (err, result) {
+        // result now equals 'impact'
+        if (err) {
+            return res.status(400).send({
+                message: errorHandler.getErrorMessage(err)
+            });
+        } else {
+            res.jsonp(result);
+        }
+    });
 };
 
 /**
@@ -38,7 +72,7 @@ exports.read = function(req, res) {
  * Update a Risk impact
  */
 exports.update = function(req, res) {
-	var riskImpact = req.riskImpact ;
+    var riskImpact = req.riskImpact ;
     riskImpact.user = req.user;
 	riskImpact = _.extend(riskImpact , req.body);
 
@@ -57,17 +91,29 @@ exports.update = function(req, res) {
  * Delete an Risk impact
  */
 exports.delete = function(req, res) {
-	var riskImpact = req.riskImpact ;
-
-	riskImpact.remove(function(err) {
-		if (err) {
-			return res.status(400).send({
-				message: errorHandler.getErrorMessage(err)
-			});
-		} else {
-			res.jsonp(riskImpact);
-		}
-	});
+    var RiskSeverityAssignment = mongoose.mtModel(req.user.tenantId + '.' + 'RiskSeverityAssignment');
+    var riskImpact = req.riskImpact ;
+    async.waterfall([
+        // Remove impact
+        function(callback) {
+            riskImpact.remove();
+            callback(null, riskImpact);
+        },
+        // Remove entry in severity matrix
+        function(impact, callback) {
+            RiskSeverityAssignment.findOneAndRemove({impact : impact._id}).exec();
+            callback(null, impact);
+        }
+    ], function (err, result) {
+        // result now equals 'impact'
+        if (err) {
+            return res.status(400).send({
+                message: errorHandler.getErrorMessage(err)
+            });
+        } else {
+            res.jsonp(result);
+        }
+    });
 };
 
 /**
