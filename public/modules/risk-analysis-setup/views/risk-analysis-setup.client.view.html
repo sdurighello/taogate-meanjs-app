@@ -625,7 +625,7 @@
                                                 </div>
                                             </div>
                                             <div class="form-group pull-right" ng-show="userHasAuthorization">
-                                                <button type="button" class="btn btn-success" ng-click="selectAssignment(assignment)">
+                                                <button type="button" class="btn btn-success" data-ng-click="selectAssignment(assignment)">
                                                     Edit
                                                 </button>
                                             </div>
@@ -633,7 +633,7 @@
                                     </form>
                                 </div>
                                 <div class="panel-body" data-ng-switch-when="edit">
-                                    <form class="form" name="editAssignmentForm" data-ng-submit="updateAssignment(assignment)" novalidate>
+                                    <form class="form" name="editAssignmentForm" novalidate>
                                         <fieldset>
                                             <div class="row">
                                                 <div class="col-md-6">
@@ -655,10 +655,11 @@
                                                     </select>
                                                 </div>
                                             </div>
-                                            <br>
-                                            <div class="form-group center-block">
-                                                <input type="submit" value="Save" class="btn btn-success">
-                                                <button type="button" class="btn btn-info" ng-click="cancelEditAssignment(assignment)">
+                                            <div class="form-group pull-right">
+                                                <button type="button" class="btn btn-success" data-ng-click="updateAssignment(assignment)">
+                                                    Save
+                                                </button>
+                                                <button type="button" class="btn btn-info" data-ng-click="cancelEditAssignment(assignment)">
                                                     Cancel
                                                 </button>
                                             </div>

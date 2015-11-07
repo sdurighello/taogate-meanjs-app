@@ -40,6 +40,11 @@ angular.module('risk-analysis-setup').controller('RiskAnalysisSetupController', 
 			});
 		});
 
+
+
+
+
+
 // ---------------------------------------------------- RISKS & CATEGORIES --------------------------------------
 
 
@@ -181,7 +186,13 @@ angular.module('risk-analysis-setup').controller('RiskAnalysisSetupController', 
 			});
 		};
 
+
+
+
+
 // ------------------------------------------------------  IMPACTS ---------------------------------------------
+
+
 
 
 
@@ -260,7 +271,13 @@ angular.module('risk-analysis-setup').controller('RiskAnalysisSetupController', 
             });
         };
 
+
+
+
+
 // ------------------------------------------------------  PROBABILITIES ---------------------------------------------
+
+
 
 
 
@@ -345,6 +362,11 @@ angular.module('risk-analysis-setup').controller('RiskAnalysisSetupController', 
 
 
 // ---------------------------------------------------- SEVERITIES --------------------------------------
+
+
+
+
+
 
         // ------------------- DRAG AND DROP LISTENERS -------
 
@@ -460,7 +482,13 @@ angular.module('risk-analysis-setup').controller('RiskAnalysisSetupController', 
         };
 
 
+
+
+
 // ------------------------------------------------------  SEVERITY ASSIGNMENTS ---------------------------------------------
+
+
+
 
 
 
@@ -486,38 +514,39 @@ angular.module('risk-analysis-setup').controller('RiskAnalysisSetupController', 
 
         // ------------------- EDIT -----------------
 
-        var originalAssignment = {};
+        var originalRiskCombinations = {};
         $scope.selectAssignment = function(assignment){
             $scope.error = null;
-            originalAssignment[assignment._id] = _.clone(assignment);
-            console.log(originalAssignment[assignment._id].riskCombinations[0]);
+            originalRiskCombinations[assignment._id] = _.cloneDeep(assignment.riskCombinations);
             $scope.selectAssignmentForm(assignment, 'edit');
         };
 
-        // Allow null severity
-        var createCopySeverityProperty = function(severity){
-            if(severity){return severity._id} else {return null;}
-        };
-
         $scope.updateAssignment = function(assignment) {
-            var copyAssignment = _.clone(assignment);
-            copyAssignment.impact = copyAssignment.impact._id;
-            copyAssignment.riskCombinations = _.map(copyAssignment.riskCombinations, function(combination){
+            // Allow null severity
+            var createCopySeverityProperty = function(severity){
+                if(severity){return severity._id;} else {return null;}
+            };
+             //Clean deep populate
+            var copyRiskCombinations = _.cloneDeep(assignment.riskCombinations);
+            copyRiskCombinations = _.map(copyRiskCombinations, function(combination){
                 combination.probability = combination.probability._id;
-                combination.severity = createCopySeverityProperty(assignment.severity);
+                combination.severity = createCopySeverityProperty(combination.severity);
                 return combination;
             });
-            RiskSeverityAssignments.update(copyAssignment, function(response) {
+            // Save only cleaned up riskCombinations
+            RiskSeverityAssignments.update({
+                _id: assignment._id,
+                riskCombinations : copyRiskCombinations
+            }, function(assignmentRes){
                 $scope.selectAssignmentForm(assignment, 'view');
-            }, function(errorResponse) {
+            },function(errorResponse){
                 $scope.error = errorResponse.data.message;
             });
         };
 
         $scope.cancelEditAssignment = function(assignment){
             $scope.error = null;
-            assignment.riskCombinations = originalAssignment[assignment._id].riskCombinations;
-            console.log(originalAssignment[assignment._id].riskCombinations[0]);
+            assignment.riskCombinations = originalRiskCombinations[assignment._id];
             $scope.selectAssignmentForm(assignment, 'view');
         };
 
