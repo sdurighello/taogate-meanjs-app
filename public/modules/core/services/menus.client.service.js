@@ -201,6 +201,15 @@ angular.module('core').service('Menus', [
                 // Risk analysis
         this.addSubMenuItem('topbar', 'setup', 'Risk analysis', 'risk-analysis-setup','risk-analysis-setup',false,
             ['superAdmin','admin','PMO','projectManager','portfolioManager','executive'],10);
+        // Portfolio Delivery
+        this.addSubMenuItem('topbar', 'setup', '', 'divider','divider',false,
+            ['superAdmin','admin','PMO','projectManager','portfolioManager','executive'],11);
+        this.addSubMenuItem('topbar', 'setup', 'Portfolio delivery', 'menuTitle','menuTitle',false,
+            ['superAdmin','admin','PMO','projectManager','portfolioManager','executive'],12);
+            // Gate Management
+        this.addSubMenuItem('topbar', 'setup', 'Gate Management', 'gate-management-setup','gate-management-setup',false,
+            ['superAdmin','admin','PMO','projectManager','portfolioManager','executive'],13);
+
 
 
 		this.addMenuItem('topbar','Definition','definition','dropdown','definition',false,['superAdmin','admin','PMO','projectManager','portfolioManager','executive'],3);

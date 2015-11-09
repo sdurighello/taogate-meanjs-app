@@ -1,0 +1,19 @@
+<section data-ng-controller="GatesController" data-ng-init="find()">
+    <div class="page-header">
+        <h1>Gates</h1>
+    </div>
+    <div class="list-group">
+        <a data-ng-repeat="gate in gates" data-ng-href="#!/gates/{{gate._id}}" class="list-group-item">
+			<small class="list-group-item-text">
+				Posted on
+				<span data-ng-bind="gate.created | date:'medium'"></span>
+				by
+				<span data-ng-bind="gate.user.displayName"></span>
+			</small>
+			<h4 class="list-group-item-heading" data-ng-bind="gate.name"></h4>
+        </a>
+    </div>
+    <div class="alert alert-warning text-center" data-ng-hide="!gates.$resolved || gates.length">
+    	No Gates yet, why don't you <a href="/#!/gates/create">create one</a>?
+    </div>
+</section>

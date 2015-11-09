@@ -1,0 +1,19 @@
+<section data-ng-controller="GateOutcomeScoresController" data-ng-init="find()">
+    <div class="page-header">
+        <h1>Gate outcome scores</h1>
+    </div>
+    <div class="list-group">
+        <a data-ng-repeat="gateOutcomeScore in gateOutcomeScores" data-ng-href="#!/gate-outcome-scores/{{gateOutcomeScore._id}}" class="list-group-item">
+			<small class="list-group-item-text">
+				Posted on
+				<span data-ng-bind="gateOutcomeScore.created | date:'medium'"></span>
+				by
+				<span data-ng-bind="gateOutcomeScore.user.displayName"></span>
+			</small>
+			<h4 class="list-group-item-heading" data-ng-bind="gateOutcomeScore.name"></h4>
+        </a>
+    </div>
+    <div class="alert alert-warning text-center" data-ng-hide="!gateOutcomeScores.$resolved || gateOutcomeScores.length">
+    	No Gate outcome scores yet, why don't you <a href="/#!/gate-outcome-scores/create">create one</a>?
+    </div>
+</section>

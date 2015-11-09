@@ -61,7 +61,6 @@ exports.delete = function(req, res) {
     var CategoryGroup = mongoose.mtModel(req.user.tenantId + '.' + 'CategoryGroup');
     var CategoryValue = mongoose.mtModel(req.user.tenantId + '.' + 'CategoryValue');
 
-
     async.series([
         function(callback){
             // Delete category from its collection

@@ -93,23 +93,23 @@
 										<fieldset>
 											<div class="row">
 												<div class="col-md-7 form-group">
-													<label for="categoryNameEdit" class="control-label">Category name</label>
-													<input id="categoryNameEdit" name="categoryNameEdit" type="text" class="form-control" data-ng-model="selectedCategoryGroup.name" required>
-													<span data-ng-show="editCategoryGroupForm.categoryNameEdit.$error.required">
+													<label for="groupNameEdit" class="control-label">Group name</label>
+													<input id="groupNameEdit" name="groupNameEdit" type="text" class="form-control" data-ng-model="selectedCategoryGroup.name" required>
+													<span data-ng-show="editCategoryGroupForm.groupNameEdit.$error.required">
 														<em style="color: red">Name is required</em>
 													</span>
 												</div>
 											</div>
 											<div class="row">
 												<div class="col-md-12 form-group">
-													<label for="categoryDescription" class="control-label">Category description</label>
-													<textarea id="categoryDescription" data-ng-model="selectedCategoryGroup.description" class="form-control" placeholder="No description yet"></textarea>
+													<label for="groupDescription" class="control-label">Group description</label>
+													<textarea id="groupDescription" data-ng-model="selectedCategoryGroup.description" class="form-control" placeholder="No description yet"></textarea>
 												</div>
 											</div>
 											<div class="row">
 												<div class="col-md-12">
 													<div class="form-group pull-right">
-														<button type="button" class="btn btn-sm btn-success" data-ng-click="updateCategoryGroup(selectedCategoryGroup)" data-ng-disabled="editImpactForm.$invalid">
+														<button type="button" class="btn btn-sm btn-success" data-ng-click="updateCategoryGroup(selectedCategoryGroup)" data-ng-disabled="editCategoryGroupForm.$invalid">
 															Save
 														</button>
 														<button type="button" class="btn btn-sm btn-danger" data-ng-click="removeCategoryGroup(selectedCategoryGroup)">
