@@ -35,47 +35,47 @@ angular.module('gate-review-setup').controller('GateReviewSetupController', ['$s
 
 		// ------------------- NG-SWITCH ---------------------
 
-		$scope.switchTypeForm = {};
+		$scope.switchScoreForm = {};
 
-		$scope.selectTypeForm = function(type, string){
-			if(string === 'view'){ $scope.switchTypeForm[type._id] = 'view';}
-			if(string === 'new'){$scope.switchTypeForm[type._id] = 'new';}
-			if(string === 'edit'){$scope.switchTypeForm[type._id] = 'edit';}
+		$scope.selectScoreForm = function(score, string){
+			if(string === 'view'){ $scope.switchScoreForm[score._id] = 'view';}
+			if(string === 'new'){$scope.switchScoreForm[score._id] = 'new';}
+			if(string === 'edit'){$scope.switchScoreForm[score._id] = 'edit';}
 		};
 
-		// ------------------- LIST OF TYPES -----------------
+		// ------------------- LIST OF SCORES -----------------
 
-		$scope.findTypes = function() {
-			PortfolioTypes.query(function(types){
-				$scope.portfolioTypes = _.clone(types);
+		$scope.findScores = function() {
+			GateOutcomeScores.query(function(scores){
+				$scope.outcomeScores = _.clone(scores);
 			});
 		};
 
 		// ------------------- EDIT -----------------
 
-		$scope.selectType = function(type){
-			$scope.selectTypeForm(type, 'edit');
+		$scope.selectScore = function(score){
+			$scope.selectScoreForm(score, 'edit');
 		};
 
-		$scope.updateType = function(type) {
-			type.$update(function(response) {
-				$scope.findTypes();
-				$scope.selectTypeForm(type, 'view');
+		$scope.updateScore = function(score) {
+			score.$update(function(response) {
+				$scope.findScores();
+				$scope.selectScoreForm(score, 'view');
 			}, function(errorResponse) {
 				$scope.error = errorResponse.data.message;
 			});
 		};
 
-		$scope.cancelEditType = function(type){
-			$scope.findTypes();
-			$scope.selectTypeForm(type, 'view');
+		$scope.cancelEditScore = function(score){
+			$scope.findScores();
+			$scope.selectScoreForm(score, 'view');
 		};
 
 		// ------------------- DELETE -----------------
 
-		$scope.removeType = function(type) {
-			type.$remove(function(response) {
-				$scope.findTypes();
+		$scope.removeScore = function(score) {
+			score.$remove(function(response) {
+				$scope.findScores();
 			}, function(errorResponse) {
 				$scope.error = errorResponse.data.message;
 			});
@@ -83,13 +83,13 @@ angular.module('gate-review-setup').controller('GateReviewSetupController', ['$s
 
 		// ------------------- NEW -----------------
 
-		$scope.createType = function() {
-			var portfolioType = new PortfolioTypes ({
-				name: 'New portfolio type'
+		$scope.createScore = function() {
+			var outcomeScore = new GateOutcomeScores ({
+				name: 'New outcome score'
 			});
-			portfolioType.$save(function(response) {
-				$scope.findTypes();
-				$scope.selectTypeForm(response._id, 'view');
+			outcomeScore.$save(function(response) {
+				$scope.findScores();
+				$scope.selectScoreForm(response._id, 'view');
 
 			}, function(errorResponse) {
 				$scope.error = errorResponse.data.message;
@@ -98,8 +98,74 @@ angular.module('gate-review-setup').controller('GateReviewSetupController', ['$s
 
 
 
+// ----------------------------------------------- GATE STATUSES ---------------------------------------
 
 
 
-	}
+        // ------------------- NG-SWITCH ---------------------
+
+        $scope.switchStatusForm = {};
+
+        $scope.selectStatusForm = function(status, string){
+            if(string === 'view'){ $scope.switchStatusForm[status._id] = 'view';}
+            if(string === 'new'){$scope.switchStatusForm[status._id] = 'new';}
+            if(string === 'edit'){$scope.switchStatusForm[status._id] = 'edit';}
+        };
+
+        // ------------------- LIST OF STATUSES -----------------
+
+        $scope.findStatuses = function() {
+            GateStatuses.query(function(statuses){
+                $scope.gateStatuses = _.clone(statuses);
+            });
+        };
+
+        // ------------------- EDIT -----------------
+
+        $scope.selectStatus = function(status){
+            $scope.selectStatusForm(status, 'edit');
+        };
+
+        $scope.updateStatus = function(status) {
+            status.$update(function(response) {
+                $scope.findStatuses();
+                $scope.selectStatusForm(status, 'view');
+            }, function(errorResponse) {
+                $scope.error = errorResponse.data.message;
+            });
+        };
+
+        $scope.cancelEditStatus = function(status){
+            $scope.findStatuses();
+            $scope.selectStatusForm(status, 'view');
+        };
+
+        // ------------------- DELETE -----------------
+
+        $scope.removeStatus = function(status) {
+            status.$remove(function(response) {
+                $scope.findStatuses();
+            }, function(errorResponse) {
+                $scope.error = errorResponse.data.message;
+            });
+        };
+
+        // ------------------- NEW -----------------
+
+        $scope.createStatus = function() {
+            var gateStatus = new GateStatuses ({
+                name: 'New gate status'
+            });
+            gateStatus.$save(function(response) {
+                $scope.findStatuses();
+                $scope.selectStatusForm(response._id, 'view');
+
+            }, function(errorResponse) {
+                $scope.error = errorResponse.data.message;
+            });
+        };
+
+
+
+    }
 ]);

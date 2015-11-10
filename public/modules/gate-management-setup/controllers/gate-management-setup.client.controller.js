@@ -106,6 +106,7 @@ angular.module('gate-management-setup').controller('GateManagementSetupControlle
                             // Update the closure gate on the view (client)
                             _.find(process.gates, '_id', process.closureGate._id).position = process.closureGate.position + 1;
                             process.closureGate.position = process.closureGate.position + 1;
+                            $scope.allowedGatePositions = getAllowedGatePositions(process);
                         },function(errorResponse){
                             console.log(errorResponse.data.message);
                             $scope.error = errorResponse.data.message;
@@ -123,9 +124,23 @@ angular.module('gate-management-setup').controller('GateManagementSetupControlle
 
 		var originalEditGateProcess = {};
 
+        var getAllowedGatePositions = function(process){
+            var retArray = [];
+            _.map(process.gates, function(gate){
+                if(gate.position !== 1 && gate.position !== process.gates.length){
+                    retArray.push(gate.position);
+                }
+            });
+            retArray = _.sortBy(retArray, function(number){
+                return number;
+            });
+            return retArray;
+        };
+
 		$scope.selectGateProcess = function(gateProcess){
 			originalEditGateProcess = _.clone(gateProcess);
 			$scope.selectedGateProcess = gateProcess;
+            $scope.allowedGatePositions = getAllowedGatePositions(gateProcess);
 		};
 
 		$scope.updateGateProcess = function(process) {
@@ -241,6 +256,7 @@ angular.module('gate-management-setup').controller('GateManagementSetupControlle
 			Gates.remove({},gate, function(res){
 				process.gates = _.without(process.gates, gate);
                 adjustGatesPosition(process, process.gates, originalEditGate[gate._id]);
+                $scope.allowedGatePositions = getAllowedGatePositions(process);
             }, function(err){
 				$scope.error = err.data.message;
 			});

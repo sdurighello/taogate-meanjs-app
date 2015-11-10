@@ -48,7 +48,7 @@
 																<textarea disabled class="form-control" ng-model="score.description"></textarea>
 															</div>
 														</div>
-														<div class="form-group center-block" data-ng-show="userHasAuthorization">
+														<div class="center-block" data-ng-show="userHasAuthorization">
 															<button type="button" class="btn btn-success" ng-click="selectScore(score)">
 																Edit
 															</button>
@@ -89,6 +89,99 @@
 																<i class="glyphicon glyphicon-trash"></i>
 															</a>
 															<button type="button" class="btn btn-info" data-ng-click="cancelEditScore(score)">
+																Cancel
+															</button>
+														</div>
+														<div class="form-group">
+															<div data-ng-show="error" class="text-danger">
+																<strong data-ng-bind="error"></strong>
+															</div>
+														</div>
+													</div>
+												</div>
+											</fieldset>
+										</form>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</tab>
+				<tab heading="Gate statuses">
+					<br>
+					<div class="row" ng-show="userHasAuthorization">
+						<div class="col-md-3">
+							<br>
+							<button class="btn btn-primary"
+									ng-click="createStatus()">
+								New status
+							</button>
+						</div>
+					</div>
+					<hr>
+					<div class="row">
+						<div class="alert alert-warning text-center" data-ng-hide="gateStatuses.length">
+							No gate statuses yet
+						</div>
+						<div class="col-md-4" data-ng-repeat="status in gateStatuses" data-ng-switch="switchStatusForm[status._id]" >
+							<div class="panel panel-default" title="Last updated on {{status.created | date:'medium'}} by {{status.user.displayName}}">
+								<div class="panel-body">
+									<div ng-switch-default="view">
+										<form class="form">
+											<fieldset>
+												<div class="row">
+													<div class="col-md-12">
+														<div class="form-group">
+															<div class="controls">
+																<input disabled type="text" class="form-control" ng-model="status.name">
+															</div>
+														</div>
+														<div class="form-group">
+															<div class="controls">
+																<textarea disabled class="form-control" ng-model="status.description"></textarea>
+															</div>
+														</div>
+														<div class="center-block" data-ng-show="userHasAuthorization">
+															<button type="button" class="btn btn-success" ng-click="selectStatus(status)">
+																Edit
+															</button>
+														</div>
+														<div class="form-group">
+															<div data-ng-show="error" class="text-danger">
+																<strong data-ng-bind="error"></strong>
+															</div>
+														</div>
+													</div>
+												</div>
+											</fieldset>
+										</form>
+									</div>
+									<div data-ng-switch-when="edit">
+										<form class="form" name="editGateStatusForm" data-ng-submit="updateStatus(status)" novalidate>
+											<fieldset>
+												<div class="row">
+													<div class="col-md-12">
+														<div class="form-group">
+															<div class="controls">
+																<input type="text" id="statusNameEdit" class="form-control" name="statusNameEdit"
+																	   data-ng-model="status.name" placeholder="Name" required>
+																<span data-ng-show="editGateStatusForm.statusNameEdit.$error.required">
+																	<em style="color: red">Name is required</em>
+																</span>
+															</div>
+														</div>
+														<div class="form-group">
+															<div class="controls">
+                                                <textarea id="description" class="form-control"
+														  data-ng-model="status.description" placeholder="Description"></textarea>
+															</div>
+														</div>
+														<div class="form-group center-block">
+															<input type="submit" value="Save" class="btn btn-success" data-ng-disabled="editGateStatusForm.$invalid">
+															<a class="btn btn-danger" data-ng-click="removeStatus(status)" data-ng-show="userHasAuthorization">
+																<i class="glyphicon glyphicon-trash"></i>
+															</a>
+															<button type="button" class="btn btn-info" data-ng-click="cancelEditStatus(status)">
 																Cancel
 															</button>
 														</div>

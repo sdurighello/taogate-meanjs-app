@@ -167,7 +167,7 @@
 														</div>
 													</div>
 													<div class="row">
-														<div class="col-md-2 form-group">
+														<div class="col-md-3 form-group">
 															<label for="gatePosition" class="control-label">Gate position</label>
 															<input disabled id="gatePosition" data-ng-model="gate.position" class="form-control">
 														</div>
@@ -201,11 +201,12 @@
 																				<textarea id="gateDescription" data-ng-model="gate.description" class="form-control" placeholder="No description yet"></textarea>
 																			</div>
 																		</div>
-																		<div class="row">
-																			<div class="col-md-2 form-group">
+																		<div class="row" data-ng-hide="gate.position === selectedGateProcess.gates.length || gate.position === 1">
+																			<div class="col-md-3 form-group">
 																				<label for="gatePosition" class="control-label">Gate position</label>
-																				<input type="number" id="gatePosition" data-ng-model="gate.position" class="form-control"
-																					   ng-disabled="gate.position === selectedGateProcess.gates.length || gate.position === 1">
+																				<select id="gatePosition" class="form-control" data-ng-model = "gate.position"
+																						data-ng-options="position for position in allowedGatePositions">
+																				</select>
 																			</div>
 																		</div>
 																	</div>
@@ -217,7 +218,8 @@
 																		<button type="button" class="btn btn-sm btn-success" data-ng-click="updateGate(selectedGateProcess, gate)" data-ng-disabled="editGateForm.$invalid">
 																			Save
 																		</button>
-																		<button type="button" class="btn btn-sm btn-danger" data-ng-click="removeGate(selectedGateProcess, gate)">
+																		<button type="button" class="btn btn-sm btn-danger" data-ng-click="removeGate(selectedGateProcess, gate)"
+																				data-ng-hide="gate.position === selectedGateProcess.gates.length || gate.position === 1">
 																			Delete Gate
 																		</button>
 																		<button type="button" class="btn btn-sm btn-info" data-ng-click="cancelEditGate(gate)">
