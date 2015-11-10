@@ -157,12 +157,54 @@ angular.module('gate-management-setup').controller('GateManagementSetupControlle
 			$scope.selectGateForm(gate, 'edit');
 		};
 
-		$scope.updateGate = function(gate) {
+        var adjustGatesPosition = function(process, array, oldGate, newGate){
+            // If you remove, omit newGate when calling function
+            // EDIT gate position
+            if(newGate){
+                if(oldGate.position === newGate.position){return;}
+                if(oldGate.position < newGate.position){
+                    _.map(array, function(element){
+                        if(oldGate.position < element.position && element.position <= newGate.position && element !== newGate){
+                            element.position = element.position - 1;
+                            Gates.update({_id: element._id, position: element.position},function(gateRes){}, function(errRes){
+                                $scope.error = errRes.data.message;
+                            });
+                        }
+                    });
+                }
+                if(oldGate.position > newGate.position){
+                    _.map(array, function(element){
+                        if(newGate.position <= element.position && element.position < oldGate.position && element !== newGate){
+                            element.position = element.position + 1;
+                            Gates.update({_id: element._id, position: element.position},function(gateRes){}, function(errRes){
+                                $scope.error = errRes.data.message;
+                            });
+                        }
+                    });
+                }
+            }
+            // REMOVE gate
+            else {
+                _.map(array, function(element){
+                    if(element.position > oldGate.position){
+                        element.position = element.position - 1;
+                        Gates.update({_id: element._id, position: element.position},function(gateRes){}, function(errRes){
+                            $scope.error = errRes.data.message;
+                        });
+                    }
+                });
+                process.closureGate.position = process.closureGate.position - 1;
+            }
+        };
+
+		$scope.updateGate = function(process, gate) {
 			Gates.update({
 				_id: gate._id,
 				name: gate.name,
-				description: gate.description
-			}, function(gate){
+				description: gate.description,
+                position: gate.position
+			}, function(gateRes){
+                adjustGatesPosition(process, process.gates, originalEditGate[gate._id], gate);
 				$scope.selectGateForm(gate, 'view');
 			},function(errorResponse){
 				$scope.error = errorResponse.data.message;
@@ -173,6 +215,7 @@ angular.module('gate-management-setup').controller('GateManagementSetupControlle
 			$scope.error = null;
 			gate.name = originalEditGate[gate._id].name;
 			gate.description = originalEditGate[gate._id].description;
+            gate.position = originalEditGate[gate._id].position;
 			$scope.selectGateForm(gate, 'view');
 		};
 
@@ -184,7 +227,6 @@ angular.module('gate-management-setup').controller('GateManagementSetupControlle
 			process.$remove(function(response) {
 				$scope.selectedGateProcess = null;
 				$scope.gateProcessList();
-
 			}, function(errorResponse) {
 				$scope.error = errorResponse.data.message;
 			});
@@ -198,7 +240,8 @@ angular.module('gate-management-setup').controller('GateManagementSetupControlle
 
 			Gates.remove({},gate, function(res){
 				process.gates = _.without(process.gates, gate);
-			}, function(err){
+                adjustGatesPosition(process, process.gates, originalEditGate[gate._id]);
+            }, function(err){
 				$scope.error = err.data.message;
 			});
 		};

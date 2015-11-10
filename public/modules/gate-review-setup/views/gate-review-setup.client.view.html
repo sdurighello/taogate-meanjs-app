@@ -1,0 +1,113 @@
+<section data-ng-controller="GateReviewSetupController" data-ng-init="init()">
+	<br>
+	<div class="row">
+		<div class="col-sm-12">
+			<div class="panel-heading">
+				<ol class="breadcrumb">
+					<li>Setup</li>
+					<li>Portfolio definition</li>
+					<li class="active">Gate review</li>
+				</ol>
+			</div>
+		</div>
+	</div>
+	<div class="row">
+		<div class="col-md-12">
+			<tabset>
+				<tab heading="Gate outcome scores">
+					<br>
+					<div class="row" ng-show="userHasAuthorization">
+						<div class="col-md-3">
+							<br>
+							<button class="btn btn-primary"
+									ng-click="createScore()">
+								New score
+							</button>
+						</div>
+					</div>
+					<hr>
+					<div class="row">
+						<div class="alert alert-warning text-center" data-ng-hide="outcomeScores.length">
+							No outcome scores yet
+						</div>
+						<div class="col-md-4" data-ng-repeat="score in outcomeScores" data-ng-switch="switchScoreForm[score._id]" >
+							<div class="panel panel-default" title="Last updated on {{score.created | date:'medium'}} by {{score.user.displayName}}">
+								<div class="panel-body">
+									<div ng-switch-default="view">
+										<form class="form">
+											<fieldset>
+												<div class="row">
+													<div class="col-md-12">
+														<div class="form-group">
+															<div class="controls">
+																<input disabled type="text" class="form-control" ng-model="score.name">
+															</div>
+														</div>
+														<div class="form-group">
+															<div class="controls">
+																<textarea disabled class="form-control" ng-model="score.description"></textarea>
+															</div>
+														</div>
+														<div class="form-group center-block" data-ng-show="userHasAuthorization">
+															<button type="button" class="btn btn-success" ng-click="selectScore(score)">
+																Edit
+															</button>
+														</div>
+														<div class="form-group">
+															<div data-ng-show="error" class="text-danger">
+																<strong data-ng-bind="error"></strong>
+															</div>
+														</div>
+													</div>
+												</div>
+											</fieldset>
+										</form>
+									</div>
+									<div data-ng-switch-when="edit">
+										<form class="form" name="editOutcomeScoreForm" data-ng-submit="updateScore(score)" novalidate>
+											<fieldset>
+												<div class="row">
+													<div class="col-md-12">
+														<div class="form-group">
+															<div class="controls">
+																<input type="text" id="scoreNameEdit" class="form-control" name="scoreNameEdit"
+																	   data-ng-model="score.name" placeholder="Name" required>
+																<span data-ng-show="editOutcomeScoreForm.scoreNameEdit.$error.required">
+																	<em style="color: red">Name is required</em>
+																</span>
+															</div>
+														</div>
+														<div class="form-group">
+															<div class="controls">
+                                                <textarea id="description" class="form-control"
+														  data-ng-model="score.description" placeholder="Description"></textarea>
+															</div>
+														</div>
+														<div class="form-group center-block">
+															<input type="submit" value="Save" class="btn btn-success" data-ng-disabled="editOutcomeScoreForm.$invalid">
+															<a class="btn btn-danger" data-ng-click="removeScore(score)" data-ng-show="userHasAuthorization">
+																<i class="glyphicon glyphicon-trash"></i>
+															</a>
+															<button type="button" class="btn btn-info" data-ng-click="cancelEditScore(score)">
+																Cancel
+															</button>
+														</div>
+														<div class="form-group">
+															<div data-ng-show="error" class="text-danger">
+																<strong data-ng-bind="error"></strong>
+															</div>
+														</div>
+													</div>
+												</div>
+											</fieldset>
+										</form>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</tab>
+			</tabset>
+		</div>
+	</div>
+</section>

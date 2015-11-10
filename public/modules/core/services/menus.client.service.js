@@ -206,9 +206,12 @@ angular.module('core').service('Menus', [
             ['superAdmin','admin','PMO','projectManager','portfolioManager','executive'],11);
         this.addSubMenuItem('topbar', 'setup', 'Portfolio delivery', 'menuTitle','menuTitle',false,
             ['superAdmin','admin','PMO','projectManager','portfolioManager','executive'],12);
-            // Gate Management
-        this.addSubMenuItem('topbar', 'setup', 'Gate Management', 'gate-management-setup','gate-management-setup',false,
+            // Gate Process
+        this.addSubMenuItem('topbar', 'setup', 'Gate process', 'gate-management-setup','gate-management-setup',false,
             ['superAdmin','admin','PMO','projectManager','portfolioManager','executive'],13);
+            // Gate Review
+        this.addSubMenuItem('topbar', 'setup', 'Gate review', 'gate-review-setup','gate-review-setup',false,
+            ['superAdmin','admin','PMO','projectManager','portfolioManager','executive'],14);
 
 
 
