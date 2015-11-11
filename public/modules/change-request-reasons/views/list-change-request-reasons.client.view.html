@@ -1,0 +1,19 @@
+<section data-ng-controller="ChangeRequestReasonsController" data-ng-init="find()">
+    <div class="page-header">
+        <h1>Change request reasons</h1>
+    </div>
+    <div class="list-group">
+        <a data-ng-repeat="changeRequestReason in changeRequestReasons" data-ng-href="#!/change-request-reasons/{{changeRequestReason._id}}" class="list-group-item">
+			<small class="list-group-item-text">
+				Posted on
+				<span data-ng-bind="changeRequestReason.created | date:'medium'"></span>
+				by
+				<span data-ng-bind="changeRequestReason.user.displayName"></span>
+			</small>
+			<h4 class="list-group-item-heading" data-ng-bind="changeRequestReason.name"></h4>
+        </a>
+    </div>
+    <div class="alert alert-warning text-center" data-ng-hide="!changeRequestReasons.$resolved || changeRequestReasons.length">
+    	No Change request reasons yet, why don't you <a href="/#!/change-request-reasons/create">create one</a>?
+    </div>
+</section>

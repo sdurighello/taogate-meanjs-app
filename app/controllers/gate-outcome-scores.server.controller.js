@@ -40,6 +40,7 @@ exports.read = function(req, res) {
 exports.update = function(req, res) {
 	var gateOutcomeScore = req.gateOutcomeScore ;
     gateOutcomeScore.user = req.user;
+    gateOutcomeScore.created = Date.now();
 	gateOutcomeScore = _.extend(gateOutcomeScore , req.body);
 
 	gateOutcomeScore.save(function(err) {

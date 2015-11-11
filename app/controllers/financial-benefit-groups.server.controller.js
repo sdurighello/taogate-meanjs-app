@@ -40,6 +40,7 @@ exports.read = function(req, res) {
 exports.update = function(req, res) {
 	var financialBenefitGroup = req.financialBenefitGroup ;
     financialBenefitGroup.user = req.user;
+    financialBenefitGroup.created = Date.now();
 	financialBenefitGroup = _.extend(financialBenefitGroup , req.body);
 
 	financialBenefitGroup.save(function(err) {

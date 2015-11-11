@@ -40,6 +40,7 @@ exports.read = function(req, res) {
 exports.update = function(req, res) {
 	var peopleRole = req.peopleRole ;
 	peopleRole.user = req.user;
+	peopleRole.created = Date.now();
 	peopleRole = _.extend(peopleRole , req.body);
 
 	peopleRole.save(function(err) {

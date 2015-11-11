@@ -38,9 +38,10 @@ exports.read = function(req, res) {
  */
 exports.update = function(req, res) {
 	var person = req.person ;
-
-	person = _.extend(person , req.body);
 	person.user = req.user;
+	person.created = Date.now();
+	person = _.extend(person , req.body);
+
 	person.save(function(err) {
 		if (err) {
 			return res.status(400).send({

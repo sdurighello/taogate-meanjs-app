@@ -40,6 +40,7 @@ exports.read = function(req, res) {
 exports.update = function(req, res) {
 	var riskSeverity = req.riskSeverity ;
     riskSeverity.user = req.user;
+	riskSeverity.created = Date.now();
 	riskSeverity = _.extend(riskSeverity , req.body);
 
 	riskSeverity.save(function(err) {

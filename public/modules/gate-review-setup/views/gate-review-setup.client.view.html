@@ -5,7 +5,7 @@
 			<div class="panel-heading">
 				<ol class="breadcrumb">
 					<li>Setup</li>
-					<li>Portfolio definition</li>
+					<li>Portfolio delivery</li>
 					<li class="active">Gate review</li>
 				</ol>
 			</div>
@@ -32,32 +32,30 @@
 						</div>
 						<div class="col-md-4" data-ng-repeat="score in outcomeScores" data-ng-switch="switchScoreForm[score._id]" >
 							<div class="panel panel-default" title="Last updated on {{score.created | date:'medium'}} by {{score.user.displayName}}">
-								<div class="panel-body">
+                                <div class="panel-heading">
+                                    <h6 class="panel-title text-center" data-ng-bind="score.name"></h6>
+                                </div>
+                                <div class="panel-body">
 									<div ng-switch-default="view">
 										<form class="form">
 											<fieldset>
 												<div class="row">
 													<div class="col-md-12">
 														<div class="form-group">
-															<div class="controls">
-																<input disabled type="text" class="form-control" ng-model="score.name">
-															</div>
+                                                            <label for="name" class="control-label">Name</label>
+                                                            <input id="name" disabled type="text" class="form-control" data-ng-model="score.name">
 														</div>
 														<div class="form-group">
-															<div class="controls">
-																<textarea disabled class="form-control" ng-model="score.description"></textarea>
-															</div>
+                                                            <label for="description" class="control-label">Description</label>
+                                                            <textarea id="description" disabled class="form-control" data-ng-model="score.description"></textarea>
 														</div>
-														<div class="center-block" data-ng-show="userHasAuthorization">
-															<button type="button" class="btn btn-success" ng-click="selectScore(score)">
-																Edit
-															</button>
-														</div>
-														<div class="form-group">
-															<div data-ng-show="error" class="text-danger">
-																<strong data-ng-bind="error"></strong>
-															</div>
-														</div>
+                                                        <button type="button" class="btn btn-success pull-right" data-ng-show="userHasAuthorization"
+                                                                data-ng-click="selectScore(score)">
+                                                            Edit
+                                                        </button>
+                                                        <div data-ng-show="error" class="text-danger">
+                                                            <strong data-ng-bind="error"></strong>
+                                                        </div>
 													</div>
 												</div>
 											</fieldset>
@@ -69,21 +67,20 @@
 												<div class="row">
 													<div class="col-md-12">
 														<div class="form-group">
-															<div class="controls">
-																<input type="text" id="scoreNameEdit" class="form-control" name="scoreNameEdit"
+                                                            <label for="scoreNameEdit" class="control-label">Name</label>
+                                                            <input type="text" id="scoreNameEdit" class="form-control" name="scoreNameEdit"
 																	   data-ng-model="score.name" placeholder="Name" required>
-																<span data-ng-show="editOutcomeScoreForm.scoreNameEdit.$error.required">
-																	<em style="color: red">Name is required</em>
-																</span>
-															</div>
+                                                            <span data-ng-show="editOutcomeScoreForm.scoreNameEdit.$error.required">
+                                                                <em style="color: red">Name is required</em>
+                                                            </span>
 														</div>
 														<div class="form-group">
-															<div class="controls">
-                                                <textarea id="description" class="form-control"
-														  data-ng-model="score.description" placeholder="Description"></textarea>
-															</div>
+                                                            <label for="descriptionEdit" class="control-label">Description</label>
+                                                            <textarea id="descriptionEdit" class="form-control"
+														        data-ng-model="score.description" placeholder="Description">
+                                                            </textarea>
 														</div>
-														<div class="form-group center-block">
+														<div class="pull-right">
 															<input type="submit" value="Save" class="btn btn-success" data-ng-disabled="editOutcomeScoreForm.$invalid">
 															<a class="btn btn-danger" data-ng-click="removeScore(score)" data-ng-show="userHasAuthorization">
 																<i class="glyphicon glyphicon-trash"></i>
@@ -92,11 +89,9 @@
 																Cancel
 															</button>
 														</div>
-														<div class="form-group">
-															<div data-ng-show="error" class="text-danger">
-																<strong data-ng-bind="error"></strong>
-															</div>
-														</div>
+                                                        <div data-ng-show="error" class="text-danger">
+                                                            <strong data-ng-bind="error"></strong>
+                                                        </div>
 													</div>
 												</div>
 											</fieldset>
@@ -125,32 +120,31 @@
 						</div>
 						<div class="col-md-4" data-ng-repeat="status in gateStatuses" data-ng-switch="switchStatusForm[status._id]" >
 							<div class="panel panel-default" title="Last updated on {{status.created | date:'medium'}} by {{status.user.displayName}}">
-								<div class="panel-body">
+								<div class="panel-heading">
+                                    <h6 class="panel-title text-center" data-ng-bind="status.name"></h6>
+                                </div>
+                                <div class="panel-body">
 									<div ng-switch-default="view">
 										<form class="form">
 											<fieldset>
 												<div class="row">
 													<div class="col-md-12">
 														<div class="form-group">
-															<div class="controls">
-																<input disabled type="text" class="form-control" ng-model="status.name">
-															</div>
+                                                            <label for="nameStatus" class="control-label">Name</label>
+                                                            <input id="nameStatus" disabled type="text" class="form-control" ng-model="status.name">
 														</div>
 														<div class="form-group">
-															<div class="controls">
-																<textarea disabled class="form-control" ng-model="status.description"></textarea>
-															</div>
+                                                            <label for="descriptionStatus" class="control-label">Description</label>
+                                                            <textarea id="descriptionStatus" disabled class="form-control" ng-model="status.description"></textarea>
 														</div>
-														<div class="center-block" data-ng-show="userHasAuthorization">
+														<div class="pull-right" data-ng-show="userHasAuthorization">
 															<button type="button" class="btn btn-success" ng-click="selectStatus(status)">
 																Edit
 															</button>
 														</div>
-														<div class="form-group">
-															<div data-ng-show="error" class="text-danger">
-																<strong data-ng-bind="error"></strong>
-															</div>
-														</div>
+                                                        <div data-ng-show="error" class="text-danger">
+                                                            <strong data-ng-bind="error"></strong>
+                                                        </div>
 													</div>
 												</div>
 											</fieldset>
@@ -162,21 +156,18 @@
 												<div class="row">
 													<div class="col-md-12">
 														<div class="form-group">
-															<div class="controls">
-																<input type="text" id="statusNameEdit" class="form-control" name="statusNameEdit"
-																	   data-ng-model="status.name" placeholder="Name" required>
-																<span data-ng-show="editGateStatusForm.statusNameEdit.$error.required">
-																	<em style="color: red">Name is required</em>
-																</span>
-															</div>
+                                                            <label for="statusNameEdit" class="control-label">Name</label>
+                                                            <input type="text" id="statusNameEdit" class="form-control" name="statusNameEdit"
+                                                                   data-ng-model="status.name" placeholder="Name" required>
+                                                            <span data-ng-show="editGateStatusForm.statusNameEdit.$error.required">
+                                                                <em style="color: red">Name is required</em>
+                                                            </span>
 														</div>
 														<div class="form-group">
-															<div class="controls">
-                                                <textarea id="description" class="form-control"
-														  data-ng-model="status.description" placeholder="Description"></textarea>
-															</div>
+                                                            <label for="descriptionStatusEdit" class="control-label">Description</label>
+															<textarea id="descriptionStatusEdit" class="form-control" data-ng-model="status.description" placeholder="Description"></textarea>
 														</div>
-														<div class="form-group center-block">
+														<div class="pull-right">
 															<input type="submit" value="Save" class="btn btn-success" data-ng-disabled="editGateStatusForm.$invalid">
 															<a class="btn btn-danger" data-ng-click="removeStatus(status)" data-ng-show="userHasAuthorization">
 																<i class="glyphicon glyphicon-trash"></i>
@@ -185,11 +176,9 @@
 																Cancel
 															</button>
 														</div>
-														<div class="form-group">
-															<div data-ng-show="error" class="text-danger">
-																<strong data-ng-bind="error"></strong>
-															</div>
-														</div>
+                                                        <div data-ng-show="error" class="text-danger">
+                                                            <strong data-ng-bind="error"></strong>
+                                                        </div>
 													</div>
 												</div>
 											</fieldset>

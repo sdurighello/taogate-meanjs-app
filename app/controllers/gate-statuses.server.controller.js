@@ -40,6 +40,7 @@ exports.read = function(req, res) {
 exports.update = function(req, res) {
 	var gateStatus = req.gateStatus ;
 	gateStatus.user = req.user;
+    gateStatus.created = Date.now();
 	gateStatus = _.extend(gateStatus , req.body);
 
 	gateStatus.save(function(err) {

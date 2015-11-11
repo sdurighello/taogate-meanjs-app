@@ -74,6 +74,7 @@ exports.read = function(req, res) {
 exports.update = function(req, res) {
     var riskImpact = req.riskImpact ;
     riskImpact.user = req.user;
+    riskImpact.created = Date.now();
 	riskImpact = _.extend(riskImpact , req.body);
 
 	riskImpact.save(function(err) {

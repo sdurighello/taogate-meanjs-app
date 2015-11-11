@@ -41,6 +41,7 @@ exports.read = function(req, res) {
 exports.update = function(req, res) {
 	var gate = req.gate ;
     gate.user = req.user;
+    gate.created = Date.now();
 	gate = _.extend(gate , req.body);
 
 	gate.save(function(err) {

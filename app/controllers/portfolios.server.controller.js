@@ -40,8 +40,9 @@ exports.read = function(req, res) {
  */
 exports.update = function(req, res) {
 	var portfolio = req.portfolio ;
-	portfolio = _.extend(portfolio , req.body);
     portfolio.user = req.user;
+    portfolio.created = Date.now();
+	portfolio = _.extend(portfolio , req.body);
 
     portfolio.save(function(err) {
 		if (err) {

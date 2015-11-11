@@ -69,6 +69,7 @@ exports.read = function(req, res) {
 exports.update = function(req, res) {
 	var riskProbability = req.riskProbability ;
     riskProbability.user = req.user;
+    riskProbability.created = Date.now();
 	riskProbability = _.extend(riskProbability , req.body);
 
 	riskProbability.save(function(err) {

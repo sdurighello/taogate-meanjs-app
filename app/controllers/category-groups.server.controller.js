@@ -40,6 +40,7 @@ exports.read = function(req, res) {
 exports.update = function(req, res) {
 	var categoryGroup = req.categoryGroup ;
     categoryGroup.user = req.user;
+    categoryGroup.created = Date.now();
 	categoryGroup = _.extend(categoryGroup , req.body);
 
 	categoryGroup.save(function(err) {

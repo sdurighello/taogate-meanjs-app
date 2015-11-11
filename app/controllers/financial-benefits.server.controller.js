@@ -40,6 +40,7 @@ exports.read = function(req, res) {
 exports.update = function(req, res) {
 	var financialBenefit = req.financialBenefit ;
     financialBenefit.user = req.user;
+    financialBenefit.created = Date.now();
 	financialBenefit = _.extend(financialBenefit , req.body);
 
 	financialBenefit.save(function(err) {

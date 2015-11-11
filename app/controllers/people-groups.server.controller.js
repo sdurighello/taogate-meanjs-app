@@ -40,6 +40,7 @@ exports.read = function(req, res) {
 exports.update = function(req, res) {
 	var peopleGroup = req.peopleGroup ;
     peopleGroup.user = req.user;
+	peopleGroup.created = Date.now();
 	peopleGroup = _.extend(peopleGroup , req.body);
 
 	peopleGroup.save(function(err) {

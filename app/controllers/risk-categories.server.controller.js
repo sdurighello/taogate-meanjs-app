@@ -40,6 +40,7 @@ exports.read = function(req, res) {
 exports.update = function(req, res) {
 	var riskCategory = req.riskCategory ;
     riskCategory.user = req.user;
+    riskCategory.created = Date.now();
 	riskCategory = _.extend(riskCategory , req.body);
 
 	riskCategory.save(function(err) {

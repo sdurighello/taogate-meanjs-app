@@ -92,6 +92,7 @@ exports.read = function(req, res) {
 exports.update = function(req, res) {
 	var gateProcess = req.gateProcess ;
     gateProcess.user = req.user;
+    gateProcess.created = Date.now();
 	gateProcess = _.extend(gateProcess , req.body);
 
 	gateProcess.save(function(err) {

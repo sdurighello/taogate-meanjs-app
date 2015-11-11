@@ -40,6 +40,7 @@ exports.read = function(req, res) {
 exports.update = function(req, res) {
 	var financialCostGroup = req.financialCostGroup ;
     financialCostGroup.user = req.user;
+    financialCostGroup.created = Date.now();
 	financialCostGroup = _.extend(financialCostGroup , req.body);
 
 	financialCostGroup.save(function(err) {

@@ -40,6 +40,7 @@ exports.read = function(req, res) {
 exports.update = function(req, res) {
 	var qualitativeImpactGroup = req.qualitativeImpactGroup ;
     qualitativeImpactGroup.user = req.user;
+    qualitativeImpactGroup.created = Date.now();
 	qualitativeImpactGroup = _.extend(qualitativeImpactGroup , req.body);
 
 	qualitativeImpactGroup.save(function(err) {

@@ -39,9 +39,9 @@ exports.read = function(req, res) {
  */
 exports.update = function(req, res) {
 	var portfolioType = req.portfolioType ;
-
-	portfolioType = _.extend(portfolioType , req.body);
 	portfolioType.user = req.user;
+	portfolioType.created = Date.now();
+	portfolioType = _.extend(portfolioType , req.body);
 
 	portfolioType.save(function(err) {
 		if (err) {

@@ -39,8 +39,9 @@ exports.read = function(req, res) {
  */
 exports.update = function(req, res) {
 	var strategyNode = req.strategyNode ;
-	strategyNode = _.extend(strategyNode , req.body);
     strategyNode.user = req.user;
+    strategyNode.created = Date.now();
+    strategyNode = _.extend(strategyNode , req.body);
 
 	strategyNode.save(function(err) {
 		if (err) {

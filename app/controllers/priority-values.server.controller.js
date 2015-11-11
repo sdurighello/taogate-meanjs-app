@@ -40,6 +40,7 @@ exports.read = function(req, res) {
 exports.update = function(req, res) {
 	var priorityValue = req.priorityValue ;
     priorityValue.user = req.user;
+    priorityValue.created = Date.now();
 	priorityValue = _.extend(priorityValue , req.body);
 
 	priorityValue.save(function(err) {
