@@ -5,6 +5,7 @@
  */
 var mongoose = require('mongoose'),
 	Schema = mongoose.Schema;
+require('mongoose-multitenant');
 
 /**
  * Milestone state Schema
@@ -14,6 +15,11 @@ var MilestoneStateSchema = new Schema({
 		type: String,
 		default: '',
 		required: 'Please fill Milestone state name',
+		trim: true
+	},
+	description: {
+		type: String,
+		default: '',
 		trim: true
 	},
 	created: {
@@ -26,4 +32,4 @@ var MilestoneStateSchema = new Schema({
 	}
 });
 
-mongoose.model('MilestoneState', MilestoneStateSchema);
+mongoose.mtModel('MilestoneState', MilestoneStateSchema);

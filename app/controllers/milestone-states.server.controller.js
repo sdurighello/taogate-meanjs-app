@@ -5,13 +5,14 @@
  */
 var mongoose = require('mongoose'),
 	errorHandler = require('./errors.server.controller'),
-	MilestoneState = mongoose.model('MilestoneState'),
+	async = require('async'),
 	_ = require('lodash');
 
 /**
  * Create a Milestone state
  */
 exports.create = function(req, res) {
+	var MilestoneState = mongoose.mtModel(req.user.tenantId + '.' + 'MilestoneState');
 	var milestoneState = new MilestoneState(req.body);
 	milestoneState.user = req.user;
 
@@ -38,7 +39,8 @@ exports.read = function(req, res) {
  */
 exports.update = function(req, res) {
 	var milestoneState = req.milestoneState ;
-
+    milestoneState.user = req.user;
+    milestoneState.created = Date.now();
 	milestoneState = _.extend(milestoneState , req.body);
 
 	milestoneState.save(function(err) {
@@ -72,7 +74,8 @@ exports.delete = function(req, res) {
 /**
  * List of Milestone states
  */
-exports.list = function(req, res) { 
+exports.list = function(req, res) {
+	var MilestoneState = mongoose.mtModel(req.user.tenantId + '.' + 'MilestoneState');
 	MilestoneState.find().sort('-created').populate('user', 'displayName').exec(function(err, milestoneStates) {
 		if (err) {
 			return res.status(400).send({
@@ -87,7 +90,8 @@ exports.list = function(req, res) {
 /**
  * Milestone state middleware
  */
-exports.milestoneStateByID = function(req, res, next, id) { 
+exports.milestoneStateByID = function(req, res, next, id) {
+	var MilestoneState = mongoose.mtModel(req.user.tenantId + '.' + 'MilestoneState');
 	MilestoneState.findById(id).populate('user', 'displayName').exec(function(err, milestoneState) {
 		if (err) return next(err);
 		if (! milestoneState) return next(new Error('Failed to load Milestone state ' + id));
@@ -100,8 +104,14 @@ exports.milestoneStateByID = function(req, res, next, id) {
  * Milestone state authorization middleware
  */
 exports.hasAuthorization = function(req, res, next) {
-	if (req.milestoneState.user.id !== req.user.id) {
-		return res.status(403).send('User is not authorized');
+	// User role check
+	if(!_.find(req.user.roles, function(role){
+			return (role === 'superAdmin' || role === 'admin' || role === 'pmo');
+		})
+	){
+		return res.status(403).send({
+			message: 'User is not authorized'
+		});
 	}
 	next();
 };

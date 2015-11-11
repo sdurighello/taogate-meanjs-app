@@ -1,0 +1,284 @@
+<section data-ng-controller="LogDeliverySetupController" data-ng-init="init()">
+	<br>
+	<div class="row">
+		<div class="col-sm-12">
+			<div class="panel-heading">
+				<ol class="breadcrumb">
+					<li>Setup</li>
+					<li>Portfolio delivery</li>
+					<li class="active">Issue & Change log</li>
+				</ol>
+			</div>
+		</div>
+	</div>
+	<div class="row">
+		<div class="col-md-12">
+			<tabset>
+				<tab heading="Change request states">
+					<br>
+					<div class="row" ng-show="userHasAuthorization">
+						<div class="col-md-3">
+							<br>
+							<button class="btn btn-primary"
+									ng-click="createChangeRequestState()">
+								New change request state
+							</button>
+						</div>
+					</div>
+					<hr>
+					<div class="row">
+						<div class="alert alert-warning text-center" data-ng-hide="changeRequestStates.length">
+							No change request states yet
+						</div>
+						<div class="col-md-4" data-ng-repeat="state in changeRequestStates" data-ng-switch="switchChangeRequestStateForm[state._id]" >
+							<div class="panel panel-default" title="Last updated on {{state.created | date:'medium'}} by {{state.user.displayName}}">
+								<div class="panel-heading">
+									<h6 class="panel-title text-center" data-ng-bind="state.name"></h6>
+								</div>
+								<div class="panel-body">
+									<div ng-switch-default="view">
+										<form class="form">
+											<fieldset>
+												<div class="row">
+													<div class="col-md-12">
+														<div class="form-group">
+															<label for="name" class="control-label">Name</label>
+															<input id="name" disabled type="text" class="form-control" data-ng-model="state.name">
+														</div>
+														<div class="form-group">
+															<label for="description" class="control-label">Description</label>
+															<textarea id="description" disabled class="form-control" data-ng-model="state.description"></textarea>
+														</div>
+														<button type="button" class="btn btn-success pull-right" data-ng-show="userHasAuthorization"
+																data-ng-click="selectChangeRequestState(state)">
+															Edit
+														</button>
+														<div data-ng-show="error" class="text-danger">
+															<strong data-ng-bind="error"></strong>
+														</div>
+													</div>
+												</div>
+											</fieldset>
+										</form>
+									</div>
+									<div data-ng-switch-when="edit">
+										<form class="form" name="editChangeRequestStateForm" data-ng-submit="updateChangeRequestState(state)" novalidate>
+											<fieldset>
+												<div class="row">
+													<div class="col-md-12">
+														<div class="form-group">
+															<label for="stateNameEdit" class="control-label">Name</label>
+															<input type="text" id="stateNameEdit" class="form-control" name="stateNameEdit"
+																   data-ng-model="state.name" placeholder="Name" required>
+                                                            <span data-ng-show="editChangeRequestStateForm.stateNameEdit.$error.required">
+                                                                <em style="color: red">Name is required</em>
+                                                            </span>
+														</div>
+														<div class="form-group">
+															<label for="descriptionEdit" class="control-label">Description</label>
+                                                            <textarea id="descriptionEdit" class="form-control"
+																	  data-ng-model="state.description" placeholder="Description">
+                                                            </textarea>
+														</div>
+														<div class="pull-right">
+															<input type="submit" value="Save" class="btn btn-success" data-ng-disabled="editChangeRequestStateForm.$invalid">
+															<a class="btn btn-danger" data-ng-click="removeChangeRequestState(state)" data-ng-show="userHasAuthorization">
+																<i class="glyphicon glyphicon-trash"></i>
+															</a>
+															<button type="button" class="btn btn-info" data-ng-click="cancelEditChangeRequestState(state)">
+																Cancel
+															</button>
+														</div>
+														<div data-ng-show="error" class="text-danger">
+															<strong data-ng-bind="error"></strong>
+														</div>
+													</div>
+												</div>
+											</fieldset>
+										</form>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</tab>
+				<tab heading="Issue states">
+                    <br>
+                    <div class="row" ng-show="userHasAuthorization">
+                        <div class="col-md-3">
+                            <br>
+                            <button class="btn btn-primary"
+                                    ng-click="createIssueState()">
+                                New issue state
+                            </button>
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="row">
+                        <div class="alert alert-warning text-center" data-ng-hide="issueStates.length">
+                            No issue states yet
+                        </div>
+                        <div class="col-md-4" data-ng-repeat="state in issueStates" data-ng-switch="switchIssueStateForm[state._id]" >
+                            <div class="panel panel-default" title="Last updated on {{state.created | date:'medium'}} by {{state.user.displayName}}">
+                                <div class="panel-heading">
+                                    <h6 class="panel-title text-center" data-ng-bind="state.name"></h6>
+                                </div>
+                                <div class="panel-body">
+                                    <div ng-switch-default="view">
+                                        <form class="form">
+                                            <fieldset>
+                                                <div class="row">
+                                                    <div class="col-md-12">
+                                                        <div class="form-group">
+                                                            <label for="name" class="control-label">Name</label>
+                                                            <input id="name" disabled type="text" class="form-control" data-ng-model="state.name">
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label for="description" class="control-label">Description</label>
+                                                            <textarea id="description" disabled class="form-control" data-ng-model="state.description"></textarea>
+                                                        </div>
+                                                        <button type="button" class="btn btn-success pull-right" data-ng-show="userHasAuthorization"
+                                                                data-ng-click="selectIssueState(state)">
+                                                            Edit
+                                                        </button>
+                                                        <div data-ng-show="error" class="text-danger">
+                                                            <strong data-ng-bind="error"></strong>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </fieldset>
+                                        </form>
+                                    </div>
+                                    <div data-ng-switch-when="edit">
+                                        <form class="form" name="editIssueStateForm" data-ng-submit="updateIssueState(state)" novalidate>
+                                            <fieldset>
+                                                <div class="row">
+                                                    <div class="col-md-12">
+                                                        <div class="form-group">
+                                                            <label for="stateNameEdit" class="control-label">Name</label>
+                                                            <input type="text" id="stateNameEdit" class="form-control" name="stateNameEdit"
+                                                                   data-ng-model="state.name" placeholder="Name" required>
+                                                            <span data-ng-show="editIssueStateForm.stateNameEdit.$error.required">
+                                                                <em style="color: red">Name is required</em>
+                                                            </span>
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label for="descriptionEdit" class="control-label">Description</label>
+                                                            <textarea id="descriptionEdit" class="form-control"
+                                                                      data-ng-model="state.description" placeholder="Description">
+                                                            </textarea>
+                                                        </div>
+                                                        <div class="pull-right">
+                                                            <input type="submit" value="Save" class="btn btn-success" data-ng-disabled="editIssueStateForm.$invalid">
+                                                            <a class="btn btn-danger" data-ng-click="removeIssueState(state)" data-ng-show="userHasAuthorization">
+                                                                <i class="glyphicon glyphicon-trash"></i>
+                                                            </a>
+                                                            <button type="button" class="btn btn-info" data-ng-click="cancelEditIssueState(state)">
+                                                                Cancel
+                                                            </button>
+                                                        </div>
+                                                        <div data-ng-show="error" class="text-danger">
+                                                            <strong data-ng-bind="error"></strong>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </fieldset>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </tab>
+                <tab heading="Action states">
+                    <br>
+                    <div class="row" ng-show="userHasAuthorization">
+                        <div class="col-md-3">
+                            <br>
+                            <button class="btn btn-primary"
+                                    ng-click="createActionState()">
+                                New action state
+                            </button>
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="row">
+                        <div class="alert alert-warning text-center" data-ng-hide="actionStates.length">
+                            No action states yet
+                        </div>
+                        <div class="col-md-4" data-ng-repeat="state in actionStates" data-ng-switch="switchActionStateForm[state._id]" >
+                            <div class="panel panel-default" title="Last updated on {{state.created | date:'medium'}} by {{state.user.displayName}}">
+                                <div class="panel-heading">
+                                    <h6 class="panel-title text-center" data-ng-bind="state.name"></h6>
+                                </div>
+                                <div class="panel-body">
+                                    <div ng-switch-default="view">
+                                        <form class="form">
+                                            <fieldset>
+                                                <div class="row">
+                                                    <div class="col-md-12">
+                                                        <div class="form-group">
+                                                            <label for="name" class="control-label">Name</label>
+                                                            <input id="name" disabled type="text" class="form-control" data-ng-model="state.name">
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label for="description" class="control-label">Description</label>
+                                                            <textarea id="description" disabled class="form-control" data-ng-model="state.description"></textarea>
+                                                        </div>
+                                                        <button type="button" class="btn btn-success pull-right" data-ng-show="userHasAuthorization"
+                                                                data-ng-click="selectActionState(state)">
+                                                            Edit
+                                                        </button>
+                                                        <div data-ng-show="error" class="text-danger">
+                                                            <strong data-ng-bind="error"></strong>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </fieldset>
+                                        </form>
+                                    </div>
+                                    <div data-ng-switch-when="edit">
+                                        <form class="form" name="editActionStateForm" data-ng-submit="updateActionState(state)" novalidate>
+                                            <fieldset>
+                                                <div class="row">
+                                                    <div class="col-md-12">
+                                                        <div class="form-group">
+                                                            <label for="stateNameEdit" class="control-label">Name</label>
+                                                            <input type="text" id="stateNameEdit" class="form-control" name="stateNameEdit"
+                                                                   data-ng-model="state.name" placeholder="Name" required>
+                                                            <span data-ng-show="editActionStateForm.stateNameEdit.$error.required">
+                                                                <em style="color: red">Name is required</em>
+                                                            </span>
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label for="descriptionEdit" class="control-label">Description</label>
+                                                            <textarea id="descriptionEdit" class="form-control"
+                                                                      data-ng-model="state.description" placeholder="Description">
+                                                            </textarea>
+                                                        </div>
+                                                        <div class="pull-right">
+                                                            <input type="submit" value="Save" class="btn btn-success" data-ng-disabled="editActionStateForm.$invalid">
+                                                            <a class="btn btn-danger" data-ng-click="removeActionState(state)" data-ng-show="userHasAuthorization">
+                                                                <i class="glyphicon glyphicon-trash"></i>
+                                                            </a>
+                                                            <button type="button" class="btn btn-info" data-ng-click="cancelEditActionState(state)">
+                                                                Cancel
+                                                            </button>
+                                                        </div>
+                                                        <div data-ng-show="error" class="text-danger">
+                                                            <strong data-ng-bind="error"></strong>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </fieldset>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </tab>
+			</tabset>
+		</div>
+	</div>
+</section>

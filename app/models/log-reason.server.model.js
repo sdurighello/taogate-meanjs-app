@@ -8,20 +8,20 @@ var mongoose = require('mongoose'),
 require('mongoose-multitenant');
 
 /**
- * Issue state Schema
+ * Log reason Schema
  */
-var IssueStateSchema = new Schema({
+var LogReasonSchema = new Schema({
 	name: {
 		type: String,
 		default: '',
-		required: 'Please fill Issue state name',
+		required: 'Please fill Log reason name',
 		trim: true
 	},
-    description: {
-        type: String,
-        default: '',
-        trim: true
-    },
+	description: {
+		type: String,
+		default: '',
+		trim: true
+	},
 	created: {
 		type: Date,
 		default: Date.now
@@ -32,4 +32,4 @@ var IssueStateSchema = new Schema({
 	}
 });
 
-mongoose.mtModel('IssueState', IssueStateSchema);
+mongoose.mtModel('LogReason', LogReasonSchema);

@@ -6,11 +6,11 @@ module.exports = function(app) {
 
 	// Milestone states Routes
 	app.route('/milestone-states')
-		.get(milestoneStates.list)
-		.post(users.requiresLogin, milestoneStates.create);
+		.get(users.requiresLogin, milestoneStates.list)
+		.post(users.requiresLogin, milestoneStates.hasAuthorization, milestoneStates.create);
 
 	app.route('/milestone-states/:milestoneStateId')
-		.get(milestoneStates.read)
+		.get(users.requiresLogin, milestoneStates.read)
 		.put(users.requiresLogin, milestoneStates.hasAuthorization, milestoneStates.update)
 		.delete(users.requiresLogin, milestoneStates.hasAuthorization, milestoneStates.delete);
 

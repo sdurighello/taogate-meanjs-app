@@ -8,20 +8,20 @@ var mongoose = require('mongoose'),
 require('mongoose-multitenant');
 
 /**
- * Issue state Schema
+ * Portfolio milestone type Schema
  */
-var IssueStateSchema = new Schema({
+var PortfolioMilestoneTypeSchema = new Schema({
 	name: {
 		type: String,
 		default: '',
-		required: 'Please fill Issue state name',
+		required: 'Please fill Portfolio milestone type name',
 		trim: true
 	},
-    description: {
-        type: String,
-        default: '',
-        trim: true
-    },
+	description: {
+		type: String,
+		default: '',
+		trim: true
+	},
 	created: {
 		type: Date,
 		default: Date.now
@@ -32,4 +32,4 @@ var IssueStateSchema = new Schema({
 	}
 });
 
-mongoose.mtModel('IssueState', IssueStateSchema);
+mongoose.mtModel('PortfolioMilestoneType', PortfolioMilestoneTypeSchema);

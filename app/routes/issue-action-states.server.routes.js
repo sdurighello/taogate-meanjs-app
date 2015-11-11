@@ -6,11 +6,11 @@ module.exports = function(app) {
 
 	// Issue action states Routes
 	app.route('/issue-action-states')
-		.get(issueActionStates.list)
-		.post(users.requiresLogin, issueActionStates.create);
+		.get(users.requiresLogin, issueActionStates.list)
+		.post(users.requiresLogin, issueActionStates.hasAuthorization, issueActionStates.create);
 
 	app.route('/issue-action-states/:issueActionStateId')
-		.get(issueActionStates.read)
+		.get(users.requiresLogin, issueActionStates.read)
 		.put(users.requiresLogin, issueActionStates.hasAuthorization, issueActionStates.update)
 		.delete(users.requiresLogin, issueActionStates.hasAuthorization, issueActionStates.delete);
 

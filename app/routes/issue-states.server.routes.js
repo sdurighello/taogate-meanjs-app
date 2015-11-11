@@ -6,11 +6,11 @@ module.exports = function(app) {
 
 	// Issue states Routes
 	app.route('/issue-states')
-		.get(issueStates.list)
-		.post(users.requiresLogin, issueStates.create);
+		.get(users.requiresLogin, issueStates.list)
+		.post(users.requiresLogin, issueStates.hasAuthorization, issueStates.create);
 
 	app.route('/issue-states/:issueStateId')
-		.get(issueStates.read)
+		.get(users.requiresLogin, issueStates.read)
 		.put(users.requiresLogin, issueStates.hasAuthorization, issueStates.update)
 		.delete(users.requiresLogin, issueStates.hasAuthorization, issueStates.delete);
 

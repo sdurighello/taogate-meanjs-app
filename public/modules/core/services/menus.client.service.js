@@ -212,18 +212,15 @@ angular.module('core').service('Menus', [
             // Gate Review
         this.addSubMenuItem('topbar', 'setup', 'Gate review', 'gate-review-setup','gate-review-setup',false,
             ['superAdmin','admin','PMO','projectManager','portfolioManager','executive'],14);
-            // Change Request log
-        this.addSubMenuItem('topbar', 'setup', 'Change request log', 'change-request-setup','change-request-setup',false,
+            // Delivery logs
+        this.addSubMenuItem('topbar', 'setup', 'Delivery logs', 'log-general-setup','log-general-setup',false,
             ['superAdmin','admin','PMO','projectManager','portfolioManager','executive'],15);
-            // Issue log
-        this.addSubMenuItem('topbar', 'setup', 'Issue log', 'issue-log-setup','issue-setup',false,
+            // Issues & Changes
+        this.addSubMenuItem('topbar', 'setup', 'Issues & Changes', 'log-delivery-setup','log-delivery-setup',false,
             ['superAdmin','admin','PMO','projectManager','portfolioManager','executive'],16);
             // Milestone log
-        this.addSubMenuItem('topbar', 'setup', 'Milestone log', 'milestone-log-setup','milestone-setup',false,
+        this.addSubMenuItem('topbar', 'setup', 'Milestones', 'log-milestone-setup','log-milestone-setup',false,
             ['superAdmin','admin','PMO','projectManager','portfolioManager','executive'],17);
-            // Delivery log priorities
-        this.addSubMenuItem('topbar', 'setup', 'Delivery log priorities', 'log-priorities','log-priorities',false,
-            ['superAdmin','admin','PMO','projectManager','portfolioManager','executive'],18);
 
 
 

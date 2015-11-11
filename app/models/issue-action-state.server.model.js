@@ -5,6 +5,7 @@
  */
 var mongoose = require('mongoose'),
 	Schema = mongoose.Schema;
+require('mongoose-multitenant');
 
 /**
  * Issue action state Schema
@@ -14,6 +15,11 @@ var IssueActionStateSchema = new Schema({
 		type: String,
 		default: '',
 		required: 'Please fill Issue action state name',
+		trim: true
+	},
+	description: {
+		type: String,
+		default: '',
 		trim: true
 	},
 	created: {
@@ -26,4 +32,4 @@ var IssueActionStateSchema = new Schema({
 	}
 });
 
-mongoose.model('IssueActionState', IssueActionStateSchema);
+mongoose.mtModel('IssueActionState', IssueActionStateSchema);

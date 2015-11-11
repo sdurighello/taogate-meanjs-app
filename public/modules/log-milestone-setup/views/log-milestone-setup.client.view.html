@@ -1,0 +1,284 @@
+<section data-ng-controller="LogMilestoneSetupController" data-ng-init="init()">
+	<br>
+	<div class="row">
+		<div class="col-sm-12">
+			<div class="panel-heading">
+				<ol class="breadcrumb">
+					<li>Setup</li>
+					<li>Portfolio delivery</li>
+					<li class="active">Milestone log</li>
+				</ol>
+			</div>
+		</div>
+	</div>
+	<div class="row">
+		<div class="col-md-12">
+			<tabset>
+                <tab heading="Milestone states">
+                    <br>
+                    <div class="row" ng-show="userHasAuthorization">
+                        <div class="col-md-3">
+                            <br>
+                            <button class="btn btn-primary"
+                                    ng-click="createMilestoneState()">
+                                New milestone state
+                            </button>
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="row">
+                        <div class="alert alert-warning text-center" data-ng-hide="milestoneStates.length">
+                            No milestone states yet
+                        </div>
+                        <div class="col-md-4" data-ng-repeat="state in milestoneStates" data-ng-switch="switchMilestoneStateForm[state._id]" >
+                            <div class="panel panel-default" title="Last updated on {{state.created | date:'medium'}} by {{state.user.displayName}}">
+                                <div class="panel-heading">
+                                    <h6 class="panel-title text-center" data-ng-bind="state.name"></h6>
+                                </div>
+                                <div class="panel-body">
+                                    <div ng-switch-default="view">
+                                        <form class="form">
+                                            <fieldset>
+                                                <div class="row">
+                                                    <div class="col-md-12">
+                                                        <div class="form-group">
+                                                            <label for="name" class="control-label">Name</label>
+                                                            <input id="name" disabled type="text" class="form-control" data-ng-model="state.name">
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label for="description" class="control-label">Description</label>
+                                                            <textarea id="description" disabled class="form-control" data-ng-model="state.description"></textarea>
+                                                        </div>
+                                                        <button type="button" class="btn btn-success pull-right" data-ng-show="userHasAuthorization"
+                                                                data-ng-click="selectMilestoneState(state)">
+                                                            Edit
+                                                        </button>
+                                                        <div data-ng-show="error" class="text-danger">
+                                                            <strong data-ng-bind="error"></strong>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </fieldset>
+                                        </form>
+                                    </div>
+                                    <div data-ng-switch-when="edit">
+                                        <form class="form" name="editMilestoneStateForm" data-ng-submit="updateMilestoneState(state)" novalidate>
+                                            <fieldset>
+                                                <div class="row">
+                                                    <div class="col-md-12">
+                                                        <div class="form-group">
+                                                            <label for="stateNameEdit" class="control-label">Name</label>
+                                                            <input type="text" id="stateNameEdit" class="form-control" name="stateNameEdit"
+                                                                   data-ng-model="state.name" placeholder="Name" required>
+                                                            <span data-ng-show="editMilestoneStateForm.stateNameEdit.$error.required">
+                                                                <em style="color: red">Name is required</em>
+                                                            </span>
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label for="descriptionEdit" class="control-label">Description</label>
+                                                            <textarea id="descriptionEdit" class="form-control"
+                                                                      data-ng-model="state.description" placeholder="Description">
+                                                            </textarea>
+                                                        </div>
+                                                        <div class="pull-right">
+                                                            <input type="submit" value="Save" class="btn btn-success" data-ng-disabled="editMilestoneStateForm.$invalid">
+                                                            <a class="btn btn-danger" data-ng-click="removeMilestoneState(state)" data-ng-show="userHasAuthorization">
+                                                                <i class="glyphicon glyphicon-trash"></i>
+                                                            </a>
+                                                            <button type="button" class="btn btn-info" data-ng-click="cancelEditMilestoneState(state)">
+                                                                Cancel
+                                                            </button>
+                                                        </div>
+                                                        <div data-ng-show="error" class="text-danger">
+                                                            <strong data-ng-bind="error"></strong>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </fieldset>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </tab>
+                <tab heading="Project milestone types">
+                    <br>
+                    <div class="row" ng-show="userHasAuthorization">
+                        <div class="col-md-3">
+                            <br>
+                            <button class="btn btn-primary"
+                                    ng-click="createProjectMilestoneType()">
+                                New project milestone type
+                            </button>
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="row">
+                        <div class="alert alert-warning text-center" data-ng-hide="projectMilestoneTypes.length">
+                            No project milestone types yet
+                        </div>
+                        <div class="col-md-4" data-ng-repeat="type in projectMilestoneTypes" data-ng-switch="switchProjectMilestoneTypeForm[type._id]" >
+                            <div class="panel panel-default" title="Last updated on {{type.created | date:'medium'}} by {{type.user.displayName}}">
+                                <div class="panel-heading">
+                                    <h6 class="panel-title text-center" data-ng-bind="type.name"></h6>
+                                </div>
+                                <div class="panel-body">
+                                    <div ng-switch-default="view">
+                                        <form class="form">
+                                            <fieldset>
+                                                <div class="row">
+                                                    <div class="col-md-12">
+                                                        <div class="form-group">
+                                                            <label for="name" class="control-label">Name</label>
+                                                            <input id="name" disabled type="text" class="form-control" data-ng-model="type.name">
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label for="description" class="control-label">Description</label>
+                                                            <textarea id="description" disabled class="form-control" data-ng-model="type.description"></textarea>
+                                                        </div>
+                                                        <button type="button" class="btn btn-success pull-right" data-ng-show="userHasAuthorization"
+                                                                data-ng-click="selectProjectMilestoneType(type)">
+                                                            Edit
+                                                        </button>
+                                                        <div data-ng-show="error" class="text-danger">
+                                                            <strong data-ng-bind="error"></strong>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </fieldset>
+                                        </form>
+                                    </div>
+                                    <div data-ng-switch-when="edit">
+                                        <form class="form" name="editProjectMilestoneTypeForm" data-ng-submit="updateProjectMilestoneType(type)" novalidate>
+                                            <fieldset>
+                                                <div class="row">
+                                                    <div class="col-md-12">
+                                                        <div class="form-group">
+                                                            <label for="projectMilestoneTypeNameEdit" class="control-label">Name</label>
+                                                            <input type="text" id="projectMilestoneTypeNameEdit" class="form-control" name="projectMilestoneTypeNameEdit"
+                                                                   data-ng-model="type.name" placeholder="Name" required>
+                                                            <span data-ng-show="editProjectMilestoneTypeForm.projectMilestoneTypeNameEdit.$error.required">
+                                                                <em style="color: red">Name is required</em>
+                                                            </span>
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label for="descriptionEdit" class="control-label">Description</label>
+                                                            <textarea id="descriptionEdit" class="form-control"
+                                                                      data-ng-model="type.description" placeholder="Description">
+                                                            </textarea>
+                                                        </div>
+                                                        <div class="pull-right">
+                                                            <input type="submit" value="Save" class="btn btn-success" data-ng-disabled="editProjectMilestoneTypeForm.$invalid">
+                                                            <a class="btn btn-danger" data-ng-click="removeProjectMilestoneType(type)" data-ng-show="userHasAuthorization">
+                                                                <i class="glyphicon glyphicon-trash"></i>
+                                                            </a>
+                                                            <button type="button" class="btn btn-info" data-ng-click="cancelEditProjectMilestoneType(type)">
+                                                                Cancel
+                                                            </button>
+                                                        </div>
+                                                        <div data-ng-show="error" class="text-danger">
+                                                            <strong data-ng-bind="error"></strong>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </fieldset>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </tab>
+                <tab heading="Portfolio milestone types">
+                    <br>
+                    <div class="row" ng-show="userHasAuthorization">
+                        <div class="col-md-3">
+                            <br>
+                            <button class="btn btn-primary"
+                                    ng-click="createPortfolioMilestoneType()">
+                                New portfolio milestone type
+                            </button>
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="row">
+                        <div class="alert alert-warning text-center" data-ng-hide="portfolioMilestoneTypes.length">
+                            No portfolio milestone types yet
+                        </div>
+                        <div class="col-md-4" data-ng-repeat="type in portfolioMilestoneTypes" data-ng-switch="switchPortfolioMilestoneTypeForm[type._id]" >
+                            <div class="panel panel-default" title="Last updated on {{type.created | date:'medium'}} by {{type.user.displayName}}">
+                                <div class="panel-heading">
+                                    <h6 class="panel-title text-center" data-ng-bind="type.name"></h6>
+                                </div>
+                                <div class="panel-body">
+                                    <div ng-switch-default="view">
+                                        <form class="form">
+                                            <fieldset>
+                                                <div class="row">
+                                                    <div class="col-md-12">
+                                                        <div class="form-group">
+                                                            <label for="name" class="control-label">Name</label>
+                                                            <input id="name" disabled type="text" class="form-control" data-ng-model="type.name">
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label for="description" class="control-label">Description</label>
+                                                            <textarea id="description" disabled class="form-control" data-ng-model="type.description"></textarea>
+                                                        </div>
+                                                        <button type="button" class="btn btn-success pull-right" data-ng-show="userHasAuthorization"
+                                                                data-ng-click="selectPortfolioMilestoneType(type)">
+                                                            Edit
+                                                        </button>
+                                                        <div data-ng-show="error" class="text-danger">
+                                                            <strong data-ng-bind="error"></strong>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </fieldset>
+                                        </form>
+                                    </div>
+                                    <div data-ng-switch-when="edit">
+                                        <form class="form" name="editPortfolioMilestoneTypeForm" data-ng-submit="updatePortfolioMilestoneType(type)" novalidate>
+                                            <fieldset>
+                                                <div class="row">
+                                                    <div class="col-md-12">
+                                                        <div class="form-group">
+                                                            <label for="portfolioMilestoneTypeNameEdit" class="control-label">Name</label>
+                                                            <input type="text" id="portfolioMilestoneTypeNameEdit" class="form-control" name="portfolioMilestoneTypeNameEdit"
+                                                                   data-ng-model="type.name" placeholder="Name" required>
+                                                            <span data-ng-show="editPortfolioMilestoneTypeForm.portfolioMilestoneTypeNameEdit.$error.required">
+                                                                <em style="color: red">Name is required</em>
+                                                            </span>
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label for="descriptionEdit" class="control-label">Description</label>
+                                                            <textarea id="descriptionEdit" class="form-control"
+                                                                      data-ng-model="type.description" placeholder="Description">
+                                                            </textarea>
+                                                        </div>
+                                                        <div class="pull-right">
+                                                            <input type="submit" value="Save" class="btn btn-success" data-ng-disabled="editPortfolioMilestoneTypeForm.$invalid">
+                                                            <a class="btn btn-danger" data-ng-click="removePortfolioMilestoneType(type)" data-ng-show="userHasAuthorization">
+                                                                <i class="glyphicon glyphicon-trash"></i>
+                                                            </a>
+                                                            <button type="button" class="btn btn-info" data-ng-click="cancelEditPortfolioMilestoneType(type)">
+                                                                Cancel
+                                                            </button>
+                                                        </div>
+                                                        <div data-ng-show="error" class="text-danger">
+                                                            <strong data-ng-bind="error"></strong>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </fieldset>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </tab>
+			</tabset>
+		</div>
+	</div>
+</section>

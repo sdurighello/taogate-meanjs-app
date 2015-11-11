@@ -8,13 +8,13 @@ var mongoose = require('mongoose'),
 require('mongoose-multitenant');
 
 /**
- * Issue state Schema
+ * Project milestone type Schema
  */
-var IssueStateSchema = new Schema({
+var ProjectMilestoneTypeSchema = new Schema({
 	name: {
 		type: String,
 		default: '',
-		required: 'Please fill Issue state name',
+		required: 'Please fill Project milestone type name',
 		trim: true
 	},
     description: {
@@ -32,4 +32,4 @@ var IssueStateSchema = new Schema({
 	}
 });
 
-mongoose.mtModel('IssueState', IssueStateSchema);
+mongoose.mtModel('ProjectMilestoneType', ProjectMilestoneTypeSchema);
