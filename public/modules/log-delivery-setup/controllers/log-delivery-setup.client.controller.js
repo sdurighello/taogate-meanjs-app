@@ -6,16 +6,24 @@ angular.module('log-delivery-setup').controller('LogDeliverySetupController', ['
 
 		// ----------- INIT ---------------
 
+        $scope.initError = [];
+
 		$scope.init = function(){
-			IssueStates.query(function(issueStates){
-				IssueActionStates.query(function(actionStates){
-					ChangeRequestStates.query(function(changeRequestStates){
-						$scope.issueStates = issueStates;
-						$scope.actionStates = actionStates;
-						$scope.changeRequestStates = changeRequestStates;
-					});
-				});
-			});
+            IssueStates.query(function(issueStates){
+                $scope.issueStates = issueStates;
+            }, function(err){
+                $scope.initError.push(err.data.message);
+            });
+            IssueActionStates.query(function(actionStates){
+                $scope.actionStates = actionStates;
+            }, function(err){
+                $scope.initError.push(err.data.message);
+            });
+            ChangeRequestStates.query(function(changeRequestStates){
+                $scope.changeRequestStates = changeRequestStates;
+            }, function(err){
+                $scope.initError.push(err.data.message);
+            });
 		};
 
 
@@ -50,9 +58,12 @@ angular.module('log-delivery-setup').controller('LogDeliverySetupController', ['
 		// ------------------- LIST STATES -----------------
 
 		$scope.findIssueStates = function() {
+            $scope.initError = [];
 			IssueStates.query(function(states){
 				$scope.issueStates = states;
-			});
+			}, function(err){
+                $scope.initError.push(err.data.message);
+            });
 		};
 
 		// ------------------- EDIT -----------------
@@ -127,8 +138,11 @@ angular.module('log-delivery-setup').controller('LogDeliverySetupController', ['
         // ------------------- LIST STATES -----------------
 
         $scope.findActionStates = function() {
+            $scope.initError = [];
             IssueActionStates.query(function(states){
                 $scope.actionStates = states;
+            }, function(err){
+                $scope.initError.push(err.data.message);
             });
         };
 
@@ -202,8 +216,11 @@ angular.module('log-delivery-setup').controller('LogDeliverySetupController', ['
         // ------------------- LIST STATES -----------------
 
         $scope.findChangeRequestStates = function() {
+            $scope.initError = [];
             ChangeRequestStates.query(function(states){
                 $scope.changeRequestStates = states;
+            }, function(err){
+                $scope.initError.push(err.data.message);
             });
         };
 

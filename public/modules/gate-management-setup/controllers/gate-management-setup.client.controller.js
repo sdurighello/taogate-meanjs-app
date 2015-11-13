@@ -6,9 +6,13 @@ angular.module('gate-management-setup').controller('GateManagementSetupControlle
 
 		// ------------- INIT -------------
 
+		$scope.initError = [];
+
 		$scope.init = function(){
 			GateProcesses.query(function(processes){
 				$scope.gateProcesses = processes;
+			}, function(err){
+				$scope.initError.push(err.data.message);
 			});
 		};
 
@@ -51,8 +55,11 @@ angular.module('gate-management-setup').controller('GateManagementSetupControlle
 		// ----------------- REFRESH GATE PROCESSES LIST ------------
 
 		$scope.gateProcessList = function(){
+			$scope.initError = [];
 			GateProcesses.query(function(gateProcesses){
 				$scope.gateProcesses = gateProcesses;
+			}, function(err){
+				$scope.initError.push(err.data.message);
 			});
 		};
 

@@ -21,7 +21,7 @@ exports.create = function(req, res) {
 				message: errorHandler.getErrorMessage(err)
 			});
 		} else {
-			res.jsonp(person);
+            Person.populate(person, {path: 'user', select:'displayName'}, function(err, person) {res.jsonp(person);});
 		}
 	});
 };

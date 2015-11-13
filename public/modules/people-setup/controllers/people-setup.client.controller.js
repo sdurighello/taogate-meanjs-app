@@ -63,50 +63,57 @@ angular.module('people-setup').controller('PeopleSetupController', ['$scope', '$
 
 		// ------------------- NG-SWITCH ---------------------
 
-		$scope.switchPersonForm = {};
-
-		$scope.selectPersonForm = function(person, string){
-			if(string === 'view'){ $scope.switchPersonForm[person._id] = 'view';}
-			if(string === 'new'){$scope.switchPersonForm[person._id] = 'new';}
-			if(string === 'edit'){$scope.switchPersonForm[person._id] = 'edit';}
+		$scope.selectPersonForm = function(string){
+			if(string === 'view'){$scope.switchPersonForm = 'view';}
+			if(string === 'edit'){$scope.switchPersonForm = 'edit';}
 		};
 
 		// ------------------- LIST OF PEOPLE -----------------
 
 		$scope.findPeople = function() {
-			People.query(function(people){
-				$scope.people = _.clone(people);
-			},function(errorResponse) {
-				$scope.error = errorResponse.data.message;
-			});
+            $scope.initError = [];
+            People.query(function(people){
+				$scope.people = people;
+			}, function(err){
+                $scope.initError.push(err.data.message);
+            });
 		};
 
 		// ------------------- EDIT -----------------
 
-
+        var originalPerson = {};
 		$scope.selectPerson = function(person){
-			$scope.selectPersonForm(person, 'edit');
+            $scope.error = null;
+            $scope.selectPersonForm('view');
+            $scope.person = person;
+            originalPerson = _.clone(person);
 		};
 
 		$scope.updatePerson = function(person) {
+            $scope.error = null;
 			person.$update(function(response) {
 				$scope.findPeople();
-				$scope.selectPersonForm(person, 'view');
+				$scope.selectPersonForm('view');
 			}, function(errorResponse) {
 				$scope.error = errorResponse.data.message;
 			});
 		};
 
 		$scope.cancelEditPerson = function(person){
-			$scope.findPeople();
-			$scope.selectPersonForm(person, 'view');
+			person.name = originalPerson.name;
+            person.title = originalPerson.title;
+            person.email = originalPerson.email;
+            person.phone = originalPerson.phone;
+			$scope.selectPersonForm('view');
 		};
 
 		// ------------------- DELETE -----------------
 
 		$scope.removePerson = function(person) {
 			person.$remove(function(response) {
-				$scope.findPeople();
+                $scope.people = _.without($scope.people, person);
+                $scope.person = null;
+                $scope.selectPersonForm('view');
 			}, function(errorResponse) {
 				$scope.error = errorResponse.data.message;
 			});
@@ -122,8 +129,9 @@ angular.module('people-setup').controller('PeopleSetupController', ['$scope', '$
 				phone: ''
 			});
 			person.$save(function(response) {
-				$scope.findPeople();
-				$scope.selectPersonForm(response._id, 'view');
+				$scope.people.push(response);
+                $scope.selectPerson(response);
+                $scope.selectPersonForm('edit');
 
 			}, function(errorResponse) {
 				$scope.error = errorResponse.data.message;
@@ -152,9 +160,12 @@ angular.module('people-setup').controller('PeopleSetupController', ['$scope', '$
 		// ----------------- REFRESH GROUP LIST ------------
 
 		$scope.projectGroupList = function(){
-			PeopleProjectGroups.query(function(groups){
+            $scope.initError = [];
+            PeopleProjectGroups.query(function(groups){
 				$scope.peopleProjectGroups = groups;
-			});
+			}, function(err){
+                $scope.initError.push(err.data.message);
+            });
 		};
 
 		// ------------------ CREATE GROUP ----------------
@@ -236,8 +247,11 @@ angular.module('people-setup').controller('PeopleSetupController', ['$scope', '$
         // ----------------- REFRESH GROUP LIST ------------
 
         $scope.portfolioGroupList = function(){
+            $scope.initError = [];
             PeoplePortfolioGroups.query(function(groups){
                 $scope.peoplePortfolioGroups = groups;
+            }, function(err){
+                $scope.initError.push(err.data.message);
             });
         };
 

@@ -6,13 +6,19 @@ angular.module('gate-review-setup').controller('GateReviewSetupController', ['$s
 
 		// ----------- INIT ---------------
 
+        $scope.initError = [];
+
 		$scope.init = function(){
-			GateOutcomeScores.query(function(scores){
-				GateStatuses.query(function(statuses){
-					$scope.outcomeScores = scores;
-					$scope.gateStatuses = statuses;
-				});
-			});
+            GateOutcomeScores.query(function(scores){
+                $scope.outcomeScores = scores;
+            }, function(err){
+                $scope.initError.push(err.data.message);
+            });
+            GateStatuses.query(function(statuses){
+                $scope.gateStatuses = statuses;
+            }, function(err){
+                $scope.initError.push(err.data.message);
+            });
 		};
 
 
@@ -46,9 +52,12 @@ angular.module('gate-review-setup').controller('GateReviewSetupController', ['$s
 		// ------------------- LIST OF SCORES -----------------
 
 		$scope.findScores = function() {
+            $scope.initError = [];
 			GateOutcomeScores.query(function(scores){
 				$scope.outcomeScores = _.clone(scores);
-			});
+			}, function(err){
+                $scope.initError.push(err.data.message);
+            });
 		};
 
 		// ------------------- EDIT -----------------
@@ -115,8 +124,11 @@ angular.module('gate-review-setup').controller('GateReviewSetupController', ['$s
         // ------------------- LIST OF STATUSES -----------------
 
         $scope.findStatuses = function() {
+            $scope.initError = [];
             GateStatuses.query(function(statuses){
                 $scope.gateStatuses = _.clone(statuses);
+            }, function(err){
+                $scope.initError.push(err.data.message);
             });
         };
 

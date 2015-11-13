@@ -19,124 +19,162 @@
 			<tabset>
 				<tab heading="People">
 					<br>
-					<div ng-show="userHasAuthorization">
-						<div class="row">
-							<div class="col-md-3">
-								<br>
-								<button class="btn btn-primary"
-										ng-click="createPerson()">
-									New person
-								</button>
-							</div>
-						</div>
-						<hr>
-					</div>
 					<div class="row">
-						<div class="alert alert-warning text-center" data-ng-hide="people.length">
-							No people yet
-						</div>
-						<div class="col-md-4" data-ng-repeat="person in people" data-ng-switch="switchPersonForm[person._id]" >
-							<div class="panel panel-default" title="Last updated on {{person.created | date:'medium'}} by {{person.user.displayName}}">
-								<div class="panel-body">
-									<div ng-switch-default="view">
-										<form class="form">
-											<fieldset>
-												<div class="row">
-													<div class="col-md-12">
-														<div class="form-group">
-															<label class="control-label" for="name">Name</label>
-															<div class="controls">
-																<input id="name" disabled type="text" class="form-control" ng-model="person.name">
-															</div>
-														</div>
-														<div class="form-group">
-															<label class="control-label" for="title">Title</label>
-															<div class="controls">
-																<input id="title" disabled type="text" class="form-control" ng-model="person.title">
-															</div>
-														</div>
-														<div class="form-group">
-															<label class="control-label" for="email">Email</label>
-															<div class="controls">
-																<input id="email" disabled type="email" class="form-control" ng-model="person.email">
-															</div>
-														</div>
-														<div class="form-group">
-															<label class="control-label" for="phone">Phone</label>
-															<div class="controls">
-																<input id="phone" disabled type="text" class="form-control" ng-model="person.phone">
-															</div>
-														</div>
-														<div class="form-group center-block" ng-show="userHasAuthorization">
-															<button type="button" class="btn btn-success" ng-click="selectPerson(person)">
-																Edit
-															</button>
-														</div>
-														<div class="form-group">
-															<div data-ng-show="error" class="text-danger">
-																<strong data-ng-bind="error"></strong>
-															</div>
-														</div>
-													</div>
-												</div>
-											</fieldset>
-										</form>
-									</div>
-									<div data-ng-switch-when="edit">
-										<form class="form" name="editPersonForm" data-ng-submit="updatePerson(person)" novalidate>
-											<fieldset>
-												<div class="row">
-													<div class="col-md-12">
-														<div class="form-group">
-															<label class="control-label" for="personNameEdit">Name</label>
-															<div class="controls">
-																<input id="personNameEdit" name="personNameEdit" type="text" class="form-control" ng-model="person.name" required>
+                        <div class="col-md-4">
+                            <div class="panel panel-default">
+                                <div class="panel-body">
+                                    <div class="alert alert-warning text-center" data-ng-hide="people.length">
+                                        No people yet
+                                    </div>
+                                    <div class="row" data-ng-show="people.length">
+                                        <div class="col-md-12">
+                                            <input id="nameFilter" type="text" class="form-control" data-ng-model="filterName" placeholder="Filter by name">
+                                        </div>
+                                    </div>
+                                    <hr>
+                                    <div class="row" style="min-height: 330px; max-height: 330px; overflow-y: auto">
+                                        <div class="col-md-12">
+                                            <button class="btn btn-default btn-block" data-ng-repeat="person in people | filter:filterName"
+                                                    data-ng-click="selectPerson(person)" data-ng-bind="person.name">
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-5" data-ng-switch="switchPersonForm">
+                            <div class="row" ng-show="userHasAuthorization" ng-switch-default="view">
+                                <div class="col-md-12">
+                                    <button class="btn btn-primary" data-ng-click="createPerson()">
+                                        New person
+                                    </button>
+                                    <button class="btn btn-success" data-ng-click="selectPersonForm('edit')" data-ng-show="person">
+                                        Edit person
+                                    </button>
+                                    <div data-ng-show="error" class="text-danger">
+                                        <strong data-ng-bind="error"></strong>
+                                    </div>
+                                </div>
+                            </div>
+                            <br>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="panel panel-default">
+                                        <div class="panel-heading">
+                                            <h6 class="panel-title" data-ng-bind="person.name"></h6>
+                                            <div class="text-center" data-ng-hide="person">
+                                                <em>Please select a person to see the details</em>
+                                            </div>
+                                        </div>
+                                        <div class="panel-body" data-ng-show="person">
+                                            <div ng-switch-default="view">
+                                                <form class="form">
+                                                    <fieldset>
+                                                        <div class="row">
+                                                            <div class="col-md-12">
+                                                                <div class="form-group">
+                                                                    <label class="control-label" for="name">Name</label>
+                                                                    <div class="controls">
+                                                                        <input id="name" disabled type="text" class="form-control" ng-model="person.name">
+                                                                    </div>
+                                                                </div>
+                                                                <div class="form-group">
+                                                                    <label class="control-label" for="title">Title</label>
+                                                                    <div class="controls">
+                                                                        <input id="title" disabled type="text" class="form-control" ng-model="person.title">
+                                                                    </div>
+                                                                </div>
+                                                                <div class="form-group">
+                                                                    <label class="control-label" for="email">Email</label>
+                                                                    <div class="controls">
+                                                                        <input id="email" disabled type="email" class="form-control" ng-model="person.email">
+                                                                    </div>
+                                                                </div>
+                                                                <div class="form-group">
+                                                                    <label class="control-label" for="phone">Phone</label>
+                                                                    <div class="controls">
+                                                                        <input id="phone" disabled type="text" class="form-control" ng-model="person.phone">
+                                                                    </div>
+                                                                </div>
+                                                                <div class="form-group">
+                                                                    <div data-ng-show="error" class="text-danger">
+                                                                        <strong data-ng-bind="error"></strong>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </fieldset>
+                                                </form>
+                                                <div class="row">
+                                                    <div class="col-md-12">
+                                                        <small>
+                                                            <em class="text-muted">
+                                                                Last updated on
+                                                                <span data-ng-bind="person.created | date:'mediumDate'"></span>
+                                                                by
+                                                                <span data-ng-bind="person.user.displayName"></span>
+                                                            </em>
+                                                        </small>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div data-ng-switch-when="edit">
+                                                <form class="form" name="editPersonForm" data-ng-submit="updatePerson(person)" novalidate>
+                                                    <fieldset>
+                                                        <div class="row">
+                                                            <div class="col-md-12">
+                                                                <div class="form-group">
+                                                                    <label class="control-label" for="personNameEdit">Name</label>
+                                                                    <div class="controls">
+                                                                        <input id="personNameEdit" name="personNameEdit" type="text" class="form-control" ng-model="person.name" required>
 																<span data-ng-show="editPersonForm.personNameEdit.$error.required">
 																	<em style="color: red">Name is required</em>
 																</span>
-															</div>
-														</div>
-														<div class="form-group">
-															<label class="control-label" for="titleEdit">Title</label>
-															<div class="controls">
-																<input id="titleEdit" type="text" class="form-control" ng-model="person.title">
-															</div>
-														</div>
-														<div class="form-group">
-															<label class="control-label" for="emailEdit">Email</label>
-															<div class="controls">
-																<input id="emailEdit" name="emailEdit" type="email" class="form-control" ng-model="person.email">
-															</div>
-															<span class="error" ng-show="editPersonForm.emailEdit.$error.email">Not a valid email address</span>
-														</div>
-														<div class="form-group">
-															<label class="control-label" for="phoneEdit">Phone</label>
-															<div class="controls">
-																<input id="phoneEdit" type="text" class="form-control" ng-model="person.phone">
-															</div>
-														</div>
-														<div class="form-group center-block">
-															<input type="submit" value="Save" class="btn btn-success" ng-disabled="editPersonForm.$invalid">
-															<a class="btn btn-danger" data-ng-click="removePerson(person)">
-																<i class="glyphicon glyphicon-trash"></i>
-															</a>
-															<button type="button" class="btn btn-info" ng-click="cancelEditPerson(person)">
-																Cancel
-															</button>
-														</div>
-														<div class="form-group">
-															<div data-ng-show="error" class="text-danger">
-																<strong data-ng-bind="error"></strong>
-															</div>
-														</div>
-													</div>
-												</div>
-											</fieldset>
-										</form>
-									</div>
-								</div>
-							</div>
-						</div>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="form-group">
+                                                                    <label class="control-label" for="titleEdit">Title</label>
+                                                                    <div class="controls">
+                                                                        <input id="titleEdit" type="text" class="form-control" ng-model="person.title">
+                                                                    </div>
+                                                                </div>
+                                                                <div class="form-group">
+                                                                    <label class="control-label" for="emailEdit">Email</label>
+                                                                    <div class="controls">
+                                                                        <input id="emailEdit" name="emailEdit" type="email" class="form-control" ng-model="person.email">
+                                                                    </div>
+                                                                    <span class="error" ng-show="editPersonForm.emailEdit.$error.email">Not a valid email address</span>
+                                                                </div>
+                                                                <div class="form-group">
+                                                                    <label class="control-label" for="phoneEdit">Phone</label>
+                                                                    <div class="controls">
+                                                                        <input id="phoneEdit" type="text" class="form-control" ng-model="person.phone">
+                                                                    </div>
+                                                                </div>
+                                                                <div class="pull-right">
+                                                                    <input type="submit" value="Save" class="btn btn-success" ng-disabled="editPersonForm.$invalid">
+                                                                    <a class="btn btn-danger" data-ng-click="removePerson(person)">
+                                                                        <i class="glyphicon glyphicon-trash"></i>
+                                                                    </a>
+                                                                    <button type="button" class="btn btn-info" ng-click="cancelEditPerson(person)">
+                                                                        Cancel
+                                                                    </button>
+                                                                </div>
+                                                                <div class="form-group">
+                                                                    <div data-ng-show="error" class="text-danger">
+                                                                        <strong data-ng-bind="error"></strong>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </fieldset>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
 					</div>
 				</tab>
 				<tab heading="Project stakeholders">

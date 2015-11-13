@@ -6,15 +6,23 @@ angular.module('log-milestone-setup').controller('LogMilestoneSetupController', 
 
 		// ----------- INIT ---------------
 
+		$scope.initError = [];
+
 		$scope.init = function(){
 			MilestoneStates.query(function(milestoneStates){
-				ProjectMilestoneTypes.query(function(projectMilestoneTypes){
-					PortfolioMilestoneTypes.query(function(portfolioMilestoneTypes){
-						$scope.milestoneStates = milestoneStates;
-						$scope.projectMilestoneTypes = projectMilestoneTypes;
-						$scope.portfolioMilestoneTypes = portfolioMilestoneTypes;
-					});
-				});
+				$scope.milestoneStates = milestoneStates;
+			}, function(err){
+				$scope.initError.push(err.data.message);
+			});
+			ProjectMilestoneTypes.query(function(projectMilestoneTypes){
+				$scope.projectMilestoneTypes = projectMilestoneTypes;
+			}, function(err){
+				$scope.initError.push(err.data.message);
+			});
+			PortfolioMilestoneTypes.query(function(portfolioMilestoneTypes){
+				$scope.portfolioMilestoneTypes = portfolioMilestoneTypes;
+			}, function(err){
+				$scope.initError.push(err.data.message);
 			});
 		};
 
@@ -50,8 +58,11 @@ angular.module('log-milestone-setup').controller('LogMilestoneSetupController', 
 		// ------------------- LIST STATES -----------------
 
 		$scope.findMilestoneStates = function() {
+			$scope.initError = [];
 			MilestoneStates.query(function(states){
 				$scope.milestoneStates = states;
+			}, function(err){
+				$scope.initError.push(err.data.message);
 			});
 		};
 
@@ -125,8 +136,11 @@ angular.module('log-milestone-setup').controller('LogMilestoneSetupController', 
 		// ------------------- LIST TYPES -----------------
 
 		$scope.findProjectMilestoneTypes = function() {
+			$scope.initError = [];
 			ProjectMilestoneTypes.query(function(types){
 				$scope.projectMilestoneTypes = types;
+			}, function(err){
+				$scope.initError.push(err.data.message);
 			});
 		};
 
@@ -203,8 +217,11 @@ angular.module('log-milestone-setup').controller('LogMilestoneSetupController', 
 		// ------------------- LIST TYPES -----------------
 
 		$scope.findPortfolioMilestoneTypes = function() {
+			$scope.initError = [];
 			PortfolioMilestoneTypes.query(function(types){
 				$scope.portfolioMilestoneTypes = types;
+			}, function(err){
+				$scope.initError.push(err.data.message);
 			});
 		};
 

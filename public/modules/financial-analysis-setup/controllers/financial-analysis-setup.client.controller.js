@@ -7,19 +7,29 @@ angular.module('financial-analysis-setup').controller('FinancialAnalysisSetupCon
 
 		// ------------- INIT -------------
 
+        $scope.initError = [];
+
 		$scope.init = function(){
             FinancialBenefitGroups.query(function(benefitGroups){
-                FinancialBenefits.query(function(benefits){
-                    FinancialCostGroups.query(function(costGroups){
-                        FinancialCosts.query(function(costs){
-                            $scope.benefitGroups = benefitGroups;
-                            $scope.costGroups = costGroups;
-                            $scope.benefits = benefits;
-                            $scope.costs = costs;
-                        });
-                    });
-                });
-			});
+                $scope.benefitGroups = benefitGroups;
+            }, function(err){
+                $scope.initError.push(err.data.message);
+            });
+            FinancialBenefits.query(function(benefits){
+                $scope.benefits = benefits;
+            }, function(err){
+                $scope.initError.push(err.data.message);
+            });
+            FinancialCostGroups.query(function(costGroups){
+                $scope.costGroups = costGroups;
+            }, function(err){
+                $scope.initError.push(err.data.message);
+            });
+            FinancialCosts.query(function(costs){
+                $scope.costs = costs;
+            }, function(err){
+                $scope.initError.push(err.data.message);
+            });
 		};
 
 		// ------- ROLES FOR BUTTONS ------
@@ -58,9 +68,12 @@ angular.module('financial-analysis-setup').controller('FinancialAnalysisSetupCon
 		// ----------------- REFRESH BENEFIT GROUP LIST ------------
 
 		$scope.benefitGroupList = function(){
+            $scope.initError = [];
             FinancialBenefitGroups.query(function(groups){
 				$scope.benefitGroups = groups;
-			});
+			}, function(err){
+                $scope.initError.push(err.data.message);
+            });
 		};
 
 		// ------------------ CREATE BENEFIT GROUP ----------------
@@ -200,8 +213,11 @@ angular.module('financial-analysis-setup').controller('FinancialAnalysisSetupCon
         // ----------------- REFRESH COST GROUP LIST ------------
 
         $scope.costGroupList = function(){
+            $scope.initError = [];
             FinancialCostGroups.query(function(groups){
                 $scope.costGroups = groups;
+            }, function(err){
+                $scope.initError.push(err.data.message);
             });
         };
 

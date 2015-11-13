@@ -6,19 +6,28 @@ angular.module('qualitative-analysis-setup').controller('QualitativeAnalysisSetu
 
 		// ------------- INIT -------------
 
+        $scope.initError = [];
+
 		$scope.init = function(){
-			QualitativeImpacts.query(function(impacts){
-				QualitativeImpactGroups.query(function(groups){
-					QualitativeImpactScores.query(function(scores){
-						$scope.impactScores = scores;
-						$scope.impacts = impacts;
-						$scope.impactGroups = groups;
 
-                        $scope.totalGroupWeights = calculateTotalGroupWeights(groups);
+            QualitativeImpacts.query(function(impacts){
+                $scope.impacts = impacts;
+            }, function(err){
+                $scope.initError.push(err.data.message);
+            });
 
-                    });
-				});
-			});
+            QualitativeImpactGroups.query(function(groups){
+                $scope.impactGroups = groups;
+            }, function(err){
+                $scope.initError.push(err.data.message);
+            });
+
+            QualitativeImpactScores.query(function(scores){
+                $scope.impactScores = scores;
+            }, function(err){
+                $scope.initError.push(err.data.message);
+            });
+
 		};
 
 		// ------- ROLES FOR BUTTONS ------
@@ -47,9 +56,12 @@ angular.module('qualitative-analysis-setup').controller('QualitativeAnalysisSetu
 		// ------------------- LIST OF SCORES -----------------
 
 		$scope.findScores = function() {
+            $scope.initError = [];
 			QualitativeImpactScores.query(function(scores){
 				$scope.impactScores = scores;
-			});
+			}, function(err){
+                $scope.initError.push(err.data.message);
+            });
 		};
 
 		// ------------------- EDIT -----------------
@@ -147,9 +159,12 @@ angular.module('qualitative-analysis-setup').controller('QualitativeAnalysisSetu
 		// ----------------- REFRESH GROUP LIST ------------
 
 		$scope.groupList = function(){
+            $scope.initError = [];
 			QualitativeImpactGroups.query(function(groups){
 				$scope.impactGroups = groups;
                 $scope.totalGroupWeights = calculateTotalGroupWeights(groups);
+            }, function(err){
+                $scope.initError.push(err.data.message);
             });
 		};
 

@@ -6,21 +6,32 @@ angular.module('portfolio-setup').controller('PortfolioSetupController', ['$scop
 
 		// ----------- INIT ---------------
 
+		$scope.initError = [];
+
 		$scope.init = function(){
+
 			Subusers.query(function(users){
-				Portfolios.query(function(portfolios){
-					PortfolioTypes.query(function(portfolioTypes){
-						$scope.users = users;
-						$scope.portfolios = portfolios;
-						$scope.portfolioTrees = createNodeTrees($scope.portfolios);
-						$scope.portfolioTypes = _.clone(portfolioTypes);
-						$scope.portfolioManagers = _.filter(users, function(user){
-							return _.find(_.get(user,'roles'), function(role){
-								return role === 'portfolioManager';
-							});
-						});
+				$scope.users = users;
+				$scope.portfolioManagers = _.filter(users, function(user){
+					return _.find(_.get(user,'roles'), function(role){
+						return role === 'portfolioManager';
 					});
 				});
+			}, function(err){
+				$scope.initError.push(err.data.message);
+			});
+
+			Portfolios.query(function(portfolios){
+				$scope.portfolios = portfolios;
+				$scope.portfolioTrees = createNodeTrees(portfolios);
+			}, function(err){
+				$scope.initError.push(err.data.message);
+			});
+
+			PortfolioTypes.query(function(portfolioTypes){
+				$scope.portfolioTypes = _.clone(portfolioTypes);
+			}, function(err){
+				$scope.initError.push(err.data.message);
 			});
 		};
 
@@ -55,8 +66,11 @@ angular.module('portfolio-setup').controller('PortfolioSetupController', ['$scop
 		// ------------------- LIST OF TYPES -----------------
 
 		$scope.findTypes = function() {
+			$scope.initError = [];
 			PortfolioTypes.query(function(types){
 				$scope.portfolioTypes = _.clone(types);
+			}, function(err){
+				$scope.initError.push(err.data.message);
 			});
 		};
 
@@ -164,9 +178,12 @@ angular.module('portfolio-setup').controller('PortfolioSetupController', ['$scop
 		// ------------- REFRESH PORTFOLIO LIST ------------
 
 		$scope.portfolioList = function(){
+			$scope.initError = [];
 			Portfolios.query(function(portfolios){
 				$scope.portfolios = portfolios;
-				$scope.portfolioTrees = createNodeTrees($scope.portfolios);
+				$scope.portfolioTrees = createNodeTrees(portfolios);
+			}, function(err){
+				$scope.initError.push(err.data.message);
 			});
 		};
 

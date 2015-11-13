@@ -7,25 +7,46 @@ angular.module('risk-analysis-setup').controller('RiskAnalysisSetupController', 
 
 		// ------------- INIT -------------
 
+        $scope.initError = [];
+
 		$scope.init = function(){
-			RiskCategories.query(function(categories){
-				RiskImpacts.query(function(impacts){
-					RiskProbabilities.query(function(probabilities){
-						RiskSeverities.query(function(severities){
-							RiskSeverityAssignments.query(function(severityAssignments){
-								Risks.query(function(risks){
-									$scope.risks = risks;
-									$scope.severityAssignments = severityAssignments;
-									$scope.severities = severities;
-									$scope.probabilities = probabilities;
-									$scope.impacts = impacts;
-									$scope.riskCategories = categories;
-								});
-							});
-						});
-					});
-				});
-			});
+
+            RiskCategories.query(function(categories){
+                $scope.riskCategories = categories;
+            }, function(err){
+                $scope.initError.push(err.data.message);
+            });
+
+            RiskImpacts.query(function(impacts){
+                $scope.impacts = impacts;
+            }, function(err){
+                $scope.initError.push(err.data.message);
+            });
+
+            RiskProbabilities.query(function(probabilities){
+                $scope.probabilities = probabilities;
+            }, function(err){
+                $scope.initError.push(err.data.message);
+            });
+
+            RiskSeverities.query(function(severities){
+                $scope.severities = severities;
+            }, function(err){
+                $scope.initError.push(err.data.message);
+            });
+
+            RiskSeverityAssignments.query(function(severityAssignments){
+                $scope.severityAssignments = severityAssignments;
+            }, function(err){
+                $scope.initError.push(err.data.message);
+            });
+
+            Risks.query(function(risks){
+                $scope.risks = risks;
+            }, function(err){
+                $scope.initError.push(err.data.message);
+            });
+
 		};
 
 		// ------- ROLES FOR BUTTONS ------
@@ -69,9 +90,12 @@ angular.module('risk-analysis-setup').controller('RiskAnalysisSetupController', 
 		// ----------------- REFRESH RISK CATEGORY LIST ------------
 
 		$scope.riskCategoryList = function(){
+            $scope.initError = [];
 			RiskCategories.query(function(categories){
 				$scope.riskCategories = categories;
-			});
+			}, function(err){
+                $scope.initError.push(err.data.message);
+            });
 		};
 
 		// ------------------ CREATE RISK CATEGORY ----------------
@@ -209,8 +233,11 @@ angular.module('risk-analysis-setup').controller('RiskAnalysisSetupController', 
         // ----------------- REFRESH IMPACT LIST ------------
 
         $scope.impactList = function(){
+            $scope.initError = [];
             RiskImpacts.query(function(impacts){
                 $scope.impacts = impacts;
+            }, function(err){
+                $scope.initError.push(err.data.message);
             });
         };
 
@@ -294,8 +321,11 @@ angular.module('risk-analysis-setup').controller('RiskAnalysisSetupController', 
         // ----------------- REFRESH PROBABILITY LIST ------------
 
         $scope.probabilityList = function(){
+            $scope.initError = [];
             RiskProbabilities.query(function(probabilities){
                 $scope.probabilities = probabilities;
+            }, function(err){
+                $scope.initError.push(err.data.message);
             });
         };
 
@@ -413,8 +443,11 @@ angular.module('risk-analysis-setup').controller('RiskAnalysisSetupController', 
         // ------------------- LIST OF SEVERITIES -----------------
 
         $scope.findSeverities = function() {
+            $scope.initError = [];
             RiskSeverities.query(function(severities){
                 $scope.severities = severities;
+            }, function(err){
+                $scope.initError.push(err.data.message);
             });
         };
 
@@ -468,7 +501,7 @@ angular.module('risk-analysis-setup').controller('RiskAnalysisSetupController', 
         $scope.createSeverity = function() {
             $scope.error = null;
             var severity = new RiskSeverities ({
-                name: 'New priority value',
+                name: 'New severity',
                 value: 0,
                 position: $scope.severities.length + 1
             });
@@ -505,6 +538,7 @@ angular.module('risk-analysis-setup').controller('RiskAnalysisSetupController', 
         // ------------------- LIST OF ASSIGNMENTS -----------------
 
         $scope.assignmentsList = function() {
+            $scope.initError = [];
             RiskSeverityAssignments.query(function(assignments){
                 $scope.severityAssignments = assignments;
             },function(errorResponse) {

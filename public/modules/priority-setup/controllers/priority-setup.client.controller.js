@@ -6,16 +6,28 @@ angular.module('priority-setup').controller('PrioritySetupController', ['$scope'
 
 		// ------------- INIT -------------
 
+        $scope.initError = [];
+
 		$scope.init = function(){
+
 			Priorities.query(function(priorities){
-				PriorityGroups.query(function(groups){
-					PriorityValues.query(function(values){
-						$scope.priorityValues = values;
-						$scope.priorities = priorities;
-						$scope.priorityGroups = groups;
-					});
-				});
+				$scope.priorities = priorities;
+			}, function(err){
+				$scope.initError.push(err.data.message);
 			});
+
+			PriorityGroups.query(function(groups){
+				$scope.priorityGroups = groups;
+			}, function(err){
+				$scope.initError.push(err.data.message);
+			});
+
+			PriorityValues.query(function(values){
+				$scope.priorityValues = values;
+			}, function(err){
+				$scope.initError.push(err.data.message);
+			});
+
 		};
 
 		// ------- ROLES FOR BUTTONS ------
@@ -78,9 +90,12 @@ angular.module('priority-setup').controller('PrioritySetupController', ['$scope'
 		// ------------------- LIST OF VALUES -----------------
 
 		$scope.findValues = function() {
+            $scope.initError = [];
 			PriorityValues.query(function(values){
 				$scope.priorityValues = values;
-			});
+			}, function(err){
+                $scope.initError.push(err.data.message);
+            });
 		};
 
 		// ------------------- EDIT -----------------
@@ -139,7 +154,7 @@ angular.module('priority-setup').controller('PrioritySetupController', ['$scope'
 			});
 			priorityValue.$save(function(response) {
 				$scope.findValues();
-				$scope.selectValueForm(response._id, 'view');
+				$scope.selectValueForm('view');
 
 			}, function(errorResponse) {
 				$scope.error = errorResponse.data.message;
@@ -171,9 +186,12 @@ angular.module('priority-setup').controller('PrioritySetupController', ['$scope'
 		// ----------------- REFRESH GROUP LIST ------------
 
 		$scope.groupList = function(){
+            $scope.initError = [];
 			PriorityGroups.query(function(groups){
 				$scope.priorityGroups = groups;
-			});
+			}, function(err){
+                $scope.initError.push(err.data.message);
+            });
 		};
 
 		// ------------------ CREATE GROUP ----------------

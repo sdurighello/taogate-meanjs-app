@@ -6,14 +6,23 @@ angular.module('strategy-node-setup').controller('StrategyNodeSetupController', 
 
 		// ----------- INIT ---------------
 
+        $scope.initError = [];
+
 		$scope.init = function(){
-			StrategyNodes.query(function(strategyNodes){
-				StrategyNodeTypes.query(function(strategyNodeTypes){
-					$scope.strategyNodes = strategyNodes;
-					$scope.strategyTrees = createNodeTrees(strategyNodes);
-					$scope.strategyNodeTypes = strategyNodeTypes;
-				});
-			});
+
+            StrategyNodes.query(function(strategyNodes){
+                $scope.strategyNodes = strategyNodes;
+                $scope.strategyTrees = createNodeTrees(strategyNodes);
+            }, function(err){
+                $scope.initError.push(err.data.message);
+            });
+
+            StrategyNodeTypes.query(function(strategyNodeTypes){
+                $scope.strategyNodeTypes = strategyNodeTypes;
+            }, function(err){
+                $scope.initError.push(err.data.message);
+            });
+
 		};
 
 
@@ -45,9 +54,12 @@ angular.module('strategy-node-setup').controller('StrategyNodeSetupController', 
 		// ------------------- LIST OF TYPES -----------------
 
 		$scope.findTypes = function() {
+            $scope.initError = [];
 			StrategyNodeTypes.query(function(types){
 				$scope.strategyNodeTypes = types;
-			});
+			}, function(err){
+                $scope.initError.push(err.data.message);
+            });
 		};
 
 		// ------------------- EDIT -----------------
@@ -146,10 +158,13 @@ angular.module('strategy-node-setup').controller('StrategyNodeSetupController', 
 		// ------------- REFRESH NODES LIST ------------
 
 		$scope.strategyNodeList = function(){
+            $scope.initError = [];
 			StrategyNodes.query(function(strategyNodes){
 				$scope.strategyNodes = strategyNodes;
-				$scope.strategyTrees = createNodeTrees($scope.strategyNodes);
-			});
+				$scope.strategyTrees = createNodeTrees(strategyNodes);
+			}, function(err){
+                $scope.initError.push(err.data.message);
+            });
 		};
 
 		// ------------------- NG-SWITCH ---------------------

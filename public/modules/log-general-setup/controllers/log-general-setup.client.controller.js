@@ -6,12 +6,18 @@ angular.module('log-general-setup').controller('LogGeneralSetupController', ['$s
 
 		// ----------- INIT ---------------
 
+		$scope.initError = [];
+
 		$scope.init = function(){
 			LogPriorities.query(function(priorities){
-				LogReasons.query(function(reasons){
-					$scope.logPriorities = priorities;
-					$scope.logReasons = reasons;
-				});
+				$scope.logPriorities = priorities;
+			}, function(err){
+				$scope.initError.push(err.data.message);
+			});
+			LogReasons.query(function(reasons){
+				$scope.logReasons = reasons;
+			}, function(err){
+				$scope.initError.push(err.data.message);
 			});
 		};
 
@@ -76,8 +82,11 @@ angular.module('log-general-setup').controller('LogGeneralSetupController', ['$s
 		// ------------------- LIST OF VALUES -----------------
 
 		$scope.findValues = function() {
+			$scope.initError = [];
 			LogPriorities.query(function(values){
 				$scope.logPriorities = values;
+			}, function(err){
+				$scope.initError.push(err.data.message);
 			});
 		};
 
@@ -163,8 +172,11 @@ angular.module('log-general-setup').controller('LogGeneralSetupController', ['$s
 		// ------------------- LIST OF REASONS -----------------
 
 		$scope.findReasons = function() {
+			$scope.initError = [];
 			LogReasons.query(function(reasons){
 				$scope.logReasons = reasons;
+			}, function(err){
+				$scope.initError.push(err.data.message);
 			});
 		};
 

@@ -6,13 +6,19 @@ angular.module('dependency-setup').controller('DependencySetupController', ['$sc
 
 		// ------------- INIT -------------
 
+        $scope.initError = [];
+
 		$scope.init = function(){
-			DependencyImpacts.query(function(impacts){
-				DependencyTypes.query(function(types){
-					$scope.dependencyImpacts = impacts;
-					$scope.dependencyTypes = types;
-				});
-			});
+            DependencyImpacts.query(function(impacts){
+                $scope.dependencyImpacts = impacts;
+            }, function(err){
+                $scope.initError.push(err.data.message);
+            });
+            DependencyTypes.query(function(types){
+                $scope.dependencyTypes = types;
+            }, function(err){
+                $scope.initError.push(err.data.message);
+            });
 		};
 
 		// ------- ROLES FOR BUTTONS ------
@@ -75,9 +81,12 @@ angular.module('dependency-setup').controller('DependencySetupController', ['$sc
 		// ------------------- LIST OF IMPACTS -----------------
 
 		$scope.findImpacts = function() {
+            $scope.initError = [];
 			DependencyImpacts.query(function(impacts){
 				$scope.dependencyImpacts = impacts;
-			});
+			}, function(err){
+                $scope.initError.push(err.data.message);
+            });
 		};
 
 		// ------------------- EDIT -----------------
@@ -167,9 +176,12 @@ angular.module('dependency-setup').controller('DependencySetupController', ['$sc
 		// ------------------- LIST OF TYPES -----------------
 
 		$scope.findTypes = function() {
+            $scope.initError = [];
 			DependencyTypes.query(function(types){
 				$scope.dependencyTypes = types;
-			});
+			}, function(err){
+                $scope.initError.push(err.data.message);
+            });
 		};
 
 		// ------------------- EDIT -----------------
