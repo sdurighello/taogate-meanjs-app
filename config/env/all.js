@@ -31,7 +31,7 @@ module.exports = {
 				'public/lib/angular-bootstrap/ui-bootstrap-tpls.js',
 				'public/lib/checklist-model/checklist-model.js',
 				'public/lib/ng-sortable/dist/ng-sortable.js'
-			]
+            ]
 		},
 		css: [
 			'public/modules/**/css/*.css'

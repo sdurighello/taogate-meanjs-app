@@ -29,7 +29,7 @@ angular.module('log-general-setup').controller('LogGeneralSetupController', ['$s
 		});
 
 
-		// ---------------------------------------------------- PRIORITY VALUES --------------------------------------
+		// ---------------------------------------------------- LOG PRIORITIES --------------------------------------
 
 		// ------------------- DRAG AND DROP LISTENERS -------
 

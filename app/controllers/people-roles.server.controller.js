@@ -59,7 +59,8 @@ exports.update = function(req, res) {
  */
 exports.delete = function(req, res) {
 	var peopleRole = req.peopleRole ;
-	var PeopleGroup = mongoose.mtModel(req.user.tenantId + '.' + 'PeopleGroup');
+	var PeopleProjectGroup = mongoose.mtModel(req.user.tenantId + '.' + 'PeopleProjectGroup');
+	var PeoplePortfolioGroup = mongoose.mtModel(req.user.tenantId + '.' + 'PeoplePortfolioGroup');
 
 	async.series([
 		function(callback){
@@ -68,8 +69,19 @@ exports.delete = function(req, res) {
 			callback(null, 'one');
 		},
 		function(callback){
-			// Delete role from groups where assigned
-			PeopleGroup.find({roles: {$in: [peopleRole._id]}}).exec(function(err, groups){
+			// Delete role from PROJECT groups where assigned
+			PeopleProjectGroup.find({roles: {$in: [peopleRole._id]}}).exec(function(err, groups){
+				async.each(groups, function(item, callback){
+					item.roles.splice(item.roles.indexOf(peopleRole._id), 1);
+					item.save();
+					callback();
+				});
+			});
+			callback(null, 'three');
+		},
+		function(callback){
+			// Delete role from PORTFOLIO groups where assigned
+			PeoplePortfolioGroup.find({roles: {$in: [peopleRole._id]}}).exec(function(err, groups){
 				async.each(groups, function(item, callback){
 					item.roles.splice(item.roles.indexOf(peopleRole._id), 1);
 					item.save();

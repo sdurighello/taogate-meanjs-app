@@ -1,0 +1,263 @@
+<section data-ng-controller="DependencySetupController" data-ng-init="init()">
+	<br>
+	<div class="row">
+		<div class="col-sm-12">
+			<div class="panel-heading">
+				<ol class="breadcrumb">
+					<li>Setup</li>
+					<li>Portfolio definition</li>
+					<li class="active">Dependencies</li>
+				</ol>
+			</div>
+		</div>
+	</div>
+	<div class="row">
+		<div class="col-md-12">
+			<tabset>
+				<tab heading="Dependency impacts">
+					<br>
+					<div class="row">
+						<div class="col-md-5">
+							<div class="panel panel-default">
+								<div class="panel-heading" data-ng-hide="dependencyImpact || !userHasAuthorization">
+									<div class="text-center">
+										<em>Drag and drop to order by impact. Top is highest impact.</em>
+									</div>
+								</div>
+								<div class="panel-body" data-as-sortable="dragControlListeners" data-ng-model="dependencyImpacts"
+									 style="overflow-y: auto; max-height: 500px; min-height: 500px;">
+									<div class="alert alert-warning text-center" data-ng-hide="dependencyImpacts.length">
+										<span>No impacts yet</span>
+									</div>
+									<button data-ng-repeat="impact in dependencyImpacts" data-as-sortable-item data-ng-click="selectImpact(impact)"
+											class="btn btn-default btn-lg btn-block center-block" style="overflow: hidden;">
+										<div data-as-sortable-item-handle>
+											<div class="row">
+												<div class="col-md-2">
+													<span class="badge" data-ng-bind="impact.position"></span>
+												</div>
+												<div class="col-md-10 text-center" data-ng-bind="impact.name"></div>
+											</div>
+										</div>
+									</button>
+								</div>
+							</div>
+						</div>
+						<div class="col-md-4" data-ng-switch="switchImpactForm">
+							<div class="row" ng-show="userHasAuthorization" ng-switch-default="view">
+								<div class="col-md-12">
+									<button class="btn btn-primary" data-ng-click="createImpact()">
+										New impact
+									</button>
+									<button class="btn btn-success" data-ng-click="selectImpactForm('edit')" data-ng-show="dependencyImpact">
+										Edit
+									</button>
+									<div data-ng-show="error" class="text-danger">
+										<strong data-ng-bind="error"></strong>
+									</div>
+								</div>
+							</div>
+							<br>
+							<div class="row">
+								<div class="col-md-12">
+									<div class="panel panel-default">
+										<div class="panel-heading">
+											<h6 class="panel-title" data-ng-bind="dependencyImpact.name"></h6>
+											<div class="text-center" data-ng-hide="dependencyImpact">
+												<em>Please select a dependency impact to see the details</em>
+											</div>
+										</div>
+										<div class="panel-body" data-ng-show="dependencyImpact">
+											<div ng-switch-default="view">
+												<form class="form">
+													<fieldset>
+														<div class="row">
+															<div class="col-md-12">
+																<div class="form-group">
+																	<label class="control-label">Impact name</label>
+																	<div class="controls">
+																		<input disabled type="text" class="form-control" ng-model="dependencyImpact.name">
+																	</div>
+																</div>
+																<div class="form-group">
+																	<label class="control-label">Numerical value</label>
+																	<div class="controls">
+																		<input disabled type="number" class="form-control" ng-model="dependencyImpact.numericalValue">
+																	</div>
+																</div>
+																<div class="form-group">
+																	<label class="control-label">Impact description</label>
+																	<div class="controls">
+																		<textarea disabled class="form-control" ng-model="dependencyImpact.description"></textarea>
+																	</div>
+																</div>
+																<div class="form-group">
+																	<div data-ng-show="error" class="text-danger">
+																		<strong data-ng-bind="error"></strong>
+																	</div>
+																</div>
+															</div>
+														</div>
+													</fieldset>
+												</form>
+												<div class="row">
+													<div class="col-md-12">
+														<small>
+															<em class="text-muted">
+																Last updated on
+																<span data-ng-bind="dependencyImpact.created | date:'mediumDate'"></span>
+																by
+																<span data-ng-bind="dependencyImpact.user.displayName"></span>
+															</em>
+														</small>
+													</div>
+												</div>
+											</div>
+											<div data-ng-switch-when="edit">
+												<form class="form" data-ng-submit="updateImpact(dependencyImpact)" novalidate name="editDependencyImpactForm">
+													<fieldset>
+														<div class="row">
+															<div class="col-md-12">
+																<div class="form-group">
+																	<label class="control-label" for="editImpactName">Impact name</label>
+																	<div class="controls">
+																		<input type="text" id="editImpactName" class="form-control" name="editImpactName"
+																			   data-ng-model="dependencyImpact.name" placeholder="Name" required>
+																	</div>
+                                                                    <span data-ng-show="editDependencyImpactForm.editImpactName.$error.required">
+                                                                        <em style="color: red">Name is required</em>
+                                                                    </span>
+																</div>
+																<div class="form-group">
+																	<label class="control-label" for="numerical">Numerical value</label>
+																	<div class="controls">
+																		<input type="number" id="numerical" class="form-control" min="0" step="1" onkeyup="this.value=this.value.replace(/[^0-9]/g,'');"
+																			   data-ng-model="dependencyImpact.numericalValue" placeholder="Enter positive integer" required>
+																	</div>
+																</div>
+																<div class="form-group">
+																	<label class="control-label" for="description">Impact description</label>
+																	<div class="controls">
+                                                        <textarea id="description" class="form-control"
+																  data-ng-model="dependencyImpact.description" placeholder="Description">
+                                                        </textarea>
+																	</div>
+																</div>
+																<div class="pull-right">
+																	<input type="submit" value="Save" class="btn btn-success" data-ng-disabled="editDependencyImpactForm.$invalid">
+																	<a class="btn btn-danger" data-ng-click="removeImpact(dependencyImpact)">
+																		<i class="glyphicon glyphicon-trash"></i>
+																	</a>
+																	<button type="button" class="btn btn-info" data-ng-click="cancelEditImpact(dependencyImpact)">
+																		Cancel
+																	</button>
+																</div>
+																<div class="form-group">
+																	<div data-ng-show="error" class="text-danger">
+																		<strong data-ng-bind="error"></strong>
+																	</div>
+																</div>
+															</div>
+														</div>
+													</fieldset>
+												</form>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</tab>
+				<tab heading="Dependency types">
+					<br>
+					<div class="row" ng-show="userHasAuthorization">
+						<div class="col-md-3">
+							<br>
+							<button class="btn btn-primary"
+									ng-click="createType()">
+								New dependency type
+							</button>
+						</div>
+					</div>
+					<hr>
+					<div class="row">
+						<div class="alert alert-warning text-center" data-ng-hide="dependencyTypes.length">
+							No dependency types yet
+						</div>
+						<div class="col-md-4" data-ng-repeat="type in dependencyTypes" data-ng-switch="switchTypeForm[type._id]" >
+							<div class="panel panel-default" title="Last updated on {{type.created | date:'medium'}} by {{type.user.displayName}}">
+								<div class="panel-heading">
+									<h6 class="panel-title text-center" data-ng-bind="type.name"></h6>
+								</div>
+								<div class="panel-body">
+									<div ng-switch-default="view">
+										<form class="form">
+											<fieldset>
+												<div class="row">
+													<div class="col-md-12">
+														<div class="form-group">
+															<label for="name" class="control-label">Name</label>
+															<input id="name" disabled type="text" class="form-control" data-ng-model="type.name">
+														</div>
+														<div class="form-group">
+															<label for="description" class="control-label">Description</label>
+															<textarea id="description" disabled class="form-control" data-ng-model="type.description"></textarea>
+														</div>
+														<button type="button" class="btn btn-success pull-right" data-ng-show="userHasAuthorization"
+																data-ng-click="selectType(type)">
+															Edit
+														</button>
+														<div data-ng-show="error" class="text-danger">
+															<strong data-ng-bind="error"></strong>
+														</div>
+													</div>
+												</div>
+											</fieldset>
+										</form>
+									</div>
+									<div data-ng-switch-when="edit">
+										<form class="form" name="editTypeForm" data-ng-submit="updateType(type)" novalidate>
+											<fieldset>
+												<div class="row">
+													<div class="col-md-12">
+														<div class="form-group">
+															<label for="typeNameEdit" class="control-label">Name</label>
+															<input type="text" id="typeNameEdit" class="form-control" name="typeNameEdit"
+																   data-ng-model="type.name" placeholder="Name" required>
+                                                            <span data-ng-show="editTypeForm.typeNameEdit.$error.required">
+                                                                <em style="color: red">Name is required</em>
+                                                            </span>
+														</div>
+														<div class="form-group">
+															<label for="descriptionEdit" class="control-label">Description</label>
+                                                            <textarea id="descriptionEdit" class="form-control"
+																	  data-ng-model="type.description" placeholder="Description">
+                                                            </textarea>
+														</div>
+														<div class="pull-right">
+															<input type="submit" value="Save" class="btn btn-success" data-ng-disabled="editTypeForm.$invalid">
+															<a class="btn btn-danger" data-ng-click="removeType(type)" data-ng-show="userHasAuthorization">
+																<i class="glyphicon glyphicon-trash"></i>
+															</a>
+															<button type="button" class="btn btn-info" data-ng-click="cancelEditType(type)">
+																Cancel
+															</button>
+														</div>
+														<div data-ng-show="error" class="text-danger">
+															<strong data-ng-bind="error"></strong>
+														</div>
+													</div>
+												</div>
+											</fieldset>
+										</form>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</tab>
+			</tabset>
+		</div>
+	</div>
+</section>
