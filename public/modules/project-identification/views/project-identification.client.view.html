@@ -43,7 +43,7 @@
                 <div class="row" ng-show="userHasAuthorization">
                     <div class="col-md-12">
                         <button class="btn btn-primary" data-ng-click="selectProjectForm('new')">
-                            New value
+                            New project
                         </button>
                     </div>
                     <hr>
@@ -84,7 +84,7 @@
                                     <label for="projectStart">Requested Start</label>
                                     <div class="input-group">
                                         <input type="text" id="projectStart" class="form-control" datepicker-popup="dd-MMMM-yyyy" data-ng-model="newProject.reqStartDate"
-                                               is-open="$parent.startDatePickerOpenedNew" min-date="" max-date="newProject.reqEndDate" />
+                                               placeholder="YYYY/MM/dd" is-open="$parent.startDatePickerOpenedNew" min-date="" max-date="newProject.reqEndDate" />
                                         <span class="input-group-btn">
                                             <button type="button" class="btn btn-default btn-sm" ng-click="openStartDatePickerNew($event)"><i class="glyphicon glyphicon-calendar"></i></button>
                                         </span>
@@ -94,7 +94,7 @@
                                     <label for="projectEnd">Requested End</label>
                                     <div class="input-group">
                                         <input id="projectEnd" type="text" class="form-control" datepicker-popup="dd-MMMM-yyyy" data-ng-model="newProject.reqEndDate"
-                                               is-open="$parent.endDatePickerOpenedNew" min-date="newProject.reqStartDate" max-date="" />
+                                               placeholder="YYYY/MM/dd" is-open="$parent.endDatePickerOpenedNew" min-date="newProject.reqStartDate" max-date="" />
                                         <span class="input-group-btn">
                                             <button type="button" class="btn btn-default btn-sm" ng-click="openEndDatePickerNew($event)"><i class="glyphicon glyphicon-calendar"></i></button>
                                         </span>
@@ -103,7 +103,7 @@
                                 <div class="form-group-sm col-md-4">
                                     <label for="projectFunds">Earmarked funds</label>
                                     <input id="projectFunds" type="number" min="0" class="form-control"
-                                           ng-model="newProject.earmarkedFunds">
+                                           ng-model="newProject.earmarkedFunds" placeholder="Enter amount">
                                 </div>
                             </div>
                             <br>

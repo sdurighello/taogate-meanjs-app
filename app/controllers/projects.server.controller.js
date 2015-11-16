@@ -94,8 +94,8 @@ exports.list = function(req, res) {
 exports.projectByID = function(req, res, next, id) {
     var Project = mongoose.mtModel(req.user.tenantId + '.' + 'Project');
 	Project.findById(id).populate('user', 'displayName').deepPopulate([
-        'projectManager','backupProjectManager','process',
-        'identification.parent','identification.portfolio'
+        'identification.projectManager','identification.backupProjectManager',
+        'process','parent','portfolio'
     ]).exec(function(err, project) {
 		if (err) return next(err);
 		if (! project) return next(new Error('Failed to load Project ' + id));

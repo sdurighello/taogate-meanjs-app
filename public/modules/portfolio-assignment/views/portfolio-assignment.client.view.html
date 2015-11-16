@@ -1,0 +1,123 @@
+<section data-ng-controller="PortfolioAssignmentController" data-ng-init="init()">
+	<br>
+	<div class="row">
+		<div class="col-sm-12">
+			<div class="panel-heading">
+				<ol class="breadcrumb">
+					<li>Portfolio definition</li>
+					<li>Identification</li>
+					<li class="active">Portfolio assignment</li>
+				</ol>
+			</div>
+		</div>
+	</div>
+	<div data-ng-show="initError" class="text-danger">
+		<strong data-ng-bind="initError"></strong>
+	</div>
+	<div class="row">
+		<div class="col-md-4">
+			<div class="panel panel-default">
+				<div class="panel-heading">
+					<h6 class="panel-title text-center">Portfolio tree</h6>
+				</div>
+				<div class="panel-body" style="min-height: 500px;  max-height: 500px; overflow-y: auto;">
+					<div class="alert alert-warning text-center" data-ng-hide="!portfolios.$resolved || portfolios.length">
+						No portfolios yet
+					</div>
+					<script type="text/ng-template" id="portfolioTree">
+						<hr>
+						<button class="btn btn-default" data-ng-click="selectNode(tree.node);">
+							<span data-ng-bind="tree.node.name"></span> &nbsp;
+							<span class="badge" data-ng-bind="selectedAssignments.assignedProjects[tree.node._id].length"></span>
+						</button>
+						<ul data-ng-if="tree.nodeTrees" class="">
+							<li data-ng-repeat="tree in tree.nodeTrees track by $index" data-ng-include="'portfolioTree'"></li>
+						</ul>
+					</script>
+					<ul class="">
+						<li data-ng-repeat="tree in portfolioTrees track by $index" data-ng-include="'portfolioTree'"></li>
+					</ul>
+				</div>
+			</div>
+		</div>
+		<div class="col-md-4">
+			<div class="panel panel-default">
+				<div class="panel-heading">
+					<h6 class="panel-title text-center">Assigned projects</h6>
+				</div>
+				<div class="panel-body">
+					<div data-ng-hide="selectedNode" class="alert alert-warning text-center">
+						Select a portfolio to see its details
+					</div>
+					<div data-ng-show="selectedNode">
+						<div class="row">
+							<div class="col-md-12 form-group">
+								<input class="form-control" disabled data-ng-model="selectedNode.name"/>
+							</div>
+						</div>
+						<div class="row">
+							<div class="col-md-12 form-group-sm">
+								<input type="text" class="form-control" placeholder="Type to filter projects" data-ng-model="filterAssignedProject">
+							</div>
+						</div>
+						<br>
+						<div class="row" style="overflow-y: auto; max-height: 370px; min-height: 370px;">
+							<div class="col-md-12">
+								<div class="panel panel-default">
+									<div class="panel-body" data-as-sortable="dragControlListeners" data-ng-model="selectedAssignments.assignedProjects[selectedNode._id]"
+										 style="overflow-y: auto; max-height: 340px; min-height: 340px;">
+										<div data-ng-show="selectedAssignments.assignedProjects[selectedNode._id].length === 0" class="alert alert-warning text-center">
+											No assigned projects yet
+										</div>
+										<button data-ng-repeat="project in selectedAssignments.assignedProjects[selectedNode._id] | filter:filterAssignedProject" as-sortable-item
+												class="btn btn-default btn-sm btn-block center-block" style="overflow: hidden;">
+											<div as-sortable-item-handle class="text-center">
+												{{project.identification.idNumber}} - {{project.identification.name}}
+											</div>
+										</button>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="col-md-4">
+			<div class="panel panel-default">
+				<div class="panel-heading">
+					<h6 class="panel-title text-center">Unassigned projects</h6>
+				</div>
+				<div class="panel-body">
+					<div>
+						<div class="row">
+							<div class="col-md-12 form-group-sm">
+								<input type="text" class="form-control" placeholder="Type to filter projects" data-ng-model="filterUnassignedProject">
+							</div>
+						</div>
+						<br>
+						<div class="row" style="overflow-y: auto; max-height: 418px; min-height: 418px;">
+							<div class="col-md-12">
+								<div class="panel panel-default">
+									<div class="panel-body" data-as-sortable="dragControlListeners" data-ng-model="selectedAssignments.unassignedProjects"
+										 style="overflow-y: auto; max-height: 387px; min-height: 387px;">
+										<div data-ng-show="selectedAssignments.unassignedProjects.length === 0" class="alert alert-warning text-center">
+											No unassigned projects yet
+										</div>
+										<button data-ng-repeat="project in selectedAssignments.unassignedProjects | filter:filterUnassignedProject" as-sortable-item
+												class="btn btn-default btn-sm btn-block center-block" style="overflow: hidden;">
+											<div as-sortable-item-handle class="text-center">
+												{{project.identification.idNumber}} - {{project.identification.name}}
+											</div>
+										</button>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+</section>

@@ -30,13 +30,16 @@ angular.module('strategy-alignment').controller('StrategyAlignmentController', [
 		};
 
 		var createProjectAssignments = function(projects, strategyNodes, selectedAssignments){
-			_.map(projects, function(project){
+            _.forEach(strategyNodes, function(node){
+                selectedAssignments.assignedProjects[node._id] = [];
+            });
+            _.map(projects, function(project){
 				if(_.isNull(project.parent) || _.isUndefined(project.parent)){
                     selectedAssignments.unassignedProjects.push(project);
 				} else {
-					_.forEach(strategyNodes, function(node){
-                        selectedAssignments.assignedProjects[node._id].push(project);
-					});
+                    _.forEach(strategyNodes, function(node){
+                        if(project.parent === node._id){selectedAssignments.assignedProjects[node._id].push(project);}
+                    });
 				}
 			});
 		};
@@ -87,11 +90,40 @@ angular.module('strategy-alignment').controller('StrategyAlignmentController', [
 
 
 
-		// ------------- PROJECTS FOR NODE ------------
+		// ------------------- PROJECTS FOR NODE ------------
 
 		$scope.selectNode = function(node){
 			$scope.selectedNode = node;
 		};
+
+
+        // ------------------- DRAG AND DROP LISTENERS -------
+
+        $scope.dragControlListeners = {
+            itemMoved: function (eventObj) {
+                var node = $scope.selectedNode;
+                var assignedProjects = $scope.selectedAssignments.assignedProjects[$scope.selectedNode._id];
+                var unassignedProjects = $scope.selectedAssignments.unassignedProjects;
+                // Ensure all "parent" properties of projects assigned to node are set to node._id
+                for (var i=0; i<assignedProjects.length; i++){
+                    var aProject = assignedProjects[i];
+                    if (aProject.parent !== node._id){
+                        aProject.parent = node._id;
+                        Projects.update(aProject);
+                    }
+
+                }
+                // Ensure all unassigned projects have parent set to null
+                for (var j=0; j<unassignedProjects.length; j++){
+                    var uProject = unassignedProjects[j];
+                    if (uProject.parent !== null){
+                        uProject.parent = null;
+                        Projects.update(uProject);
+                    }
+
+                }
+            }
+        };
 
 
 

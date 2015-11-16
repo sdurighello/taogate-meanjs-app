@@ -109,7 +109,6 @@ angular.module('project-identification').controller('ProjectIdentificationContro
         $scope.newProject = {};
 
         $scope.createProject = function(){
-            console.log(typeof $scope.newProject.reqStartDate);
             var newProject = new Projects({
                 identification: {
                     idNumber : $scope.newProject.idNumber,
