@@ -6,28 +6,30 @@
 				<ol class="breadcrumb">
 					<li>Portfolio definition</li>
 					<li>Identification</li>
-					<li class="active">Projects identification</li>
+					<li class="active">Strategy alignment</li>
 				</ol>
 			</div>
 		</div>
 	</div>
-	{{selectedProject}}
 	<div data-ng-show="initError" class="text-danger">
 		<strong data-ng-bind="initError"></strong>
 	</div>
+    {{projects}}<br>
+    {{strategyNodes}}<br>
+    {{selectedAssignments}}
 	<div class="row">
 		<div class="col-md-4">
 			<div class="panel panel-default">
 				<div class="panel-heading">
 					<h6 class="panel-title text-center">Strategy tree</h6>
 				</div>
-				<div class="panel-body" style="min-height: 560px;  max-height: 610px; overflow-y: auto;">
+				<div class="panel-body" style="min-height: 500px;  max-height: 500px; overflow-y: auto;">
 					<div class="alert alert-warning text-center" data-ng-hide="!strategyNodes.$resolved || strategyNodes.length">
 						No strategy nodes yet
 					</div>
 					<script type="text/ng-template" id="portfolioTree">
 						<hr>
-						<button class="btn btn-default" data-ng-click="selectStrategyNode(tree.node);">
+						<button class="btn btn-default" data-ng-click="selectNode(tree.node);">
 							{{tree.node.name}}
 						</button>
 						<ul data-ng-if="tree.nodeTrees" class="">
@@ -43,37 +45,77 @@
 		<div class="col-md-4">
 			<div class="panel panel-default">
 				<div class="panel-heading">
-					<h6 class="panel-title text-center">Projects for strategy node</h6>
+					<h6 class="panel-title text-center">Assigned projects</h6>
 				</div>
-				<div class="panel-body" style="min-height: 560px;  max-height: 610px; overflow-y: auto;">
-					<div class="alert alert-warning text-center" data-ng-hide="selectedStrategyNode">
-						Select a strategy node to see details
-					</div>
-					<div data-ng-show="selectedStrategyNode">
-						<div class="row">
-							<div class="col-md-12">
-								<div class="panel panel-default">
-									<div><h5> &nbsp; Strategy node: <i>{{selectedStrategyNode.name}}</i></h5></div>
-								</div>
-							</div>
-						</div>
-						<div class="row">
-							<div class="form-group col-md-12" data-ng-repeat="project in strategyNodeProjects">
-								<button class="btn btn-default btn-block" data-ng-bind="project.identification.name"></button>
-								<p data-ng-hide="strategyNodeProjects.length !== 0"><i>This strategy node has no projects identified</i></p>
-							</div>
-						</div>
-					</div>
+				<div class="panel-body">
+                    <div data-ng-hide="selectedNode" class="alert alert-warning text-center">
+                        Select a node to see its details
+                    </div>
+                    <div data-ng-show="selectedNode">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="panel panel-default" style="overflow: hidden">
+                                    <div class="text-center"><h5> &nbsp; <i data-ng-bind="selectedNode.name"></i></h5></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row" style="overflow-y: auto; max-height: 410px; min-height: 410px;">
+                            <div class="col-md-12">
+                                <div class="panel panel-default">
+                                    <div class="panel-body" as-sortable ng-model="selectedAssignments.assignedProjects[selectedNode._id]"
+                                         style="overflow-y: auto; max-height: 380px; min-height: 380px;">
+                                        <div data-ng-show="selectedAssignments.assignedProjects[selectedNode._id].length === 0" class="alert alert-warning text-center">
+                                            No assigned projects yet
+                                        </div>
+                                        <button data-ng-repeat="project in selectedAssignments.assignedProjects[selectedNode._id]" as-sortable-item
+                                                class="btn btn-default btn-sm btn-block center-block" style="overflow: hidden;">
+                                            <div as-sortable-item-handle class="text-center">
+                                                {{project.identification.idNumber}} - {{project.identification.name}}
+                                            </div>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
 				</div>
 			</div>
 		</div>
 		<div class="col-md-4">
 			<div class="panel panel-default">
 				<div class="panel-heading">
-					<h6 class="panel-title text-center">Details</h6>
+					<h6 class="panel-title text-center">Unassigned projects</h6>
 				</div>
-				<div class="panel-body" style="min-height: 560px;  max-height: 610px; overflow-y: auto;">
-
+				<div class="panel-body">
+                    <div data-ng-hide="selectedNode" class="alert alert-warning text-center">
+                        Select a node to see its details
+                    </div>
+                    <div data-ng-show="selectedNode">
+                        <div class="row">
+                            <div class="col-md-12 form-group-sm">
+                                <input type="text" class="form-control" placeholder="Type to filter projects" data-ng-model="filterProject">
+                            </div>
+                        </div>
+                        <br>
+                        <div class="row" style="overflow-y: auto; max-height: 418px; min-height: 418px;">
+                            <div class="col-md-12">
+                                <div class="panel panel-default">
+                                    <div class="panel-body" as-sortable ng-model="selectedAssignments.unassignedProjects"
+                                         style="overflow-y: auto; max-height: 387px; min-height: 387px;">
+                                        <div data-ng-show="selectedAssignments.unassignedProjects.length === 0" class="alert alert-warning text-center">
+                                            No unassigned projects yet
+                                        </div>
+                                        <button data-ng-repeat="project in selectedAssignments.unassignedProjects" as-sortable-item
+                                                class="btn btn-default btn-sm btn-block center-block" style="overflow: hidden;">
+                                            <div as-sortable-item-handle class="text-center">
+                                                {{project.identification.idNumber}} - {{project.identification.name}}
+                                            </div>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
 				</div>
 			</div>
 		</div>

@@ -32,6 +32,8 @@ var ProjectSchema = new Schema({
 		current: ProjectSelectionRecord,
         history: [ProjectSelectionRecord]
 	},
+    parent: {type: Schema.ObjectId, ref: 'StrategyNode', default:null, $tenant:true},
+    portfolio: {type: Schema.ObjectId, ref: 'Portfolio', default:null, $tenant:true},
     process: {type: Schema.ObjectId, ref: 'GateProcess', default:null, $tenant:true},
     identification: {
         idNumber: {type: String, trim: true, default:null},
@@ -40,8 +42,6 @@ var ProjectSchema = new Schema({
         earmarkedFunds: {type: Number, default:null},
         reqStartDate:{type: Date, default:null},
         reqEndDate:{type: Date, default:null},
-        parent: {type: Schema.ObjectId, ref: 'StrategyNode', default:null, $tenant:true},
-        portfolio: {type: Schema.ObjectId, ref: 'Portfolio', default:null, $tenant:true},
         projectManager : {type: Schema.Types.ObjectId, ref: 'User', default:null},
         backupProjectManager : {type: Schema.Types.ObjectId, ref: 'User', default:null}
     }

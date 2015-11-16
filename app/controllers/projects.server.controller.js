@@ -13,6 +13,7 @@ var mongoose = require('mongoose'),
  */
 exports.create = function(req, res) {
 	var Project = mongoose.mtModel(req.user.tenantId + '.' + 'Project');
+    console.log(req.body);
 	var project = new Project(req.body);
 	project.user = req.user;
 

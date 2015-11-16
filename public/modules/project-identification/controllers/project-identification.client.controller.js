@@ -49,6 +49,33 @@ angular.module('project-identification').controller('ProjectIdentificationContro
 		});
 
 
+        // ------- DATE PICKER ------
+
+        $scope.openStartDatePickerNew = function($event) {
+            $event.preventDefault();
+            $event.stopPropagation();
+            $scope.startDatePickerOpenedNew = true;
+        };
+
+        $scope.openEndDatePickerNew = function($event) {
+            $event.preventDefault();
+            $event.stopPropagation();
+            $scope.endDatePickerOpenedNew = true;
+        };
+
+        $scope.openStartDatePickerEdit = function($event) {
+            $event.preventDefault();
+            $event.stopPropagation();
+            $scope.startDatePickerOpenedEdit = true;
+        };
+
+        $scope.openEndDatePickerEdit = function($event) {
+            $event.preventDefault();
+            $event.stopPropagation();
+            $scope.endDatePickerOpenedEdit = true;
+        };
+
+
 		// ------------- REFRESH PROJECT LIST ------------
 
 		var projectList = function(){
@@ -82,6 +109,7 @@ angular.module('project-identification').controller('ProjectIdentificationContro
         $scope.newProject = {};
 
         $scope.createProject = function(){
+            console.log(typeof $scope.newProject.reqStartDate);
             var newProject = new Projects({
                 identification: {
                     idNumber : $scope.newProject.idNumber,
@@ -102,10 +130,9 @@ angular.module('project-identification').controller('ProjectIdentificationContro
             });
             newProject.$save(function(response) {
                 // Add new project to view after saving to server
-                $scope.projects.push(newProject);
+                $scope.projects.unshift(newProject);
                 // Clear form fields
                 $scope.newProject = {};
-                // Show new project in view
                 $scope.selectProjectForm('default');
             }, function(errorResponse) {
                 $scope.error = errorResponse.data.message;
@@ -120,44 +147,53 @@ angular.module('project-identification').controller('ProjectIdentificationContro
 
         // ------------- SELECT VIEW PROJECT ------------
 
-        var setProject = function(project){
-            $scope.selectedProject = project;
-        };
-
+        var originalProject;
+        var clickedProject;
         $scope.selectProject = function(project){
-            Projects.query({_id: project._id}, function(projectRes){
-                setProject(projectRes);
+            // Save the clicked project to update its text if changes to name happen
+            clickedProject = project;
+            // Get the full project fat object from the "projectById" server function that populates everything
+            Projects.get({projectId:project._id}, function(res){
+                $scope.selectedProject = res;
+                $scope.selectedProject.identification.reqStartDate = new Date($scope.selectedProject.identification.reqStartDate).toISOString();
+                originalProject = _.cloneDeep(res);
+                $scope.selectProjectForm('view');
             },function(errorResponse){
                 $scope.error = errorResponse.data.message;
             });
         };
 
+
         $scope.cancelViewProject = function(){
+            $scope.selectedProject = null;
+            clickedProject = null;
             $scope.selectProjectForm('default');
         };
 
 
         // ------------- EDIT PROJECT ------------
 
-        //$scope.editProject = function(){
-        //    // Clean up the deep populate
-        //    var projectCopy = _.clone($scope.selectedProject);
-        //    projectCopy.process = allowNull($scope.selectedProject.process);
-        //    projectCopy.identification.projectManager = allowNull($scope.selectedProject.identification.projectManager);
-        //    projectCopy.identification.backupProjectManager = allowNull($scope.selectedProject.identification.backupProjectManager);
-        //
-        //    // Save the project to the server
-        //    Projects.update(projectCopy, function(response) {
-        //
-        //    }, function(errorResponse) {
-        //        $scope.error = errorResponse.data.message;
-        //    });
-        //};
-        //
-        //$scope.cancelEditProject = function(){
-        //    $scope.selectedProject = _.cloneDeep(originalProject);
-        //    $scope.selectProjectForm('view');
-        //};
+        $scope.editProject = function(){
+            // Clean up the deep populate
+            var projectCopy = _.cloneDeep($scope.selectedProject);
+            projectCopy.identification.projectManager = allowNull($scope.selectedProject.identification.projectManager);
+            projectCopy.identification.backupProjectManager = allowNull($scope.selectedProject.identification.backupProjectManager);
+
+            // Save the project to the server
+            Projects.update(projectCopy, function(res) {
+                // Update the text on the project list (project from $scope.projects)
+                clickedProject.identification.idNumber = res.identification.idNumber;
+                clickedProject.identification.name = res.identification.name;
+                $scope.selectProject($scope.selectedProject);
+            }, function(errorResponse) {
+                $scope.error = errorResponse.data.message;
+            });
+        };
+
+        $scope.cancelEditProject = function(){
+            $scope.selectedProject = _.cloneDeep(originalProject);
+            $scope.selectProject($scope.selectedProject);
+        };
 
 
 
@@ -166,17 +202,14 @@ angular.module('project-identification').controller('ProjectIdentificationContro
         $scope.deleteProject = function(){
             Projects.remove({},{_id: $scope.selectedProject._id}, function(projectRes){
                 // Remove project from the "projects" collection
-                $scope.projects = _.without($scope.projects, projectRes);
+                $scope.projects = _.without($scope.projects, clickedProject);
                 $scope.selectedProject = null;
+                clickedProject = null;
                 $scope.selectProjectForm('default');
             }, function(err){
                 $scope.error = err.data.message;
             });
         };
-
-
-
-
 
 
 

@@ -1,8 +1,8 @@
 'use strict';
 
 angular.module('strategy-alignment').controller('StrategyAlignmentController', ['$scope','$stateParams', '$location', 'Authentication',
-	'StrategyNodes','Projects','Subusers', 'GateProcesses', 'Portfolios', '_','$q',
-	function($scope, $stateParams, $location, Authentication, StrategyNodes, Projects, Subusers, GateProcesses, Portfolios, _ , $q) {
+	'StrategyNodes','Projects', '_','$q',
+	function($scope, $stateParams, $location, Authentication, StrategyNodes, Projects, _ , $q) {
 
 		// ----------- INIT ---------------
 
@@ -10,43 +10,37 @@ angular.module('strategy-alignment').controller('StrategyAlignmentController', [
 
 		$scope.init = function(){
 
-			Subusers.query(function(users){
-				$scope.users = users;
-				$scope.projectManagers = _.filter(users, function(user){
-					return _.find(_.get(user,'roles'), function(role){
-						return role === 'projectManager';
-					});
-				});
-			}, function(err){
-				$scope.initError.push(err.data.message);
-			});
+            $q.all([
+                StrategyNodes.query().$promise,
+                Projects.query().$promise
+            ]).then(function(data) {
+                var strategyNodes = data[0];
+                var projects = data[1];
 
-			StrategyNodes.query(function(strategyNodes){
-				$scope.strategyNodes = strategyNodes;
-				$scope.strategyTrees = createNodeTrees(strategyNodes);
-			}, function(err){
-				$scope.initError.push(err.data.message);
-			});
+                $scope.strategyNodes = strategyNodes;
+                $scope.strategyTrees = createNodeTrees(strategyNodes);
+                $scope.projects = projects;
 
-			Projects.query(function(projects){
-				$scope.projects = projects;
-			}, function(err){
-				$scope.initError.push(err.data.message);
-			});
-
-			GateProcesses.query(function(processes){
-				$scope.gateProcesses = processes;
-			}, function(err){
-				$scope.initError.push(err.data.message);
-			});
-
-			Portfolios.query(function(portfolios){
-				$scope.portfolios = portfolios;
-			}, function(err){
-				$scope.initError.push(err.data.message);
-			});
+                $scope.selectedAssignments = {};
+                $scope.selectedAssignments.assignedProjects = {};
+                $scope.selectedAssignments.unassignedProjects = [];
+                createProjectAssignments(projects, strategyNodes, $scope.selectedAssignments);
+            });
 
 		};
+
+		var createProjectAssignments = function(projects, strategyNodes, selectedAssignments){
+			_.map(projects, function(project){
+				if(_.isNull(project.parent) || _.isUndefined(project.parent)){
+                    selectedAssignments.unassignedProjects.push(project);
+				} else {
+					_.forEach(strategyNodes, function(node){
+                        selectedAssignments.assignedProjects[node._id].push(project);
+					});
+				}
+			});
+		};
+
 
 
 		// ------- ROLES FOR BUTTONS ------
@@ -92,168 +86,12 @@ angular.module('strategy-alignment').controller('StrategyAlignmentController', [
 		};
 
 
-		// ------------- REFRESH NODES LIST ------------
-
-		//var strategyNodeList = function(){
-		//	$scope.initError = [];
-		//	StrategyNodes.query(function(strategyNodes){
-		//       Projects.query(function(projects){
-		//           $scope.strategyNodes = strategyNodes;
-		//           $scope.strategyTrees = createNodeTrees(strategyNodes);
-		//           $scope.projects = projects;
-		//           $scope.selectProjectForm('list');
-		//       });
-		//
-		//	}, function(err){
-		//		$scope.initError.push(err.data.message);
-		//	});
-		//};
-
-
-		// ------------------- NG-SWITCH ---------------------
-
-		$scope.switchProjectForm = {};
-
-		$scope.selectProjectForm = function(string){
-			if(string === 'list'){ $scope.switchProjectForm = 'list';}
-			if(string === 'new'){$scope.switchProjectForm = 'new';}
-			if(string === 'view'){ $scope.switchProjectForm = 'view';}
-			if(string === 'edit'){$scope.switchProjectForm = 'edit';}
-		};
-
-		var allowNull = function(obj){
-			if(obj){return obj._id;} else {return null;}
-		};
-
 
 		// ------------- PROJECTS FOR NODE ------------
 
-		$scope.selectStrategyNode = function(node){
-			// Gather projects for the strategy node for the list
-			$scope.selectedStrategyNode = node;
-			$scope.strategyNodeProjects = _.filter($scope.projects, _.matchesProperty('identification.parent', node._id));
-			$scope.selectProjectForm('list');
+		$scope.selectNode = function(node){
+			$scope.selectedNode = node;
 		};
-
-
-
-		// ------------- CREATE NEW PROJECT -----------
-
-		$scope.selectNewProject = function(){
-			$scope.selectProjectForm('new');
-		};
-
-		$scope.newProject = {};
-
-		$scope.createProject = function(){
-			var newProject = new Projects({
-				process: allowNull($scope.newProject.process),
-				identification: {
-					idNumber : $scope.newProject.idNumber,
-					name : $scope.newProject.name,
-					description : $scope.newProject.description,
-					reqStartDate: $scope.newProject.reqStartDate,
-					reqEndDate : $scope.newProject.reqEndDate,
-					earmarkedFunds : $scope.newProject.earmarkedFunds,
-					projectManager: allowNull($scope.newProject.projectManager),
-					backupProjectManager: allowNull($scope.newProject.backupProjectManager),
-					parent: allowNull($scope.selectedStrategyNode),
-					portfolio: allowNull($scope.newProject.portfolio)
-				},
-				selection: {
-					current: {
-						active : true
-					},
-					history:[]
-				}
-			});
-			newProject.$save(function(response) {
-				// Add new project to view after saving to server
-				$scope.projects.push(newProject);
-				$scope.strategyNodeProjects.push(newProject);
-				// Clear form fields
-				$scope.newProject = null;
-				// Show new project in view
-				$scope.selectProject(newProject);
-			}, function(errorResponse) {
-				$scope.error = errorResponse.data.message;
-			});
-		};
-
-		$scope.cancelNewProject = function(){
-			$scope.newProject = null;
-			$scope.selectProjectForm('list');
-		};
-
-
-		// ------------- SELECT VIEW PROJECT ------------
-
-		var originalProject = {};
-
-		$scope.selectProject = function(project){
-			Projects.query({_id: project._id}, function(projectRes){
-				var obj = projectRes[0]; // Query returns an array
-				originalProject = _.cloneDeep(obj);
-				$scope.selectedProject = obj;
-				$scope.selectProjectForm('view');
-
-			},function(errorResponse){
-				$scope.error = errorResponse.data.message;
-			});
-		};
-
-		$scope.cancelViewProject = function(){
-			$scope.selectProjectForm('list');
-		};
-
-
-		// ------------- EDIT PROJECT ------------
-
-		$scope.editProject = function(){
-			// Clean up the deep populate
-			var projectCopy = {};
-			projectCopy = _.clone($scope.selectedProject);
-			projectCopy.process = allowNull($scope.selectedProject.process);
-			projectCopy.identification.projectManager = allowNull($scope.selectedProject.identification.projectManager);
-			projectCopy.identification.backupProjectManager = allowNull($scope.selectedProject.identification.backupProjectManager);
-			projectCopy.identification.parent = allowNull($scope.selectedStrategyNode);
-			projectCopy.identification.portfolio = allowNull($scope.selectedProject.identification.portfolio);
-
-			// Save the project to the server
-			Projects.update(projectCopy, function(response) {
-				// Update the view list array
-				$scope.strategyNodeProjects = _.map($scope.strategyNodeProjects, function(project){
-					if(project._id === projectCopy._id){return projectCopy;}
-					return project;
-				});
-				// Show the edited project in view mode
-				$scope.selectProject(projectCopy);
-			}, function(errorResponse) {
-				$scope.error = errorResponse.data.message;
-			});
-		};
-
-		$scope.cancelEditProject = function(){
-			$scope.selectedProject = originalProject;
-			$scope.selectProjectForm('view');
-		};
-
-
-
-		// ------------- DELETE PROJECT ------------
-
-		$scope.deleteProject = function(){
-			Projects.remove({},{_id: $scope.selectedProject._id}, function(projectRes){
-				// Remove project from the "projects" collection
-				$scope.projects = _.without($scope.projects, $scope.selectedProject);
-				$scope.strategyNodeProjects = _.without($scope.strategyNodeProjects, $scope.selectedProject);
-				$scope.selectedProject = null;
-				$scope.selectProjectForm('list');
-			}, function(err){
-				$scope.error = err.data.message;
-			});
-		};
-
 
 
 
