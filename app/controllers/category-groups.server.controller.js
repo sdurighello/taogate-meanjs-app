@@ -52,6 +52,11 @@ exports.update = function(req, res) {
 			res.jsonp(categoryGroup);
 		}
 	});
+
+    // Go through all projects, loop all groups to match this group,
+    // evaluate if the category exist for all categories ids in this group,
+    // if not create with cat value null, else nothing
+
 };
 
 /**

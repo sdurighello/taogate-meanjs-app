@@ -7,7 +7,11 @@ angular.module('categories').factory('Categories', ['$resource',
 		}, {
 			update: {
 				method: 'PUT'
-			}
+			},
+            createCategory: {
+                method: 'POST',
+                url: 'categories/:groupId'
+            }
 		});
 	}
 ]);

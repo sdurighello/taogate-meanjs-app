@@ -14,6 +14,9 @@ module.exports = function(app) {
 		.put(users.requiresLogin, categories.hasAuthorization, categories.update)
 		.delete(users.requiresLogin, categories.hasAuthorization, categories.delete);
 
+	app.route('/categories/:groupId')
+		.post(users.requiresLogin, categories.hasAuthorization, categories.create);
+
 	// Finish by binding the Category middleware
 	app.param('categoryId', categories.categoryByID);
 };

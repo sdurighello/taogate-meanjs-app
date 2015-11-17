@@ -12,19 +12,37 @@ var mongoose = require('mongoose'),
  * Create a Category
  */
 exports.create = function(req, res) {
+    console.log(req.query.groupId);
+    var CategoryGroup = mongoose.mtModel(req.user.tenantId + '.' + 'CategoryGroup');
     var Category = mongoose.mtModel(req.user.tenantId + '.' + 'Category');
 	var category = new Category(req.body);
 	category.user = req.user;
 
-	category.save(function(err) {
-		if (err) {
-			return res.status(400).send({
-				message: errorHandler.getErrorMessage(err)
-			});
-		} else {
-			res.jsonp(category);
-		}
-	});
+    async.series([
+        function(callback){
+            // Save the new category to its collection
+            category.save();
+            callback(null, 'one');
+        },
+        function(callback){
+            // Add the category to the group's "categories" array
+            CategoryGroup.findById(req.query.groupId).exec(function(err, group){
+                group.categories.push(category._id);
+                group.save();
+            });
+            callback(null, 'two');
+        }
+    ],function(err, results){
+        // results is now equal to ['one', 'two']
+        if (err) {
+            return res.status(400).send({
+                message: errorHandler.getErrorMessage(err)
+            });
+        } else {
+            res.jsonp(category);
+        }
+    });
+
 };
 
 /**
@@ -58,6 +76,7 @@ exports.update = function(req, res) {
  * Delete a Category
  */
 exports.delete = function(req, res) {
+    console.log(req.query.groupId);
     var category = req.category ;
     var CategoryGroup = mongoose.mtModel(req.user.tenantId + '.' + 'CategoryGroup');
     var CategoryValue = mongoose.mtModel(req.user.tenantId + '.' + 'CategoryValue');
@@ -76,13 +95,10 @@ exports.delete = function(req, res) {
             callback(null, 'two');
         },
         function(callback){
-            // Delete category from groups where assigned
-            CategoryGroup.find({categories: {$in: [category._id]}}).exec(function(err, groups){
-                async.each(groups, function(item, callback){
-                    item.categories.splice(item.categories.indexOf(category._id), 1);
-                    item.save();
-                    callback();
-                });
+            // Delete category from group where assigned
+            CategoryGroup.findById(req.query.groupId).exec(function(err, group){
+                group.categories.splice(group.categories.indexOf(category._id), 1);
+                group.save();
             });
             callback(null, 'three');
         }

@@ -77,34 +77,17 @@ angular.module('category-setup').controller('CategorySetupController', ['$scope'
 		// ------------------ CREATE CATEGORY ----------------
 
 		$scope.createCategory = function(group) {
-			$scope.error = null;
+            var category = new Categories ({
+                name: 'New category',
+                categoryValues: []
+            });
+            category.$save({groupId: group._id}, function(res) {
+                // Add new category to the view group
+                group.categories.push(res);
 
-			var category = new Categories ({
-				name: 'New category',
-				categoryValues: []
-			});
-
-			category.$save(function(res) {
-				// Add new category to the view group
-				group.categories.push(res);
-				// Clean the array from deep populate and get only _ids
-				var copyGroup = _.clone(group);
-				copyGroup.categories = _.map(_.get(copyGroup, 'categories'), function(category){
-					return category._id;
-				});
-				// Add the created category to the Group's categories array
-				CategoryGroups.update({
-					_id: copyGroup._id,
-					categories:copyGroup.categories
-				}, function(group){
-					// do something on success response
-				},function(errorResponse){
-					$scope.error = errorResponse.data.message;
-				});
-
-			}, function(errorResponse) {
-				$scope.error = errorResponse.data.message;
-			});
+            }, function(errorResponse) {
+                $scope.error = errorResponse.data.message;
+            });
 		};
 
 		// ------------------- EDIT CATEGORY GROUP (HEADER ONLY) -----------------
@@ -181,15 +164,15 @@ angular.module('category-setup').controller('CategorySetupController', ['$scope'
 
 		// ------------------- REMOVE CATEGORY -----------------
 
-		$scope.removeCategory = function(group, category) {
-			$scope.error = null;
+        $scope.removeCategory = function(group, category) {
+            $scope.error = null;
 
-			Categories.remove({},category, function(res){
-				group.categories = _.without(group.categories, category);
-			}, function(err){
-				$scope.error = err.data.message;
-			});
-		};
+            Categories.remove({groupId: group._id},category, function(res){
+                group.categories = _.without(group.categories, category);
+            }, function(err){
+                $scope.error = err.data.message;
+            });
+        };
 
 
 		// ------------------ CREATE CATEGORY VALUE ----------------
@@ -202,23 +185,9 @@ angular.module('category-setup').controller('CategorySetupController', ['$scope'
 				description: 'New category value description'
 			});
 
-			categoryValue.$save(function(categoryValueRes) {
+			categoryValue.$save({categoryId: category._id}, function(categoryValueRes) {
 				// Add values to the view category
 				category.categoryValues.push(categoryValueRes);
-				// Clean the array from deep populate and get only _ids
-				var copyCategory = _.clone(category);
-				copyCategory.categoryValues = _.map(_.get(copyCategory, 'categoryValues'), function(value){
-					return value._id;
-				});
-				// Add the created value to the Category's categoryValues array
-				Categories.update({
-					_id: copyCategory._id,
-					categoryValues:copyCategory.categoryValues
-				}, function(category){
-					// do something on success response
-				},function(errorResponse){
-					$scope.error = errorResponse.data.message;
-				});
 
 			}, function(errorResponse) {
 				$scope.error = errorResponse.data.message;
@@ -253,7 +222,7 @@ angular.module('category-setup').controller('CategorySetupController', ['$scope'
 
 		$scope.removeCategoryValue = function(category, categoryValue) {
 			$scope.error = null;
-			CategoryValues.remove({},categoryValue, function(value){
+			CategoryValues.remove({categoryId: category._id},categoryValue, function(value){
 				category.categoryValues = _.without(category.categoryValues, categoryValue);
 			}, function(err){
 				$scope.error = err.data.message;

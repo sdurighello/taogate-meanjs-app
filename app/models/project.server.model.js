@@ -17,13 +17,21 @@ var ProjectSelectionRecord = {
     selectedForPrioritization: {type: Boolean, default: false},
     selectedForEvaluation: {type: Boolean, default: false},
     selectedForDelivery: {type: Boolean, default: false},
-    archived: {type: Boolean, default: false}, // Like deleted and only appears in admin "archived" view
+    //archived: {type: Boolean, default: false} - Like deleted and only appears in admin "archived" view - Manage with separate table archivedProjects
     comment: {type: String, default: '', trim: true},
     recordDate: {type: Date, default: Date.now},
     user: {type: Schema.ObjectId, ref: 'User'}
 };
 
+var AssignedCategorySchema = new Schema({
+    category : {type: Schema.Types.ObjectId, ref: 'Category', $tenant:true},
+    value : {type: Schema.Types.ObjectId, ref: 'CategoryValue', $tenant:true}
+});
 
+var AssignedCategoryGroupSchema = new Schema({
+    group : {type: Schema.Types.ObjectId, ref: 'CategoryGroup', $tenant:true},
+    categories : [AssignedCategorySchema]
+});
 
 var ProjectSchema = new Schema({
     created: {type: Date, default: Date.now},
@@ -44,7 +52,8 @@ var ProjectSchema = new Schema({
         reqEndDate:{type: Date, default:null},
         projectManager : {type: Schema.Types.ObjectId, ref: 'User', default:null},
         backupProjectManager : {type: Schema.Types.ObjectId, ref: 'User', default:null}
-    }
+    },
+    categorization: [AssignedCategoryGroupSchema]
 });
 
 

@@ -12,11 +12,27 @@ var mongoose = require('mongoose'),
  * Create a Category value
  */
 exports.create = function(req, res) {
+	var Category = mongoose.mtModel(req.user.tenantId + '.' + 'Category');
 	var CategoryValue = mongoose.mtModel(req.user.tenantId + '.' + 'CategoryValue');
 	var categoryValue = new CategoryValue(req.body);
 	categoryValue.user = req.user;
 
-	categoryValue.save(function(err) {
+	async.series([
+		function(callback){
+			// Save the new value to its collection
+			categoryValue.save();
+			callback(null, 'one');
+		},
+		function(callback){
+			// Add the value to the category's "categoryValues" array
+			Category.findById(req.query.categoryId).exec(function(err, category){
+				category.categoryValues.push(categoryValue._id);
+				category.save();
+			});
+			callback(null, 'two');
+		}
+	],function(err, results){
+		// results is now equal to ['one', 'two']
 		if (err) {
 			return res.status(400).send({
 				message: errorHandler.getErrorMessage(err)
@@ -25,6 +41,7 @@ exports.create = function(req, res) {
 			res.jsonp(categoryValue);
 		}
 	});
+
 };
 
 /**
@@ -69,12 +86,9 @@ exports.delete = function(req, res) {
         },
         function(callback){
             // Delete value from categories where assigned
-            Category.find({categoryValues: {$in: [categoryValue._id]}}).exec(function(err, categories){
-                async.each(categories, function(item, callback){
-                    item.categoryValues.splice(item.categoryValues.indexOf(categoryValue._id), 1);
-                    item.save();
-                    callback();
-                });
+            Category.findById(req.query.categoryId).exec(function(err, category){
+                category.categoryValues.splice(category.categoryValues.indexOf(categoryValue._id), 1);
+                category.save();
             });
             callback(null, 'three');
         }

@@ -1,8 +1,8 @@
 'use strict';
 
 angular.module('project-identification').controller('ProjectIdentificationController', ['$scope','$stateParams', '$location', 'Authentication',
-	'Projects','Subusers', 'GateProcesses', '_','$q',
-	function($scope, $stateParams, $location, Authentication, Projects, Subusers, GateProcesses, _ , $q) {
+	'Projects','Subusers', '_','$q',
+	function($scope, $stateParams, $location, Authentication, Projects, Subusers, _ , $q) {
 
 		// ----------- INIT ---------------
 
@@ -26,12 +26,6 @@ angular.module('project-identification').controller('ProjectIdentificationContro
 			}, function(err){
 				$scope.initError.push(err.data.message);
 			});
-
-            GateProcesses.query(function(processes){
-                $scope.gateProcesses = processes;
-            }, function(err){
-                $scope.initError.push(err.data.message);
-            });
 
 		};
 
@@ -154,7 +148,6 @@ angular.module('project-identification').controller('ProjectIdentificationContro
             // Get the full project fat object from the "projectById" server function that populates everything
             Projects.get({projectId:project._id}, function(res){
                 $scope.selectedProject = res;
-                $scope.selectedProject.identification.reqStartDate = new Date($scope.selectedProject.identification.reqStartDate).toISOString();
                 originalProject = _.cloneDeep(res);
                 $scope.selectProjectForm('view');
             },function(errorResponse){
