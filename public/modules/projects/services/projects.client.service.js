@@ -7,7 +7,11 @@ angular.module('projects').factory('Projects', ['$resource',
 		}, {
 			update: {
 				method: 'PUT'
-			}
+			},
+            updateCategoryAssignment: {
+                method: 'PUT',
+                url: 'projects/categoryAssignment/:projectId/:assignedGroupId/:assignedCategoryId/:valueId'
+            }
 		});
 	}
 ]);

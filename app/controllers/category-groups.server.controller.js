@@ -12,19 +12,48 @@ var mongoose = require('mongoose'),
  * Create a Category group
  */
 exports.create = function(req, res) {
+    var Project = mongoose.mtModel(req.user.tenantId + '.' + 'Project');
 	var CategoryGroup = mongoose.mtModel(req.user.tenantId + '.' + 'CategoryGroup');
 	var categoryGroup = new CategoryGroup(req.body);
 	categoryGroup.user = req.user;
 
-	categoryGroup.save(function(err) {
-		if (err) {
-			return res.status(400).send({
-				message: errorHandler.getErrorMessage(err)
-			});
-		} else {
-			res.jsonp(categoryGroup);
-		}
-	});
+    async.series([
+        // GROUP: Save Group in its collection
+        function(callback){
+            categoryGroup.save();
+            callback(null, 'one');
+        },
+        // PROJECTS: Add new group to all projects
+        function(callback){
+            Project.find().exec(function(err, projects){
+                if (err) {
+                    return res.status(400).send({
+                        message: errorHandler.getErrorMessage(err)
+                    });
+                } else {
+                    async.each(projects, function(project, callback){
+                        project.categorization.push({
+                            group: categoryGroup._id,
+                            categories: []
+                        });
+                        project.save();
+                        callback();
+                    });
+                }
+            });
+            callback(null, 'two');
+        }
+    ],function(err, results){
+        // results is now equal to ['one', 'two']
+        if (err) {
+            return res.status(400).send({
+                message: errorHandler.getErrorMessage(err)
+            });
+        } else {
+            res.jsonp(categoryGroup);
+        }
+    });
+
 };
 
 /**
@@ -53,29 +82,26 @@ exports.update = function(req, res) {
 		}
 	});
 
-    // Go through all projects, loop all groups to match this group,
-    // evaluate if the category exist for all categories ids in this group,
-    // if not create with cat value null, else nothing
-
 };
 
 /**
  * Delete a Category Group
  */
 exports.delete = function(req, res) {
+    var Project = mongoose.mtModel(req.user.tenantId + '.' + 'Project');
     var CategoryGroup = mongoose.mtModel(req.user.tenantId + '.' + 'CategoryGroup');
     var Category = mongoose.mtModel(req.user.tenantId + '.' + 'Category');
     var CategoryValue = mongoose.mtModel(req.user.tenantId + '.' + 'CategoryValue');
     var categoryGroup = req.categoryGroup ;
 
     async.series([
+        // CATEGORY-GROUP: Delete Group from its collection
         function(callback){
-            // Delete Group from its collection
             categoryGroup.remove();
             callback(null, 'one');
         },
+        // CATEGORY-VALUES: Delete all values of the categories in the group
         function(callback){
-            // Delete all values of the categories in the group
             async.each(categoryGroup.categories, function(item, callback){
                 Category.findById(item._id).exec(function(err, category){
                     if (err) {
@@ -92,10 +118,32 @@ exports.delete = function(req, res) {
             });
             callback(null, 'two');
         },
+        // CATEGORIES: Delete all categories (from "categories" collection) belonging to this category Group
         function(callback){
-            // Delete all categories (from "categories" collection) belonging to this category Group
             async.each(categoryGroup.categories, function(item, callback){
                 Category.findByIdAndRemove(item._id, callback);
+            });
+            callback(null, 'three');
+        },
+        // PROJECTS: Delete group object from project.categorization
+        function(callback){
+            Project.find().exec(function(err, projects){
+                if (err) {
+                    return res.status(400).send({
+                        message: errorHandler.getErrorMessage(err)
+                    });
+                } else {
+                    async.each(projects, function(project, callback){
+                        async.each(project.categorization, function(assignedGroup, callback){
+                            if(assignedGroup.group.equals(categoryGroup._id)){
+                                assignedGroup.remove();
+                            }
+                            callback();
+                        });
+                        project.save();
+                        callback();
+                    });
+                }
             });
             callback(null, 'three');
         }

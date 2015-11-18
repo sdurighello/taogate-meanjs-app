@@ -12,25 +12,50 @@ var mongoose = require('mongoose'),
  * Create a Category
  */
 exports.create = function(req, res) {
-    console.log(req.query.groupId);
+    var Project = mongoose.mtModel(req.user.tenantId + '.' + 'Project');
     var CategoryGroup = mongoose.mtModel(req.user.tenantId + '.' + 'CategoryGroup');
     var Category = mongoose.mtModel(req.user.tenantId + '.' + 'Category');
 	var category = new Category(req.body);
 	category.user = req.user;
 
     async.series([
+        // CATEGORIES: Save the new category to its collection
         function(callback){
-            // Save the new category to its collection
             category.save();
             callback(null, 'one');
         },
+        // GROUP.CATEGORIES: Add the category to the group's "categories" array
         function(callback){
-            // Add the category to the group's "categories" array
             CategoryGroup.findById(req.query.groupId).exec(function(err, group){
                 group.categories.push(category._id);
                 group.save();
             });
             callback(null, 'two');
+        },
+        // PROJECTS.CATEGORIZATION: Add the category to all existing projects
+        function(callback){
+            Project.find().exec(function(err, projects){
+                if (err) {
+                    return res.status(400).send({
+                        message: errorHandler.getErrorMessage(err)
+                    });
+                } else {
+                    async.each(projects, function(project, callback){
+                        async.each(project.categorization, function(assignedGroup, callback){
+                            if(assignedGroup.group.equals(req.query.groupId)){
+                                assignedGroup.categories.push({
+                                    category: category._id,
+                                    categoryValue: null
+                                });
+                            }
+                            callback();
+                        });
+                        project.save();
+                        callback();
+                    });
+                }
+            });
+            callback(null, 'three');
         }
     ],function(err, results){
         // results is now equal to ['one', 'two']
@@ -76,31 +101,58 @@ exports.update = function(req, res) {
  * Delete a Category
  */
 exports.delete = function(req, res) {
-    console.log(req.query.groupId);
+    var Project = mongoose.mtModel(req.user.tenantId + '.' + 'Project');
     var category = req.category ;
     var CategoryGroup = mongoose.mtModel(req.user.tenantId + '.' + 'CategoryGroup');
     var CategoryValue = mongoose.mtModel(req.user.tenantId + '.' + 'CategoryValue');
 
     async.series([
+        // CATEGORIES: Delete category from its collection
         function(callback){
-            // Delete category from its collection
             category.remove();
             callback(null, 'one');
         },
+        // VALUES: Delete its values from the values collection
         function(callback){
-            // Delete its values from the values collection
             async.each(category.categoryValues, function(item, callback){
                 CategoryValue.findByIdAndRemove(item._id, callback);
             });
             callback(null, 'two');
         },
+        // GROUP.CATEGORIES: Delete category from group where assigned
         function(callback){
-            // Delete category from group where assigned
             CategoryGroup.findById(req.query.groupId).exec(function(err, group){
                 group.categories.splice(group.categories.indexOf(category._id), 1);
                 group.save();
             });
             callback(null, 'three');
+        },
+        // PROJECTS.CATEGORIZATION: Remove the category to all existing projects
+        function(callback){
+            Project.find().exec(function(err, projects){
+                if (err) {
+                    return res.status(400).send({
+                        message: errorHandler.getErrorMessage(err)
+                    });
+                } else {
+                    async.each(projects, function(project, callback){
+                        async.each(project.categorization, function(assignedGroup, callback){
+                            if(assignedGroup.group.equals(req.query.groupId)){
+                                async.each(assignedGroup.categories, function(assignedCategory, callback){
+                                    if(assignedCategory.category.equals(category._id)){
+                                        assignedCategory.remove();
+                                    }
+                                    callback();
+                                });
+                            }
+                            callback();
+                        });
+                        project.save();
+                        callback();
+                    });
+                }
+            });
+            callback(null, 'four');
         }
     ],function(err, results){
         // results is now equal to ['one', 'two']

@@ -104,6 +104,9 @@ angular.module('project-identification').controller('ProjectIdentificationContro
 
         $scope.createProject = function(){
             var newProject = new Projects({
+                // Definition
+                parent: null,
+                portfolio: null,
                 identification: {
                     idNumber : $scope.newProject.idNumber,
                     name : $scope.newProject.name,
@@ -114,12 +117,31 @@ angular.module('project-identification').controller('ProjectIdentificationContro
                     projectManager: allowNull($scope.newProject.projectManager),
                     backupProjectManager: allowNull($scope.newProject.backupProjectManager)
                 },
+                categorization: [],
+                prioritization: [],
+                ranking: [],
                 selection: {
                     current: {
                         active : true
                     },
                     history:[]
-                }
+                },
+                // Evaluation
+                stakeholders: [],
+                financialAnalysis: {
+                    costs: [],
+                    benefits: [],
+                    ratios: {
+                        NPV: null,
+                        BCR: null,
+                        payback: null
+                    }
+                },
+                qualitativeAnalysis: [],
+                riskAnalysis: [],
+                // Delivery
+                process: null
+
             });
             newProject.$save(function(response) {
                 // Add new project to view after saving to server

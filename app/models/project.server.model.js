@@ -25,7 +25,7 @@ var ProjectSelectionRecord = {
 
 var AssignedCategorySchema = new Schema({
     category : {type: Schema.Types.ObjectId, ref: 'Category', $tenant:true},
-    value : {type: Schema.Types.ObjectId, ref: 'CategoryValue', $tenant:true}
+    categoryValue : {type: Schema.Types.ObjectId, ref: 'CategoryValue', $tenant:true}
 });
 
 var AssignedCategoryGroupSchema = new Schema({
@@ -33,16 +33,16 @@ var AssignedCategoryGroupSchema = new Schema({
     categories : [AssignedCategorySchema]
 });
 
+
+// ------------------------ BIG FAT SCHEMA ------------------------
+
 var ProjectSchema = new Schema({
     created: {type: Date, default: Date.now},
     user: {type: Schema.ObjectId, ref: 'User'},
-	selection: {
-		current: ProjectSelectionRecord,
-        history: [ProjectSelectionRecord]
-	},
+
+    // Definition
     parent: {type: Schema.ObjectId, ref: 'StrategyNode', default:null, $tenant:true},
     portfolio: {type: Schema.ObjectId, ref: 'Portfolio', default:null, $tenant:true},
-    process: {type: Schema.ObjectId, ref: 'GateProcess', default:null, $tenant:true},
     identification: {
         idNumber: {type: String, trim: true, default:null},
         name: {type: String, default: '', trim: true, required:'Project name is required'},
@@ -53,7 +53,31 @@ var ProjectSchema = new Schema({
         projectManager : {type: Schema.Types.ObjectId, ref: 'User', default:null},
         backupProjectManager : {type: Schema.Types.ObjectId, ref: 'User', default:null}
     },
-    categorization: [AssignedCategoryGroupSchema]
+    categorization: [AssignedCategoryGroupSchema],
+    prioritization: [],
+    ranking: [],
+    selection: {
+        current: ProjectSelectionRecord,
+        history: [ProjectSelectionRecord]
+    },
+
+    // Evaluation
+    stakeholders: [],
+    financialAnalysis: {
+        costs: [],
+        benefits: [],
+        ratios: {
+            NPV: {type: Date, default:null},
+            BCR: {type: Date, default:null},
+            payback: {type: Date, default:null}
+        }
+    },
+    qualitativeAnalysis: [],
+    riskAnalysis: [],
+
+    // Delivery
+    process: {type: Schema.ObjectId, ref: 'GateProcess', default:null, $tenant:true}
+
 });
 
 

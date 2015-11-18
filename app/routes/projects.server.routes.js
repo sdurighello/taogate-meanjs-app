@@ -14,6 +14,9 @@ module.exports = function(app) {
 		.put(users.requiresLogin, projects.hasAuthorization, projects.update)
 		.delete(users.requiresLogin, projects.hasAuthorization, projects.delete);
 
+	app.route('/projects/categoryAssignment/:projectId/:assignedGroupId/:assignedCategoryId/:valueId')
+		.put(users.requiresLogin, projects.hasAuthorization, projects.updateCategoryAssignment);
+
 	// Finish by binding the Project middleware
 	app.param('projectId', projects.projectByID);
 };
