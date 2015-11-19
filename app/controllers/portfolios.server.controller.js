@@ -12,20 +12,37 @@ var mongoose = require('mongoose'),
  * Create a Portfolio
  */
 exports.create = function(req, res) {
+    var PortfolioRanking = mongoose.mtModel(req.user.tenantId + '.' + 'PortfolioRanking');
 	var Portfolio = mongoose.mtModel(req.user.tenantId + '.' + 'Portfolio');
 	var portfolio = new Portfolio(req.body);
 	portfolio.user = req.user;
 
-	portfolio.save(function(err) {
-		if (err) {
-            console.log('err= '+err);
-			return res.status(400).send({
-				message: errorHandler.getErrorMessage(err)
-			});
-		} else {
-			res.jsonp(portfolio);
-		}
-	});
+    async.series([
+        function(callback){
+            // PORTFOLIO: Save new portfolio
+            portfolio.save();
+            callback(null, 'one');
+        },
+        function(callback){
+            // PORTFOLIO-RANKINGS: Add portfolio to rankings
+            var portfolioRanking = new PortfolioRanking({
+                portfolio: portfolio._id,
+                projects: []
+            });
+            portfolioRanking.save();
+            callback(null, 'two');
+        }
+    ],function(err, results){
+        // results is now equal to ['one', 'two']
+        if (err) {
+            return res.status(400).send({
+                message: errorHandler.getErrorMessage(err)
+            });
+        } else {
+            res.jsonp(portfolio);
+        }
+    });
+
 };
 
 /**
@@ -59,6 +76,7 @@ exports.update = function(req, res) {
  * Delete an Portfolio
  */
 exports.delete = function(req, res) {
+    var PortfolioRanking = mongoose.mtModel(req.user.tenantId + '.' + 'PortfolioRanking');
     var Portfolio = mongoose.mtModel(req.user.tenantId + '.' + 'Portfolio');
 	var portfolio = req.portfolio ;
 
@@ -90,6 +108,19 @@ exports.delete = function(req, res) {
                 });
             });
             callback(null, 'three');
+        },
+        function(callback){
+            // RANKING: Delete portfolio ranking
+            PortfolioRanking.findOne({portfolio: portfolio._id}).exec(function(err, portfolioRanking){
+                if (err) {
+                    return res.status(400).send({
+                        message: errorHandler.getErrorMessage(err)
+                    });
+                } else {
+                    if(portfolioRanking){ portfolioRanking.remove();}
+                }
+            });
+            callback(null, 'four');
         }
     ],function(err, results){
         // results is now equal to ['one', 'two']

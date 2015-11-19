@@ -15,7 +15,6 @@ exports.create = function(req, res) {
 	var Project = mongoose.mtModel(req.user.tenantId + '.' + 'Project');
     var CategoryGroup = mongoose.mtModel(req.user.tenantId + '.' + 'CategoryGroup');
     var Category = mongoose.mtModel(req.user.tenantId + '.' + 'Category');
-    console.log(req.body);
 	var project = new Project(req.body);
 	project.user = req.user;
 

@@ -257,8 +257,8 @@ angular.module('core').service('Menus', [
                 // Priorities assignment
         this.addSubMenuItem('topbar', 'definition', 'Priority assignment', 'priority-assignment','priority-assignment',false,
             ['superAdmin','admin','PMO','projectManager','portfolioManager','executive'],9);
-                // Project ranking
-        this.addSubMenuItem('topbar', 'definition', 'Projects ranking', 'project-ranking','project-ranking',false,
+                // Portfolio rankings
+        this.addSubMenuItem('topbar', 'definition', 'Portfolio rankings', 'portfolio-ranking-assignment','portfolio-ranking-assignment',false,
             ['superAdmin','admin','PMO','projectManager','portfolioManager','executive'],10);
             // Selection
         this.addSubMenuItem('topbar', 'definition', '', 'divider','divider',false,

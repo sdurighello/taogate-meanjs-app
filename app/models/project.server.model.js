@@ -33,6 +33,16 @@ var AssignedCategoryGroupSchema = new Schema({
     categories : [AssignedCategorySchema]
 });
 
+var AssignedPrioritySchema = new Schema({
+    priority : {type: Schema.Types.ObjectId, ref: 'Priority', $tenant:true},
+    priorityValue : {type: Schema.Types.ObjectId, ref: 'PriorityValue', $tenant:true}
+});
+
+var AssignedPriorityGroupSchema = new Schema({
+    group : {type: Schema.Types.ObjectId, ref: 'PriorityGroup', $tenant:true},
+    priorities : [AssignedPrioritySchema]
+});
+
 
 // ------------------------ BIG FAT SCHEMA ------------------------
 
@@ -54,7 +64,7 @@ var ProjectSchema = new Schema({
         backupProjectManager : {type: Schema.Types.ObjectId, ref: 'User', default:null}
     },
     categorization: [AssignedCategoryGroupSchema],
-    prioritization: [],
+    prioritization: [AssignedPriorityGroupSchema],
     ranking: [],
     selection: {
         current: ProjectSelectionRecord,

@@ -1,0 +1,122 @@
+<section data-ng-controller="PortfolioRankingAssignmentController" data-ng-init="init()">
+	<br>
+	<div class="row">
+		<div class="col-sm-12">
+			<div class="panel-heading">
+				<ol class="breadcrumb">
+					<li>Portfolio definition</li>
+					<li>Prioritization</li>
+					<li class="active">Portfolio rankings</li>
+				</ol>
+			</div>
+		</div>
+	</div>
+	<div data-ng-show="initError" class="text-danger">
+		<strong data-ng-bind="initError"></strong>
+	</div>
+	<div class="row">
+		<div class="col-md-4">
+			<div class="panel panel-default">
+				<div class="panel-heading">
+					<h6 class="panel-title text-center">Portfolio tree</h6>
+				</div>
+				<div class="panel-body" style="min-height: 500px;  max-height: 500px; overflow-y: auto;">
+					<div class="alert alert-warning text-center" data-ng-hide="!portfolios.$resolved || portfolios.length">
+						No portfolios yet
+					</div>
+					<script type="text/ng-template" id="portfolioTree">
+						<hr>
+						<button class="btn btn-default" data-ng-click="selectNode(tree.node);">
+							<span data-ng-bind="tree.node.name"></span> &nbsp;
+						</button>
+						<ul data-ng-if="tree.nodeTrees" class="">
+							<li data-ng-repeat="tree in tree.nodeTrees track by $index" data-ng-include="'portfolioTree'"></li>
+						</ul>
+					</script>
+					<ul class="">
+						<li data-ng-repeat="tree in portfolioTrees track by $index" data-ng-include="'portfolioTree'"></li>
+					</ul>
+				</div>
+			</div>
+		</div>
+		<div class="col-md-4">
+			<div class="panel panel-default">
+				<div class="panel-heading">
+					<h6 class="panel-title text-center">Ranking</h6>
+				</div>
+				<div class="panel-body">
+					<div data-ng-hide="selectedNode" class="alert alert-warning text-center">
+						Select a portfolio to see its details
+					</div>
+					<div data-ng-show="selectedNode">
+                        <div class="row">
+							<div class="col-md-12">
+                                <div class="panel">
+                                    <div class="form-control">Portfolio: <em>{{selectedNode.name}}</em></div>
+                                </div>
+							</div>
+						</div>
+						<div class="row" style="overflow-y: auto; max-height: 412px; min-height: 412px;">
+							<div class="col-md-12">
+								<div class="panel panel-default">
+									<div class="panel-body" data-as-sortable="dragControlListeners" data-ng-model="assignedProjects"
+										 style="overflow-y: auto; max-height: 382px; min-height: 382px;">
+										<div data-ng-show="assignedProjects.length === 0" class="alert alert-warning text-center">
+											No ranked projects
+										</div>
+										<button data-ng-repeat="project in assignedProjects | filter:filterAssignedProject" as-sortable-item
+												class="btn btn-default btn-sm btn-block center-block" style="overflow: hidden;">
+											<div as-sortable-item-handle class="pull-left">
+                                                <span class="badge" data-ng-bind="assignedProjects.indexOf(project) + 1"></span> &nbsp;
+                                                <span>{{project.idNumber}} - {{project.name}}</span>
+											</div>
+										</button>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="col-md-4">
+			<div class="panel panel-default">
+				<div class="panel-heading">
+					<h6 class="panel-title text-center">Projects not ranked</h6>
+				</div>
+				<div class="panel-body">
+                    <div data-ng-hide="selectedNode" class="alert alert-warning text-center">
+                        Select a portfolio to see its details
+                    </div>
+					<div data-ng-show="selectedNode">
+						<div class="row">
+							<div class="col-md-12 form-group-sm">
+								<input type="text" class="form-control" placeholder="Type to filter projects" data-ng-model="filterUnassignedProject">
+							</div>
+						</div>
+						<br>
+						<div class="row" style="overflow-y: auto; max-height: 418px; min-height: 418px;">
+							<div class="col-md-12">
+								<div class="panel panel-default">
+									<div class="panel-body" data-as-sortable="dragControlListeners" data-ng-model="unassignedProjects"
+										 style="overflow-y: auto; max-height: 387px; min-height: 387px;">
+										<div data-ng-show="unassignedProjects.length === 0" class="alert alert-warning text-center">
+											No projects to be ranked
+										</div>
+										<button data-ng-repeat="project in unassignedProjects | filter:filterUnassignedProject" as-sortable-item
+												class="btn btn-default btn-sm btn-block center-block" style="overflow: hidden;">
+											<div as-sortable-item-handle class="text-center">
+												{{project.idNumber}} - {{project.name}}
+											</div>
+										</button>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+</section>
