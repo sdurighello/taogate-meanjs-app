@@ -59,8 +59,6 @@ exports.update = function(req, res) {
  */
 exports.delete = function(req, res) {
 
-    // to be updated that when deleting a value, also delete in collection "assignedPriorities" (assigned-priority)
-
 	var priorityValue = req.priorityValue ;
 
 	priorityValue.remove(function(err) {

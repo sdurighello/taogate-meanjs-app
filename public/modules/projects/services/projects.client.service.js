@@ -11,6 +11,10 @@ angular.module('projects').factory('Projects', ['$resource',
             updateCategoryAssignment: {
                 method: 'PUT',
                 url: 'projects/categoryAssignment/:projectId/:assignedGroupId/:assignedCategoryId/:valueId'
+            },
+            updatePriorityAssignment: {
+                method: 'PUT',
+                url: 'projects/priorityAssignment/:projectId/:assignedGroupId/:assignedPriorityId/:valueId'
             }
 		});
 	}

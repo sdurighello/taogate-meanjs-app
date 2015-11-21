@@ -12,6 +12,9 @@ require('mongoose-multitenant');
  * Project Schema
  */
 
+
+// ---
+
 var ProjectSelectionRecord = {
     active: {type: Boolean, default: true, required: 'Field active of project is required'}, // Still there but "view only"
     selectedForPrioritization: {type: Boolean, default: false},
@@ -23,6 +26,8 @@ var ProjectSelectionRecord = {
     user: {type: Schema.ObjectId, ref: 'User'}
 };
 
+// ----
+
 var AssignedCategorySchema = new Schema({
     category : {type: Schema.Types.ObjectId, ref: 'Category', $tenant:true},
     categoryValue : {type: Schema.Types.ObjectId, ref: 'CategoryValue', $tenant:true}
@@ -33,6 +38,8 @@ var AssignedCategoryGroupSchema = new Schema({
     categories : [AssignedCategorySchema]
 });
 
+// ----
+
 var AssignedPrioritySchema = new Schema({
     priority : {type: Schema.Types.ObjectId, ref: 'Priority', $tenant:true},
     priorityValue : {type: Schema.Types.ObjectId, ref: 'PriorityValue', $tenant:true}
@@ -42,6 +49,10 @@ var AssignedPriorityGroupSchema = new Schema({
     group : {type: Schema.Types.ObjectId, ref: 'PriorityGroup', $tenant:true},
     priorities : [AssignedPrioritySchema]
 });
+
+// ----
+
+
 
 
 // ------------------------ BIG FAT SCHEMA ------------------------

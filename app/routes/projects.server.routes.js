@@ -17,6 +17,9 @@ module.exports = function(app) {
 	app.route('/projects/categoryAssignment/:projectId/:assignedGroupId/:assignedCategoryId/:valueId')
 		.put(users.requiresLogin, projects.hasAuthorization, projects.updateCategoryAssignment);
 
+    app.route('/projects/priorityAssignment/:projectId/:assignedGroupId/:assignedPriorityId/:valueId')
+        .put(users.requiresLogin, projects.hasAuthorization, projects.updatePriorityAssignment);
+
 	// Finish by binding the Project middleware
 	app.param('projectId', projects.projectByID);
 };

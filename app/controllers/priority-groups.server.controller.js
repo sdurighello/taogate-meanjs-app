@@ -12,11 +12,40 @@ var mongoose = require('mongoose'),
  * Create a Priority group
  */
 exports.create = function(req, res) {
+	var Project = mongoose.mtModel(req.user.tenantId + '.' + 'Project');
+
 	var PriorityGroup = mongoose.mtModel(req.user.tenantId + '.' + 'PriorityGroup');
 	var priorityGroup = new PriorityGroup(req.body);
 	priorityGroup.user = req.user;
 
-	priorityGroup.save(function(err) {
+	async.series([
+		// GROUP: Save Group in its collection
+		function(callback){
+			priorityGroup.save();
+			callback(null, 'one');
+		},
+		// PROJECTS: Add new group to all projects
+		function(callback){
+			Project.find().exec(function(err, projects){
+				if (err) {
+					return res.status(400).send({
+						message: errorHandler.getErrorMessage(err)
+					});
+				} else {
+					async.each(projects, function(project, callback){
+						project.prioritization.push({
+							group: priorityGroup._id,
+							priorities: []
+						});
+						project.save();
+						callback();
+					});
+				}
+			});
+			callback(null, 'two');
+		}
+	],function(err, results){
+		// results is now equal to ['one', 'two']
 		if (err) {
 			return res.status(400).send({
 				message: errorHandler.getErrorMessage(err)
@@ -58,42 +87,56 @@ exports.update = function(req, res) {
  * Delete an Priority Group
  */
 exports.delete = function(req, res) {
+    var Project = mongoose.mtModel(req.user.tenantId + '.' + 'Project');
 	var PriorityGroup = mongoose.mtModel(req.user.tenantId + '.' + 'PriorityGroup');
 	var Priority = mongoose.mtModel(req.user.tenantId + '.' + 'Priority');
 	var priorityGroup = req.priorityGroup ;
 
-	async.series([
-		function(callback){
-			// Delete all priorities (from "priorities" collection) belonging to this priority Group
-			async.each(priorityGroup.priorities, function(item, callback){
-				Priority.findById(item._id).exec(function(err, priority){
-					if (err) {
-						return res.status(400).send({
-							message: errorHandler.getErrorMessage(err)
-						});
-					} else {
-						priority.remove();
-					}
-				});
-				callback();
-			});
-			callback(null, 'one');
-		},
-		function(callback){
-			// Delete Group from its collection
-			priorityGroup.remove();
-			callback(null, 'two');
-		}
-	],function(err, results){
-		// results is now equal to ['one', 'two']
-		if (err) {
-			return res.status(400).send({
-				message: errorHandler.getErrorMessage(err)
-			});
-		} else {
-			res.jsonp(priorityGroup);
-		}
-	});
+    async.series([
+        // PRIORITY-GROUP: Delete Group from its collection
+        function(callback){
+            priorityGroup.remove();
+            callback(null, 'one');
+        },
+        // PRIORITIES: Delete all priorities (from "priorities" collection) belonging to this Group
+        function(callback){
+            async.each(priorityGroup.priorities, function(item, callback){
+                Priority.findByIdAndRemove(item._id, callback);
+            });
+            callback(null, 'three');
+        },
+        // PROJECTS: Delete group object from project.prioritization
+        function(callback){
+            Project.find().exec(function(err, projects){
+                if (err) {
+                    return res.status(400).send({
+                        message: errorHandler.getErrorMessage(err)
+                    });
+                } else {
+                    async.each(projects, function(project, callback){
+                        async.each(project.prioritization, function(assignedGroup, callback){
+                            if(assignedGroup.group.equals(priorityGroup._id)){
+                                assignedGroup.remove();
+                            }
+                            callback();
+                        });
+                        project.save();
+                        callback();
+                    });
+                }
+            });
+            callback(null, 'three');
+        }
+    ],function(err, results){
+        // results is now equal to ['one', 'two']
+        if (err) {
+            return res.status(400).send({
+                message: errorHandler.getErrorMessage(err)
+            });
+        } else {
+            res.jsonp(priorityGroup);
+        }
+    });
 };
 
 /**

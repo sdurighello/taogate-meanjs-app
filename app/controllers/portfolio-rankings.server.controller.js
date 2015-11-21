@@ -77,19 +77,27 @@ exports.delete = function(req, res) {
 exports.list = function(req, res) {
     var PortfolioRanking = mongoose.mtModel(req.user.tenantId + '.' + 'PortfolioRanking');
 
-    // Query params are "string" and so they need to be converted in "ObjectId"
-    var ObjectId = require('mongoose').Types.ObjectId;
-    var queryPortfolioId = { portfolio: new ObjectId(req.query.portfolioId) };
-
     if(req.query.portfolioId){
-        PortfolioRanking.findOne(queryPortfolioId).exec(function(err, portfolioRanking){
-            if (err) {
-                return res.status(400).send({
-                    message: errorHandler.getErrorMessage(err)
-                });
-            } else {
-                res.jsonp(portfolioRanking);
-            }
+        PortfolioRanking.findOne({portfolio: req.query.portfolioId}).populate('user', 'displayName').populate('projects')
+            .exec(function(err, portfolioRanking){
+                // Remove the projects that have been unassigned or assigned to another portfolio
+            async.each(portfolioRanking.projects, function(project, callback) {
+                if(project){
+                    if(project.portfolio === null || !project.portfolio.equals(req.query.portfolioId)){
+                        portfolioRanking.projects.splice(portfolioRanking.projects.indexOf(project), 1);
+                        portfolioRanking.save();
+                    }
+                }
+                callback();
+            }, function(err){
+                if (err) {
+                    return res.status(400).send({
+                        message: errorHandler.getErrorMessage(err)
+                    });
+                } else {
+                    res.jsonp(portfolioRanking);
+                }
+            });
         });
     } else {
         PortfolioRanking.find().populate('user', 'displayName').exec(function(err, portfolioRankings) {

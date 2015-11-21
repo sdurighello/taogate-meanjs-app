@@ -13,10 +13,13 @@ var mongoose = require('mongoose'),
  */
 exports.create = function(req, res) {
 	var Project = mongoose.mtModel(req.user.tenantId + '.' + 'Project');
-    var CategoryGroup = mongoose.mtModel(req.user.tenantId + '.' + 'CategoryGroup');
-    var Category = mongoose.mtModel(req.user.tenantId + '.' + 'Category');
 	var project = new Project(req.body);
 	project.user = req.user;
+
+    var CategoryGroup = mongoose.mtModel(req.user.tenantId + '.' + 'CategoryGroup');
+    var Category = mongoose.mtModel(req.user.tenantId + '.' + 'Category');
+    var PriorityGroup = mongoose.mtModel(req.user.tenantId + '.' + 'PriorityGroup');
+    var Priority = mongoose.mtModel(req.user.tenantId + '.' + 'Priority');
 
     async.series([
         // PROJECT: Save project in its collection
@@ -48,6 +51,31 @@ exports.create = function(req, res) {
                 }
             });
             callback(null, 'two');
+        },
+        // PROJECT.PRIORITIZATION: Add all existing groups (and their priorities) to new project
+        function(callback){
+            PriorityGroup.find().exec(function(err, groups){
+                if (err) {
+                    return res.status(400).send({
+                        message: errorHandler.getErrorMessage(err)
+                    });
+                } else {
+                    async.each(groups, function(group, callback){
+                        var obj = {group: group._id, priorities: []};
+                        async.each(group.priorities, function(priority, callback){
+                            obj.priorities.push({
+                                priority: priority,
+                                priorityValue: null
+                            });
+                            callback();
+                        });
+                        project.prioritization.push(obj);
+                        project.save();
+                        callback();
+                    });
+                }
+            });
+            callback(null, 'three');
         }
     ],function(err, results){
         // results is now equal to ['one', 'two']
@@ -119,22 +147,71 @@ exports.updateCategoryAssignment = function(req, res) {
 
 };
 
+/**
+ *  Update a Priority Assignment
+ */
+exports.updatePriorityAssignment = function(req, res) {
+    var project = req.project ;
+    project.user = req.user;
+    project.created = Date.now();
+
+    async.each(project.prioritization, function(assignedGroup, callback) {
+        if(assignedGroup._id.equals(req.params.assignedGroupId)){
+            async.each(assignedGroup.priorities, function(assignedPriority, callback){
+                if(assignedPriority._id.equals(req.params.assignedPriorityId)){
+                    assignedPriority.priorityValue = req.params.valueId;
+                    project.save();
+                }
+                callback();
+            });
+        }
+        callback();
+    }, function(err){
+        if( err ) {
+            return res.status(400).send({
+                message: errorHandler.getErrorMessage(err)
+            });
+        } else {
+            res.jsonp(project);
+        }
+    });
+
+};
+
 
 /**
  * Delete an Project
  */
 exports.delete = function(req, res) {
 	var project = req.project ;
+    var PortfolioRanking = mongoose.mtModel(req.user.tenantId + '.' + 'PortfolioRanking');
 
-	project.remove(function(err) {
-		if (err) {
-			return res.status(400).send({
-				message: errorHandler.getErrorMessage(err)
-			});
-		} else {
-			res.jsonp(project);
-		}
-	});
+    async.series([
+        // PROJECT: Delete project in its collection
+        function(callback){
+            project.remove();
+            callback(null, 'one');
+        },
+        // PORTFOLIO RANKINGS: Delete project from the "projects" array if project assigned to a portfolio
+        function(callback){
+            if(project.portfolio){
+                PortfolioRanking.findOne({portfolio: project.portfolio._id}).exec(function(err, portfolioRanking){
+                    portfolioRanking.projects.splice(portfolioRanking.projects.indexOf(project._id), 1);
+                    portfolioRanking.save();
+                });
+            }
+            callback(null, 'two');
+        }
+    ],function(err, results){
+        // results is now equal to ['one', 'two']
+        if (err) {
+            return res.status(400).send({
+                message: errorHandler.getErrorMessage(err)
+            });
+        } else {
+            res.jsonp(project);
+        }
+    });
 };
 
 /**
@@ -142,7 +219,7 @@ exports.delete = function(req, res) {
  */
 exports.list = function(req, res) {
     var Project = mongoose.mtModel(req.user.tenantId + '.' + 'Project');
-	Project.find().sort('-created').populate('user', 'displayName').exec(function(err, projects) {
+	Project.find().populate('user', 'displayName').exec(function(err, projects) {
 		if (err) {
 			return res.status(400).send({
 				message: errorHandler.getErrorMessage(err)
@@ -161,7 +238,8 @@ exports.projectByID = function(req, res, next, id) {
 	Project.findById(id).populate('user', 'displayName').deepPopulate([
         'parent','portfolio',
         'identification.projectManager','identification.backupProjectManager',
-        'categorization.group','categorization.categories.category.categoryValues'
+        'categorization.group','categorization.categories.category.categoryValues',
+        'prioritization.group','prioritization.priorities.priority'
     ]).exec(function(err, project) {
 		if (err) return next(err);
 		if (! project) return next(new Error('Failed to load Project ' + id));

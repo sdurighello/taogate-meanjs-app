@@ -13,8 +13,8 @@ require('mongoose-multitenant');
  * Portfolio ranking Schema
  */
 var PortfolioRankingSchema = new Schema({
-	portfolio: {},
-    projects: [],
+	portfolio: {type: Schema.Types.ObjectId, ref: 'Portfolio', default:null, $tenant:true},
+    projects: [{type: Schema.Types.ObjectId, ref: 'Project', default:null, $tenant:true}],
 	created: {
 		type: Date,
 		default: Date.now

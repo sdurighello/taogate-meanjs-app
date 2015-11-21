@@ -259,13 +259,10 @@ angular.module('priority-setup').controller('PrioritySetupController', ['$scope'
 				description: 'New priority description'
 			});
 
-			priority.$save(function(priorityRes) {
-				group.priorities.push(priorityRes);
-				group.$update(function(groupRes) {
+			priority.$save({groupId: group._id}, function(res) {
+				// Add new priority to the view group
+				group.priorities.push(res);
 
-				}, function(errorResponse) {
-					$scope.error = errorResponse.data.message;
-				});
 			}, function(errorResponse) {
 				$scope.error = errorResponse.data.message;
 			});
@@ -300,11 +297,11 @@ angular.module('priority-setup').controller('PrioritySetupController', ['$scope'
 		$scope.removePriority = function(group, priority) {
 			$scope.error = null;
 
-			Priorities.remove({},priority, function(res){
-				group.priorities = _.without(group.priorities, priority);
-			}, function(err){
-				$scope.error = err.data.message;
-			});
+            Priorities.remove({groupId: group._id}, priority, function(res){
+                group.priorities = _.without(group.priorities, priority);
+            }, function(err){
+                $scope.error = err.data.message;
+            });
 
 		};
 	}

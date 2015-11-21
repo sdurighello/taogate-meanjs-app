@@ -76,6 +76,7 @@ exports.update = function(req, res) {
  * Delete an Portfolio
  */
 exports.delete = function(req, res) {
+    var Project = mongoose.mtModel(req.user.tenantId + '.' + 'Project');
     var PortfolioRanking = mongoose.mtModel(req.user.tenantId + '.' + 'PortfolioRanking');
     var Portfolio = mongoose.mtModel(req.user.tenantId + '.' + 'Portfolio');
 	var portfolio = req.portfolio ;
@@ -110,6 +111,17 @@ exports.delete = function(req, res) {
             callback(null, 'three');
         },
         function(callback){
+            // PROJECTS: Delete portfolio from assigned projects and set project's "portfolio" property to null
+            Project.find({portfolio: portfolio._id}).exec(function(err, projects){
+                async.each(projects, function(project, callback){
+                    project.portfolio = null;
+                    project.save();
+                    callback();
+                });
+            });
+            callback(null, 'four');
+        },
+        function(callback){
             // RANKING: Delete portfolio ranking
             PortfolioRanking.findOne({portfolio: portfolio._id}).exec(function(err, portfolioRanking){
                 if (err) {
@@ -120,7 +132,7 @@ exports.delete = function(req, res) {
                     if(portfolioRanking){ portfolioRanking.remove();}
                 }
             });
-            callback(null, 'four');
+            callback(null, 'five');
         }
     ],function(err, results){
         // results is now equal to ['one', 'two']
