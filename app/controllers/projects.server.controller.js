@@ -219,7 +219,15 @@ exports.delete = function(req, res) {
  */
 exports.list = function(req, res) {
     var Project = mongoose.mtModel(req.user.tenantId + '.' + 'Project');
-	Project.find().populate('user', 'displayName').exec(function(err, projects) {
+    var queryObj = {};
+    if(!_.isEmpty(req.query)){
+        for (var property in req.query) {
+            if (req.query.hasOwnProperty(property)) {
+                queryObj[property] = req.query[property];
+            }
+        }
+    }
+	Project.find(queryObj).populate('user', 'displayName').exec(function(err, projects) {
 		if (err) {
 			return res.status(400).send({
 				message: errorHandler.getErrorMessage(err)
@@ -235,17 +243,25 @@ exports.list = function(req, res) {
  */
 exports.projectByID = function(req, res, next, id) {
     var Project = mongoose.mtModel(req.user.tenantId + '.' + 'Project');
-	Project.findById(id).populate('user', 'displayName').deepPopulate([
-        'parent','portfolio',
-        'identification.projectManager','identification.backupProjectManager',
-        'categorization.group','categorization.categories.category.categoryValues',
-        'prioritization.group','prioritization.priorities.priority'
-    ]).exec(function(err, project) {
-		if (err) return next(err);
-		if (! project) return next(new Error('Failed to load Project ' + id));
-		req.project = project ;
-		next();
-	});
+
+    var retPropertiesString = '';
+    var deepPopulateArray = [];
+
+    if(req.query.retPropertiesString){
+        retPropertiesString = req.query.retPropertiesString;
+    }
+    if(req.query.deepPopulateArray){
+        deepPopulateArray = req.query.deepPopulateArray;
+    }
+
+    Project.findById(id, retPropertiesString).populate('user', 'displayName').deepPopulate(deepPopulateArray)
+        .exec(function(err, project) {
+            if (err) return next(err);
+            if (! project) return next(new Error('Failed to load Project ' + id));
+            req.project = project ;
+            next();
+        });
+
 };
 
 /**

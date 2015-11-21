@@ -95,7 +95,15 @@ angular.module('category-assignment').controller('CategoryAssignmentController',
 		$scope.selectProject = function(project){
             originalCategoryAssignment = {};
 			// Get the full project fat object from the "projectById" server function that populates everything
-			Projects.get({projectId:project._id}, function(res){
+			Projects.get({
+				projectId:project._id,
+				retPropertiesString : 'user created selection identification categorization portfolio',
+				deepPopulateArray : [
+					'portfolio',
+					'identification.projectManager','identification.backupProjectManager',
+					'categorization.group','categorization.categories.category.categoryValues'
+				]
+			}, function(res){
 				$scope.selectedProject = res;
 			},function(errorResponse){
 				$scope.error = errorResponse.data.message;

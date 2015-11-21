@@ -119,7 +119,6 @@ angular.module('project-identification').controller('ProjectIdentificationContro
                 },
                 categorization: [],
                 prioritization: [],
-                ranking: [],
                 selection: {
                     current: {
                         active : true
@@ -127,18 +126,24 @@ angular.module('project-identification').controller('ProjectIdentificationContro
                     history:[]
                 },
                 // Evaluation
-                stakeholders: [],
                 financialAnalysis: {
                     costs: [],
                     benefits: [],
+                    yearlySummary: [],
                     ratios: {
-                        NPV: null,
-                        BCR: null,
-                        payback: null
+                        current: {
+                            totalCosts:null,
+                            totalBenefits:null,
+                            NPV: null,
+                            BCR: null,
+                            payback: null
+                        },
+                        history: []
                     }
                 },
                 qualitativeAnalysis: [],
                 riskAnalysis: [],
+                stakeholders: [],
                 // Delivery
                 process: null
 
@@ -168,7 +173,11 @@ angular.module('project-identification').controller('ProjectIdentificationContro
             // Save the clicked project to update its text if changes to name happen
             clickedProject = project;
             // Get the full project fat object from the "projectById" server function that populates everything
-            Projects.get({projectId:project._id}, function(res){
+            Projects.get({
+                projectId:project._id,
+                retPropertiesString : 'identification',
+                deepPopulateArray : ['identification.projectManager','identification.backupProjectManager']
+            }, function(res){
                 $scope.selectedProject = res;
                 originalProject = _.cloneDeep(res);
                 $scope.selectProjectForm('view');

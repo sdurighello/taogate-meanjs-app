@@ -10,7 +10,7 @@ angular.module('portfolio-ranking-assignment').controller('PortfolioRankingAssig
 
 		$scope.init = function(){
 
-			Projects.query(function(projects){
+			Projects.query({'selection.current.selectedForPrioritization': true}, function(projects){
 				$scope.projects = projects;
 			}, function(err){
 				$scope.initError.push(err.data.message);
@@ -84,7 +84,14 @@ angular.module('portfolio-ranking-assignment').controller('PortfolioRankingAssig
 		$scope.selectNode = function(node){
             $scope.error = null;
 			$scope.selectedNode = node;
-            PortfolioRankings.get({portfolioId: node._id}, function(res){
+            PortfolioRankings.get({
+				portfolioId: node._id,
+                retPropertiesString : 'user created selection identification portfolio',
+                deepPopulateArray : [
+                    'portfolio',
+                    'identification.projectManager','identification.backupProjectManager'
+                ]
+            }, function(res){
                 selectedPortfolioRanking = res;
                 $scope.selectedAssignment.assignedProjects = _.map(res.projects, function(project){
                     return {
@@ -115,6 +122,10 @@ angular.module('portfolio-ranking-assignment').controller('PortfolioRankingAssig
 		// ------------------- DRAG AND DROP LISTENERS -------
 
 		$scope.dragControlListeners = {
+            // Check for user authorization or if project selected for prioritization/active
+            accept: function (sourceItemHandleScope, destSortableScope) {
+                if($scope.userHasAuthorization){ return true; }
+            },
             // Just save the all "projects" array property to the object on the server every time there is a change
 			itemMoved: function (eventObj) {
                 if(eventObj){

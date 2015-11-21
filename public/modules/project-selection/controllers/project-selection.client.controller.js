@@ -75,7 +75,14 @@ angular.module('project-selection').controller('ProjectSelectionController', ['$
 			// Save the clicked project to update its text if changes to name happen
 			clickedProject = project;
 			// Get the full project fat object from the "projectById" server function that populates everything
-			Projects.get({projectId:project._id}, function(res){
+			Projects.get({
+				projectId:project._id,
+                retPropertiesString : 'user created selection identification portfolio',
+                deepPopulateArray : [
+                    'portfolio',
+                    'identification.projectManager','identification.backupProjectManager'
+                ]
+			}, function(res){
 				$scope.selectedProject = res;
 				originalProject = _.cloneDeep(res);
 				$scope.selectProjectForm('view');
@@ -97,6 +104,7 @@ angular.module('project-selection').controller('ProjectSelectionController', ['$
 		$scope.editProject = function(){
 			// Clean up the deep populate
 			var projectCopy = _.cloneDeep($scope.selectedProject);
+            projectCopy.portfolio = allowNull(projectCopy.portfolio);
 			projectCopy.identification.projectManager = allowNull($scope.selectedProject.identification.projectManager);
 			projectCopy.identification.backupProjectManager = allowNull($scope.selectedProject.identification.backupProjectManager);
 

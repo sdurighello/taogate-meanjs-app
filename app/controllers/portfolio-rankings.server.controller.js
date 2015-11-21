@@ -80,10 +80,10 @@ exports.list = function(req, res) {
     if(req.query.portfolioId){
         PortfolioRanking.findOne({portfolio: req.query.portfolioId}).populate('user', 'displayName').populate('projects')
             .exec(function(err, portfolioRanking){
-                // Remove the projects that have been unassigned or assigned to another portfolio
+                // Remove the projects that have been: 1) unassigned or 2) assigned to another portfolio or 3) Not selected for prioritization
             async.each(portfolioRanking.projects, function(project, callback) {
                 if(project){
-                    if(project.portfolio === null || !project.portfolio.equals(req.query.portfolioId)){
+                    if(project.portfolio === null || !project.portfolio.equals(req.query.portfolioId) || project.selection.current.selectedForPrioritization === false){
                         portfolioRanking.projects.splice(portfolioRanking.projects.indexOf(project), 1);
                         portfolioRanking.save();
                     }

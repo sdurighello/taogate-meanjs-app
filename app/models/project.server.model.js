@@ -52,6 +52,36 @@ var AssignedPriorityGroupSchema = new Schema({
 
 // ----
 
+var BenefitSchema = new Schema({
+    group : {type: Schema.Types.ObjectId, ref: 'FinancialBenefitGroup', $tenant:true, required:'FinancialBenefitGroup missing'},
+    benefit : {type: Schema.Types.ObjectId, ref: 'FinancialBenefit', $tenant:true, required:'FinancialBenefit missing'},
+    year : {type: Number, required: 'Year for benefit is missing'},
+    benefitValue : {type: Number, required: 'Value for benefit is missing'}
+});
+
+var CostSchema = new Schema({
+    group : {type: Schema.Types.ObjectId, ref: 'FinancialCostGroup', $tenant:true, required:'FinancialCostGroup missing'},
+    cost : {type: Schema.Types.ObjectId, ref: 'FinancialCost', $tenant:true, required:'FinancialCost missing'},
+    year : {type: Number, required: 'Year for cost is missing'},
+    costValue : {type: Number, required: 'Value for cost is missing'}
+});
+
+var YearlySummarySchema = new Schema({
+    year : {type: Number},
+    yearlyCostValue : {type: Number},
+    yearlyBenefitValue : {type: Number},
+    yearlyNet : {type: Number}
+});
+
+var FinancialRatiosRecord = {
+    totalCosts:{type: Number, default:null},
+    totalBenefits:{type: Number, default:null},
+    NPV: {type: Number, default:null},
+    BCR: {type: Number, default:null},
+    payback: {type: Number, default:null},
+    created: {type: Date, default: Date.now}
+};
+
 
 
 
@@ -76,25 +106,24 @@ var ProjectSchema = new Schema({
     },
     categorization: [AssignedCategoryGroupSchema],
     prioritization: [AssignedPriorityGroupSchema],
-    ranking: [],
     selection: {
         current: ProjectSelectionRecord,
         history: [ProjectSelectionRecord]
     },
 
     // Evaluation
-    stakeholders: [],
     financialAnalysis: {
-        costs: [],
-        benefits: [],
+        costs: [CostSchema],
+        benefits: [BenefitSchema],
+        yearlySummary: [YearlySummarySchema],
         ratios: {
-            NPV: {type: Date, default:null},
-            BCR: {type: Date, default:null},
-            payback: {type: Date, default:null}
+            current: FinancialRatiosRecord,
+            history: [FinancialRatiosRecord]
         }
     },
     qualitativeAnalysis: [],
     riskAnalysis: [],
+    stakeholders: [],
 
     // Delivery
     process: {type: Schema.ObjectId, ref: 'GateProcess', default:null, $tenant:true}

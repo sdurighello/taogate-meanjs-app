@@ -10,7 +10,7 @@ angular.module('priority-assignment').controller('PriorityAssignmentController',
 
 		$scope.init = function(){
 
-			Projects.query(function(projects){
+			Projects.query({'selection.current.selectedForPrioritization': true}, function(projects){
 				$scope.projects = projects;
 			}, function(err){
 				$scope.initError.push(err.data.message);
@@ -95,7 +95,15 @@ angular.module('priority-assignment').controller('PriorityAssignmentController',
 		$scope.selectProject = function(project){
 			originalPriorityAssignment = {};
 			// Get the full project fat object from the "projectById" server function that populates everything
-			Projects.get({projectId:project._id}, function(res){
+			Projects.get({
+				projectId:project._id,
+				retPropertiesString : 'user created selection identification prioritization portfolio',
+				deepPopulateArray : [
+                    'portfolio',
+                    'identification.projectManager','identification.backupProjectManager',
+                    'prioritization.group','prioritization.priorities.priority'
+                ]
+			}, function(res){
 				$scope.selectedProject = res;
 			},function(errorResponse){
 				$scope.error = errorResponse.data.message;
