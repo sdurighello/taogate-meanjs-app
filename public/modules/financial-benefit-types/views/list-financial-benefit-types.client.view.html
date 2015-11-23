@@ -1,0 +1,19 @@
+<section data-ng-controller="FinancialBenefitTypesController" data-ng-init="find()">
+    <div class="page-header">
+        <h1>Financial benefit types</h1>
+    </div>
+    <div class="list-group">
+        <a data-ng-repeat="financialBenefitType in financialBenefitTypes" data-ng-href="#!/financial-benefit-types/{{financialBenefitType._id}}" class="list-group-item">
+			<small class="list-group-item-text">
+				Posted on
+				<span data-ng-bind="financialBenefitType.created | date:'medium'"></span>
+				by
+				<span data-ng-bind="financialBenefitType.user.displayName"></span>
+			</small>
+			<h4 class="list-group-item-heading" data-ng-bind="financialBenefitType.name"></h4>
+        </a>
+    </div>
+    <div class="alert alert-warning text-center" data-ng-hide="!financialBenefitTypes.$resolved || financialBenefitTypes.length">
+    	No Financial benefit types yet, why don't you <a href="/#!/financial-benefit-types/create">create one</a>?
+    </div>
+</section>

@@ -52,25 +52,27 @@ var AssignedPriorityGroupSchema = new Schema({
 
 // ----
 
-var BenefitSchema = new Schema({
+var AssignedBenefitSchema = new Schema({
     group : {type: Schema.Types.ObjectId, ref: 'FinancialBenefitGroup', $tenant:true, required:'FinancialBenefitGroup missing'},
     benefit : {type: Schema.Types.ObjectId, ref: 'FinancialBenefit', $tenant:true, required:'FinancialBenefit missing'},
-    year : {type: Number, required: 'Year for benefit is missing'},
-    benefitValue : {type: Number, required: 'Value for benefit is missing'}
+    name : {type: String, default: '', trim: true, required:'Benefit name is required'},
+    year : {type: Number, min:0, required: 'Year for benefit is missing'},
+    amount : {type: Number, min:0, required: 'Amount for benefit is missing'}
 });
 
-var CostSchema = new Schema({
+var AssignedCostSchema = new Schema({
     group : {type: Schema.Types.ObjectId, ref: 'FinancialCostGroup', $tenant:true, required:'FinancialCostGroup missing'},
     cost : {type: Schema.Types.ObjectId, ref: 'FinancialCost', $tenant:true, required:'FinancialCost missing'},
-    year : {type: Number, required: 'Year for cost is missing'},
-    costValue : {type: Number, required: 'Value for cost is missing'}
+    name : {type: String, default: '', trim: true, required:'Cost name is required'},
+    year : {type: Number, min:0, required: 'Year for cost is missing'},
+    amount : {type: Number, min:0, required: 'Amount for cost is missing'}
 });
 
 var YearlySummarySchema = new Schema({
-    year : {type: Number},
-    yearlyCostValue : {type: Number},
-    yearlyBenefitValue : {type: Number},
-    yearlyNet : {type: Number}
+    year : {type: Number, default:null},
+    yearlyCostValue : {type: Number, default:null},
+    yearlyBenefitValue : {type: Number, default:null},
+    yearlyNet : {type: Number, default:null}
 });
 
 var FinancialRatiosRecord = {
@@ -113,8 +115,8 @@ var ProjectSchema = new Schema({
 
     // Evaluation
     financialAnalysis: {
-        costs: [CostSchema],
-        benefits: [BenefitSchema],
+        costs: [AssignedCostSchema],
+        benefits: [AssignedBenefitSchema],
         yearlySummary: [YearlySummarySchema],
         ratios: {
             current: FinancialRatiosRecord,

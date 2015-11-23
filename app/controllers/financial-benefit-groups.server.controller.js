@@ -59,20 +59,20 @@ exports.update = function(req, res) {
  */
 exports.delete = function(req, res) {
     var FinancialBenefitGroup = mongoose.mtModel(req.user.tenantId + '.' + 'FinancialBenefitGroup');
-    var FinancialBenefit = mongoose.mtModel(req.user.tenantId + '.' + 'FinancialBenefit');
+    var FinancialBenefitType = mongoose.mtModel(req.user.tenantId + '.' + 'FinancialBenefitType');
     var financialBenefitGroup = req.financialBenefitGroup ;
 
     async.series([
         function(callback){
             // Delete all benefits (from "benefits" collection) belonging to this benefit Group
-            async.each(financialBenefitGroup.benefits, function(item, callback){
-                FinancialBenefit.findById(item._id).exec(function(err, benefit){
+            async.each(financialBenefitGroup.benefitTypes, function(item, callback){
+                FinancialBenefitType.findById(item._id).exec(function(err, benefitType){
                     if (err) {
                         return res.status(400).send({
                             message: errorHandler.getErrorMessage(err)
                         });
                     } else {
-                        benefit.remove();
+                        benefitType.remove();
                     }
                 });
                 callback();

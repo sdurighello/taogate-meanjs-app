@@ -59,20 +59,20 @@ exports.update = function(req, res) {
  */
 exports.delete = function(req, res) {
     var FinancialCostGroup = mongoose.mtModel(req.user.tenantId + '.' + 'FinancialCostGroup');
-    var FinancialCost = mongoose.mtModel(req.user.tenantId + '.' + 'FinancialCost');
+    var FinancialCostType = mongoose.mtModel(req.user.tenantId + '.' + 'FinancialCostType');
     var financialCostGroup = req.financialCostGroup ;
 
     async.series([
         function(callback){
             // Delete all costs (from "costs" collection) belonging to this cost Group
-            async.each(financialCostGroup.costs, function(item, callback){
-                FinancialCost.findById(item._id).exec(function(err, cost){
+            async.each(financialCostGroup.costTypes, function(item, callback){
+                FinancialCostType.findById(item._id).exec(function(err, costType){
                     if (err) {
                         return res.status(400).send({
                             message: errorHandler.getErrorMessage(err)
                         });
                     } else {
-                        cost.remove();
+                        costType.remove();
                     }
                 });
                 callback();

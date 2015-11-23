@@ -1,9 +1,9 @@
 'use strict';
 
 angular.module('financial-analysis-setup').controller('FinancialAnalysisSetupController', ['$scope', '$stateParams', '$location',
-    'Authentication','FinancialBenefitGroups','FinancialBenefits','FinancialCostGroups','FinancialCosts','$q', '_',
-	function($scope, $stateParams, $location, Authentication, FinancialBenefitGroups, FinancialBenefits, FinancialCostGroups,
-             FinancialCosts, $q, _) {
+    'Authentication','FinancialBenefitGroups','FinancialBenefitTypes','FinancialCostGroups','FinancialCostTypes','$q', '_',
+	function($scope, $stateParams, $location, Authentication, FinancialBenefitGroups, FinancialBenefitTypes, FinancialCostGroups,
+             FinancialCostTypes, $q, _) {
 
 		// ------------- INIT -------------
 
@@ -15,8 +15,8 @@ angular.module('financial-analysis-setup').controller('FinancialAnalysisSetupCon
             }, function(err){
                 $scope.initError.push(err.data.message);
             });
-            FinancialBenefits.query(function(benefits){
-                $scope.benefits = benefits;
+            FinancialBenefitTypes.query(function(benefitTypes){
+                $scope.benefitTypes = benefitTypes;
             }, function(err){
                 $scope.initError.push(err.data.message);
             });
@@ -25,8 +25,8 @@ angular.module('financial-analysis-setup').controller('FinancialAnalysisSetupCon
             }, function(err){
                 $scope.initError.push(err.data.message);
             });
-            FinancialCosts.query(function(costs){
-                $scope.costs = costs;
+            FinancialCostTypes.query(function(costTypes){
+                $scope.costTypes = costTypes;
             }, function(err){
                 $scope.initError.push(err.data.message);
             });
@@ -58,11 +58,11 @@ angular.module('financial-analysis-setup').controller('FinancialAnalysisSetupCon
 			if(string === 'edit'){$scope.switchBenefitGroupForm[group._id] = 'edit';}
 		};
 
-		$scope.switchBenefitForm = {};
+		$scope.switchBenefitTypeForm = {};
 
-		$scope.selectBenefitForm = function(benefit, string){
-			if(string === 'view'){ $scope.switchBenefitForm[benefit._id] = 'view';}
-			if(string === 'edit'){$scope.switchBenefitForm[benefit._id] = 'edit';}
+		$scope.selectBenefitTypeForm = function(type, string){
+			if(string === 'view'){ $scope.switchBenefitTypeForm[type._id] = 'view';}
+			if(string === 'edit'){$scope.switchBenefitTypeForm[type._id] = 'edit';}
 		};
 
 		// ----------------- REFRESH BENEFIT GROUP LIST ------------
@@ -83,8 +83,8 @@ angular.module('financial-analysis-setup').controller('FinancialAnalysisSetupCon
 
 			var benefitGroup = new FinancialBenefitGroups ({
 				name: 'New benefit group',
-				description: 'new group description',
-				benefits: []
+				description: '',
+				benefitTypes: []
 			});
 
 			benefitGroup.$save(function(response) {
@@ -131,18 +131,18 @@ angular.module('financial-analysis-setup').controller('FinancialAnalysisSetupCon
 		};
 
 
-		// ------------------ CREATE BENEFIT ----------------
+		// ------------------ CREATE BENEFIT TYPE ----------------
 
-		$scope.createBenefit = function(group) {
+		$scope.createBenefitType = function(group) {
 			$scope.error = null;
 
-			var benefit = new FinancialBenefits ({
-				name: 'New benefit',
-				description: 'New benefit description'
+			var benefitType = new FinancialBenefitTypes ({
+				name: 'New benefit type',
+				description: ''
 			});
 
-			benefit.$save(function(benefitRes) {
-				group.benefits.push(benefitRes);
+			benefitType.$save(function(benefitRes) {
+				group.benefitTypes.push(benefitRes);
 				group.$update(function(groupRes) {
 
 				}, function(errorResponse) {
@@ -153,36 +153,36 @@ angular.module('financial-analysis-setup').controller('FinancialAnalysisSetupCon
 			});
 		};
 
-		// ------------------- EDIT BENEFIT -----------------
+		// ------------------- EDIT BENEFIT TYPE-----------------
 
-		var originalEditBenefit = {};
+		var originalEditBenefitType = {};
 
-		$scope.selectEditBenefit = function(group, benefit){
-			originalEditBenefit[benefit._id] = _.clone(benefit);
-			$scope.selectBenefitForm(benefit, 'edit');
+		$scope.selectEditBenefitType = function(group, type){
+			originalEditBenefitType[type._id] = _.clone(type);
+			$scope.selectBenefitTypeForm(type, 'edit');
 		};
 
-		$scope.updateBenefit = function(group, benefit) {
-			FinancialBenefits.update(benefit, function(response) {
-				$scope.selectBenefitForm(benefit, 'view');
+		$scope.updateBenefitType = function(group, type) {
+			FinancialBenefitTypes.update(type, function(response) {
+				$scope.selectBenefitTypeForm(type, 'view');
 			}, function(errorResponse) {
 				$scope.error = errorResponse.data.message;
 			});
 		};
 
-		$scope.cancelEditBenefit = function(benefit){
+		$scope.cancelEditBenefitType = function(type){
 			$scope.error = null;
-			benefit.name = originalEditBenefit[benefit._id].name;
-			benefit.description = originalEditBenefit[benefit._id].description;
-			$scope.selectBenefitForm(benefit, 'view');
+            type.name = originalEditBenefitType[type._id].name;
+            type.description = originalEditBenefitType[type._id].description;
+			$scope.selectBenefitTypeForm(type, 'view');
 		};
 
-		// ------------------- REMOVE BENEFIT -----------------
+		// ------------------- REMOVE BENEFIT TYPE-----------------
 
-		$scope.removeBenefit = function(group, benefit) {
+		$scope.removeBenefitType = function(group, type) {
 			$scope.error = null;
-            FinancialBenefits.remove({},benefit, function(res){
-                group.benefits = _.without(group.benefits, benefit);
+            FinancialBenefitTypes.remove({},type, function(res){
+                group.benefitTypes = _.without(group.benefitTypes, type);
             }, function(err){
                 $scope.error = err.data.message;
             });
@@ -203,11 +203,11 @@ angular.module('financial-analysis-setup').controller('FinancialAnalysisSetupCon
             if(string === 'edit'){$scope.switchCostGroupForm[group._id] = 'edit';}
         };
 
-        $scope.switchCostForm = {};
+        $scope.switchCostTypeForm = {};
 
-        $scope.selectCostForm = function(cost, string){
-            if(string === 'view'){ $scope.switchCostForm[cost._id] = 'view';}
-            if(string === 'edit'){$scope.switchCostForm[cost._id] = 'edit';}
+        $scope.selectCostTypeForm = function(type, string){
+            if(string === 'view'){ $scope.switchCostTypeForm[type._id] = 'view';}
+            if(string === 'edit'){$scope.switchCostTypeForm[type._id] = 'edit';}
         };
 
         // ----------------- REFRESH COST GROUP LIST ------------
@@ -228,8 +228,8 @@ angular.module('financial-analysis-setup').controller('FinancialAnalysisSetupCon
 
             var costGroup = new FinancialCostGroups ({
                 name: 'New cost group',
-                description: 'new group description',
-                costs: []
+                description: '',
+                costTypes: []
             });
 
             costGroup.$save(function(response) {
@@ -276,58 +276,57 @@ angular.module('financial-analysis-setup').controller('FinancialAnalysisSetupCon
         };
 
 
-        // ------------------ CREATE COST ----------------
+        // ------------------ CREATE COST TYPE----------------
 
-        $scope.createCost = function(group) {
+        $scope.createCostType = function(group) {
             $scope.error = null;
 
-            var cost = new FinancialCosts ({
-                name: 'New cost',
-                description: 'New cost description'
+            var costType = new FinancialCostTypes ({
+                name: 'New cost type',
+                description: ''
             });
 
-            cost.$save(function(costRes) {
-                group.costs.push(costRes);
-                group.$update(function(groupRes) {
+            costType.$save({groupId: group._id}, function(res) {
+                // Add new type to the view group
+                group.costTypes.push(res);
 
-                }, function(errorResponse) {
-                    $scope.error = errorResponse.data.message;
-                });
+            }, function(errorResponse) {
+                $scope.error = errorResponse.data.message;
+            });
+
+        };
+
+        // ------------------- EDIT COST TYPE-----------------
+
+        var originalEditCostType = {};
+
+        $scope.selectEditCostType = function(group, type){
+            originalEditCostType[type._id] = _.clone(type);
+            $scope.selectCostTypeForm(type, 'edit');
+        };
+
+        $scope.updateCostType = function(group, type) {
+            FinancialCostTypes.update(type, function(response) {
+                $scope.selectCostTypeForm(type, 'view');
             }, function(errorResponse) {
                 $scope.error = errorResponse.data.message;
             });
         };
 
-        // ------------------- EDIT COST -----------------
-
-        var originalEditCost = {};
-
-        $scope.selectEditCost = function(group, cost){
-            originalEditCost[cost._id] = _.clone(cost);
-            $scope.selectCostForm(cost, 'edit');
-        };
-
-        $scope.updateCost = function(group, cost) {
-            FinancialCosts.update(cost, function(response) {
-                $scope.selectCostForm(cost, 'view');
-            }, function(errorResponse) {
-                $scope.error = errorResponse.data.message;
-            });
-        };
-
-        $scope.cancelEditCost = function(cost){
+        $scope.cancelEditCost = function(type){
             $scope.error = null;
-            cost.name = originalEditCost[cost._id].name;
-            cost.description = originalEditCost[cost._id].description;
-            $scope.selectCostForm(cost, 'view');
+            type.name = originalEditCostType[type._id].name;
+            type.description = originalEditCostType[type._id].description;
+            $scope.selectCostTypeForm(type, 'view');
         };
 
-        // ------------------- REMOVE COST -----------------
+        // ------------------- REMOVE COST TYPE-----------------
 
-        $scope.removeCost = function(group, cost) {
+        $scope.removeCostType = function(group, type) {
             $scope.error = null;
-            FinancialCosts.remove({},cost, function(res){
-                group.costs = _.without(group.costs, cost);
+
+            FinancialCostTypes.remove({groupId: group._id}, type, function(res){
+                group.costTypes = _.without(group.costTypes, type);
             }, function(err){
                 $scope.error = err.data.message;
             });

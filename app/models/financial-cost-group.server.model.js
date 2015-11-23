@@ -23,7 +23,7 @@ var FinancialCostGroupSchema = new Schema({
 		default: '',
 		trim: true
 	},
-	costs : [{type: Schema.Types.ObjectId, ref: 'FinancialCost', $tenant:true}],
+	costTypes : [{type: Schema.Types.ObjectId, ref: 'FinancialCostType', $tenant:true}],
 	created: {
 		type: Date,
 		default: Date.now

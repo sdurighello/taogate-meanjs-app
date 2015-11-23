@@ -23,7 +23,7 @@ var FinancialBenefitGroupSchema = new Schema({
         default: '',
         trim: true
     },
-    benefits : [{type: Schema.Types.ObjectId, ref: 'FinancialBenefit', $tenant:true}],
+    benefitTypes : [{type: Schema.Types.ObjectId, ref: 'FinancialBenefitType', $tenant:true}],
 	created: {
 		type: Date,
 		default: Date.now
