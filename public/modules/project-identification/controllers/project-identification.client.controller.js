@@ -127,6 +127,7 @@ angular.module('project-identification').controller('ProjectIdentificationContro
                 },
                 // Evaluation
                 financialAnalysis: {
+                    discountRate: null,
                     costs: [],
                     benefits: [],
                     yearlySummary: [],

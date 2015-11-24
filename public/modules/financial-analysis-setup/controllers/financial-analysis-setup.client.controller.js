@@ -44,162 +44,12 @@ angular.module('financial-analysis-setup').controller('FinancialAnalysisSetupCon
 			});
 		});
 
-// ---------------------------------------------------- BENEFITS --------------------------------------
-
-
-
-		// ------------------- NG-SWITCH ---------------------
-
-		$scope.switchBenefitGroupForm = {};
-
-		$scope.selectBenefitGroupForm = function(group, string){
-			if(string === 'view'){ $scope.switchBenefitGroupForm[group._id] = 'view';}
-			if(string === 'new'){$scope.switchBenefitGroupForm[group._id] = 'new';}
-			if(string === 'edit'){$scope.switchBenefitGroupForm[group._id] = 'edit';}
-		};
-
-		$scope.switchBenefitTypeForm = {};
-
-		$scope.selectBenefitTypeForm = function(type, string){
-			if(string === 'view'){ $scope.switchBenefitTypeForm[type._id] = 'view';}
-			if(string === 'edit'){$scope.switchBenefitTypeForm[type._id] = 'edit';}
-		};
-
-		// ----------------- REFRESH BENEFIT GROUP LIST ------------
-
-		$scope.benefitGroupList = function(){
-            $scope.initError = [];
-            FinancialBenefitGroups.query(function(groups){
-				$scope.benefitGroups = groups;
-			}, function(err){
-                $scope.initError.push(err.data.message);
-            });
-		};
-
-		// ------------------ CREATE BENEFIT GROUP ----------------
-
-		$scope.createBenefitGroup = function() {
-			$scope.error = null;
-
-			var benefitGroup = new FinancialBenefitGroups ({
-				name: 'New benefit group',
-				description: '',
-				benefitTypes: []
-			});
-
-			benefitGroup.$save(function(response) {
-				$scope.benefitGroupList();
-			}, function(errorResponse) {
-				$scope.error = errorResponse.data.message;
-			});
-		};
-
-		// ------------------- EDIT GROUP -----------------
-
-		var originalEditBenefitGroup = {};
-
-		$scope.selectBenefitGroup = function(group){
-			originalEditBenefitGroup[group._id] = _.clone(group);
-			$scope.error = null;
-			$scope.selectBenefitGroupForm(group, 'edit');
-		};
-
-		$scope.updateBenefitGroup = function(group) {
-			group.$update(function(response) {
-				$scope.selectBenefitGroupForm(group, 'view');
-			}, function(errorResponse) {
-				$scope.error = errorResponse.data.message;
-			});
-		};
-
-		$scope.cancelEditBenefitGroup = function(group){
-			$scope.error = null;
-			group.name = originalEditBenefitGroup[group._id].name;
-			group.description = originalEditBenefitGroup[group._id].description;
-			$scope.selectBenefitGroupForm(group, 'view');
-		};
-
-		// ------------------- REMOVE BENEFIT GROUP -----------------
-
-		$scope.removeBenefitGroup = function(group) {
-			$scope.error = null;
-			group.$remove(function(response) {
-				$scope.benefitGroupList();
-			}, function(errorResponse) {
-				$scope.error = errorResponse.data.message;
-			});
-		};
-
-
-		// ------------------ CREATE BENEFIT TYPE ----------------
-
-		$scope.createBenefitType = function(group) {
-			$scope.error = null;
-
-			var benefitType = new FinancialBenefitTypes ({
-				name: 'New benefit type',
-				description: ''
-			});
-
-			benefitType.$save(function(benefitRes) {
-				group.benefitTypes.push(benefitRes);
-				group.$update(function(groupRes) {
-
-				}, function(errorResponse) {
-					$scope.error = errorResponse.data.message;
-				});
-			}, function(errorResponse) {
-				$scope.error = errorResponse.data.message;
-			});
-		};
-
-		// ------------------- EDIT BENEFIT TYPE-----------------
-
-		var originalEditBenefitType = {};
-
-		$scope.selectEditBenefitType = function(group, type){
-			originalEditBenefitType[type._id] = _.clone(type);
-			$scope.selectBenefitTypeForm(type, 'edit');
-		};
-
-		$scope.updateBenefitType = function(group, type) {
-			FinancialBenefitTypes.update(type, function(response) {
-				$scope.selectBenefitTypeForm(type, 'view');
-			}, function(errorResponse) {
-				$scope.error = errorResponse.data.message;
-			});
-		};
-
-		$scope.cancelEditBenefitType = function(type){
-			$scope.error = null;
-            type.name = originalEditBenefitType[type._id].name;
-            type.description = originalEditBenefitType[type._id].description;
-			$scope.selectBenefitTypeForm(type, 'view');
-		};
-
-		// ------------------- REMOVE BENEFIT TYPE-----------------
-
-		$scope.removeBenefitType = function(group, type) {
-			$scope.error = null;
-            FinancialBenefitTypes.remove({},type, function(res){
-                group.benefitTypes = _.without(group.benefitTypes, type);
-            }, function(err){
-                $scope.error = err.data.message;
-            });
-		};
-
-
-// ---------------------------------------------------- COSTS --------------------------------------
-
-
-
         // ------------------- NG-SWITCH ---------------------
 
         $scope.switchCostGroupForm = {};
 
         $scope.selectCostGroupForm = function(group, string){
             if(string === 'view'){ $scope.switchCostGroupForm[group._id] = 'view';}
-            if(string === 'new'){$scope.switchCostGroupForm[group._id] = 'new';}
             if(string === 'edit'){$scope.switchCostGroupForm[group._id] = 'edit';}
         };
 
@@ -207,19 +57,51 @@ angular.module('financial-analysis-setup').controller('FinancialAnalysisSetupCon
 
         $scope.selectCostTypeForm = function(type, string){
             if(string === 'view'){ $scope.switchCostTypeForm[type._id] = 'view';}
+            if(string === 'new'){$scope.switchCostTypeForm[type._id] = 'new';}
             if(string === 'edit'){$scope.switchCostTypeForm[type._id] = 'edit';}
         };
 
-        // ----------------- REFRESH COST GROUP LIST ------------
+        $scope.switchBenefitGroupForm = {};
+
+        $scope.selectBenefitGroupForm = function(group, string){
+            if(string === 'view'){ $scope.switchBenefitGroupForm[group._id] = 'view';}
+            if(string === 'edit'){$scope.switchBenefitGroupForm[group._id] = 'edit';}
+        };
+
+        $scope.switchBenefitTypeForm = {};
+
+        $scope.selectBenefitTypeForm = function(type, string){
+            if(string === 'view'){ $scope.switchBenefitTypeForm[type._id] = 'view';}
+            if(string === 'new'){$scope.switchBenefitTypeForm[type._id] = 'new';}
+            if(string === 'edit'){$scope.switchBenefitTypeForm[type._id] = 'edit';}
+        };
+
+
+        // ----------------- REFRESH GROUPS LISTS ------------
 
         $scope.costGroupList = function(){
-            $scope.initError = [];
-            FinancialCostGroups.query(function(groups){
-                $scope.costGroups = groups;
-            }, function(err){
-                $scope.initError.push(err.data.message);
+            FinancialCostGroups.query(function(costGroups){
+                $scope.costGroups = costGroups;
             });
         };
+
+        $scope.benefitGroupList = function(){
+            FinancialBenefitGroups.query(function(benefitGroups){
+                $scope.benefitGroups = benefitGroups;
+            });
+        };
+
+
+
+
+
+
+// --------------------------------------------------------- COSTS ---------------------------------------------------
+
+
+
+
+
 
         // ------------------ CREATE COST GROUP ----------------
 
@@ -228,7 +110,6 @@ angular.module('financial-analysis-setup').controller('FinancialAnalysisSetupCon
 
             var costGroup = new FinancialCostGroups ({
                 name: 'New cost group',
-                description: '',
                 costTypes: []
             });
 
@@ -239,88 +120,95 @@ angular.module('financial-analysis-setup').controller('FinancialAnalysisSetupCon
             });
         };
 
-        // ------------------- EDIT GROUP -----------------
+        // ------------------ CREATE COST TYPE ----------------
+
+        $scope.createCostType = function(group) {
+            var costType = new FinancialCostTypes ({
+                name: 'New cost type',
+                description: ''
+            });
+            costType.$save({groupId: group._id}, function(res) {
+                // Add new category to the view group
+                group.costTypes.push(res);
+
+            }, function(errorResponse) {
+                $scope.error = errorResponse.data.message;
+            });
+        };
+
+        // ------------------- EDIT COST GROUP (HEADER ONLY) -----------------
 
         var originalEditCostGroup = {};
 
-        $scope.selectCostGroup = function(group){
-            originalEditCostGroup[group._id] = _.clone(group);
-            $scope.error = null;
-            $scope.selectCostGroupForm(group, 'edit');
+        $scope.selectCostGroup = function(costGroup){
+            originalEditCostGroup = _.clone(costGroup);
+            $scope.selectedCostGroup = costGroup;
         };
 
         $scope.updateCostGroup = function(group) {
-            group.$update(function(response) {
+            FinancialCostGroups.update({
+                _id: group._id,
+                name: group.name,
+                description: group.description
+            }, function(group){
                 $scope.selectCostGroupForm(group, 'view');
-            }, function(errorResponse) {
+            },function(errorResponse){
                 $scope.error = errorResponse.data.message;
             });
         };
 
         $scope.cancelEditCostGroup = function(group){
             $scope.error = null;
-            group.name = originalEditCostGroup[group._id].name;
-            group.description = originalEditCostGroup[group._id].description;
+            $scope.selectedCostGroup.name = originalEditCostGroup.name;
+            $scope.selectedCostGroup.description = originalEditCostGroup.description;
             $scope.selectCostGroupForm(group, 'view');
         };
 
-        // ------------------- REMOVE COST GROUP -----------------
-
-        $scope.removeCostGroup = function(group) {
-            $scope.error = null;
-            group.$remove(function(response) {
-                $scope.costGroupList();
-            }, function(errorResponse) {
-                $scope.error = errorResponse.data.message;
-            });
-        };
-
-
-        // ------------------ CREATE COST TYPE----------------
-
-        $scope.createCostType = function(group) {
-            $scope.error = null;
-
-            var costType = new FinancialCostTypes ({
-                name: 'New cost type',
-                description: ''
-            });
-
-            costType.$save({groupId: group._id}, function(res) {
-                // Add new type to the view group
-                group.costTypes.push(res);
-
-            }, function(errorResponse) {
-                $scope.error = errorResponse.data.message;
-            });
-
-        };
-
-        // ------------------- EDIT COST TYPE-----------------
+        // ------------------- EDIT COST TYPE (HEADER ONLY) -----------------
 
         var originalEditCostType = {};
 
-        $scope.selectEditCostType = function(group, type){
+        $scope.selectCostType = function(type){
             originalEditCostType[type._id] = _.clone(type);
+            $scope.error = null;
             $scope.selectCostTypeForm(type, 'edit');
         };
 
-        $scope.updateCostType = function(group, type) {
-            FinancialCostTypes.update(type, function(response) {
-                $scope.selectCostTypeForm(type, 'view');
-            }, function(errorResponse) {
-                $scope.error = errorResponse.data.message;
+        $scope.updateCostType = function(type) {
+            FinancialCostTypes.update({
+                _id: type._id,
+                name: type.name,
+                description: type.description
+            }, function(res){
+                $scope.selectCostTypeForm(res, 'view');
+            },function(err){
+                $scope.error = err.data.message;
             });
         };
 
-        $scope.cancelEditCost = function(type){
+        $scope.cancelEditCostType = function(type){
             $scope.error = null;
             type.name = originalEditCostType[type._id].name;
             type.description = originalEditCostType[type._id].description;
             $scope.selectCostTypeForm(type, 'view');
         };
 
-        // ------------------- REMOVE COST TYPE-----------------
+
+        // ------------------- REMOVE COST GROUP -----------------
+
+        $scope.removeCostGroup = function(group) {
+            $scope.error = null;
+            group.$remove(function(response) {
+                $scope.selectedCostGroup = null;
+                $scope.costGroupList();
+
+            }, function(errorResponse) {
+                $scope.error = errorResponse.data.message;
+            });
+        };
+
+
+        // ------------------- REMOVE COST TYPE -----------------
 
         $scope.removeCostType = function(group, type) {
             $scope.error = null;
@@ -331,6 +219,137 @@ angular.module('financial-analysis-setup').controller('FinancialAnalysisSetupCon
                 $scope.error = err.data.message;
             });
         };
+
+
+
+
+
+
+// --------------------------------------------------------- BENEFITS ---------------------------------------------------
+
+
+
+
+
+
+        // ------------------ CREATE BENEFIT GROUP ----------------
+
+        $scope.createBenefitGroup = function() {
+            $scope.error = null;
+
+            var benefitGroup = new FinancialBenefitGroups ({
+                name: 'New benefit group',
+                benefitTypes: []
+            });
+
+            benefitGroup.$save(function(response) {
+                $scope.benefitGroupList();
+            }, function(errorResponse) {
+                $scope.error = errorResponse.data.message;
+            });
+        };
+
+        // ------------------ CREATE BENEFIT TYPE ----------------
+
+        $scope.createBenefitType = function(group) {
+            var benefitType = new FinancialBenefitTypes ({
+                name: 'New benefit type',
+                description: ''
+            });
+            benefitType.$save({groupId: group._id}, function(res) {
+                // Add new category to the view group
+                group.benefitTypes.push(res);
+
+            }, function(errorResponse) {
+                $scope.error = errorResponse.data.message;
+            });
+        };
+
+        // ------------------- EDIT BENEFIT GROUP (HEADER ONLY) -----------------
+
+        var originalEditBenefitGroup = {};
+
+        $scope.selectBenefitGroup = function(benefitGroup){
+            originalEditBenefitGroup = _.clone(benefitGroup);
+            $scope.selectedBenefitGroup = benefitGroup;
+        };
+
+        $scope.updateBenefitGroup = function(group) {
+            FinancialBenefitGroups.update({
+                _id: group._id,
+                name: group.name,
+                description: group.description
+            }, function(group){
+                $scope.selectBenefitGroupForm(group, 'view');
+            },function(errorResponse){
+                $scope.error = errorResponse.data.message;
+            });
+        };
+
+        $scope.cancelEditBenefitGroup = function(group){
+            $scope.error = null;
+            $scope.selectedBenefitGroup.name = originalEditBenefitGroup.name;
+            $scope.selectedBenefitGroup.description = originalEditBenefitGroup.description;
+            $scope.selectBenefitGroupForm(group, 'view');
+        };
+
+        // ------------------- EDIT BENEFIT TYPE (HEADER ONLY) -----------------
+
+        var originalEditBenefitType = {};
+
+        $scope.selectBenefitType = function(type){
+            originalEditBenefitType[type._id] = _.clone(type);
+            $scope.error = null;
+            $scope.selectBenefitTypeForm(type, 'edit');
+        };
+
+        $scope.updateBenefitType = function(type) {
+            FinancialBenefitTypes.update({
+                _id: type._id,
+                name: type.name,
+                description: type.description
+            }, function(res){
+                $scope.selectBenefitTypeForm(res, 'view');
+            },function(err){
+                $scope.error = err.data.message;
+            });
+        };
+
+        $scope.cancelEditBenefitType = function(type){
+            $scope.error = null;
+            type.name = originalEditBenefitType[type._id].name;
+            type.description = originalEditBenefitType[type._id].description;
+            $scope.selectBenefitTypeForm(type, 'view');
+        };
+
+
+        // ------------------- REMOVE BENEFIT GROUP -----------------
+
+        $scope.removeBenefitGroup = function(group) {
+            $scope.error = null;
+            group.$remove(function(response) {
+                $scope.selectedBenefitGroup = null;
+                $scope.benefitGroupList();
+
+            }, function(errorResponse) {
+                $scope.error = errorResponse.data.message;
+            });
+        };
+
+
+        // ------------------- REMOVE BENEFIT TYPE -----------------
+
+        $scope.removeBenefitType = function(group, type) {
+            $scope.error = null;
+
+            FinancialBenefitTypes.remove({groupId: group._id}, type, function(res){
+                group.benefitTypes = _.without(group.benefitTypes, type);
+            }, function(err){
+                $scope.error = err.data.message;
+            });
+        };
+
+
 
 
     }

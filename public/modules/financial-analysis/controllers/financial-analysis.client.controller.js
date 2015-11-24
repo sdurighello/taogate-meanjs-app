@@ -1,9 +1,9 @@
 'use strict';
 
 angular.module('financial-analysis').controller('FinancialAnalysisController', ['$scope','$stateParams', '$location',
-	'Authentication','FinancialBenefitGroups','FinancialBenefits','FinancialCostGroups','FinancialCosts', 'Projects', 'Portfolios', '$q', '_',
-	function($scope, $stateParams, $location, Authentication, FinancialBenefitGroups, FinancialBenefits, FinancialCostGroups,
-			 FinancialCosts, Projects, Portfolios, $q, _) {
+	'Authentication','FinancialBenefitGroups','FinancialBenefitTypes','FinancialCostGroups','FinancialCostTypes', 'Projects', 'Portfolios', '$q', '_',
+	function($scope, $stateParams, $location, Authentication, FinancialBenefitGroups, FinancialBenefitTypes, FinancialCostGroups,
+			 FinancialCostTypes, Projects, Portfolios, $q, _) {
 
 		// ------------- INIT -------------
 
@@ -15,7 +15,7 @@ angular.module('financial-analysis').controller('FinancialAnalysisController', [
             }, function(err){
                 $scope.initError.push(err.data.message);
             });
-			Projects.query(function(projects){
+			Projects.query({'selection.current.selectedForEvaluation': true}, function(projects){
 				$scope.projects = projects;
 			}, function(err){
 				$scope.initError.push(err.data.message);
@@ -25,8 +25,8 @@ angular.module('financial-analysis').controller('FinancialAnalysisController', [
 			}, function(err){
 				$scope.initError.push(err.data.message);
 			});
-			FinancialBenefits.query(function(benefits){
-				$scope.benefits = benefits;
+			FinancialBenefitTypes.query(function(benefitTypes){
+				$scope.benefitTypes = benefitTypes;
 			}, function(err){
 				$scope.initError.push(err.data.message);
 			});
@@ -35,8 +35,8 @@ angular.module('financial-analysis').controller('FinancialAnalysisController', [
 			}, function(err){
 				$scope.initError.push(err.data.message);
 			});
-			FinancialCosts.query(function(costs){
-				$scope.costs = costs;
+			FinancialCostTypes.query(function(costTypes){
+				$scope.costTypes = costTypes;
 			}, function(err){
 				$scope.initError.push(err.data.message);
 			});
@@ -99,7 +99,9 @@ angular.module('financial-analysis').controller('FinancialAnalysisController', [
                 retPropertiesString : 'user created selection identification portfolio financialAnalysis',
                 deepPopulateArray : [
                     'portfolio',
-                    'identification.projectManager','identification.backupProjectManager'
+                    'identification.projectManager','identification.backupProjectManager',
+                    'financialAnalysis.costs.group.costTypes','financialAnalysis.costs.type',
+                    'financialAnalysis.benefits.group.benefitTypes','financialAnalysis.benefits.type'
                 ]
             }, function(res){
                 $scope.selectedProject = res;
@@ -123,27 +125,65 @@ angular.module('financial-analysis').controller('FinancialAnalysisController', [
 
         // ------------- NEW COST ASSIGNMENT ---------
 
+        $scope.newCostAssignment = {};
+        $scope.newCostAssignment.group = {};
+        $scope.newCostAssignment.type = {};
+        $scope.newCostAssignment.name = '';
+        $scope.newCostAssignment.year = null;
+        $scope.newCostAssignment.amount = null;
 
+        $scope.createNewCostAssignment = function(project){
+            var newCostAssignment = {
+                group : $scope.newCostAssignment.group._id,
+                type : $scope.newCostAssignment.type._id,
+                name : $scope.newCostAssignment.name,
+                year : $scope.newCostAssignment.year,
+                amount : $scope.newCostAssignment.amount
+            };
+
+            Projects.createCostAssignment({
+                projectId:project._id
+            },newCostAssignment,function(res){
+                // Clear new cost form
+                $scope.newCostAssignment = {};
+                $scope.newCostAssignment.group = {};
+                $scope.newCostAssignment.type = {};
+                $scope.newCostAssignment.name = '';
+                $scope.newCostAssignment.year = null;
+                $scope.newCostAssignment.amount = null;
+                // Close new cost form done directly in the view's html
+                // Re-load selected project to refresh list of costs
+                $scope.selectProject(project);
+            }, function(err){
+                $scope.error = err.data.message;
+            });
+        };
 
 
         // ------------- SELECT COST ASSIGNMENT ---------
 
         $scope.selectCostAssignment = function(assignedCost){
             originalCostAssignment[assignedCost._id] = _.clone(assignedCost);
-            $scope.selectCostForm(assignedCost, 'edit');
         };
 
 
 
         // ------------- EDIT COST ASSIGNMENT ---------
 
-        $scope.saveAssignedCost = function(project, assignedCost){
-            Projects.updateCategoryAssignment(
+        $scope.editAssignedCost = function(project, assignedCost){
+            // Check cost type since ngOptions doesn't update it if group changed but user didn't specifically selected a new type
+            if(!_.find(assignedCost.group.costTypes, assignedCost.type)){
+                assignedCost.type = null;
+            }
+            var copyAssignedCost = _.clone(assignedCost);
+            copyAssignedCost.group = allowNull(copyAssignedCost.group);
+            copyAssignedCost.type = allowNull(copyAssignedCost.type);
+            Projects.updateCostAssignment(
                 {
                     projectId: project._id,
-                    assignedCostId: assignedCost._id
-                },assignedCost, function(res){
-                    $scope.selectCostForm(assignedCost, 'view');
+                    costAssignmentId: assignedCost._id
+                }, copyAssignedCost, function(res){
+
                 }, function(err){
                     $scope.error = err.data.message;
                 }
@@ -152,12 +192,157 @@ angular.module('financial-analysis').controller('FinancialAnalysisController', [
 
         $scope.cancelEditAssignedCost = function(assignedCost){
             assignedCost.group = originalCostAssignment[assignedCost._id].group;
-            assignedCost.cost = originalCostAssignment[assignedCost._id].cost;
+            assignedCost.type = originalCostAssignment[assignedCost._id].type;
             assignedCost.name = originalCostAssignment[assignedCost._id].name;
             assignedCost.year = originalCostAssignment[assignedCost._id].year;
             assignedCost.amount = originalCostAssignment[assignedCost._id].amount;
-            $scope.selectCostForm(assignedCost, 'view');
         };
+
+
+        // ------------- DELETE COST ASSIGNMENT ---------
+
+        $scope.deleteAssignedCost = function(project, assignedCost){
+            Projects.updateCostAssignment(
+                {
+                    projectId: project._id,
+                    costAssignmentId: assignedCost._id,
+                    deleteAssignedCost: true
+                },assignedCost, function(res){
+                    //Remove object from the array in the view
+                    project.financialAnalysis.costs = _.without(project.financialAnalysis.costs, assignedCost);
+                }, function(err){
+                    $scope.error = err.data.message;
+                }
+            );
+        };
+
+
+
+        // -------------------------------------------------------- BENEFITS -------------------------------------------------
+
+
+        // ------------- NEW BENEFIT ASSIGNMENT ---------
+
+        $scope.newBenefitAssignment = {};
+        $scope.newBenefitAssignment.group = {};
+        $scope.newBenefitAssignment.type = {};
+        $scope.newBenefitAssignment.name = '';
+        $scope.newBenefitAssignment.year = null;
+        $scope.newBenefitAssignment.amount = null;
+
+        $scope.createNewBenefitAssignment = function(project){
+            var newBenefitAssignment = {
+                group : $scope.newBenefitAssignment.group._id,
+                type : $scope.newBenefitAssignment.type._id,
+                name : $scope.newBenefitAssignment.name,
+                year : $scope.newBenefitAssignment.year,
+                amount : $scope.newBenefitAssignment.amount
+            };
+
+            Projects.createBenefitAssignment({
+                projectId:project._id
+            },newBenefitAssignment,function(res){
+                // Clear new benefit form
+                $scope.newBenefitAssignment = {};
+                $scope.newBenefitAssignment.group = {};
+                $scope.newBenefitAssignment.type = {};
+                $scope.newBenefitAssignment.name = '';
+                $scope.newBenefitAssignment.year = null;
+                $scope.newBenefitAssignment.amount = null;
+                // Close new benefit form done directly in the view's html
+                // Re-load selected project to refresh list of benefits
+                $scope.selectProject(project);
+            }, function(err){
+                $scope.error = err.data.message;
+            });
+        };
+
+
+        // ------------- SELECT BENEFIT ASSIGNMENT ---------
+
+        $scope.selectBenefitAssignment = function(assignedBenefit){
+            originalBenefitAssignment[assignedBenefit._id] = _.clone(assignedBenefit);
+        };
+
+
+
+        // ------------- EDIT BENEFIT ASSIGNMENT ---------
+
+        $scope.editAssignedBenefit = function(project, assignedBenefit){
+            // Check benefit type since ngOptions doesn't update it if group changed but user didn't specifically selected a new type
+            if(!_.find(assignedBenefit.group.benefitTypes, assignedBenefit.type)){
+                assignedBenefit.type = null;
+            }
+            var copyAssignedBenefit = _.clone(assignedBenefit);
+            copyAssignedBenefit.group = allowNull(copyAssignedBenefit.group);
+            copyAssignedBenefit.type = allowNull(copyAssignedBenefit.type);
+            Projects.updateBenefitAssignment(
+                {
+                    projectId: project._id,
+                    benefitAssignmentId: assignedBenefit._id
+                }, copyAssignedBenefit, function(res){
+
+                }, function(err){
+                    $scope.error = err.data.message;
+                }
+            );
+        };
+
+        $scope.cancelEditAssignedBenefit = function(assignedBenefit){
+            assignedBenefit.group = originalBenefitAssignment[assignedBenefit._id].group;
+            assignedBenefit.type = originalBenefitAssignment[assignedBenefit._id].type;
+            assignedBenefit.name = originalBenefitAssignment[assignedBenefit._id].name;
+            assignedBenefit.year = originalBenefitAssignment[assignedBenefit._id].year;
+            assignedBenefit.amount = originalBenefitAssignment[assignedBenefit._id].amount;
+        };
+
+
+        // ------------- DELETE BENEFIT ASSIGNMENT ---------
+
+        $scope.deleteAssignedBenefit = function(project, assignedBenefit){
+            Projects.updateBenefitAssignment(
+                {
+                    projectId: project._id,
+                    benefitAssignmentId: assignedBenefit._id,
+                    deleteAssignedBenefit: true
+                },assignedBenefit, function(res){
+                    //Remove object from the array in the view
+                    project.financialAnalysis.benefits = _.without(project.financialAnalysis.benefits, assignedBenefit);
+                }, function(err){
+                    $scope.error = err.data.message;
+                }
+            );
+        };
+
+
+    // -------------------------------------------------------- ANALYSIS RATIOS -------------------------------------------------
+
+        var originalDiscountRate;
+        var originalBaseYear;
+        $scope.selectDiscountRate = function(project){
+            originalDiscountRate = _.clone(project.financialAnalysis.discountRate);
+            originalBaseYear = _.clone(project.financialAnalysis.baseYear);
+        };
+
+        $scope.saveDiscountRate = function(project){
+            Projects.updateDiscountData({projectId:project._id},{discountRate: project.financialAnalysis.discountRate, baseYear: project.financialAnalysis.baseYear},
+                function(res){
+
+                },
+                function(err){
+                    $scope.error = err.data.message;
+                }
+            );
+        };
+
+        $scope.cancelEditDiscountRate = function(project){
+            project.financialAnalysis.discountRate = originalDiscountRate;
+        };
+
+
+
+
+
 
 
 	}

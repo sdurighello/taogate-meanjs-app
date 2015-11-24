@@ -101,7 +101,7 @@ exports.delete = function(req, res) {
  */
 exports.list = function(req, res) {
     var FinancialBenefitGroup = mongoose.mtModel(req.user.tenantId + '.' + 'FinancialBenefitGroup');
-	FinancialBenefitGroup.find().sort('-created').deepPopulate(['benefits']).populate('user', 'displayName').exec(function(err, financialBenefitGroups) {
+	FinancialBenefitGroup.find().sort('-created').deepPopulate(['benefitTypes']).populate('user', 'displayName').exec(function(err, financialBenefitGroups) {
 		if (err) {
 			return res.status(400).send({
 				message: errorHandler.getErrorMessage(err)
@@ -117,7 +117,7 @@ exports.list = function(req, res) {
  */
 exports.financialBenefitGroupByID = function(req, res, next, id) {
     var FinancialBenefitGroup = mongoose.mtModel(req.user.tenantId + '.' + 'FinancialBenefitGroup');
-	FinancialBenefitGroup.findById(id).deepPopulate(['benefits']).populate('user', 'displayName').exec(function(err, financialBenefitGroup) {
+	FinancialBenefitGroup.findById(id).deepPopulate(['benefitTypes']).populate('user', 'displayName').exec(function(err, financialBenefitGroup) {
 		if (err) return next(err);
 		if (! financialBenefitGroup) return next(new Error('Failed to load Financial benefit group ' + id));
 		req.financialBenefitGroup = financialBenefitGroup ;

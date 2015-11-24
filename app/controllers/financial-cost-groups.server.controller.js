@@ -101,7 +101,7 @@ exports.delete = function(req, res) {
  */
 exports.list = function(req, res) {
     var FinancialCostGroup = mongoose.mtModel(req.user.tenantId + '.' + 'FinancialCostGroup');
-	FinancialCostGroup.find().sort('-created').deepPopulate(['costs']).populate('user', 'displayName').exec(function(err, financialCostGroups) {
+	FinancialCostGroup.find().sort('-created').deepPopulate(['costTypes']).populate('user', 'displayName').exec(function(err, financialCostGroups) {
 		if (err) {
 			return res.status(400).send({
 				message: errorHandler.getErrorMessage(err)
@@ -117,7 +117,7 @@ exports.list = function(req, res) {
  */
 exports.financialCostGroupByID = function(req, res, next, id) {
     var FinancialCostGroup = mongoose.mtModel(req.user.tenantId + '.' + 'FinancialCostGroup');
-	FinancialCostGroup.findById(id).deepPopulate(['costs']).populate('user', 'displayName').exec(function(err, financialCostGroup) {
+	FinancialCostGroup.findById(id).deepPopulate(['costTypes']).populate('user', 'displayName').exec(function(err, financialCostGroup) {
 		if (err) return next(err);
 		if (! financialCostGroup) return next(new Error('Failed to load Financial cost group ' + id));
 		req.financialCostGroup = financialCostGroup ;

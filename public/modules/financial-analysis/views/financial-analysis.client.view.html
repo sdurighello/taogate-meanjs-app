@@ -23,7 +23,7 @@
 				<div class="panel-body">
 					<div class="row">
 						<div class=" form-group col-md-12">
-							<select id="selectSourcePortfolio" class="form-control input-sm" ng-model="filterProfilePortfolio"
+							<select id="selectSourcePortfolio" class="form-control input-sm" data-ng-model="filterProfilePortfolio"
 									ng-options="portfolio.name for portfolio in portfolios">
 								<option value="">Filter by portfolio</option>
 							</select>
@@ -36,10 +36,13 @@
 					<hr>
 					<div class="row" style="min-height: 350px; max-height: 350px; overflow-y: auto">
 						<div class="col-md-12">
-							<button type="button" ng-repeat="project in projects |
+                            <div data-ng-show="projects.length === 0" class="alert alert-warning text-center">
+                                There are no projects created or available for evaluation
+                            </div>
+							<button type="button" data-ng-repeat="project in projects |
               filter: ((project.identification.name = filterProfileProject)&&
               (project.portfolio = filterProfilePortfolio._id))"
-									ng-click="createFinancialProfile(project)"
+									data-ng-click="selectProject(project)"
 									class="btn btn-default btn-sm center-block btn-block" style="overflow: hidden;">
 								{{project.identification.idNumber}} - {{project.identification.name}}
 							</button>
@@ -52,48 +55,58 @@
 			<tabset>
 				<tab heading="Costs">
 					<br>
-					<div class="row">
+                    <div data-ng-show="error" class="text-danger">
+                        <strong data-ng-bind="error"></strong>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div data-ng-hide="selectedProject || projects.length === 0" class="alert alert-warning text-center">
+                                Select a project to see its details
+                            </div>
+                        </div>
+                    </div>
+					<div class="row" data-ng-show="selectedProject">
 						<div class="col-md-12">
 							<div class="row">
 								<div class="col-sm-6">
 									<div class="panel panel-default">
-										<div><h5> &nbsp; Project: <i>{{selectedProject.identificatio.name}}</i></h5></div>
+										<div><h5> &nbsp; Project: <i>{{selectedProject.identification.name}}</i></h5></div>
 									</div>
 								</div>
 								<div class="col-md-3 col-md-offset-1">
 									<button class="btn btn-sm btn-primary"
-											ng-click="showNewCostForm = true" ng-show="!showNewCostForm">
+											data-ng-click="showNewCostForm = true" data-ng-show="!showNewCostForm">
 										Add new cost
 									</button>
 								</div>
 							</div>
-							<div class="row" ng-show="showNewCostForm">
+							<div class="row" data-ng-show="showNewCostForm">
 								<div class="col-md-12">
 									<div class="panel panel-default">
 										<div class="panel-heading">
 											<h6 class="panel-title">Add new cost</h6>
 										</div>
 										<div class="panel-body">
-											<form role="form" ng-submit="assignCost()">
+											<form role="form" novalidate>
 												<div class="row">
                                                     <div class="form-group-sm col-md-3">
 														<label for="type">Cost group</label>
-														<select id="type" class="form-control" ng-model = "formAssignCost.group"
-																ng-options="group.name for group in costGroups">
+														<select id="type" class="form-control" data-ng-model = "newCostAssignment.group"
+																data-ng-options="group.name for group in costGroups">
 															<option value="">--choose cost group</option>
 														</select>
 													</div>
                                                     <div class="form-group-sm col-md-3">
                                                         <label for="type">Cost type</label>
-                                                        <select id="type" class="form-control" ng-model = "formAssignCost.cost"
-                                                                ng-options="cost.name for cost in costs">
+                                                        <select id="type" class="form-control" data-ng-model = "newCostAssignment.type"
+                                                                data-ng-options="type.name for type in newCostAssignment.group.costTypes">
                                                             <option value="">--choose cost type</option>
                                                         </select>
                                                     </div>
                                                     <div class="form-group-sm col-md-6">
 														<label for="">Cost name</label>
 														<input id="" class="form-control" type="text" placeholder="Enter name"
-															   ng-model="formAssignCost.name" >
+															   data-ng-model="newCostAssignment.name" >
 													</div>
 												</div>
                                                 <br>
@@ -101,22 +114,22 @@
                                                     <div class="form-group-sm col-md-3">
                                                         <label for="">Year</label>
                                                         <input id="" class="form-control" type="number" placeholder="Enter year"
-                                                               ng-model="formAssignCost.year" >
+                                                               data-ng-model="newCostAssignment.year" >
                                                     </div>
                                                     <div class="form-group-sm col-md-3">
                                                         <label for="">Amount</label>
                                                         <input id="" class="form-control" type="number" placeholder="Enter amount"
-                                                               ng-model="formAssignCost.amount" >
+                                                               data-ng-model="newCostAssignment.amount" >
                                                     </div>
                                                 </div>
 												<hr>
 												<div class="row">
 													<div class="btn-group-xs pull-right">
 														<div class="form-group col-md-4">
-															<button type="submit" class="btn btn-success center-block btn-xs" ng-click="">Save</button>
+															<button type="submit" class="btn btn-success center-block btn-xs" data-ng-click="showNewCostForm = false; createNewCostAssignment(selectedProject);">Save</button>
 														</div>
 														<div class="form-group col-md-4">
-															<button type="submit" class="btn btn-info center-block btn-xs" ng-click="showNewCostForm = false">Cancel</button>
+															<button type="submit" class="btn btn-info center-block btn-xs" data-ng-click="showNewCostForm = false">Cancel</button>
 														</div>
 													</div>
 												</div>
@@ -125,15 +138,22 @@
 									</div>
 								</div>
 							</div>
-							<div class="row" ng-show="!showNewCostForm">
+							<div class="row">
 								<div class="col-md-12">
 									<div class="panel panel-default">
 										<div class="panel-heading">
 											<h6 class="panel-title text-center">Project Costs</h6>
 										</div>
 										<div class="panel-body">
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <div data-ng-show="selectedProject.financialAnalysis.costs.length === 0" class="alert alert-warning text-center">
+                                                        There are no costs for this project yet
+                                                    </div>
+                                                </div>
+                                            </div>
 											<form>
-												<table class="table">
+												<table class="table" data-ng-hide="selectedProject.financialAnalysis.costs.length === 0">
 													<tr>
 														<th>Cost group</th>
                                                         <th>Cost type</th>
@@ -141,73 +161,71 @@
 														<th>Year</th>
 														<th>Amount</th>
 														<th> </th>
+                                                        <th> </th>
+                                                        <th> </th>
 													</tr>
-													<tr ng-repeat-start="cost in selectedProject.finiancialAnalysis.costs">
+													<tr data-ng-repeat-start="cost in selectedProject.financialAnalysis.costs" data-ng-show="!costEditFlag">
 														<td>
 															{{cost.group.name}}
 														</td>
 														<td>
-															{{cost.cost.name}}
+															{{cost.type.name}}
 														</td>
+                                                        <td>
+                                                            {{cost.name}}
+                                                        </td>
 														<td>
 															{{cost.year}}
 														</td>
 														<td>
 															{{cost.amount}}
 														</td>
-														<td>
-															<button class="btn btn-success btn-xs" ng-click="costEditFlag = true" ng-show="!costEditFlag">
+														<td colspan="3">
+															<button class="btn btn-success btn-xs" data-ng-click="costEditFlag = true; selectCostAssignment(cost)" data-ng-show="!costEditFlag">
 																Edit
 															</button>
 														</td>
 													</tr>
-													<tr ng-repeat-end ng-show="costEditFlag">
-														<td colspan="6">
-															<div class="panel panel-default">
-																<div class="panel-body">
-																	<form>
-																		<div class="row">
-                                                                            <div class="form-group-sm col-md-2">
-																				<select id="type" class="form-control input-sm" ng-model = "cost.group._id"
-																						ng-options="group._id as group.name for group in costGroups">
-																					<option value="">--choose group</option>
-																				</select>
-																			</div>
-                                                                            <div class="form-group-sm col-md-3">
-																				<input id="" class="form-control input-sm" type="text" placeholder="Enter name"
-																					   ng-model="cost.cost.name" >
-																			</div>
-                                                                            <div class="form-group-sm col-md-2">
-																				<input id="" class="form-control input-sm" type="number" min="0" placeholder="Enter year"
-																					   ng-model="cost.year" >
-																			</div>
-                                                                            <div class="form-group-sm col-md-2">
-																				<input id="" class="form-control input-sm" type="number" placeholder="Enter year"
-																					   ng-model="cost.amount" >
-																			</div>
-																		</div>
-																		<br>
-																		<div class="row">
-																			<div class="row pull-right">
-																				<div class="form-group-sm">
-																					<div class="col-md-12">
-																						<button class="btn btn-success btn-xs" ng-click="">
-																							Save
-																						</button>
-																						<button type="button" class="btn btn-danger btn-xs" ng-click="">
-																							Delete
-																						</button>
-																						<button class="btn btn-info btn-xs" ng-click="costEditFlag = false">
-																							Cancel
-																						</button>
-																					</div>
-																				</div>
-																			</div>
-																		</div>
-																	</form>
-																</div>
-															</div>
-														</td>
+													<tr data-ng-repeat-end data-ng-show="costEditFlag">
+                                                        <td>
+                                                            <select id="" class="form-control input-sm" data-ng-model = "cost.group"
+                                                                    data-ng-options="group.name for group in costGroups track by group._id">
+                                                                <option value="">--choose cost group</option>
+                                                            </select>
+                                                        </td>
+                                                        <td>
+                                                            <select id="" class="form-control input-sm" data-ng-model = "cost.type"
+                                                                    data-ng-options="costType.name for costType in cost.group.costTypes track by costType._id">
+                                                                <option value="">--choose cost type</option>
+                                                            </select>
+                                                        </td>
+                                                        <td>
+                                                            <input id="" class="form-control input-sm" type="text" placeholder="Enter name"
+                                                                   data-ng-model="cost.name" >
+                                                        </td>
+                                                        <td>
+                                                            <input id="" class="form-control input-sm" type="number" placeholder="Enter year"
+                                                                   data-ng-model="cost.year" >
+                                                        </td>
+                                                        <td>
+                                                            <input id="" class="form-control input-sm" type="number" placeholder="Enter amount"
+                                                                   data-ng-model="cost.amount" >
+                                                        </td>
+                                                        <td>
+                                                            <button class="btn btn-success btn-xs" data-ng-click="costEditFlag = false; editAssignedCost(selectedProject, cost);">
+                                                                <span class="glyphicon glyphicon-ok"></span>
+                                                            </button>
+                                                        </td>
+                                                        <td>
+                                                            <button class="btn btn-info btn-xs" data-ng-click="costEditFlag = false; cancelEditAssignedCost(cost);">
+                                                                <span class="glyphicon glyphicon-remove"></span>
+                                                            </button>
+                                                        </td>
+                                                        <td>
+                                                            <button class="btn btn-danger btn-xs" data-ng-click="costEditFlag = false; deleteAssignedCost(selectedProject, cost)">
+                                                                <span class="glyphicon glyphicon-trash"></span>
+                                                            </button>
+                                                        </td>
 													</tr>
 												</table>
 											</form>
@@ -218,162 +236,189 @@
 						</div>
 					</div>
 				</tab>
-				<tab heading="Benefits">
-					<br>
-					<div class="row">
-						<div class="col-md-12">
-							<div class="row">
-								<div class="col-sm-6">
-									<div class="panel panel-default">
-										<div><h5> &nbsp; Project: <i>{{selectedProject.identification.name}}</i></h5></div>
-									</div>
-								</div>
-								<div class="col-md-3 col-md-offset-1">
-									<button class="btn btn-sm btn-primary"
-											ng-click="showNewBenefitForm = true" ng-show="!showNewBenefitForm">
-										Add new benefit
-									</button>
-								</div>
-							</div>
-							<div class="row" ng-show="showNewBenefitForm">
-								<div class="col-md-12">
-									<div class="panel panel-default">
-										<div class="panel-heading">
-											<h6 class="panel-title">Add new benefit</h6>
-										</div>
-										<div class="panel-body">
-											<form role="form" ng-submit="assignBenefit()">
-												<div class="row">
-                                                    <div class="form-group-sm col-md-2">
-														<label for="type">Benefit group</label>
-														<select id="type" class="form-control" ng-model = "formAssignBenefit.group"
-																ng-options="group.name for group in benefitGroups">
-															<option value="">--choose group</option>
-														</select>
-													</div>
+                <tab heading="Benefits">
+                    <br>
+                    <div data-ng-show="error" class="text-danger">
+                        <strong data-ng-bind="error"></strong>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div data-ng-hide="selectedProject || projects.length === 0" class="alert alert-warning text-center">
+                                Select a project to see its details
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row" data-ng-show="selectedProject">
+                        <div class="col-md-12">
+                            <div class="row">
+                                <div class="col-sm-6">
+                                    <div class="panel panel-default">
+                                        <div><h5> &nbsp; Project: <i>{{selectedProject.identification.name}}</i></h5></div>
+                                    </div>
+                                </div>
+                                <div class="col-md-3 col-md-offset-1">
+                                    <button class="btn btn-sm btn-primary"
+                                            data-ng-click="showNewBenefitForm = true" data-ng-show="!showNewBenefitForm">
+                                        Add new benefit
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="row" data-ng-show="showNewBenefitForm">
+                                <div class="col-md-12">
+                                    <div class="panel panel-default">
+                                        <div class="panel-heading">
+                                            <h6 class="panel-title">Add new benefit</h6>
+                                        </div>
+                                        <div class="panel-body">
+                                            <form role="form" novalidate>
+                                                <div class="row">
                                                     <div class="form-group-sm col-md-3">
-														<label for="">Benefit name</label>
-														<input id="" class="form-control" type="text" placeholder="Enter name"
-															   ng-model="formAssignBenefit.name" >
-													</div>
-                                                    <div class="form-group-sm col-md-2">
-														<label for="">Year</label>
-														<input id="" class="form-control" type="number" placeholder="Enter year"
-															   ng-model="formAssignBenefit.year" >
-													</div>
+                                                        <label for="type">Benefit group</label>
+                                                        <select id="type" class="form-control" data-ng-model = "newBenefitAssignment.group"
+                                                                data-ng-options="group.name for group in benefitGroups">
+                                                            <option value="">--choose benefit group</option>
+                                                        </select>
+                                                    </div>
                                                     <div class="form-group-sm col-md-3">
-														<label for="">Amount</label>
-														<input id="" class="form-control" type="number" placeholder="Enter amount"
-															   ng-model="formAssignBenefit.amount" >
-													</div>
-												</div>
-												<hr>
-												<div class="row">
-													<div class="btn-group-xs pull-right">
-														<div class="form-group col-md-4">
-															<button type="submit" class="btn btn-success center-block btn-xs" ng-click="">Save</button>
-														</div>
-														<div class="form-group col-md-4">
-															<button type="submit" class="btn btn-info center-block btn-xs" ng-click="showNewBenefitForm = false">Cancel</button>
-														</div>
-													</div>
-												</div>
-											</form>
-										</div>
-									</div>
-								</div>
-							</div>
-							<div class="row" ng-show="!showNewBenefitForm">
-								<div class="col-md-12">
-									<div class="panel panel-default">
-										<div class="panel-heading">
-											<h6 class="panel-title text-center">Project Benefits</h6>
-										</div>
-										<div class="panel-body">
-											<table class="table table-responsive">
-												<tr>
-													<th>Benefit type</th>
-													<th>Benefit name</th>
-													<th>Year</th>
-													<th>Amount</th>
-													<th>&nbsp</th>
-												</tr>
-												<tr ng-repeat-start="benefit in selectedProject.financialAnalysis.benefits">
-													<td>
-														<p>{{benefit.group.name}}</p>
-													</td>
-													<td>
-														<p>{{benefit.benefit.name}}</p>
-													</td>
-													<td>
-														<p>{{benefit.year}}</p>
-													</td>
-													<td>
-														<p>{{benefit.amount}}</p>
-													</td>
-													<td>
-														<button class="btn btn-success btn-xs" ng-show="!benefitEditFlag"
-																ng-click="benefitEditFlag=true">
-															Edit
-														</button>
-													</td>
-												</tr>
-												<tr ng-repeat-end ng-show="BenefitEditFlag">
-													<td colspan="7">
-														<div class="panel panel-default">
-															<div class="panel-body">
-																<form>
-																	<div class="row">
-                                                                        <div class="form-group-sm col-md-3">
-																			<select id="type" class="form-control input-sm" ng-model = "benefit.group._id"
-																					ng-options="group._id as group.name for group in benefitGroups">
-																				<option value="">--choose group</option>
-																			</select>
-																		</div>
-                                                                        <div class="form-group-sm col-md-3">
-																			<input id="" class="form-control input-sm" type="text" placeholder="Enter name"
-																				   ng-model="benefit.benefit.name" >
-																		</div>
-                                                                        <div class="form-group-sm col-md-2">
-																			<input id="" class="form-control input-sm" type="number" min="0" placeholder="Enter year"
-																				   ng-model="benefit.year" >
-																		</div>
-                                                                        <div class="form-group-sm col-md-2">
-																			<input id="" class="form-control input-sm" type="number" placeholder="Enter amount"
-																				   ng-model="benefit.amount" >
-																		</div>
-																	</div>
-																	<br>
-																	<div class="row">
-																		<div class="row pull-right">
-																			<div class="form-group-sm">
-																				<div class="col-md-12">
-																					<button class="btn btn-success btn-xs" ng-click="">
-																						Save
-																					</button>
-																					<button type="button" class="btn btn-danger btn-xs" ng-click="">
-																						Delete
-																					</button>
-																					<button class="btn btn-info btn-xs" ng-click="benefitEditFlag=false">
-																						Cancel
-																					</button>
-																				</div>
-																			</div>
-																		</div>
-																	</div>
-																</form>
-															</div>
-														</div>
-													</td>
-												</tr>
-											</table>
-										</div>
-									</div>
-								</div>
-							</div>
-						</div>
-					</div>
-				</tab>
+                                                        <label for="type">Benefit type</label>
+                                                        <select id="type" class="form-control" data-ng-model = "newBenefitAssignment.type"
+                                                                data-ng-options="type.name for type in newBenefitAssignment.group.benefitTypes">
+                                                            <option value="">--choose benefit type</option>
+                                                        </select>
+                                                    </div>
+                                                    <div class="form-group-sm col-md-6">
+                                                        <label for="">Benefit name</label>
+                                                        <input id="" class="form-control" type="text" placeholder="Enter name"
+                                                               data-ng-model="newBenefitAssignment.name" >
+                                                    </div>
+                                                </div>
+                                                <br>
+                                                <div class="row">
+                                                    <div class="form-group-sm col-md-3">
+                                                        <label for="">Year</label>
+                                                        <input id="" class="form-control" type="number" placeholder="Enter year"
+                                                               data-ng-model="newBenefitAssignment.year" >
+                                                    </div>
+                                                    <div class="form-group-sm col-md-3">
+                                                        <label for="">Amount</label>
+                                                        <input id="" class="form-control" type="number" placeholder="Enter amount"
+                                                               data-ng-model="newBenefitAssignment.amount" >
+                                                    </div>
+                                                </div>
+                                                <hr>
+                                                <div class="row">
+                                                    <div class="btn-group-xs pull-right">
+                                                        <div class="form-group col-md-4">
+                                                            <button type="submit" class="btn btn-success center-block btn-xs" data-ng-click="showNewBenefitForm = false; createNewBenefitAssignment(selectedProject);">Save</button>
+                                                        </div>
+                                                        <div class="form-group col-md-4">
+                                                            <button type="submit" class="btn btn-info center-block btn-xs" data-ng-click="showNewBenefitForm = false">Cancel</button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="panel panel-default">
+                                        <div class="panel-heading">
+                                            <h6 class="panel-title text-center">Project Benefits</h6>
+                                        </div>
+                                        <div class="panel-body">
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <div data-ng-show="selectedProject.financialAnalysis.benefits.length === 0" class="alert alert-warning text-center">
+                                                        There are no benefits for this project yet
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <form>
+                                                <table class="table" data-ng-hide="selectedProject.financialAnalysis.benefits.length === 0">
+                                                    <tr>
+                                                        <th>Benefit group</th>
+                                                        <th>Benefit type</th>
+                                                        <th>Benefit name</th>
+                                                        <th>Year</th>
+                                                        <th>Amount</th>
+                                                        <th> </th>
+                                                        <th> </th>
+                                                        <th> </th>
+                                                    </tr>
+                                                    <tr data-ng-repeat-start="benefit in selectedProject.financialAnalysis.benefits" data-ng-show="!benefitEditFlag">
+                                                        <td>
+                                                            {{benefit.group.name}}
+                                                        </td>
+                                                        <td>
+                                                            {{benefit.type.name}}
+                                                        </td>
+                                                        <td>
+                                                            {{benefit.name}}
+                                                        </td>
+                                                        <td>
+                                                            {{benefit.year}}
+                                                        </td>
+                                                        <td>
+                                                            {{benefit.amount}}
+                                                        </td>
+                                                        <td colspan="3">
+                                                            <button class="btn btn-success btn-xs" data-ng-click="benefitEditFlag = true; selectBenefitAssignment(benefit)" data-ng-show="!benefitEditFlag">
+                                                                Edit
+                                                            </button>
+                                                        </td>
+                                                    </tr>
+                                                    <tr data-ng-repeat-end data-ng-show="benefitEditFlag">
+                                                        <td>
+                                                            <select id="" class="form-control input-sm" data-ng-model = "benefit.group"
+                                                                    data-ng-options="group.name for group in benefitGroups track by group._id">
+                                                                <option value="">--choose benefit group</option>
+                                                            </select>
+                                                        </td>
+                                                        <td>
+                                                            <select id="" class="form-control input-sm" data-ng-model = "benefit.type"
+                                                                    data-ng-options="benefitType.name for benefitType in benefit.group.benefitTypes track by benefitType._id">
+                                                                <option value="">--choose benefit type</option>
+                                                            </select>
+                                                        </td>
+                                                        <td>
+                                                            <input id="" class="form-control input-sm" type="text" placeholder="Enter name"
+                                                                   data-ng-model="benefit.name" >
+                                                        </td>
+                                                        <td>
+                                                            <input id="" class="form-control input-sm" type="number" placeholder="Enter year"
+                                                                   data-ng-model="benefit.year" >
+                                                        </td>
+                                                        <td>
+                                                            <input id="" class="form-control input-sm" type="number" placeholder="Enter amount"
+                                                                   data-ng-model="benefit.amount" >
+                                                        </td>
+                                                        <td>
+                                                            <button class="btn btn-success btn-xs" data-ng-click="benefitEditFlag = false; editAssignedBenefit(selectedProject, benefit);">
+                                                                <span class="glyphicon glyphicon-ok"></span>
+                                                            </button>
+                                                        </td>
+                                                        <td>
+                                                            <button class="btn btn-info btn-xs" data-ng-click="benefitEditFlag = false; cancelEditAssignedBenefit(benefit);">
+                                                                <span class="glyphicon glyphicon-remove"></span>
+                                                            </button>
+                                                        </td>
+                                                        <td>
+                                                            <button class="btn btn-danger btn-xs" data-ng-click="benefitEditFlag = false; deleteAssignedBenefit(selectedProject, benefit)">
+                                                                <span class="glyphicon glyphicon-trash"></span>
+                                                            </button>
+                                                        </td>
+                                                    </tr>
+                                                </table>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </tab>
 				<tab heading="Overview">
 					<br>
 					<div class="row">
@@ -384,6 +429,61 @@
 										<div><h5> &nbsp; Project: <i>{{selectedProject.identification.name}}</i></h5></div>
 									</div>
 								</div>
+                                <div class="col-sm-6">
+                                    <div class="panel panel-default panel-body" data-ng-show="!showDiscountRateEdit">
+                                        <div class="row">
+                                            <div class="form-group-sm col-md-6">
+                                                <label>Discount rate</label>
+                                                <div class="input-group">
+                                                    <input id="" disabled class="form-control input-sm" type="number" min="0"
+                                                           data-ng-model="selectedProject.financialAnalysis.discountRate" >
+                                                    <span class="input-group-addon">%</span>
+                                                </div>
+                                            </div>
+                                            <div class="form-group-sm col-md-6">
+                                                <label>Base year</label>
+                                                <input id="" disabled class="form-control input-sm" type="number" min="0"
+                                                       data-ng-model="selectedProject.financialAnalysis.baseYear" >
+                                            </div>
+                                        </div>
+                                        <br>
+                                        <div class="row pull-right">
+                                            <div class="form-group-sm col-md-6" data-ng-show="userHasAuthorization">
+                                                <button class="btn btn-success btn-xs" data-ng-click="showDiscountRateEdit = true; selectDiscountRate(selectedProject);">
+                                                    Edit
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="panel panel-default panel-body" data-ng-show="showDiscountRateEdit">
+                                        <div class="row">
+                                            <div class="form-group-sm col-md-6">
+                                                <label>Discount rate</label>
+                                                <div class="input-group">
+                                                    <input id="" class="form-control input-sm" type="number" min="0" placeholder="Enter rate"
+                                                           data-ng-model="selectedProject.financialAnalysis.discountRate" >
+                                                    <span class="input-group-addon">%</span>
+                                                </div>
+                                            </div>
+                                            <div class="form-group-sm col-md-6">
+                                                <label>Base year</label>
+                                                <input id="" class="form-control input-sm" type="number" min="0" placeholder="Enter year"
+                                                       data-ng-model="selectedProject.financialAnalysis.baseYear" >
+                                            </div>
+                                        </div>
+                                        <br>
+                                        <div class="row pull-right">
+                                            <div class="form-group-sm col-md-12">
+                                                <button class="btn btn-success btn-xs" data-ng-click="showDiscountRateEdit = false; saveDiscountRate(selectedProject);">
+                                                    Save
+                                                </button>
+                                                <button class="btn btn-info btn-xs" data-ng-click="showDiscountRateEdit = false; cancelEditDiscountRate(selectedProject);">
+                                                    Cancel
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
 							</div>
 							<div class="row">
 								<div class="col-md-12">
@@ -421,25 +521,25 @@
 													<th>Net</th>
 													<th> </th>
 												</tr>
-												<tr ng-repeat="year in projectYears">
+												<tr ng-repeat="yearlyRecord in selectedProject.financialAnalysis.yearlySummary">
 													<td>
-														{{year}}
+														{{yearlyRecord.year}}
 													</td>
 													<td>
-														{{projectAnnualFlows[year.toString()].yearlyCosts | currency:currentUser.userData.currency+"&nbsp":0}}
+														{{yearlyRecord.yearlyCosts}}
 													</td>
 													<td>
-														{{projectAnnualFlows[year.toString()].yearlyBenefits | currency:currentUser.userData.currency+"&nbsp":0}}
+														{{yearlyRecord.yearlyBenefits}}
 													</td>
 													<td>
-														{{projectAnnualFlows[year.toString()].yearlyNet | currency:currentUser.userData.currency+"&nbsp":0}}
+														{{yearlyRecord.yearlyNet}}
 													</td>
 												</tr>
 												<tr>
 													<td> </td>
-													<td><b>{{finIndicators.totalCosts | currency:currentUser.userData.currency+"&nbsp":0}}</b></td>
-													<td><b>{{finIndicators.totalBenefits | currency:currentUser.userData.currency+"&nbsp":0}}</b></td>
-													<td><b>{{finIndicators.net | currency:currentUser.userData.currency+"&nbsp":0}}</b></td>
+													<td><b>{{selectedProject.financialAnalysis.ratios.totalCosts}}</b></td>
+													<td><b>{{selectedProject.financialAnalysis.ratios.totalBenefits}}</b></td>
+													<td><b>{{}}</b></td>
 												</tr>
 											</table>
 										</div>
