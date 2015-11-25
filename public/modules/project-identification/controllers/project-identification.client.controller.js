@@ -119,29 +119,10 @@ angular.module('project-identification').controller('ProjectIdentificationContro
                 },
                 categorization: [],
                 prioritization: [],
-                selection: {
-                    current: {
-                        active : true
-                    },
-                    history:[]
-                },
+                selection: {active : true},
                 // Evaluation
-                financialAnalysis: {
-                    discountRate: null,
-                    costs: [],
-                    benefits: [],
-                    yearlySummary: [],
-                    ratios: {
-                        current: {
-                            totalCosts:null,
-                            totalBenefits:null,
-                            NPV: null,
-                            BCR: null,
-                            payback: null
-                        },
-                        history: []
-                    }
-                },
+                costs: [],
+                benefits: [],
                 qualitativeAnalysis: [],
                 riskAnalysis: [],
                 stakeholders: [],

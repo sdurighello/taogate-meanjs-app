@@ -15,27 +15,6 @@ angular.module('projects').factory('Projects', ['$resource',
             updatePriorityAssignment: {
                 method: 'PUT',
                 url: 'projects/priorityAssignment/:projectId/:assignedGroupId/:assignedPriorityId/:valueId'
-            },
-            createCostAssignment: {
-                method: 'PUT',
-                url: 'projects/:projectId/costAssignment'
-            },
-            updateCostAssignment: {
-                method: 'PUT',
-                url: 'projects/:projectId/costAssignment/:costAssignmentId'
-            },
-            createBenefitAssignment: {
-                method: 'PUT',
-                url: 'projects/:projectId/benefitAssignment'
-            },
-            updateBenefitAssignment: {
-                method: 'PUT',
-                url: 'projects/:projectId/benefitAssignment/:benefitAssignmentId'
-            },
-            updateDiscountData: {
-                // discountRate and baseYear in req.body
-                method: 'PUT',
-                url: 'projects/:projectId/discountData'
             }
 		});
 	}

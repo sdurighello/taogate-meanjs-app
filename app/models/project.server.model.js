@@ -13,19 +13,6 @@ require('mongoose-multitenant');
  */
 
 
-// ---
-
-var ProjectSelectionRecord = {
-    active: {type: Boolean, default: true, required: 'Field active of project is required'}, // Still there but "view only"
-    selectedForPrioritization: {type: Boolean, default: false},
-    selectedForEvaluation: {type: Boolean, default: false},
-    selectedForDelivery: {type: Boolean, default: false},
-    //archived: {type: Boolean, default: false} - Like deleted and only appears in admin "archived" view - Manage with separate table archivedProjects
-    comment: {type: String, default: '', trim: true},
-    recordDate: {type: Date, default: Date.now},
-    user: {type: Schema.ObjectId, ref: 'User'}
-};
-
 // ----
 
 var AssignedCategorySchema = new Schema({
@@ -50,42 +37,6 @@ var AssignedPriorityGroupSchema = new Schema({
     priorities : [AssignedPrioritySchema]
 });
 
-// ----
-
-var AssignedBenefitSchema = new Schema({
-    group : {type: Schema.Types.ObjectId, ref: 'FinancialBenefitGroup', $tenant:true, required:'Financial Benefit Group missing'},
-    type : {type: Schema.Types.ObjectId, ref: 'FinancialBenefitType', $tenant:true, required:'Financial Benefit Type missing'},
-    name : {type: String, default: '', trim: true, required:'Benefit name is required'},
-    year : {type: Number, min:0, required: 'Year for benefit is missing'},
-    amount : {type: Number, min:0, required: 'Amount for benefit is missing'}
-});
-
-var AssignedCostSchema = new Schema({
-    group : {type: Schema.Types.ObjectId, ref: 'FinancialCostGroup', $tenant:true, required:'Financial Cost Group missing'},
-    type : {type: Schema.Types.ObjectId, ref: 'FinancialCostType', $tenant:true, required:'Financial Cost Type missing'},
-    name : {type: String, default: '', trim: true, required:'Cost name is required'},
-    year : {type: Number, min:0, required: 'Year for cost is missing'},
-    amount : {type: Number, min:0, required: 'Amount for cost is missing'}
-});
-
-var YearlySummarySchema = new Schema({
-    year : {type: Number, default:null},
-    yearlyCosts : {type: Number, default:null},
-    yearlyBenefits : {type: Number, default:null},
-    yearlyNet : {type: Number, default:null}
-});
-
-var FinancialRatiosRecord = {
-    totalCosts:{type: Number, default:null},
-    totalBenefits:{type: Number, default:null},
-    NPV: {type: Number, default:null},
-    BCR: {type: Number, default:null},
-    payback: {type: Number, default:null},
-    created: {type: Date, default: Date.now}
-};
-
-
-
 
 // ------------------------ BIG FAT SCHEMA ------------------------
 
@@ -93,7 +44,8 @@ var ProjectSchema = new Schema({
     created: {type: Date, default: Date.now},
     user: {type: Schema.ObjectId, ref: 'User'},
 
-    // Definition
+// -------------------------------------------------- DEFINITION -----------------------------------------------------
+
     parent: {type: Schema.ObjectId, ref: 'StrategyNode', default:null, $tenant:true},
     portfolio: {type: Schema.ObjectId, ref: 'Portfolio', default:null, $tenant:true},
     identification: {
@@ -109,27 +61,35 @@ var ProjectSchema = new Schema({
     categorization: [AssignedCategoryGroupSchema],
     prioritization: [AssignedPriorityGroupSchema],
     selection: {
-        current: ProjectSelectionRecord,
-        history: [ProjectSelectionRecord]
+        active: {type: Boolean, default: true, required: 'Field active of project is required'}, // Still there but "view only"
+        selectedForPrioritization: {type: Boolean, default: false},
+        selectedForEvaluation: {type: Boolean, default: false},
+        selectedForDelivery: {type: Boolean, default: false}
     },
 
-    // Evaluation
-    financialAnalysis: {
-        discountRate:{type: Number, default:null, min:0},
-        baseYear: {type: Number, default:null, min:0},
-        costs: [AssignedCostSchema],
-        benefits: [AssignedBenefitSchema],
-        yearlySummary: [YearlySummarySchema],
-        ratios: {
-            current: FinancialRatiosRecord,
-            history: [FinancialRatiosRecord]
-        }
-    },
+// -------------------------------------------------- EVALUATION -----------------------------------------------------
+
+    // Financial analysis
+
+    discountRate:{type: Number, default:null, min:0},
+    baseYear: {type: Number, default:null, min:0},
+    costs: [{type: Schema.ObjectId, ref: 'FinancialCost', $tenant:true}],
+    benefits: [{type: Schema.ObjectId, ref: 'FinancialBenefit', $tenant:true}],
+
+    // Qualitative analysis
+
     qualitativeAnalysis: [],
+
+    // Risk analysis
+
     riskAnalysis: [],
+
+    // Stakeholders
+
     stakeholders: [],
 
-    // Delivery
+// -------------------------------------------------- DELIVERY -----------------------------------------------------
+
     process: {type: Schema.ObjectId, ref: 'GateProcess', default:null, $tenant:true}
 
 });

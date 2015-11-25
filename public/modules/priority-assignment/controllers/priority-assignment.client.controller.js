@@ -10,7 +10,7 @@ angular.module('priority-assignment').controller('PriorityAssignmentController',
 
 		$scope.init = function(){
 
-			Projects.query({'selection.current.selectedForPrioritization': true}, function(projects){
+			Projects.query({'selection.selectedForPrioritization': true}, function(projects){
 				$scope.projects = projects;
 			}, function(err){
 				$scope.initError.push(err.data.message);
