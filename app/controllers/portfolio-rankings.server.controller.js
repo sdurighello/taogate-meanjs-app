@@ -83,7 +83,7 @@ exports.list = function(req, res) {
                 // Remove the projects that have been: 1) unassigned or 2) assigned to another portfolio or 3) Not selected for prioritization
             async.each(portfolioRanking.projects, function(project, callback) {
                 if(project){
-                    if(project.portfolio === null || !project.portfolio.equals(req.query.portfolioId) || project.selection.current.selectedForPrioritization === false){
+                    if(project.portfolio === null || !project.portfolio.equals(req.query.portfolioId) || project.selection.selectedForPrioritization === false){
                         portfolioRanking.projects.splice(portfolioRanking.projects.indexOf(project), 1);
                         portfolioRanking.save();
                     }

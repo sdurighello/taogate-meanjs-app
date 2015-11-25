@@ -38,6 +38,18 @@ var AssignedPriorityGroupSchema = new Schema({
 });
 
 
+// ----
+
+var AssignedImpactSchema = new Schema({
+    impact : {type: Schema.Types.ObjectId, ref: 'QualitativeImpact', $tenant:true},
+    score : {type: Schema.Types.ObjectId, ref: 'QualitativeImpactScore', $tenant:true}
+});
+
+var AssignedImpactGroupSchema = new Schema({
+    group : {type: Schema.Types.ObjectId, ref: 'QualitativeImpactGroup', $tenant:true},
+    impacts : [AssignedImpactSchema]
+});
+
 // ------------------------ BIG FAT SCHEMA ------------------------
 
 var ProjectSchema = new Schema({
@@ -78,7 +90,7 @@ var ProjectSchema = new Schema({
 
     // Qualitative analysis
 
-    qualitativeAnalysis: [],
+    qualitativeAnalysis: [AssignedImpactGroupSchema],
 
     // Risk analysis
 

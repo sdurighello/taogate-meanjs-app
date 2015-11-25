@@ -144,7 +144,7 @@ exports.delete = function(req, res) {
  */
 exports.list = function(req, res) {
 	var PriorityGroup = mongoose.mtModel(req.user.tenantId + '.' + 'PriorityGroup');
-	PriorityGroup.find().deepPopulate(['priorities']).sort('-created').populate('user', 'displayName').exec(function(err, priorityGroups) {
+	PriorityGroup.find().deepPopulate(['priorities']).populate('user', 'displayName').exec(function(err, priorityGroups) {
 		if (err) {
 			return res.status(400).send({
 				message: errorHandler.getErrorMessage(err)

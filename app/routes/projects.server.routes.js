@@ -14,12 +14,15 @@ module.exports = function(app) {
 		.put(users.requiresLogin, projects.hasAuthorization, projects.update)
 		.delete(users.requiresLogin, projects.hasAuthorization, projects.delete);
 
-	// Category & Priority assignment
+	// Category & Priority assignment & Impact assignment
 	app.route('/projects/categoryAssignment/:projectId/:assignedGroupId/:assignedCategoryId/:valueId')
 		.put(users.requiresLogin, projects.hasAuthorization, projects.updateCategoryAssignment);
 
     app.route('/projects/priorityAssignment/:projectId/:assignedGroupId/:assignedPriorityId/:valueId')
         .put(users.requiresLogin, projects.hasAuthorization, projects.updatePriorityAssignment);
+
+    app.route('/projects/impactAssignment/:projectId/:assignedGroupId/:assignedImpactId/:scoreId')
+        .put(users.requiresLogin, projects.hasAuthorization, projects.updateImpactAssignment);
 
 
 	// Finish by binding the Project middleware

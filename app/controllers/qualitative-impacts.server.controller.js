@@ -12,19 +12,62 @@ var mongoose = require('mongoose'),
  * Create a Qualitative impact
  */
 exports.create = function(req, res) {
-	var QualitativeImpact = mongoose.mtModel(req.user.tenantId + '.' + 'QualitativeImpact');
+	var Project = mongoose.mtModel(req.user.tenantId + '.' + 'Project');
+    var QualitativeImpactGroup = mongoose.mtModel(req.user.tenantId + '.' + 'QualitativeImpactGroup');
+    var QualitativeImpact = mongoose.mtModel(req.user.tenantId + '.' + 'QualitativeImpact');
 	var qualitativeImpact = new QualitativeImpact(req.body);
 	qualitativeImpact.user = req.user;
 
-	qualitativeImpact.save(function(err) {
-		if (err) {
-			return res.status(400).send({
-				message: errorHandler.getErrorMessage(err)
-			});
-		} else {
-			res.jsonp(qualitativeImpact);
-		}
-	});
+    async.series([
+        // IMPACTS: Save the new impact to its collection
+        function(callback){
+            qualitativeImpact.save(function(err){
+                callback(err);
+            });
+        },
+        // GROUP.IMPACTS: Add the impact to the group's "impacts" array
+        function(callback){
+            QualitativeImpactGroup.findById(req.query.groupId).exec(function(err, group){
+                group.impacts.push(qualitativeImpact._id);
+                group.save();
+            });
+            callback(null, 'two');
+        },
+        // PROJECTS.QUALITATIVE-ANALYSIS: Add the impact to all existing projects
+        function(callback){
+            Project.find().exec(function(err, projects){
+                if (err) {
+                    return res.status(400).send({
+                        message: errorHandler.getErrorMessage(err)
+                    });
+                } else {
+                    async.each(projects, function(project, callback){
+                        async.each(project.qualitativeAnalysis, function(assignedGroup, callback){
+                            if(assignedGroup.group.equals(req.query.groupId)){
+                                assignedGroup.impacts.push({
+                                    impact: qualitativeImpact._id,
+                                    score: null
+                                });
+                            }
+                            callback();
+                        });
+                        project.save();
+                        callback();
+                    });
+                }
+            });
+            callback(null, 'three');
+        }
+    ],function(err, results){
+        // results is now equal to ['one', 'two', 'three']
+        if (err) {
+            return res.status(400).send({
+                message: errorHandler.getErrorMessage(err)
+            });
+        } else {
+            res.jsonp(qualitativeImpact);
+        }
+    });
 };
 
 /**
@@ -58,25 +101,51 @@ exports.update = function(req, res) {
  * Delete an Qualitative impact
  */
 exports.delete = function(req, res) {
+    var Project = mongoose.mtModel(req.user.tenantId + '.' + 'Project');
     var qualitativeImpact = req.qualitativeImpact ;
     var QualitativeImpactGroup = mongoose.mtModel(req.user.tenantId + '.' + 'QualitativeImpactGroup');
 
     async.series([
+        // IMPACTS: Delete impact from its collection
         function(callback){
-            // Delete impact from its collection
-            qualitativeImpact.remove();
-            callback(null, 'one');
-        },
-        function(callback){
-            // Delete impact from groups where assigned
-            QualitativeImpactGroup.find({impacts: {$in: [qualitativeImpact._id]}}).exec(function(err, groups){
-                async.each(groups, function(item, callback){
-                    item.impacts.splice(item.impacts.indexOf(qualitativeImpact._id), 1);
-                    item.save();
-                    callback();
-                });
+            qualitativeImpact.remove(function(err){
+                callback(err);
             });
-            callback(null, 'two');
+        },
+        // GROUP.IMPACTS: Delete impact from group where assigned
+        function(callback){
+            QualitativeImpactGroup.findById(req.query.groupId).exec(function(err, group){
+                group.impacts.splice(group.impacts.indexOf(qualitativeImpact._id), 1);
+                group.save();
+            });
+            callback(null, 'three');
+        },
+        // PROJECTS.QUALITATIVE-ANALYSIS: Remove the impact from all existing projects
+        function(callback){
+            Project.find().exec(function(err, projects){
+                if (err) {
+                    return res.status(400).send({
+                        message: errorHandler.getErrorMessage(err)
+                    });
+                } else {
+                    async.each(projects, function(project, callback){
+                        async.each(project.qualitativeAnalysis, function(assignedGroup, callback){
+                            if(assignedGroup.group.equals(req.query.groupId)){
+                                async.each(assignedGroup.impacts, function(assignedImpact, callback){
+                                    if(assignedImpact.impact.equals(qualitativeImpact._id)){
+                                        assignedImpact.remove();
+                                    }
+                                    callback();
+                                });
+                            }
+                            callback();
+                        });
+                        project.save();
+                        callback();
+                    });
+                }
+            });
+            callback(null, 'four');
         }
     ],function(err, results){
         // results is now equal to ['one', 'two']
@@ -95,7 +164,7 @@ exports.delete = function(req, res) {
  */
 exports.list = function(req, res) {
     var QualitativeImpact = mongoose.mtModel(req.user.tenantId + '.' + 'QualitativeImpact');
-	QualitativeImpact.find().sort('-created').populate('user', 'displayName').exec(function(err, qualitativeImpacts) {
+	QualitativeImpact.find().populate('user', 'displayName').exec(function(err, qualitativeImpacts) {
 		if (err) {
 			return res.status(400).send({
 				message: errorHandler.getErrorMessage(err)

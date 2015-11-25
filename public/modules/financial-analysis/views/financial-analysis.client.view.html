@@ -37,7 +37,7 @@
 					<div class="row" style="min-height: 350px; max-height: 350px; overflow-y: auto">
 						<div class="col-md-12">
                             <div data-ng-show="projects.length === 0" class="alert alert-warning text-center">
-                                There are no projects created or available for evaluation
+                                There are no projects created or selected for evaluation
                             </div>
 							<button type="button" data-ng-repeat="project in projects |
               filter: ((project.identification.name = filterProfileProject)&&

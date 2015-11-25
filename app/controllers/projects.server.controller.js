@@ -22,6 +22,8 @@ exports.create = function(req, res) {
     var Category = mongoose.mtModel(req.user.tenantId + '.' + 'Category');
     var PriorityGroup = mongoose.mtModel(req.user.tenantId + '.' + 'PriorityGroup');
     var Priority = mongoose.mtModel(req.user.tenantId + '.' + 'Priority');
+    var QualitativeImpactGroup = mongoose.mtModel(req.user.tenantId + '.' + 'QualitativeImpactGroup');
+    var QualitativeImpact = mongoose.mtModel(req.user.tenantId + '.' + 'QualitativeImpact');
 
     async.series([
         // PROJECT: Save project in its collection
@@ -73,6 +75,31 @@ exports.create = function(req, res) {
                             callback();
                         });
                         project.prioritization.push(obj);
+                        project.save();
+                        callback();
+                    });
+                }
+            });
+            callback(null, 'three');
+        },
+        // PROJECT.QUALITATIVE-ANALYSIS: Add all existing qualitative-groups (and their impacts) to new project
+        function(callback){
+            QualitativeImpactGroup.find().exec(function(err, groups){
+                if (err) {
+                    return res.status(400).send({
+                        message: errorHandler.getErrorMessage(err)
+                    });
+                } else {
+                    async.each(groups, function(group, callback){
+                        var obj = {group: group._id, impacts: []};
+                        async.each(group.impacts, function(impact, callback){
+                            obj.impacts.push({
+                                impact: impact,
+                                score: null
+                            });
+                            callback();
+                        });
+                        project.qualitativeAnalysis.push(obj);
                         project.save();
                         callback();
                     });
@@ -178,6 +205,37 @@ exports.updatePriorityAssignment = function(req, res) {
             res.jsonp(project);
         }
     });
+};
+
+
+/**
+ *  Update a Qualitative Impact Assignment
+ */
+exports.updateImpactAssignment = function(req, res) {
+    var project = req.project ;
+    project.user = req.user;
+    project.created = Date.now();
+
+    async.each(project.qualitativeAnalysis, function(assignedGroup, callback) {
+        if(assignedGroup._id.equals(req.params.assignedGroupId)){
+            async.each(assignedGroup.impacts, function(assignedImpact, callback){
+                if(assignedImpact._id.equals(req.params.assignedImpactId)){
+                    assignedImpact.score = req.params.scoreId;
+                    project.save();
+                }
+                callback();
+            });
+        }
+        callback();
+    }, function(err){
+        if( err ) {
+            return res.status(400).send({
+                message: errorHandler.getErrorMessage(err)
+            });
+        } else {
+            res.jsonp(project);
+        }
+    });
 
 };
 
@@ -188,6 +246,8 @@ exports.updatePriorityAssignment = function(req, res) {
 exports.delete = function(req, res) {
 	var project = req.project ;
     var PortfolioRanking = mongoose.mtModel(req.user.tenantId + '.' + 'PortfolioRanking');
+    var FinancialCost = mongoose.mtModel(req.user.tenantId + '.' + 'FinancialCost');
+    var FinancialBenefit = mongoose.mtModel(req.user.tenantId + '.' + 'FinancialBenefit');
 
     async.series([
         // PROJECT: Delete project in its collection
@@ -199,12 +259,28 @@ exports.delete = function(req, res) {
         // PORTFOLIO RANKINGS: Delete project from the "projects" array if project assigned to a portfolio
         function(callback){
             if(project.portfolio){
-                PortfolioRanking.findOne({portfolio: project.portfolio._id}).exec(function(err, portfolioRanking){
-                    portfolioRanking.projects.splice(portfolioRanking.projects.indexOf(project._id), 1);
-                    portfolioRanking.save();
+                PortfolioRanking.findOne({portfolio: project.portfolio}).exec(function(err, portfolioRanking){
+                    if(portfolioRanking){
+                        portfolioRanking.projects.splice(portfolioRanking.projects.indexOf(project._id), 1);
+                        portfolioRanking.save();
+                    }
                 });
             }
             callback(null, 'two');
+        },
+        // FINANCIAL COSTS: Delete all costs belonging to the project
+        function(callback){
+            async.each(project.costs, function(item, callback){
+                FinancialCost.findByIdAndRemove(item, callback);
+            });
+            callback(null, 'three');
+        },
+        // FINANCIAL BENEFITS: Delete all benefits belonging to the project
+        function(callback){
+            async.each(project.benefits, function(item, callback){
+                FinancialBenefit.findByIdAndRemove(item, callback);
+            });
+            callback(null, 'four');
         }
     ],function(err, results){
         // results is now equal to ['one', 'two']

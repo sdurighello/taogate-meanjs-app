@@ -234,18 +234,15 @@ angular.module('qualitative-analysis-setup').controller('QualitativeAnalysisSetu
 			var impact = new QualitativeImpacts ({
 				name: 'New impact',
                 weight: 0,
-				description: 'New impact description'
+				description: ''
 			});
 
-			impact.$save(function(impactRes) {
-				group.impacts.push(impactRes);
-				group.$update(function(groupRes) {
-                    $scope.totalImpactWeights[group._id] = _.reduce(group.impacts, function(memo, impact){
-                        return memo + impact.weight;
-                    }, 0);
-				}, function(errorResponse) {
-					$scope.error = errorResponse.data.message;
-				});
+			impact.$save({groupId: group._id}, function(res) {
+				// Add new priority to the view group
+				group.impacts.push(res);
+				$scope.totalImpactWeights[group._id] = _.reduce(group.impacts, function(memo, impact){
+					return memo + impact.weight;
+				}, 0);
 			}, function(errorResponse) {
 				$scope.error = errorResponse.data.message;
 			});
@@ -284,14 +281,14 @@ angular.module('qualitative-analysis-setup').controller('QualitativeAnalysisSetu
 		$scope.removeImpact = function(group, impact) {
 			$scope.error = null;
 
-			QualitativeImpacts.remove({},impact, function(res){
-				group.impacts = _.without(group.impacts, impact);
+            QualitativeImpacts.remove({groupId: group._id}, impact, function(res){
+                group.impacts = _.without(group.impacts, impact);
                 $scope.totalImpactWeights[group._id] = _.reduce(group.impacts, function(memo, impact){
                     return memo + impact.weight;
                 }, 0);
-			}, function(err){
-				$scope.error = err.data.message;
-			});
+            }, function(err){
+                $scope.error = err.data.message;
+            });
 
 		};
 	}
