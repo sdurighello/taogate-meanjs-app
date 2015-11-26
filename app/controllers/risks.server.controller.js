@@ -12,19 +12,63 @@ var mongoose = require('mongoose'),
  * Create a Risk
  */
 exports.create = function(req, res) {
+	var Project = mongoose.mtModel(req.user.tenantId + '.' + 'Project');
+    var RiskCategory = mongoose.mtModel(req.user.tenantId + '.' + 'RiskCategory');
 	var Risk = mongoose.mtModel(req.user.tenantId + '.' + 'Risk');
 	var risk = new Risk(req.body);
 	risk.user = req.user;
 
-	risk.save(function(err) {
-		if (err) {
-			return res.status(400).send({
-				message: errorHandler.getErrorMessage(err)
-			});
-		} else {
-			res.jsonp(risk);
-		}
-	});
+    async.series([
+        // RISKS: Save the new risk to its collection
+        function(callback){
+            risk.save();
+            callback(null, 'one');
+        },
+        // RISK-CATEGORY.RISKS: Add the priority to the group's "priorities" array
+        function(callback){
+            RiskCategory.findById(req.query.groupId).exec(function(err, group){
+                group.risks.push(risk._id);
+                group.save();
+            });
+            callback(null, 'two');
+        },
+        // PROJECTS.RISK-ANALYSIS: Add the risk to all existing projects (in the right category)
+        function(callback){
+            Project.find().exec(function(err, projects){
+                if (err) {
+                    return res.status(400).send({
+                        message: errorHandler.getErrorMessage(err)
+                    });
+                } else {
+                    async.each(projects, function(project, callback){
+                        async.each(project.riskAnalysis, function(assignedGroup, callback){
+                            if(assignedGroup.category.equals(req.query.groupId)){
+                                assignedGroup.risks.push({
+                                    risk: risk._id,
+                                    impact: null,
+                                    probability: null,
+                                    severity: null
+                                });
+                            }
+                            callback();
+                        });
+                        project.save();
+                        callback();
+                    });
+                }
+            });
+            callback(null, 'three');
+        }
+    ],function(err, results){
+        // results is now equal to ['one', 'two', 'three']
+        if (err) {
+            return res.status(400).send({
+                message: errorHandler.getErrorMessage(err)
+            });
+        } else {
+            res.jsonp(risk);
+        }
+    });
 };
 
 /**
@@ -58,25 +102,50 @@ exports.update = function(req, res) {
  * Delete an Risk
  */
 exports.delete = function(req, res) {
+    var Project = mongoose.mtModel(req.user.tenantId + '.' + 'Project');
     var risk = req.risk ;
     var RiskCategory = mongoose.mtModel(req.user.tenantId + '.' + 'RiskCategory');
 
     async.series([
+        // RISKS: Delete risk from its collection
         function(callback){
-            // Delete risk from its collection
             risk.remove();
             callback(null, 'one');
         },
+        // CATEGORY.RISKS: Delete risk from group where assigned
         function(callback){
-            // Delete risk from categories where assigned
-            RiskCategory.find({risks: {$in: [risk._id]}}).exec(function(err, categories){
-                async.each(categories, function(item, callback){
-                    item.risks.splice(item.risks.indexOf(risk._id), 1);
-                    item.save();
-                    callback();
-                });
+            RiskCategory.findById(req.query.groupId).exec(function(err, group){
+                group.risks.splice(group.risks.indexOf(risk._id), 1);
+                group.save();
             });
             callback(null, 'three');
+        },
+        // PROJECTS.RISK-ANALYSIS: Remove the risk from all existing projects
+        function(callback){
+            Project.find().exec(function(err, projects){
+                if (err) {
+                    return res.status(400).send({
+                        message: errorHandler.getErrorMessage(err)
+                    });
+                } else {
+                    async.each(projects, function(project, callback){
+                        async.each(project.riskAnalysis, function(assignedGroup, callback){
+                            if(assignedGroup.category.equals(req.query.groupId)){
+                                async.each(assignedGroup.risks, function(assignedRisk, callback){
+                                    if(assignedRisk.risk.equals(risk._id)){
+                                        assignedRisk.remove();
+                                    }
+                                    callback();
+                                });
+                            }
+                            callback();
+                        });
+                        project.save();
+                        callback();
+                    });
+                }
+            });
+            callback(null, 'four');
         }
     ],function(err, results){
         // results is now equal to ['one', 'two']
@@ -95,7 +164,7 @@ exports.delete = function(req, res) {
  */
 exports.list = function(req, res) {
     var Risk = mongoose.mtModel(req.user.tenantId + '.' + 'Risk');
-	Risk.find().sort('-created').populate('user', 'displayName').exec(function(err, risks) {
+	Risk.find().populate('user', 'displayName').exec(function(err, risks) {
 		if (err) {
 			return res.status(400).send({
 				message: errorHandler.getErrorMessage(err)

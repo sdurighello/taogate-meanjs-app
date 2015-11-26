@@ -1,0 +1,181 @@
+<section data-ng-controller="RiskAnalysisController" data-ng-init="init()">
+	<br>
+	<div class="row">
+		<div class="col-sm-12">
+			<div class="panel-heading">
+				<ol class="breadcrumb">
+					<li>Portfolio evaluation</li>
+					<li>Project evaluation profiles</li>
+					<li class="active">Risk analysis</li>
+				</ol>
+			</div>
+		</div>
+	</div>
+	<div data-ng-show="initError" class="text-danger">
+		<strong data-ng-bind="initError"></strong>
+	</div>
+	<div class="row">
+		<div class="col-sm-3">
+			<div class="panel panel-default">
+				<div class="panel-heading">
+					<h6 class="panel-title text-center">Projects</h6>
+				</div>
+				<div class="panel-body">
+					<div class="row">
+						<div class="col-md-12 form-group-sm">
+							<input type="text" class="form-control" placeholder="Type to filter projects" data-ng-model="filterProject">
+						</div>
+					</div>
+					<hr>
+					<div class="row" style="min-height: 350px; max-height: 350px; overflow-y: auto">
+						<div class="col-md-12">
+							<div data-ng-show="projects.length === 0" class="alert alert-warning text-center">
+								There are no projects created or selected for evaluation
+							</div>
+							<button type="button" ng-repeat="project in projects | filter:filterProject"
+									ng-click="selectProject(project)" class="btn btn-default btn-sm center-block btn-block" style="overflow: hidden;">
+								{{project.identification.idNumber}} {{project.identification.name}}
+							</button>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="col-md-9">
+			<div class="row">
+				<div class="col-md-12">
+					<div data-ng-hide="selectedProject || projects.length === 0" class="alert alert-warning text-center">
+						Select a project to see its details
+					</div>
+				</div>
+			</div>
+			<div data-ng-show="selectedProject">
+				<div class="row">
+					<div class="col-sm-12">
+						<div class="panel panel-default">
+							<div><h5> &nbsp; Project: <i>{{selectedProject.identification.name}}</i></h5></div>
+						</div>
+					</div>
+				</div>
+				<div class="row">
+					<div class=" form-group-sm col-md-3">
+						<select id="selectSourcePortfolio" class="form-control input-sm" data-ng-model="filterRisk.riskCategory"
+								data-ng-options="category.name for category in riskCategories">
+							<option value="">--Filter by risk category</option>
+						</select>
+					</div>
+					<div class="form-group-sm col-md-3">
+						<select id="projectPortfolio" class="form-control" data-ng-model = "filterRisk.riskCategory.risk"
+								data-ng-options="risk.name for risk in filterRisk.riskCategory.risks">
+							<option value="">--Filter by risk</option>
+						</select>
+					</div>
+				</div>
+				<hr>
+				<div class="row">
+					<div data-ng-show="selectedProject.riskAnalysis.length === 0" class="alert alert-warning text-center">
+						There are no risks created yet
+					</div>
+					<div class="col-md-12" data-ng-repeat="assignedCategory in selectedProject.riskAnalysis | filter : (assignedCategory.category._id = filterRisk.riskCategory._id) track by assignedCategory._id">
+						<div class="panel panel-default">
+							<div class="panel-heading text-center">
+								<em data-ng-bind="assignedCategory.category.name"></em>
+							</div>
+							<div class="panel-body">
+								<div class="row">
+									<div class="col-md-4" data-ng-repeat="assignedRisk in assignedCategory.risks | filter : (assignedRisk.risk._id = filterRisk.riskCategory.risk._id) track by assignedRisk._id" data-ng-switch="switchRiskForm[assignedRisk._id]">
+										<div class="panel panel-default" data-ng-switch-default="view">
+											<div class="panel-heading text-center">
+												<b>{{assignedRisk.risk.name}}</b>
+											</div>
+											<div class="panel-body">
+												<div class="row">
+													<div class="form-group-sm col-md-12">
+														<label class="small">Impact</label>
+														<select disabled class="form-control input-sm" data-ng-model = "assignedRisk.impact"
+																data-ng-options="impact._id as impact.name for impact in impacts">
+															<option value="">--choose impact</option>
+														</select>
+													</div>
+												</div>
+												<div class="row">
+													<div class="form-group-sm col-md-12">
+														<label class="small">Probability</label>
+														<select disabled class="form-control input-sm" data-ng-model = "assignedRisk.probability"
+																data-ng-options="probability._id as probability.name for probability in probabilities">
+															<option value="">--choose probability</option>
+														</select>
+													</div>
+												</div>
+                                                <div class="row">
+                                                    <div class="form-group-sm col-md-12">
+                                                        <label class="small">Severity</label>
+                                                        <span class="form-control input-sm" data-ng-bind="findSeverityAssignment(assignedRisk).severity.name" data-ng-disabled="true"></span>
+                                                    </div>
+                                                </div>
+												<br>
+												<div class="row" data-ng-show="userHasAuthorization && selectedProject.selection.active">
+													<div class="col-md-12">
+														<div class="btn-group-xs pull-right">
+															<button type="button" class="btn btn-success btn-sm" ng-click="selectRiskAssignment(assignedRisk)">
+																Edit
+															</button>
+														</div>
+													</div>
+												</div>
+											</div>
+										</div>
+										<div class="panel panel-default" data-ng-switch-when="edit">
+											<div class="panel-heading text-center">
+												<b>{{assignedRisk.risk.name}}</b>
+											</div>
+											<div class="panel-body">
+												<div class="row">
+													<div class="col-md-12">
+														<label class="small">Impact</label>
+														<select class="form-control input-sm" data-ng-model = "assignedRisk.impact"
+																data-ng-options="impact._id as impact.name for impact in impacts">
+															<option value="">--choose impact</option>
+														</select>
+													</div>
+												</div>
+												<div class="row">
+													<div class="col-md-12">
+														<label class="small">Probability</label>
+														<select class="form-control input-sm" data-ng-model = "assignedRisk.probability"
+																data-ng-options="probability._id as probability.name for probability in probabilities">
+															<option value="">--choose probability</option>
+														</select>
+													</div>
+												</div>
+												<div class="row">
+													<div class="form-group-sm col-md-12">
+														<label class="small">Severity</label>
+                                                        <span class="form-control input-sm" data-ng-bind="findSeverityAssignment(assignedRisk).severity.name" data-ng-disabled="true"></span>
+													</div>
+												</div>
+												<br>
+												<div class="row">
+													<div class="col-md-12">
+														<div class="btn-group-xs pull-right">
+															<button type="button" class="btn btn-success btn-sm" ng-click="saveAssignedRisk(selectedProject, assignedCategory, assignedRisk)">
+																Save
+															</button>
+															<button type="button" class="btn btn-info btn-sm" ng-click="cancelEditAssignedRisk(assignedRisk)">
+																Cancel
+															</button>
+														</div>
+													</div>
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</section>

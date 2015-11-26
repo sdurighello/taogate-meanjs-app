@@ -24,6 +24,8 @@ exports.create = function(req, res) {
     var Priority = mongoose.mtModel(req.user.tenantId + '.' + 'Priority');
     var QualitativeImpactGroup = mongoose.mtModel(req.user.tenantId + '.' + 'QualitativeImpactGroup');
     var QualitativeImpact = mongoose.mtModel(req.user.tenantId + '.' + 'QualitativeImpact');
+    var RiskCategory = mongoose.mtModel(req.user.tenantId + '.' + 'RiskCategory');
+    var Risk = mongoose.mtModel(req.user.tenantId + '.' + 'Risk');
 
     async.series([
         // PROJECT: Save project in its collection
@@ -105,7 +107,34 @@ exports.create = function(req, res) {
                     });
                 }
             });
-            callback(null, 'three');
+            callback(null, 'four');
+        },
+        // PROJECT.RISK-ANALYSIS: Add all existing risks to new project
+        function(callback){
+            RiskCategory.find().exec(function(err, categories){
+                if (err) {
+                    return res.status(400).send({
+                        message: errorHandler.getErrorMessage(err)
+                    });
+                } else {
+                    async.each(categories, function(category, callback){
+                        var obj = {category: category._id, risks: []};
+                        async.each(category.risks, function(risk, callback){
+                            obj.risks.push({
+                                risk: risk,
+                                impact: null,
+                                probability: null,
+                                severityAssignment: null
+                            });
+                            callback();
+                        });
+                        project.riskAnalysis.push(obj);
+                        project.save();
+                        callback();
+                    });
+                }
+            });
+            callback(null, 'five');
         }
     ],function(err, results){
         // results is now equal to ['one', 'two']
@@ -238,6 +267,66 @@ exports.updateImpactAssignment = function(req, res) {
     });
 
 };
+
+
+/**
+ *  Update a Risk Assignment
+ */
+exports.updateRiskAssignment = function(req, res) {
+    var project = req.project ;
+    project.user = req.user;
+    project.created = Date.now();
+
+    var RiskSeverityAssignment = mongoose.mtModel(req.user.tenantId + '.' + 'RiskSeverityAssignment');
+
+    async.waterfall([
+        // Find the SEVERITY ASSIGNMENT based on impact and probability
+        function(callback){
+            RiskSeverityAssignment.findOne({probability: req.params.probabilityId, impact:req.params.impactId},
+                function(err, severityAssignment) {
+                if (err) {
+                    callback(err);
+                } else {
+                    callback(null, severityAssignment);
+                }
+            });
+        },
+        // Update IMPACT and PROBABILITY and SEVERITY
+        function(severityAssignment, callback){
+            async.each(project.riskAnalysis, function(assignedCategory, callback){
+                if(assignedCategory._id.equals(req.params.assignedCategoryId)){
+                    async.each(assignedCategory.risks, function(assignedRisk, callback){
+                        if(assignedRisk._id.equals(req.params.assignedRiskId)){
+                            assignedRisk.impact = req.params.impactId;
+                            assignedRisk.probability = req.params.probabilityId;
+                            if(severityAssignment){
+                                assignedRisk.severityAssignment = severityAssignment._id;
+                            } else {
+                                assignedRisk.severityAssignment = null;
+                            }
+                            project.save();
+                        }
+                        callback();
+                    });
+                }
+                callback();
+            });
+            callback(null, 'done');
+        }
+    ],function(err, severityAssignment, done){
+        if (err) {
+            return res.status(400).send({
+                message: errorHandler.getErrorMessage(err)
+            });
+        } else {
+            res.jsonp(project);
+        }
+    });
+
+
+
+};
+
 
 
 /**

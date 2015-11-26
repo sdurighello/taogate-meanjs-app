@@ -40,6 +40,7 @@ var AssignedPriorityGroupSchema = new Schema({
 
 // ----
 
+
 var AssignedImpactSchema = new Schema({
     impact : {type: Schema.Types.ObjectId, ref: 'QualitativeImpact', $tenant:true},
     score : {type: Schema.Types.ObjectId, ref: 'QualitativeImpactScore', $tenant:true}
@@ -49,6 +50,26 @@ var AssignedImpactGroupSchema = new Schema({
     group : {type: Schema.Types.ObjectId, ref: 'QualitativeImpactGroup', $tenant:true},
     impacts : [AssignedImpactSchema]
 });
+
+
+
+// ----
+
+
+var AssignedRiskSchema = new Schema({
+    risk : {type: Schema.Types.ObjectId, ref: 'Risk', $tenant:true},
+    impact : {type: Schema.Types.ObjectId, ref: 'RiskImpact', $tenant:true},
+    probability : {type: Schema.Types.ObjectId, ref: 'RiskProbability', $tenant:true},
+    severityAssignment : {type: Schema.Types.ObjectId, ref: 'RiskSeverityAssignment', $tenant:true}
+});
+
+var AssignedRiskCategorySchema = new Schema({
+    category : {type: Schema.Types.ObjectId, ref: 'RiskCategory', $tenant:true},
+    risks : [AssignedRiskSchema]
+});
+
+
+
 
 // ------------------------ BIG FAT SCHEMA ------------------------
 
@@ -94,7 +115,7 @@ var ProjectSchema = new Schema({
 
     // Risk analysis
 
-    riskAnalysis: [],
+    riskAnalysis: [AssignedRiskCategorySchema],
 
     // Stakeholders
 

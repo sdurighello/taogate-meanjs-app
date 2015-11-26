@@ -62,7 +62,17 @@ angular.module('risk-analysis-setup').controller('RiskAnalysisSetupController', 
 		});
 
 
+        // ------ CREATE SEVERITY MATRIX --------
 
+        var createSeverityMatrix = function(severityAssignments){
+            /*
+            severityMatrix = [
+                    {impact: <impact>, probabilities: [
+                                                { probability: <probability>, severityAssignment : <severityAssignment> }
+                                              ]
+                ]
+             */
+        };
 
 
 
@@ -160,19 +170,15 @@ angular.module('risk-analysis-setup').controller('RiskAnalysisSetupController', 
 
 			var risk = new Risks ({
 				name: 'New risk',
-				description: 'New risk description'
+				description: ''
 			});
 
-			risk.$save(function(riskRes) {
-				category.risks.push(riskRes);
-				category.$update(function(categoryRes) {
-
-				}, function(errorResponse) {
-					$scope.error = errorResponse.data.message;
-				});
-			}, function(errorResponse) {
-				$scope.error = errorResponse.data.message;
-			});
+            risk.$save({groupId: category._id}, function(res) {
+                // Add new risk to the view category
+                category.risks.push(res);
+            }, function(errorResponse) {
+                $scope.error = errorResponse.data.message;
+            });
 		};
 
 		// ------------------- EDIT RISK -----------------
@@ -203,7 +209,7 @@ angular.module('risk-analysis-setup').controller('RiskAnalysisSetupController', 
 
 		$scope.removeRisk = function(category, risk) {
 			$scope.error = null;
-			Risks.remove({},risk, function(res){
+			Risks.remove({groupId: category._id},risk, function(res){
 				category.risks = _.without(category.risks, risk);
 			}, function(err){
 				$scope.error = err.data.message;
@@ -249,7 +255,7 @@ angular.module('risk-analysis-setup').controller('RiskAnalysisSetupController', 
             var impact = new RiskImpacts ({
                 name: 'New impact',
                 description: '',
-                value: 0
+                impactValue: 0
             });
 
             impact.$save(function(response) {
@@ -272,6 +278,7 @@ angular.module('risk-analysis-setup').controller('RiskAnalysisSetupController', 
 
         $scope.updateImpact = function(impact) {
             impact.$update(function(response) {
+                $scope.assignmentsList();
                 $scope.selectImpactForm(impact, 'view');
             }, function(errorResponse) {
                 $scope.error = errorResponse.data.message;
@@ -282,7 +289,7 @@ angular.module('risk-analysis-setup').controller('RiskAnalysisSetupController', 
             $scope.error = null;
             impact.name = originalEditImpact[impact._id].name;
             impact.description = originalEditImpact[impact._id].description;
-            impact.value = originalEditImpact[impact._id].value;
+            impact.impactValue = originalEditImpact[impact._id].impactValue;
             $scope.selectImpactForm(impact, 'view');
         };
 
@@ -337,7 +344,7 @@ angular.module('risk-analysis-setup').controller('RiskAnalysisSetupController', 
             var probability = new RiskProbabilities ({
                 name: 'New probability',
                 description: '',
-                value: 0
+                probabilityValue: 0
             });
 
             probability.$save(function(response) {
@@ -360,6 +367,7 @@ angular.module('risk-analysis-setup').controller('RiskAnalysisSetupController', 
 
         $scope.updateProbability = function(probability) {
             probability.$update(function(response) {
+                $scope.assignmentsList();
                 $scope.selectProbabilityForm(probability, 'view');
             }, function(errorResponse) {
                 $scope.error = errorResponse.data.message;
@@ -370,7 +378,7 @@ angular.module('risk-analysis-setup').controller('RiskAnalysisSetupController', 
             $scope.error = null;
             probability.name = originalEditProbability[probability._id].name;
             probability.description = originalEditProbability[probability._id].description;
-            probability.value = originalEditProbability[probability._id].value;
+            probability.probabilityValue = originalEditProbability[probability._id].probabilityValue;
             $scope.selectProbabilityForm(probability, 'view');
         };
 
@@ -473,7 +481,7 @@ angular.module('risk-analysis-setup').controller('RiskAnalysisSetupController', 
 
         $scope.cancelEditSeverity = function(severity){
             severity.name = originalSeverity.name;
-            severity.value = originalSeverity.value;
+            severity.severityValue = originalSeverity.severityValue;
             severity.description = originalSeverity.description;
             $scope.selectSeverityForm('view');
         };
@@ -502,7 +510,7 @@ angular.module('risk-analysis-setup').controller('RiskAnalysisSetupController', 
             $scope.error = null;
             var severity = new RiskSeverities ({
                 name: 'New severity',
-                value: 0,
+                severityValue: 0,
                 position: $scope.severities.length + 1
             });
             severity.$save(function(response) {
@@ -548,39 +556,34 @@ angular.module('risk-analysis-setup').controller('RiskAnalysisSetupController', 
 
         // ------------------- EDIT -----------------
 
-        var originalRiskCombinations = {};
+        var originalSeverityAssignment = {};
         $scope.selectAssignment = function(assignment){
             $scope.error = null;
-            originalRiskCombinations[assignment._id] = _.cloneDeep(assignment.riskCombinations);
+            originalSeverityAssignment[assignment._id] = _.cloneDeep(assignment);
             $scope.selectAssignmentForm(assignment, 'edit');
         };
 
         $scope.updateAssignment = function(assignment) {
-            // Allow null severity
-            var createCopySeverityProperty = function(severity){
-                if(severity){return severity._id;} else {return null;}
+            // Allow null
+            var allowNull = function(obj){
+                if(obj){return obj._id;} else {return null;}
             };
              //Clean deep populate
-            var copyRiskCombinations = _.cloneDeep(assignment.riskCombinations);
-            copyRiskCombinations = _.map(copyRiskCombinations, function(combination){
-                combination.probability = combination.probability._id;
-                combination.severity = createCopySeverityProperty(combination.severity);
-                return combination;
-            });
-            // Save only cleaned up riskCombinations
-            RiskSeverityAssignments.update({
-                _id: assignment._id,
-                riskCombinations : copyRiskCombinations
-            }, function(assignmentRes){
+            var copySeverityAssignment = _.cloneDeep(assignment);
+            copySeverityAssignment.impact = copySeverityAssignment.impact._id;
+            copySeverityAssignment.probability = copySeverityAssignment.probability._id;
+            copySeverityAssignment.severity = allowNull(copySeverityAssignment.severity);
+            // Save only cleaned up severity assignments
+            RiskSeverityAssignments.update(copySeverityAssignment, function(res){
                 $scope.selectAssignmentForm(assignment, 'view');
-            },function(errorResponse){
-                $scope.error = errorResponse.data.message;
+            },function(err){
+                $scope.error = err.data.message;
             });
         };
 
         $scope.cancelEditAssignment = function(assignment){
             $scope.error = null;
-            assignment.riskCombinations = originalRiskCombinations[assignment._id];
+             assignment.severity = originalSeverityAssignment[assignment._id].severity;
             $scope.selectAssignmentForm(assignment, 'view');
         };
 

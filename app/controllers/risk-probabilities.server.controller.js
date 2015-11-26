@@ -18,40 +18,41 @@ exports.create = function(req, res) {
 	var riskProbability = new RiskProbability(req.body);
 	riskProbability.user = req.user;
 
-    async.waterfall([
-        // Save new probability
+    async.series([
+        // RISK-PROBABILITIES: Save new probability
         function(callback) {
-            riskProbability.save();
-            callback(null, riskProbability);
+            riskProbability.save(function(err){
+                callback(err);
+            });
         },
-        // Create an entry for each riskCombination in severity matrix
-        function(probability, callback) {
-            RiskSeverityAssignment.find().exec(function(err, assignments){
+        // RISK-SEVERITY-ASSIGNMENTS: Create an entry for each impact in severity matrix
+        function(callback) {
+            RiskImpact.find().exec(function(err, impacts){
                 if (err) {
                     return res.status(400).send({
                         message: errorHandler.getErrorMessage(err)
                     });
                 } else {
-                    async.each(assignments, function(assignment, callback){
-                        assignment.riskCombinations.push({
-                            probability : probability,
+                    async.each(impacts, function(impact, callback){
+                        var severityAssignment = new RiskSeverityAssignment({
+                            impact : impact._id,
+                            probability : riskProbability._id,
                             severity : null
                         });
-                        assignment.save();
+                        severityAssignment.save();
                         callback();
                     });
                 }
             });
-            callback(null, probability);
+            callback(null);
         }
-    ], function (err, result) {
-        // result now equals 'probability'
+    ], function (err, results) {
         if (err) {
             return res.status(400).send({
                 message: errorHandler.getErrorMessage(err)
             });
         } else {
-            res.jsonp(result);
+            res.jsonp(riskProbability);
         }
     });
 };
@@ -89,42 +90,36 @@ exports.update = function(req, res) {
 exports.delete = function(req, res) {
     var RiskSeverityAssignment = mongoose.mtModel(req.user.tenantId + '.' + 'RiskSeverityAssignment');
     var riskProbability = req.riskProbability ;
-    async.waterfall([
-        // Remove riskProbability
+    async.series([
+        // RISK-PROBABILITIES: Remove riskProbability
         function(callback) {
-            riskProbability.remove();
-            callback(null, riskProbability);
+            riskProbability.remove(function(err){
+                callback(err);
+            });
         },
-        // Remove entry in each riskCombinations of the severity matrix
-        function(probability, callback) {
-            RiskSeverityAssignment.find().exec(function(err, assignments){
-                if (err) {
+        // RISK-SEVERITY-ASSIGNMENTS: Remove all assignments belonging to that probability
+        function(callback) {
+            RiskSeverityAssignment.find({probability: riskProbability._id}).exec(function(err, assignments){
+                if(err){
                     return res.status(400).send({
                         message: errorHandler.getErrorMessage(err)
                     });
                 } else {
                     async.each(assignments, function(assignment, callback){
-                        async.each(assignment.riskCombinations, function(combination, callback){
-                            if(combination.probability.equals(probability._id)){
-                                combination.remove();
-                                assignment.save();
-                            }
-                            callback();
-                        });
+                        assignment.remove();
                         callback();
                     });
                 }
             });
-            callback(null, probability);
+            callback(null);
         }
-    ], function (err, result) {
-        // result now equals 'probability'
+    ], function (err, results) {
         if (err) {
             return res.status(400).send({
                 message: errorHandler.getErrorMessage(err)
             });
         } else {
-            res.jsonp(result);
+            res.jsonp(riskProbability);
         }
     });
 };
@@ -134,7 +129,7 @@ exports.delete = function(req, res) {
  */
 exports.list = function(req, res) {
 	var RiskProbability = mongoose.mtModel(req.user.tenantId + '.' + 'RiskProbability');
-	RiskProbability.find().sort('-created').populate('user', 'displayName').exec(function(err, riskProbabilities) {
+	RiskProbability.find().sort('probabilityValue').populate('user', 'displayName').exec(function(err, riskProbabilities) {
 		if (err) {
 			return res.status(400).send({
 				message: errorHandler.getErrorMessage(err)

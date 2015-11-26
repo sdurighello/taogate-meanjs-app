@@ -22,7 +22,7 @@ var RiskImpactSchema = new Schema({
         default: '',
         trim: true
     },
-    value: {
+    impactValue: {
         type: Number,
         default: 0,
         required: 'Please fill Risk impact value'

@@ -77,7 +77,7 @@ exports.delete = function(req, res) {
 exports.list = function(req, res) {
 	var RiskSeverityAssignment = mongoose.mtModel(req.user.tenantId + '.' + 'RiskSeverityAssignment');
 	RiskSeverityAssignment.find().deepPopulate([
-        'impact', 'riskCombinations.probability','riskCombinations.severity'
+        'impact', 'probability','severity'
     ]).populate('user', 'displayName').exec(function(err, riskSeverityAssignments) {
 		if (err) {
 			return res.status(400).send({
@@ -95,7 +95,7 @@ exports.list = function(req, res) {
 exports.riskSeverityAssignmentByID = function(req, res, next, id) {
 	var RiskSeverityAssignment = mongoose.mtModel(req.user.tenantId + '.' + 'RiskSeverityAssignment');
 	RiskSeverityAssignment.findById(id).deepPopulate([
-        'impact', 'riskCombinations.probability','riskCombinations.severity'
+        'impact', 'probability','severity'
     ]).populate('user', 'displayName').exec(function(err, riskSeverityAssignment) {
 		if (err) return next(err);
 		if (! riskSeverityAssignment) return next(new Error('Failed to load Risk severity assignment ' + id));

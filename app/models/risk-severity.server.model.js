@@ -22,7 +22,7 @@ var RiskSeveritySchema = new Schema({
         default: '',
         trim: true
     },
-    value: {
+    severityValue: {
         type: Number,
         default: 0,
         required: 'Please fill severity numerical value'

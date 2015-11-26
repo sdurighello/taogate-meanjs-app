@@ -6,11 +6,11 @@ module.exports = function(app) {
 
 	// Risk severity assignments Routes
 	app.route('/risk-severity-assignments')
-		.get(riskSeverityAssignments.list)
-		.post(users.requiresLogin, riskSeverityAssignments.create);
+		.get(users.requiresLogin, riskSeverityAssignments.list)
+		.post(users.requiresLogin, riskSeverityAssignments.hasAuthorization, riskSeverityAssignments.create);
 
 	app.route('/risk-severity-assignments/:riskSeverityAssignmentId')
-		.get(riskSeverityAssignments.read)
+		.get(users.requiresLogin, riskSeverityAssignments.read)
 		.put(users.requiresLogin, riskSeverityAssignments.hasAuthorization, riskSeverityAssignments.update)
 		.delete(users.requiresLogin, riskSeverityAssignments.hasAuthorization, riskSeverityAssignments.delete);
 

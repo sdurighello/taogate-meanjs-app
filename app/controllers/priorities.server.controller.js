@@ -163,7 +163,7 @@ exports.delete = function(req, res) {
  */
 exports.list = function(req, res) {
     var Priority = mongoose.mtModel(req.user.tenantId + '.' + 'Priority');
-	Priority.find().sort('-created').populate('user', 'displayName').exec(function(err, priorities) {
+	Priority.find().populate('user', 'displayName').exec(function(err, priorities) {
 		if (err) {
 			return res.status(400).send({
 				message: errorHandler.getErrorMessage(err)

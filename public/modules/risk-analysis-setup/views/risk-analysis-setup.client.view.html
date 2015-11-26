@@ -369,7 +369,7 @@
                                                         <div class="form-group">
                                                             <label class="control-label">Value</label>
                                                             <div class="controls">
-                                                                <input disabled type="number" class="form-control" ng-model="probability.value">
+                                                                <input disabled type="number" class="form-control" ng-model="probability.probabilityValue">
                                                             </div>
                                                         </div>
                                                         <div class="form-group pull-right" data-ng-show="userHasAuthorization">
@@ -404,7 +404,7 @@
                                                             <label class="control-label" for="numericalEdit">Value</label>
                                                             <div class="controls">
                                                                 <input type="number" id="numericalEdit" class="form-control" min="0" step="1" onkeyup="this.value=this.value.replace(/[^0-9]/g,'');"
-                                                                       data-ng-model="probability.value" placeholder="Enter positive integer" required name="numericalEdit">
+                                                                       data-ng-model="probability.probabilityValue" placeholder="Enter positive integer" required name="numericalEdit">
                                                             </div>
                                                             <span data-ng-show="editProbabilityForm.numericalEdit.$error.required">
 																	<em style="color: red">Probability value is required</em>
@@ -511,7 +511,7 @@
                                                                 <div class="form-group">
                                                                     <label class="control-label">Value</label>
                                                                     <div class="controls">
-                                                                        <input disabled type="number" class="form-control" ng-model="severity.value">
+                                                                        <input disabled type="number" class="form-control" ng-model="severity.severityValue">
                                                                     </div>
                                                                 </div>
                                                                 <div class="form-group">
@@ -563,7 +563,7 @@
                                                                     <label class="control-label" for="numerical">Value</label>
                                                                     <div class="controls">
                                                                         <input type="number" id="numerical" class="form-control" min="0" step="1" onkeyup="this.value=this.value.replace(/[^0-9]/g,'');"
-                                                                               data-ng-model="severity.value" placeholder="Enter positive integer" required>
+                                                                               data-ng-model="severity.severityValue" placeholder="Enter positive integer" required>
                                                                     </div>
                                                                 </div>
                                                                 <div class="form-group center-block">
@@ -619,12 +619,12 @@
                                                 </div>
                                             </div>
                                             <br>
-                                            <div class="row" ng-repeat="combination in assignment.riskCombinations track by $index">
+                                            <div class="row">
                                                 <div class="col-md-6 form-group">
-                                                    <input type="text" class="form-control input-sm" data-ng-model="combination.probability.name" disabled>
+                                                    <input type="text" class="form-control input-sm" data-ng-model="assignment.probability.name" disabled>
                                                 </div>
                                                 <div class="col-md-6 form-group">
-                                                    <input type="text" class="form-control input-sm" data-ng-model="combination.severity.name" disabled>
+                                                    <input type="text" class="form-control input-sm" data-ng-model="assignment.severity.name" disabled>
                                                 </div>
                                             </div>
                                             <div class="form-group pull-right" ng-show="userHasAuthorization">
@@ -647,12 +647,12 @@
                                                 </div>
                                             </div>
                                             <br>
-                                            <div class="row" ng-repeat="combination in assignment.riskCombinations track by $index">
+                                            <div class="row">
                                                 <div class="col-md-6 form-group">
-                                                    <input type="text" class="form-control input-sm" data-ng-model="combination.probability.name" disabled>
+                                                    <input type="text" class="form-control input-sm" data-ng-model="assignment.probability.name" disabled>
                                                 </div>
                                                 <div class="col-md-6 form-group">
-                                                    <select id="" class="form-control input-sm" data-ng-model = "combination.severity"
+                                                    <select id="" class="form-control input-sm" data-ng-model = "assignment.severity"
                                                             data-ng-options="severity as severity.name for severity in severities track by severity._id">
                                                         <option value="">--choose severity</option>
                                                     </select>

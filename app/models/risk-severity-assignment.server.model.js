@@ -14,15 +14,10 @@ require('mongoose-multitenant');
  */
 
 
-var RiskCombinationSchema = new Schema({
-    probability : {type: Schema.Types.ObjectId, ref: 'RiskProbability', $tenant:true},
-    severity : {type: Schema.Types.ObjectId, ref: 'RiskSeverity', $tenant:true}
-});
-
-
 var RiskSeverityAssignmentSchema = new Schema({
     impact : {type: Schema.Types.ObjectId, ref: 'RiskImpact', $tenant:true},
-    riskCombinations : [RiskCombinationSchema],
+	probability : {type: Schema.Types.ObjectId, ref: 'RiskProbability', $tenant:true},
+	severity : {type: Schema.Types.ObjectId, ref: 'RiskSeverity', $tenant:true},
 	created: {
 		type: Date,
 		default: Date.now

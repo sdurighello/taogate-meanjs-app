@@ -22,7 +22,7 @@ var RiskProbabilitySchema = new Schema({
 		default: '',
 		trim: true
 	},
-    value: {
+    probabilityValue: {
         type: Number,
         default: 0,
         required: 'Please fill Risk probability value'

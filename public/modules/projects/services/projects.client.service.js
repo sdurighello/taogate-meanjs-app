@@ -19,6 +19,10 @@ angular.module('projects').factory('Projects', ['$resource',
             updateImpactAssignment: {
                 method: 'PUT',
                 url: 'projects/impactAssignment/:projectId/:assignedGroupId/:assignedImpactId/:scoreId'
+            },
+            updateRiskAssignment: {
+                method: 'PUT',
+                url: 'projects/riskAssignment/:projectId/:assignedCategoryId/:assignedRiskId/:impactId/:probabilityId'
             }
 		});
 	}
