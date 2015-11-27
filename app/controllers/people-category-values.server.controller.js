@@ -12,19 +12,36 @@ var mongoose = require('mongoose'),
  * Create a People category value
  */
 exports.create = function(req, res) {
+	var PeopleCategory = mongoose.mtModel(req.user.tenantId + '.' + 'PeopleCategory');
 	var PeopleCategoryValue = mongoose.mtModel(req.user.tenantId + '.' + 'PeopleCategoryValue');
 	var peopleCategoryValue = new PeopleCategoryValue(req.body);
 	peopleCategoryValue.user = req.user;
 
-	peopleCategoryValue.save(function(err) {
-		if (err) {
-			return res.status(400).send({
-				message: errorHandler.getErrorMessage(err)
-			});
-		} else {
-			res.jsonp(peopleCategoryValue);
-		}
-	});
+    async.series([
+        // CATEGORY-VALUES: Save the new value to its collection
+        function(callback){
+            peopleCategoryValue.save(function(err){
+                callback(err);
+            });
+        },
+        // CATEGORY.CATEGORY-VALUES: Add the value to the category's "categoryValues" array
+        function(callback){
+            PeopleCategory.findById(req.query.categoryId).exec(function(err, category){
+                category.categoryValues.push(peopleCategoryValue._id);
+                category.save();
+            });
+            callback(null, 'two');
+        }
+    ],function(err, results){
+        // results is now equal to ['one', 'two', 'three']
+        if (err) {
+            return res.status(400).send({
+                message: errorHandler.getErrorMessage(err)
+            });
+        } else {
+            res.jsonp(peopleCategoryValue);
+        }
+    });
 };
 
 /**
@@ -57,26 +74,25 @@ exports.update = function(req, res) {
 /**
  * Delete an People category value
  */
+
 exports.delete = function(req, res) {
 	var peopleCategoryValue = req.peopleCategoryValue ;
     var PeopleCategory = mongoose.mtModel(req.user.tenantId + '.' + 'PeopleCategory');
 
     async.series([
+        // CATEGORY-VALUES: Delete value from its collection
         function(callback){
-            // Delete category value from its collection
-            peopleCategoryValue.remove();
-            callback(null, 'one');
-        },
-        function(callback){
-            // Delete value from categories where assigned
-            PeopleCategory.find({categoryValues: {$in: [peopleCategoryValue._id]}}).exec(function(err, categories){
-                async.each(categories, function(item, callback){
-                    item.categoryValues.splice(item.categoryValues.indexOf(peopleCategoryValue._id), 1);
-                    item.save();
-                    callback();
-                });
+            peopleCategoryValue.remove(function(err){
+                callback(err);
             });
-            callback(null, 'two');
+        },
+        // CATEGORY.CATEGORY-VALUES: Delete value from category where assigned
+        function(callback){
+            PeopleCategory.findById(req.query.categoryId).exec(function(err, category){
+                category.categoryValues.splice(category.categoryValues.indexOf(peopleCategoryValue._id), 1);
+                category.save();
+            });
+            callback(null, 'three');
         }
     ],function(err, results){
         // results is now equal to ['one', 'two']
@@ -88,6 +104,7 @@ exports.delete = function(req, res) {
             res.jsonp(peopleCategoryValue);
         }
     });
+
 };
 
 /**
@@ -95,7 +112,7 @@ exports.delete = function(req, res) {
  */
 exports.list = function(req, res) {
     var PeopleCategoryValue = mongoose.mtModel(req.user.tenantId + '.' + 'PeopleCategoryValue');
-	PeopleCategoryValue.find().sort('-created').populate('user', 'displayName').exec(function(err, peopleCategoryValues) {
+	PeopleCategoryValue.find().populate('user', 'displayName').exec(function(err, peopleCategoryValues) {
 		if (err) {
 			return res.status(400).send({
 				message: errorHandler.getErrorMessage(err)

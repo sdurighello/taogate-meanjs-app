@@ -135,6 +135,33 @@ exports.create = function(req, res) {
                 }
             });
             callback(null, 'five');
+        },
+        // PROJECT.STAKEHOLDERS: Add all existing groups/roles + categories/values to new project
+        function(callback){
+            RiskCategory.find().exec(function(err, categories){
+                if (err) {
+                    return res.status(400).send({
+                        message: errorHandler.getErrorMessage(err)
+                    });
+                } else {
+                    async.each(categories, function(category, callback){
+                        var obj = {category: category._id, risks: []};
+                        async.each(category.risks, function(risk, callback){
+                            obj.risks.push({
+                                risk: risk,
+                                impact: null,
+                                probability: null,
+                                severityAssignment: null
+                            });
+                            callback();
+                        });
+                        project.riskAnalysis.push(obj);
+                        project.save();
+                        callback();
+                    });
+                }
+            });
+            callback(null, 'five');
         }
     ],function(err, results){
         // results is now equal to ['one', 'two']

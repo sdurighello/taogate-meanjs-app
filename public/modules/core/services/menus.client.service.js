@@ -293,19 +293,19 @@ angular.module('core').service('Menus', [
             ['superAdmin','admin','PMO','projectManager','portfolioManager','executive'],4);
         this.addSubMenuItem('topbar', 'evaluation', 'Stakeholders', 'menuTitle','menuTitle',false,
             ['superAdmin','admin','PMO','projectManager','portfolioManager','executive'],5);
-                // Stakeholders assignment
-        this.addSubMenuItem('topbar', 'evaluation', 'Stakeholder assignment', 'stakeholder-assignment','stakeholder-assignment',false,
+                // Project Stakeholders analysis
+        this.addSubMenuItem('topbar', 'evaluation', 'Project stakeholders analysis', 'people-project-analysis','people-project-analysis',false,
             ['superAdmin','admin','PMO','projectManager','portfolioManager','executive'],6);
-                // Stakeholders analysis
-        this.addSubMenuItem('topbar', 'evaluation', 'Stakeholder analysis', 'stakeholder-analysis','stakeholder-analysis',false,
+                // Portfolio Stakeholders analysis
+        this.addSubMenuItem('topbar', 'evaluation', 'Portfolio stakeholders analysis', 'people-portfolio-analysis','people-portfolio-analysis',false,
             ['superAdmin','admin','PMO','projectManager','portfolioManager','executive'],7);
             // Dependencies
         this.addSubMenuItem('topbar', 'evaluation', '', 'divider','divider',false,
             ['superAdmin','admin','PMO','projectManager','portfolioManager','executive'],8);
         this.addSubMenuItem('topbar', 'evaluation', 'Dependencies', 'menuTitle','menuTitle',false,
             ['superAdmin','admin','PMO','projectManager','portfolioManager','executive'],9);
-                // Dependencies assignment
-        this.addSubMenuItem('topbar', 'evaluation', 'Dependency assignment', 'dependency-assignment','dependency-assignment',false,
+                // Project dependencies
+        this.addSubMenuItem('topbar', 'evaluation', 'Project dependencies', 'dependency-assignment','dependency-assignment',false,
             ['superAdmin','admin','PMO','projectManager','portfolioManager','executive'],10);
 
 

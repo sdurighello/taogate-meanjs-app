@@ -13,7 +13,6 @@ var mongoose = require('mongoose'),
  */
 exports.create = function(req, res) {
 	var Project = mongoose.mtModel(req.user.tenantId + '.' + 'Project');
-
 	var PriorityGroup = mongoose.mtModel(req.user.tenantId + '.' + 'PriorityGroup');
 	var Priority = mongoose.mtModel(req.user.tenantId + '.' + 'Priority');
 	var priority = new Priority(req.body);
@@ -22,8 +21,9 @@ exports.create = function(req, res) {
 	async.series([
 		// PRIORITIES: Save the new priority to its collection
 		function(callback){
-			priority.save();
-			callback(null, 'one');
+			priority.save(function(err){
+                callback(err);
+            });
 		},
 		// GROUP.PRIORITIES: Add the priority to the group's "priorities" array
 		function(callback){
@@ -108,8 +108,9 @@ exports.delete = function(req, res) {
     async.series([
         // PRIORITIES: Delete priority from its collection
         function(callback){
-            priority.remove();
-            callback(null, 'one');
+            priority.remove(function(err){
+				callback(err);
+			});
         },
         // GROUP.PRIORITIES: Delete priority from group where assigned
         function(callback){

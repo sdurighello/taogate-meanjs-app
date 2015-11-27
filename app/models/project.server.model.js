@@ -13,7 +13,11 @@ require('mongoose-multitenant');
  */
 
 
-// ----
+// ------------------------------------------------ SUB-SCHEMAS --------------------------------------------------
+
+
+    // --- Categorization ---
+
 
 var AssignedCategorySchema = new Schema({
     category : {type: Schema.Types.ObjectId, ref: 'Category', $tenant:true},
@@ -25,7 +29,7 @@ var AssignedCategoryGroupSchema = new Schema({
     categories : [AssignedCategorySchema]
 });
 
-// ----
+    // --- Prioritization ---
 
 var AssignedPrioritySchema = new Schema({
     priority : {type: Schema.Types.ObjectId, ref: 'Priority', $tenant:true},
@@ -38,7 +42,7 @@ var AssignedPriorityGroupSchema = new Schema({
 });
 
 
-// ----
+    // --- Qualitative Analysis ---
 
 
 var AssignedImpactSchema = new Schema({
@@ -53,7 +57,7 @@ var AssignedImpactGroupSchema = new Schema({
 
 
 
-// ----
+    // --- Risk Analysis ---
 
 
 var AssignedRiskSchema = new Schema({
@@ -69,15 +73,39 @@ var AssignedRiskCategorySchema = new Schema({
 });
 
 
+    // --- Project Stakeholders ---
+
+var AssignedPeopleCategorySchema = new Schema({
+    category : {type: Schema.Types.ObjectId, ref: 'PeopleCategory', $tenant:true},
+    categoryValue : {type: Schema.Types.ObjectId, ref: 'PeopleCategoryValue', $tenant:true}
+});
+
+var AssignedPeopleProjectRoleSchema = new Schema({
+    role : {type: Schema.Types.ObjectId, ref: 'PeopleProjectRole', $tenant:true},
+    person: {type: Schema.Types.ObjectId, ref: 'Person', $tenant:true},
+    categorization : [AssignedPeopleCategorySchema]
+});
+
+var AssignedPeopleProjectGroupSchema = new Schema({
+    group : {type: Schema.Types.ObjectId, ref: 'PeopleProjectGroup', $tenant:true},
+    roles : [AssignedPeopleProjectRoleSchema]
+});
 
 
-// ------------------------ BIG FAT SCHEMA ------------------------
+
+
+
+
+// ------------------------------------------------ BIG FAT SCHEMA --------------------------------------------------
+
 
 var ProjectSchema = new Schema({
     created: {type: Date, default: Date.now},
     user: {type: Schema.ObjectId, ref: 'User'},
 
-// -------------------------------------------------- DEFINITION -----------------------------------------------------
+
+    // ----------------- DEFINITION ---------------------
+
 
     parent: {type: Schema.ObjectId, ref: 'StrategyNode', default:null, $tenant:true},
     portfolio: {type: Schema.ObjectId, ref: 'Portfolio', default:null, $tenant:true},
@@ -100,34 +128,38 @@ var ProjectSchema = new Schema({
         selectedForDelivery: {type: Boolean, default: false}
     },
 
-// -------------------------------------------------- EVALUATION -----------------------------------------------------
+    // ----------------- EVALUATION ---------------------
 
-    // Financial analysis
+        // Financial analysis
 
     discountRate:{type: Number, default:null, min:0},
     baseYear: {type: Number, default:null, min:0},
     costs: [{type: Schema.ObjectId, ref: 'FinancialCost', $tenant:true}],
     benefits: [{type: Schema.ObjectId, ref: 'FinancialBenefit', $tenant:true}],
 
-    // Qualitative analysis
+        // Qualitative analysis
 
     qualitativeAnalysis: [AssignedImpactGroupSchema],
 
-    // Risk analysis
+        // Risk analysis
 
     riskAnalysis: [AssignedRiskCategorySchema],
 
-    // Stakeholders
+        // Stakeholders
 
-    stakeholders: [],
+    stakeholders: [AssignedPeopleProjectGroupSchema],
 
-// -------------------------------------------------- DELIVERY -----------------------------------------------------
+
+
+    // ----------------- DELIVERY ---------------------
+
+
 
     process: {type: Schema.ObjectId, ref: 'GateProcess', default:null, $tenant:true}
 
+
+
 });
-
-
 
 ProjectSchema.plugin(deepPopulate);
 mongoose.mtModel('Project', ProjectSchema);

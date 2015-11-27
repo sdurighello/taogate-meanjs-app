@@ -75,7 +75,7 @@ exports.delete = function(req, res) {
  */
 exports.list = function(req, res) {
 	var Person = mongoose.mtModel(req.user.tenantId + '.' + 'Person');
-	Person.find().sort('-created').populate('user', 'displayName').exec(function(err, people) {
+	Person.find().sort('name').populate('user', 'displayName').exec(function(err, people) {
 		if (err) {
 			return res.status(400).send({
 				message: errorHandler.getErrorMessage(err)
@@ -102,20 +102,7 @@ exports.personByID = function(req, res, next, id) {
 /**
  * Person authorization middleware
  */
-exports.hasCreateAuthorization = function(req, res, next) {
-	// User role check
-	if(!_.find(req.user.roles, function(role){
-			return (role === 'superAdmin' || role === 'admin' || role === 'pmo');
-		})
-	){
-		return res.status(403).send({
-			message: 'User is not authorized'
-		});
-	}
-	next();
-};
-
-exports.hasEditAuthorization = function(req, res, next) {
+exports.hasAuthorization = function(req, res, next) {
 	// User role check
 	if(!_.find(req.user.roles, function(role){
 			return (role === 'superAdmin' || role === 'admin' || role === 'pmo');

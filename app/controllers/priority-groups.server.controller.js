@@ -13,7 +13,6 @@ var mongoose = require('mongoose'),
  */
 exports.create = function(req, res) {
 	var Project = mongoose.mtModel(req.user.tenantId + '.' + 'Project');
-
 	var PriorityGroup = mongoose.mtModel(req.user.tenantId + '.' + 'PriorityGroup');
 	var priorityGroup = new PriorityGroup(req.body);
 	priorityGroup.user = req.user;

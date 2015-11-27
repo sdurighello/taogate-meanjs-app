@@ -59,14 +59,14 @@ exports.update = function(req, res) {
  */
 exports.delete = function(req, res) {
 	var PeoplePortfolioGroup = mongoose.mtModel(req.user.tenantId + '.' + 'PeoplePortfolioGroup');
-	var PeopleRole = mongoose.mtModel(req.user.tenantId + '.' + 'PeopleRole');
+	var PeoplePortfolioRole = mongoose.mtModel(req.user.tenantId + '.' + 'PeoplePortfolioRole');
 	var peoplePortfolioGroup = req.peoplePortfolioGroup ;
 
 	async.series([
 		function(callback){
 			// Delete roles in group from "people roles" collection
 			async.each(peoplePortfolioGroup.roles, function(item, callback){
-				PeopleRole.findById(item._id).exec(function(err, role){
+				PeoplePortfolioRole.findById(item._id).exec(function(err, role){
 					if (err) {
 						return res.status(400).send({
 							message: errorHandler.getErrorMessage(err)

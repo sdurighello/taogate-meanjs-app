@@ -279,7 +279,7 @@
 														<div class="row" ng-show="userHasAuthorization">
 															<div class="col-md-3">
 																<div class="form-group">
-																	<button type="button" class="btn btn-primary" ng-click="createRole(group)">
+																	<button type="button" class="btn btn-primary" ng-click="createProjectRole(group)">
 																		New role
 																	</button>
 																</div>
@@ -289,10 +289,10 @@
 															</div>
 														</div>
 														<div class="row">
-															<div class="col-md-4 form-group" data-ng-repeat="role in group.roles track by $index" data-ng-switch="switchRoleForm[role._id]">
-																<button class="btn btn-default btn-lg btn-block" data-ng-bind="role.name" data-ng-click="viewRoleDetails = !viewRoleDetails"
+															<div class="col-md-4 form-group" data-ng-repeat="role in group.roles track by $index" data-ng-switch="switchProjectRoleForm[role._id]">
+																<button class="btn btn-default btn-lg btn-block" data-ng-bind="role.name" data-ng-click="viewProjectRoleDetails = !viewProjectRoleDetails"
 																		title="Last updated on {{role.created | date:'medium'}} by {{role.user.displayName}}"></button>
-																<div data-ng-show="viewRoleDetails">
+																<div data-ng-show="viewProjectRoleDetails">
 																	<div class="panel panel-default">
 																		<div class="panel-body" ng-switch-default="view">
 																			<div class="row">
@@ -316,7 +316,7 @@
 																					<div class="row" ng-show="userHasAuthorization">
 																						<div class="form-group col-md-12 pull-right">
 																							<button type="button" class="btn btn-success pull-right"
-																									data-ng-click="selectEditRole(group, role)">
+																									data-ng-click="selectEditProjectRole(group, role)">
 																								Edit
 																							</button>
 																						</div>
@@ -327,13 +327,13 @@
 																		<div class="panel-body" ng-switch-when="edit">
 																			<div class="row" >
 																				<div class="col-md-12">
-																					<form name="editRoleForm" novalidate>
+																					<form name="editProjectRoleForm" novalidate>
 																						<fieldset>
 																							<div class="row">
 																								<div class="form-group col-md-12">
 																									<label for="roleNameEdit" class="control-label">Role name</label>
 																									<input id="roleNameEdit" name="roleNameEdit" type="text" class="form-control" data-ng-model="role.name" required>
-																									<span data-ng-show="editRoleForm.roleNameEdit.$error.required">
+																									<span data-ng-show="editProjectRoleForm.roleNameEdit.$error.required">
                                                                                                         <em style="color: red">Name is required</em>
                                                                                                     </span>
 																								</div>
@@ -347,13 +347,13 @@
 																							<div class="row">
 																								<div class="col-md-12">
 																									<div class="form-group pull-right">
-																										<button type="button" class="btn btn-success" ng-click="updateRole(group, role)" data-ng-disabled="editRoleForm.$invalid">
+																										<button type="button" class="btn btn-success" ng-click="updateProjectRole(group, role)" data-ng-disabled="editProjectRoleForm.$invalid">
 																											Save
 																										</button>
-																										<a class="btn btn-danger" data-ng-click="removeRole(group, role)">
+																										<a class="btn btn-danger" data-ng-click="removeProjectRole(group, role)">
 																											<i class="glyphicon glyphicon-trash"></i>
 																										</a>
-																										<button type="button" class="btn btn-info" ng-click="cancelEditRole(role)">
+																										<button type="button" class="btn btn-info" ng-click="cancelEditProjectRole(role)">
 																											Cancel
 																										</button>
 																									</div>
@@ -489,7 +489,7 @@
 														<div class="row" ng-show="userHasAuthorization">
 															<div class="col-md-3">
 																<div class="form-group">
-																	<button type="button" class="btn btn-primary" ng-click="createRole(group)">
+																	<button type="button" class="btn btn-primary" ng-click="createPortfolioRole(group)">
 																		New role
 																	</button>
 																</div>
@@ -499,10 +499,10 @@
 															</div>
 														</div>
 														<div class="row">
-															<div class="col-md-4 form-group" data-ng-repeat="role in group.roles track by $index" data-ng-switch="switchRoleForm[role._id]">
-																<button class="btn btn-default btn-lg btn-block" data-ng-bind="role.name" data-ng-click="viewRoleDetails = !viewRoleDetails"
+															<div class="col-md-4 form-group" data-ng-repeat="role in group.roles track by $index" data-ng-switch="switchPortfolioRoleForm[role._id]">
+																<button class="btn btn-default btn-lg btn-block" data-ng-bind="role.name" data-ng-click="viewPortfolioRoleDetails = !viewPortfolioRoleDetails"
 																		title="Last updated on {{role.created | date:'medium'}} by {{role.user.displayName}}"></button>
-																<div data-ng-show="viewRoleDetails">
+																<div data-ng-show="viewPortfolioRoleDetails">
 																	<div class="panel panel-default">
 																		<div class="panel-body" ng-switch-default="view">
 																			<div class="row">
@@ -526,7 +526,7 @@
 																					<div class="row" ng-show="userHasAuthorization">
 																						<div class="form-group col-md-12 pull-right">
 																							<button type="button" class="btn btn-success pull-right"
-																									data-ng-click="selectEditRole(group, role)">
+																									data-ng-click="selectEditPortfolioRole(group, role)">
 																								Edit
 																							</button>
 																						</div>
@@ -537,13 +537,13 @@
 																		<div class="panel-body" ng-switch-when="edit">
 																			<div class="row" >
 																				<div class="col-md-12">
-																					<form name="editRoleForm" novalidate>
+																					<form name="editPortfolioRoleForm" novalidate>
 																						<fieldset>
 																							<div class="row">
 																								<div class="form-group col-md-12">
 																									<label for="roleNameEdit" class="control-label">Role name</label>
 																									<input id="roleNameEdit" name="roleNameEdit" type="text" class="form-control" data-ng-model="role.name" required>
-																									<span data-ng-show="editRoleForm.roleNameEdit.$error.required">
+																									<span data-ng-show="editPortfolioRoleForm.roleNameEdit.$error.required">
                                                                                                         <em style="color: red">Name is required</em>
                                                                                                     </span>
 																								</div>
@@ -557,13 +557,13 @@
 																							<div class="row">
 																								<div class="col-md-12">
 																									<div class="form-group pull-right">
-																										<button type="button" class="btn btn-success" ng-click="updateRole(group, role)" data-ng-disabled="editRoleForm.$invalid">
+																										<button type="button" class="btn btn-success" ng-click="updatePortfolioRole(group, role)" data-ng-disabled="editPortfolioRoleForm.$invalid">
 																											Save
 																										</button>
-																										<a class="btn btn-danger" data-ng-click="removeRole(group, role)">
+																										<a class="btn btn-danger" data-ng-click="removePortfolioRole(group, role)">
 																											<i class="glyphicon glyphicon-trash"></i>
 																										</a>
-																										<button type="button" class="btn btn-info" ng-click="cancelEditRole(role)">
+																										<button type="button" class="btn btn-info" ng-click="cancelEditPortfolioRole(role)">
 																											Cancel
 																										</button>
 																									</div>

@@ -23,7 +23,7 @@ var PeopleProjectGroupSchema = new Schema({
 		default: '',
 		trim: true
 	},
-	roles : [{type: Schema.Types.ObjectId, ref: 'PeopleRole', $tenant:true}],
+	roles : [{type: Schema.Types.ObjectId, ref: 'PeopleProjectRole', $tenant:true}],
 	created: {
 		type: Date,
 		default: Date.now

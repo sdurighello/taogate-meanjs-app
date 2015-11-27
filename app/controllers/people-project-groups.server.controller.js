@@ -12,19 +12,48 @@ var mongoose = require('mongoose'),
  * Create a People Project group
  */
 exports.create = function(req, res) {
+	var Project = mongoose.mtModel(req.user.tenantId + '.' + 'Project');
 	var PeopleProjectGroup = mongoose.mtModel(req.user.tenantId + '.' + 'PeopleProjectGroup');
 	var peopleProjectGroup = new PeopleProjectGroup(req.body);
 	peopleProjectGroup.user = req.user;
 
-	peopleProjectGroup.save(function(err) {
-		if (err) {
-			return res.status(400).send({
-				message: errorHandler.getErrorMessage(err)
-			});
-		} else {
-			res.jsonp(peopleProjectGroup);
-		}
-	});
+    async.series([
+        // GROUP: Save Group in its collection
+        function(callback){
+            peopleProjectGroup.save(function(err){
+                callback(err);
+            });
+        },
+        // PROJECTS: Add new group to all projects
+        function(callback){
+            Project.find().exec(function(err, projects){
+                if (err) {
+                    return res.status(400).send({
+                        message: errorHandler.getErrorMessage(err)
+                    });
+                } else {
+                    async.each(projects, function(project, callback){
+                        project.stakeholders.push({
+                            group: peopleProjectGroup._id,
+                            roles: []
+                        });
+                        project.save();
+                        callback();
+                    });
+                }
+            });
+            callback(null, 'two');
+        }
+    ],function(err, results){
+        // results is now equal to ['one', 'two']
+        if (err) {
+            return res.status(400).send({
+                message: errorHandler.getErrorMessage(err)
+            });
+        } else {
+            res.jsonp(peopleProjectGroup);
+        }
+    });
 };
 
 /**
@@ -58,42 +87,57 @@ exports.update = function(req, res) {
  * Delete an People Project group
  */
 exports.delete = function(req, res) {
+    var Project = mongoose.mtModel(req.user.tenantId + '.' + 'Project');
 	var PeopleProjectGroup = mongoose.mtModel(req.user.tenantId + '.' + 'PeopleProjectGroup');
-	var PeopleRole = mongoose.mtModel(req.user.tenantId + '.' + 'PeopleRole');
+	var PeopleProjectRole = mongoose.mtModel(req.user.tenantId + '.' + 'PeopleProjectRole');
 	var peopleProjectGroup = req.peopleProjectGroup ;
 
-	async.series([
-		function(callback){
-			// Delete roles in group from "people roles" collection
-			async.each(peopleProjectGroup.roles, function(item, callback){
-				PeopleRole.findById(item._id).exec(function(err, role){
-					if (err) {
-						return res.status(400).send({
-							message: errorHandler.getErrorMessage(err)
-						});
-					} else {
-						role.remove();
-					}
-				});
-				callback();
-			});
-			callback(null, 'one');
-		},
-		function(callback){
-			// Delete group from groups
-			peopleProjectGroup.remove();
-			callback(null, 'two');
-		}
-	],function(err, results){
-		// results is now equal to ['one', 'two']
-		if (err) {
-			return res.status(400).send({
-				message: errorHandler.getErrorMessage(err)
-			});
-		} else {
-			res.jsonp(peopleProjectGroup);
-		}
-	});
+    async.series([
+        // PEOPLE-PROJECT-GROUP: Delete Group from its collection
+        function(callback){
+            peopleProjectGroup.remove(function(err){
+                callback(err);
+            });
+        },
+        // ROLES: Delete all roles (from "people-project-roles" collection) belonging to this Group
+        function(callback){
+            async.each(peopleProjectGroup.roles, function(item, callback){
+                PeopleProjectRole.findByIdAndRemove(item._id, callback);
+            });
+            callback(null, 'three');
+        },
+        // PROJECTS: Delete group object from project.stakeholders
+        function(callback){
+            Project.find().exec(function(err, projects){
+                if (err) {
+                    return res.status(400).send({
+                        message: errorHandler.getErrorMessage(err)
+                    });
+                } else {
+                    async.each(projects, function(project, callback){
+                        async.each(project.stakeholders, function(assignedGroup, callback){
+                            if(assignedGroup.group.equals(peopleProjectGroup._id)){
+                                assignedGroup.remove();
+                            }
+                            callback();
+                        });
+                        project.save();
+                        callback();
+                    });
+                }
+            });
+            callback(null, 'three');
+        }
+    ],function(err, results){
+        // results is now equal to ['one', 'two']
+        if (err) {
+            return res.status(400).send({
+                message: errorHandler.getErrorMessage(err)
+            });
+        } else {
+            res.jsonp(peopleProjectGroup);
+        }
+    });
 };
 
 /**
@@ -101,7 +145,7 @@ exports.delete = function(req, res) {
  */
 exports.list = function(req, res) {
 	var PeopleProjectGroup = mongoose.mtModel(req.user.tenantId + '.' + 'PeopleProjectGroup');
-	PeopleProjectGroup.find().deepPopulate(['roles']).sort('-created').populate('user', 'displayName').exec(function(err, peopleProjectGroups) {
+	PeopleProjectGroup.find().deepPopulate(['roles']).populate('user', 'displayName').exec(function(err, peopleProjectGroups) {
 		if (err) {
 			return res.status(400).send({
 				message: errorHandler.getErrorMessage(err)
