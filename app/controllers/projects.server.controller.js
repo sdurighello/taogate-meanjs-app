@@ -26,6 +26,10 @@ exports.create = function(req, res) {
     var QualitativeImpact = mongoose.mtModel(req.user.tenantId + '.' + 'QualitativeImpact');
     var RiskCategory = mongoose.mtModel(req.user.tenantId + '.' + 'RiskCategory');
     var Risk = mongoose.mtModel(req.user.tenantId + '.' + 'Risk');
+    var PeopleCategory = mongoose.mtModel(req.user.tenantId + '.' + 'PeopleCategory');
+    var PeopleProjectGroup = mongoose.mtModel(req.user.tenantId + '.' + 'PeopleProjectGroup');
+    var PeopleProjectRole = mongoose.mtModel(req.user.tenantId + '.' + 'PeopleProjectRole');
+
 
     async.series([
         // PROJECT: Save project in its collection
@@ -138,30 +142,56 @@ exports.create = function(req, res) {
         },
         // PROJECT.STAKEHOLDERS: Add all existing groups/roles + categories/values to new project
         function(callback){
-            RiskCategory.find().exec(function(err, categories){
-                if (err) {
-                    return res.status(400).send({
-                        message: errorHandler.getErrorMessage(err)
-                    });
-                } else {
-                    async.each(categories, function(category, callback){
-                        var obj = {category: category._id, risks: []};
-                        async.each(category.risks, function(risk, callback){
-                            obj.risks.push({
-                                risk: risk,
-                                impact: null,
-                                probability: null,
-                                severityAssignment: null
+            async.waterfall([
+                // Create the "categorization" array [{category:<objectId>, categoryValue:null}] from all existing people-categories
+                function(callback){
+                    PeopleCategory.find().exec(function(err, categories) {
+                        if (err) {
+                            callback(err);
+                        } else {
+                            var retArray = [];
+                            async.each(categories, function(category, callback){
+                                retArray.push({
+                                    category: category._id,
+                                    categoryValue: null
+                                });
+                                callback();
                             });
-                            callback();
-                        });
-                        project.riskAnalysis.push(obj);
-                        project.save();
-                        callback();
+                            callback(null, retArray);
+                        }
+                    });
+                },
+                // Add to projects all the people-groups/roles with the "categorization" array
+                function(retArray, callback){
+                    PeopleProjectGroup.find().exec(function(err, groups){
+                        if (err) {
+                            callback(err);
+                        } else {
+                            async.each(groups, function(group, callback){
+                                var obj = {group: group._id, roles: []};
+                                async.each(group.roles, function(role, callback){
+                                    obj.roles.push({
+                                        role: role,
+                                        person: null,
+                                        categorization: retArray
+                                    });
+                                    callback();
+                                });
+                                project.stakeholders.push(obj);
+                                project.save();
+                                callback();
+                            });
+                            callback(null);
+                        }
                     });
                 }
+            ],function(err, severityAssignment, done){
+                if (err) {
+                    callback(err);
+                } else {
+                    callback(null);
+                }
             });
-            callback(null, 'five');
         }
     ],function(err, results){
         // results is now equal to ['one', 'two']

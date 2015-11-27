@@ -22,24 +22,28 @@ exports.create = function(req, res) {
     async.series([
         // CATEGORIES: Save the new category to its collection
         function(callback){
-            category.save();
-            callback(null, 'one');
+            category.save(function(err){
+                callback(err);
+            });
         },
         // GROUP.CATEGORIES: Add the category to the group's "categories" array
         function(callback){
             CategoryGroup.findById(req.query.groupId).exec(function(err, group){
-                group.categories.push(category._id);
-                group.save();
+                if(err){
+                    callback(err);
+                } else {
+                    group.categories.push(category._id);
+                    group.save(function(err){
+                        callback(err);
+                    });
+                }
             });
-            callback(null, 'two');
         },
         // PROJECTS.CATEGORIZATION: Add the category to all existing projects
         function(callback){
             Project.find().exec(function(err, projects){
                 if (err) {
-                    return res.status(400).send({
-                        message: errorHandler.getErrorMessage(err)
-                    });
+                    callback(err);
                 } else {
                     async.each(projects, function(project, callback){
                         async.each(project.categorization, function(assignedGroup, callback){
@@ -51,15 +55,19 @@ exports.create = function(req, res) {
                             }
                             callback();
                         });
-                        project.save();
-                        callback();
+                        project.save(function(err){
+                            if(err){
+                                callback(err);
+                            } else {
+                                callback();
+                            }
+                        });
                     });
+                    callback(null);
                 }
             });
-            callback(null, 'three');
         }
-    ],function(err, results){
-        // results is now equal to ['one', 'two']
+    ],function(err){
         if (err) {
             return res.status(400).send({
                 message: errorHandler.getErrorMessage(err)

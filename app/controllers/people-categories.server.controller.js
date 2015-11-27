@@ -28,9 +28,7 @@ exports.create = function(req, res) {
         function(callback){
             Project.find().exec(function(err, projects){
                 if (err) {
-                    return res.status(400).send({
-                        message: errorHandler.getErrorMessage(err)
-                    });
+                    callback(err);
                 } else {
                     async.each(projects, function(project, callback){
                         async.each(project.stakeholders, function(assignedGroup, callback){
@@ -43,11 +41,12 @@ exports.create = function(req, res) {
                             });
                             callback();
                         });
+                        project.save();
                         callback();
                     });
+                    callback(null);
                 }
             });
-            callback(null, 'two');
         }
     ],function(err, results){
         // results is now equal to ['one', 'two']

@@ -13,6 +13,7 @@ var mongoose = require('mongoose'),
  */
 exports.create = function(req, res) {
     var Project = mongoose.mtModel(req.user.tenantId + '.' + 'Project');
+    var PeopleCategory = mongoose.mtModel(req.user.tenantId + '.' + 'PeopleCategory');
     var PeopleProjectGroup = mongoose.mtModel(req.user.tenantId + '.' + 'PeopleProjectGroup');
     var PeopleProjectRole = mongoose.mtModel(req.user.tenantId + '.' + 'PeopleProjectRole');
 	var peopleProjectRole = new PeopleProjectRole(req.body);
@@ -28,39 +29,75 @@ exports.create = function(req, res) {
         // GROUP.ROLES: Add the role to the group's "roles" array
         function(callback){
             PeopleProjectGroup.findById(req.query.groupId).exec(function(err, group){
-                group.roles.push(peopleProjectRole._id);
-                group.save();
-            });
-            callback(null, 'two');
-        },
-        // PROJECTS.STAKEHOLDERS: Add the role to all existing projects
-        function(callback){
-            Project.find().exec(function(err, projects){
-                if (err) {
-                    return res.status(400).send({
-                        message: errorHandler.getErrorMessage(err)
-                    });
-                } else {
-                    async.each(projects, function(project, callback){
-                        async.each(project.stakeholders, function(assignedGroup, callback){
-                            if(assignedGroup.group.equals(req.query.groupId)){
-                                assignedGroup.roles.push({
-                                    role: peopleProjectRole._id,
-                                    person: null,
-                                    categorization: []
-                                });
-                            }
-                            callback();
+                    if (err) {
+                        callback(err);
+                    } else {
+                        group.roles.push(peopleProjectRole._id);
+                        group.save(function(err){
+                            callback(err);
                         });
-                        project.save();
-                        callback();
+                    }
+            });
+        },
+        // PROJECTS.STAKEHOLDERS: Add the role to all existing projects (requires the "categorization" array built from existing people-categories)
+        function(callback){
+            async.waterfall([
+                // Create the "categorization" array [{category:<objectId>, categoryValue:null}] from all existing people-categories
+                function(callback){
+                    PeopleCategory.find().exec(function(err, categories) {
+                        if (err) {
+                            callback(err);
+                        } else {
+                            var retArray = [];
+                            async.each(categories, function(category, callback){
+                                retArray.push({
+                                    category: category._id,
+                                    categoryValue: null
+                                });
+                                callback();
+                            });
+                            callback(null, retArray);
+                        }
+                    });
+                },
+                // Add to all existing projects the new role with the "categorization" array (to the correct people-group)
+                function(retArray, callback){
+                    Project.find().exec(function(err, projects){
+                        if (err) {
+                            callback(err);
+                        } else {
+                            async.each(projects, function(project, callback){
+                                async.each(project.stakeholders, function(assignedGroup, callback){
+                                    if(assignedGroup.group.equals(req.query.groupId)){
+                                        assignedGroup.roles.push({
+                                            role: peopleProjectRole._id,
+                                            person: null,
+                                            categorization: retArray
+                                        });
+                                    }
+                                    callback();
+                                });
+                                project.save(function(err){
+                                    if(err){
+                                        callback(err);
+                                    } else {
+                                        callback();
+                                    }
+                                });
+                            });
+                            callback(null);
+                        }
                     });
                 }
+            ],function(err){
+                if (err) {
+                    callback(err);
+                } else {
+                    callback(null);
+                }
             });
-            callback(null, 'three');
         }
-    ],function(err, results){
-        // results is now equal to ['one', 'two', 'three']
+    ],function(err){
         if (err) {
             return res.status(400).send({
                 message: errorHandler.getErrorMessage(err)
@@ -115,18 +152,25 @@ exports.delete = function(req, res) {
         // GROUP.ROLES: Delete role from group where assigned
         function(callback){
             PeopleProjectGroup.findById(req.query.groupId).exec(function(err, group){
-                group.roles.splice(group.roles.indexOf(peopleProjectRole._id), 1);
-                group.save();
+                if(err){
+                    callback(err);
+                } else {
+                    group.roles.splice(group.roles.indexOf(peopleProjectRole._id), 1);
+                    group.save(function(err){
+                        if(err){
+                            callback(err);
+                        } else {
+                            callback(null);
+                        }
+                    });
+                }
             });
-            callback(null, 'three');
         },
         // PROJECTS.STAKEHOLDERS: Remove the role from all existing projects
         function(callback){
             Project.find().exec(function(err, projects){
                 if (err) {
-                    return res.status(400).send({
-                        message: errorHandler.getErrorMessage(err)
-                    });
+                    callback(err);
                 } else {
                     async.each(projects, function(project, callback){
                         async.each(project.stakeholders, function(assignedGroup, callback){
@@ -140,15 +184,19 @@ exports.delete = function(req, res) {
                             }
                             callback();
                         });
-                        project.save();
-                        callback();
+                        project.save(function(err){
+                            if(err){
+                                callback(err);
+                            } else {
+                                callback();
+                            }
+                        });
                     });
                 }
             });
-            callback(null, 'four');
+            callback(null);
         }
-    ],function(err, results){
-        // results is now equal to ['one', 'two']
+    ],function(err){
         if (err) {
             return res.status(400).send({
                 message: errorHandler.getErrorMessage(err)
