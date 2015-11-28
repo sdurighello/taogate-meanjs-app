@@ -36,7 +36,7 @@ angular.module('risk-analysis-setup').controller('RiskAnalysisSetupController', 
             });
 
             RiskSeverityAssignments.query(function(severityAssignments){
-                $scope.severityAssignments = severityAssignments;
+                $scope.severityMatrix = createSeverityMatrix(severityAssignments);
             }, function(err){
                 $scope.initError.push(err.data.message);
             });
@@ -72,6 +72,16 @@ angular.module('risk-analysis-setup').controller('RiskAnalysisSetupController', 
                                               ]
                 ]
              */
+            return _.chain(severityAssignments)
+                .groupBy('impact._id')
+                .map(function(value, key) {
+                    return {
+                        impact: value[0].impact,
+                        probabilities: value
+                    };
+                })
+                .value();
+
         };
 
 
@@ -530,9 +540,6 @@ angular.module('risk-analysis-setup').controller('RiskAnalysisSetupController', 
 
 
 
-
-
-
         // ------------------- NG-SWITCH ---------------------
 
         $scope.switchAssignmentForm = {};
@@ -548,7 +555,7 @@ angular.module('risk-analysis-setup').controller('RiskAnalysisSetupController', 
         $scope.assignmentsList = function() {
             $scope.initError = [];
             RiskSeverityAssignments.query(function(assignments){
-                $scope.severityAssignments = assignments;
+                $scope.severityMatrix = createSeverityMatrix(assignments);
             },function(errorResponse) {
                 $scope.error = errorResponse.data.message;
             });

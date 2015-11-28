@@ -79,18 +79,16 @@
 					<div class="col-md-12" data-ng-repeat="assignedGroup in selectedProject.qualitativeAnalysis | filter : (assignedGroup.group._id = filterImpact.impactGroup._id) track by assignedGroup._id">
 						<div class="panel panel-default">
 							<div class="panel-heading text-center">
-								<em data-ng-bind="assignedGroup.group.name"></em>
+								<b data-ng-bind="assignedGroup.group.name"></b>
 							</div>
 							<div class="panel-body">
 								<div class="row">
 									<div class="col-md-4" data-ng-repeat="assignedImpact in assignedGroup.impacts | filter : (assignedImpact.impact._id = filterImpact.impactGroup.impact._id) track by assignedImpact._id" data-ng-switch="switchImpactForm[assignedImpact._id]">
 										<div class="panel panel-default" data-ng-switch-default="view">
-											<div class="panel-heading">
-												<div class="row">
-													<div class="col-md-12 form-group">
-														<b>{{assignedImpact.impact.name}}</b>
-													</div>
-												</div>
+											<div class="panel-heading text-center">
+												<em data-ng-bind="assignedImpact.impact.name"></em>
+											</div>
+											<div class="panel-body">
 												<div class="row">
 													<div class="col-md-12">
 														<select disabled class="form-control input-sm" data-ng-model = "assignedImpact.score"
@@ -112,12 +110,10 @@
 											</div>
 										</div>
 										<div class="panel panel-default" data-ng-switch-when="edit">
-											<div class="panel-heading">
-												<div class="row">
-													<div class="col-md-12 form-group">
-														<b>{{assignedImpact.impact.name}}</b>
-													</div>
-												</div>
+											<div class="panel-heading text-center">
+												<em data-ng-bind="assignedImpact.impact.name"></em>
+											</div>
+											<div class="panel-body">
 												<div class="row">
 													<div class="col-md-12">
 														<select id="type" class="form-control input-sm" data-ng-model = "assignedImpact.score"

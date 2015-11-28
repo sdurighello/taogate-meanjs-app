@@ -76,18 +76,16 @@
                     <div class="col-md-12" data-ng-repeat="assignedGroup in selectedProject.categorization | filter : (assignedGroup.group._id = filterCategory.categoryGroup._id) track by assignedGroup._id">
                         <div class="panel panel-default">
                             <div class="panel-heading text-center">
-                                <em data-ng-bind="assignedGroup.group.name"></em>
+                                <b data-ng-bind="assignedGroup.group.name"></b>
                             </div>
                             <div class="panel-body">
                                 <div class="row">
                                     <div class="col-md-4" data-ng-repeat="assignedCategory in assignedGroup.categories | filter : (assignedCategory.category._id = filterCategory.categoryGroup.category._id) track by assignedCategory._id" data-ng-switch="switchCategoryForm[assignedCategory._id]">
                                         <div class="panel panel-default" data-ng-switch-default="view">
-                                            <div class="panel-heading">
-                                                <div class="row">
-                                                    <div class="col-md-12 form-group">
-                                                        <b>{{assignedCategory.category.name}}</b>
-                                                    </div>
-                                                </div>
+                                            <div class="panel-heading text-center">
+                                                <em data-ng-bind="assignedCategory.category.name"></em>
+                                            </div>
+                                            <div class="panel-body">
                                                 <div class="row">
                                                     <div class="col-md-12">
                                                         <select disabled class="form-control input-sm" data-ng-model = "assignedCategory.categoryValue"
@@ -109,12 +107,10 @@
                                             </div>
                                         </div>
                                         <div class="panel panel-default" data-ng-switch-when="edit">
-                                            <div class="panel-heading">
-                                                <div class="row">
-                                                    <div class="col-md-12 form-group">
-                                                        <b>{{assignedCategory.category.name}}</b>
-                                                    </div>
-                                                </div>
+                                            <div class="panel-heading text-center">
+                                                <em data-ng-bind="assignedCategory.category.name"></em>
+                                            </div>
+                                            <div class="panel-body">
                                                 <div class="row">
                                                     <div class="col-md-12">
                                                         <select id="type" class="form-control input-sm" data-ng-model = "assignedCategory.categoryValue"

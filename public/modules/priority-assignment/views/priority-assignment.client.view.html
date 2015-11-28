@@ -79,18 +79,16 @@
 					<div class="col-md-12" data-ng-repeat="assignedGroup in selectedProject.prioritization | filter : (assignedGroup.group._id = filterPriority.priorityGroup._id) track by assignedGroup._id">
 						<div class="panel panel-default">
 							<div class="panel-heading text-center">
-								<em data-ng-bind="assignedGroup.group.name"></em>
+								<b data-ng-bind="assignedGroup.group.name"></b>
 							</div>
 							<div class="panel-body">
 								<div class="row">
 									<div class="col-md-4" data-ng-repeat="assignedPriority in assignedGroup.priorities | filter : (assignedPriority.priority._id = filterPriority.priorityGroup.priority._id) track by assignedPriority._id" data-ng-switch="switchPriorityForm[assignedPriority._id]">
 										<div class="panel panel-default" data-ng-switch-default="view">
-											<div class="panel-heading">
-												<div class="row">
-													<div class="col-md-12 form-group">
-														<b>{{assignedPriority.priority.name}}</b>
-													</div>
-												</div>
+											<div class="panel-heading text-center">
+												<em data-ng-bind="assignedPriority.priority.name"></em>
+											</div>
+											<div class="panel-body">
 												<div class="row">
 													<div class="col-md-12">
 														<select disabled class="form-control input-sm" data-ng-model = "assignedPriority.priorityValue"
@@ -112,12 +110,10 @@
 											</div>
 										</div>
 										<div class="panel panel-default" data-ng-switch-when="edit">
-											<div class="panel-heading">
-												<div class="row">
-													<div class="col-md-12 form-group">
-														<b>{{assignedPriority.priority.name}}</b>
-													</div>
-												</div>
+											<div class="panel-heading text-center">
+												<em data-ng-bind="assignedPriority.priority.name"></em>
+											</div>
+											<div class="panel-body">
 												<div class="row">
 													<div class="col-md-12">
 														<select id="type" class="form-control input-sm" data-ng-model = "assignedPriority.priorityValue"
