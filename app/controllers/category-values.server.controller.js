@@ -20,19 +20,24 @@ exports.create = function(req, res) {
 	async.series([
 		function(callback){
 			// Save the new value to its collection
-			categoryValue.save();
-			callback(null, 'one');
+			categoryValue.save(function(err){
+				callback(err);
+			});
 		},
 		function(callback){
 			// Add the value to the category's "categoryValues" array
 			Category.findById(req.query.categoryId).exec(function(err, category){
-				category.categoryValues.push(categoryValue._id);
-				category.save();
+                if(err){
+                    callback(err);
+                } else {
+                    category.categoryValues.push(categoryValue._id);
+                    category.save(function(err){
+                        callback(err);
+                    });
+                }
 			});
-			callback(null, 'two');
 		}
-	],function(err, results){
-		// results is now equal to ['one', 'two']
+	],function(err){
 		if (err) {
 			return res.status(400).send({
 				message: errorHandler.getErrorMessage(err)
@@ -81,19 +86,24 @@ exports.delete = function(req, res) {
     async.series([
         function(callback){
             // Delete category value from its collection
-            categoryValue.remove();
-            callback(null, 'one');
+            categoryValue.remove(function(err){
+                callback(err);
+            });
         },
         function(callback){
             // Delete value from categories where assigned
             Category.findById(req.query.categoryId).exec(function(err, category){
-                category.categoryValues.splice(category.categoryValues.indexOf(categoryValue._id), 1);
-                category.save();
+                if(err){
+                    callback(err);
+                } else {
+                    category.categoryValues.splice(category.categoryValues.indexOf(categoryValue._id), 1);
+                    category.save(function(err){
+                        callback(err);
+                    });
+                }
             });
-            callback(null, 'three');
         }
-    ],function(err, results){
-        // results is now equal to ['one', 'two']
+    ],function(err){
         if (err) {
             return res.status(400).send({
                 message: errorHandler.getErrorMessage(err)

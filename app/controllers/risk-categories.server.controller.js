@@ -20,31 +20,30 @@ exports.create = function(req, res) {
     async.series([
         // GROUP: Save Group in its collection
         function(callback){
-            riskCategory.save();
-            callback(null, 'one');
+            riskCategory.save(function(err){
+                callback(err);
+            });
         },
         // PROJECTS: Add new group to all projects
         function(callback){
             Project.find().exec(function(err, projects){
                 if (err) {
-                    return res.status(400).send({
-                        message: errorHandler.getErrorMessage(err)
-                    });
+                    callback(err);
                 } else {
                     async.each(projects, function(project, callback){
                         project.riskAnalysis.push({
                             category: riskCategory._id,
                             risks: []
                         });
-                        project.save();
-                        callback();
+                        project.save(function(err){
+                            if(err){callback(err);} else {callback();}
+                        });
                     });
+                    callback(null);
                 }
             });
-            callback(null, 'two');
         }
-    ],function(err, results){
-        // results is now equal to ['one', 'two']
+    ],function(err){
         if (err) {
             return res.status(400).send({
                 message: errorHandler.getErrorMessage(err)
@@ -94,40 +93,43 @@ exports.delete = function(req, res) {
     async.series([
         // RISK-CATEGORY: Delete Group from its collection
         function(callback){
-            riskCategory.remove();
-            callback(null, 'one');
+            riskCategory.remove(function(err){
+                callback(err);
+            });
         },
         // RISKS: Delete all risks (from "risks" collection) belonging to this Group
         function(callback){
             async.each(riskCategory.risks, function(item, callback){
-                Risk.findByIdAndRemove(item._id, callback);
+                Risk.findByIdAndRemove(item._id, function(err){
+                    if(err){callback(err);} else {callback();}
+                });
             });
-            callback(null, 'three');
+            callback(null);
         },
         // PROJECTS: Delete group object from project.riskAnalysis
         function(callback){
             Project.find().exec(function(err, projects){
                 if (err) {
-                    return res.status(400).send({
-                        message: errorHandler.getErrorMessage(err)
-                    });
+                    callback(err);
                 } else {
                     async.each(projects, function(project, callback){
                         async.each(project.riskAnalysis, function(assignedGroup, callback){
                             if(assignedGroup.category.equals(riskCategory._id)){
-                                assignedGroup.remove();
+                                assignedGroup.remove(function(err){
+                                    if(err){callback(err);}
+                                });
                             }
                             callback();
                         });
-                        project.save();
-                        callback();
+                        project.save(function(err){
+                            if(err){callback(err);} else {callback();}
+                        });
                     });
+                    callback(null);
                 }
             });
-            callback(null, 'three');
         }
-    ],function(err, results){
-        // results is now equal to ['one', 'two']
+    ],function(err){
         if (err) {
             return res.status(400).send({
                 message: errorHandler.getErrorMessage(err)

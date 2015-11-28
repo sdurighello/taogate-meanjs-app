@@ -62,24 +62,25 @@ exports.delete = function(req, res) {
     var Gate = mongoose.mtModel(req.user.tenantId + '.' + 'Gate');
 
     async.series([
-        function(callback){
-            // Delete outcome from its collection
-            gateOutcome.remove();
-            callback(null, 'one');
+		// GATE-OUTCOMES: Delete outcome from its collection
+		function(callback){
+            gateOutcome.remove(function(err){
+                callback(err);
+            });
         },
+        // GATES.GATE-OUTCOMES: Delete outcome from gates where assigned
         function(callback){
-            // Delete outcome from gates where assigned
             Gate.find({gateOutcomes: {$in: [gateOutcome._id]}}).exec(function(err, gates){
                 async.each(gates, function(item, callback){
                     item.gateOutcomes.splice(item.gateOutcomes.indexOf(gateOutcome._id), 1);
-                    item.save();
-                    callback();
+                    item.save(function(err){
+                        if(err){callback(err);} else {callback();}
+                    });
                 });
             });
-            callback(null, 'three');
+            callback(null);
         }
-    ],function(err, results){
-        // results is now equal to ['one', 'two']
+    ],function(err){
         if (err) {
             return res.status(400).send({
                 message: errorHandler.getErrorMessage(err)
@@ -95,7 +96,7 @@ exports.delete = function(req, res) {
  */
 exports.list = function(req, res) {
 	var GateOutcome = mongoose.mtModel(req.user.tenantId + '.' + 'GateOutcome');
-	GateOutcome.find().sort('-created').populate('user', 'displayName').exec(function(err, gateOutcomes) {
+	GateOutcome.find().populate('user', 'displayName').exec(function(err, gateOutcomes) {
 		if (err) {
 			return res.status(400).send({
 				message: errorHandler.getErrorMessage(err)

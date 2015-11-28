@@ -62,36 +62,38 @@ exports.delete = function(req, res) {
     var strategyNode = req.strategyNode ;
 
     async.series([
+        // NODES: Delete strategyNode from strategyNodes
         function(callback){
-            // Delete strategyNode from strategyNodes
-            strategyNode.remove();
-            callback(null, 'one');
+            strategyNode.remove(function(err){
+                callback(err);
+            });
         },
+        // 1st DEGREE CHILDREN: Delete strategyNode from first degree children strategyNodes (parent and ancestors)
         function(callback){
-            // Delete strategyNode from first degree children strategyNodes (parent and ancestors)
             StrategyNode.find({parent: strategyNode._id}).exec(function(err, strategyNodes){
                 async.each(strategyNodes, function(item, callback){
                     item.parent = null;
                     item.ancestors = [];
-                    item.save();
-                    callback();
+                    item.save(function(err){
+                        if(err){callback(err);} else {callback();}
+                    });
                 });
             });
-            callback(null, 'two');
+            callback(null);
         },
+        // 2nd DEGREE CHILDREN: Delete strategyNode from second degree children strategyNodes (in ancestors only)
         function(callback){
-            // Delete strategyNode from second degree children strategyNodes (in ancestors only)
             StrategyNode.find({ancestors: {$in: [strategyNode._id]}}).exec(function(err, strategyNodes){
                 async.each(strategyNodes, function(item, callback){
                     item.ancestors.splice(item.ancestors.indexOf(strategyNode._id), 1);
-                    item.save();
-                    callback();
+                    item.save(function(err){
+                        if(err){callback(err);} else {callback();}
+                    });
                 });
             });
-            callback(null, 'three');
+            callback(null);
         }
-    ],function(err, results){
-        // results is now equal to ['one', 'two']
+    ],function(err){
         if (err) {
             return res.status(400).send({
                 message: errorHandler.getErrorMessage(err)

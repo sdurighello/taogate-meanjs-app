@@ -64,24 +64,25 @@ exports.delete = function(req, res) {
     var StrategyNode = mongoose.mtModel(req.user.tenantId + '.' + 'StrategyNode');
 
     async.series([
-        function(callback){
-            // Delete strategy node type from node types
-            strategyNodeType.remove();
-            callback(null, 'one');
+		// NODE-TYPES: Delete strategy node type from node types
+		function(callback){
+            strategyNodeType.remove(function(err){
+                callback(err);
+            });
         },
+        // NODES: Remove type assignment from nodes
         function(callback){
-            // Remove type assignment from nodes
             StrategyNode.find({type: strategyNodeType._id}).exec(function(err, strategyNodes){
                 async.each(strategyNodes, function(item, callback){
                     item.type = null;
-                    item.save();
-                    callback();
+                    item.save(function(err){
+                        if(err){callback(err);} else {callback();}
+                    });
                 });
             });
-            callback(null, 'two');
+            callback(null);
         }
-    ],function(err, results){
-        // results is now equal to ['one', 'two']
+    ],function(err){
         if (err) {
             return res.status(400).send({
                 message: errorHandler.getErrorMessage(err)
@@ -97,7 +98,7 @@ exports.delete = function(req, res) {
  */
 exports.list = function(req, res) {
     var StrategyNodeType = mongoose.mtModel(req.user.tenantId + '.' + 'StrategyNodeType');
-	StrategyNodeType.find().sort('-created').populate('user', 'displayName').exec(function(err, strategyNodeTypes) {
+	StrategyNodeType.find().populate('user', 'displayName').exec(function(err, strategyNodeTypes) {
 		if (err) {
 			return res.status(400).send({
 				message: errorHandler.getErrorMessage(err)

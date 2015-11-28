@@ -73,7 +73,7 @@ exports.delete = function(req, res) {
  * List of Overall rankings
  */
 exports.list = function(req, res) { 
-	OverallRanking.find().sort('-created').populate('user', 'displayName').exec(function(err, overallRankings) {
+	OverallRanking.find().populate('user', 'displayName').exec(function(err, overallRankings) {
 		if (err) {
 			return res.status(400).send({
 				message: errorHandler.getErrorMessage(err)

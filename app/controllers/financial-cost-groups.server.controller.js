@@ -63,29 +63,28 @@ exports.delete = function(req, res) {
     var financialCostGroup = req.financialCostGroup ;
 
     async.series([
+        // COST-GROUPS: Delete group from its collection
         function(callback){
-            // Delete all costs (from "costs" collection) belonging to this cost Group
+            financialCostGroup.remove(function(err){
+                callback(err);
+            });
+        },
+        // GROUP.COST-TYPES: Delete all costs (from "costs" collection) belonging to this cost Group
+        function(callback){
             async.each(financialCostGroup.costTypes, function(item, callback){
                 FinancialCostType.findById(item._id).exec(function(err, costType){
                     if (err) {
-                        return res.status(400).send({
-                            message: errorHandler.getErrorMessage(err)
-                        });
+                        callback(err);
                     } else {
-                        costType.remove();
+                        costType.remove(function(err){
+                            if(err){callback(err);} else {callback();}
+                        });
                     }
                 });
-                callback();
             });
-            callback(null, 'one');
-        },
-        function(callback){
-            // Delete Group from its collection
-            financialCostGroup.remove();
-            callback(null, 'two');
+            callback(null);
         }
-    ],function(err, results){
-        // results is now equal to ['one', 'two']
+    ],function(err){
         if (err) {
             return res.status(400).send({
                 message: errorHandler.getErrorMessage(err)
@@ -101,7 +100,7 @@ exports.delete = function(req, res) {
  */
 exports.list = function(req, res) {
     var FinancialCostGroup = mongoose.mtModel(req.user.tenantId + '.' + 'FinancialCostGroup');
-	FinancialCostGroup.find().sort('-created').deepPopulate(['costTypes']).populate('user', 'displayName').exec(function(err, financialCostGroups) {
+	FinancialCostGroup.find().deepPopulate(['costTypes']).populate('user', 'displayName').exec(function(err, financialCostGroups) {
 		if (err) {
 			return res.status(400).send({
 				message: errorHandler.getErrorMessage(err)

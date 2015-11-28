@@ -76,7 +76,7 @@ exports.delete = function(req, res) {
  */
 exports.list = function(req, res) {
 	var GateOutcomeScore = mongoose.mtModel(req.user.tenantId + '.' + 'GateOutcomeScore');
-	GateOutcomeScore.find().sort('-created').populate('user', 'displayName').exec(function(err, gateOutcomeScores) {
+	GateOutcomeScore.find().populate('user', 'displayName').exec(function(err, gateOutcomeScores) {
 		if (err) {
 			return res.status(400).send({
 				message: errorHandler.getErrorMessage(err)

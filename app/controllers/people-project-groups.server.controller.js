@@ -28,24 +28,22 @@ exports.create = function(req, res) {
         function(callback){
             Project.find().exec(function(err, projects){
                 if (err) {
-                    return res.status(400).send({
-                        message: errorHandler.getErrorMessage(err)
-                    });
+                    callback(err);
                 } else {
                     async.each(projects, function(project, callback){
                         project.stakeholders.push({
                             group: peopleProjectGroup._id,
                             roles: []
                         });
-                        project.save();
-                        callback();
+                        project.save(function(err){
+                            if(err){callback(err);} else {callback();}
+                        });
                     });
+                    callback(null);
                 }
             });
-            callback(null, 'two');
         }
-    ],function(err, results){
-        // results is now equal to ['one', 'two']
+    ],function(err){
         if (err) {
             return res.status(400).send({
                 message: errorHandler.getErrorMessage(err)
@@ -102,34 +100,36 @@ exports.delete = function(req, res) {
         // ROLES: Delete all roles (from "people-project-roles" collection) belonging to this Group
         function(callback){
             async.each(peopleProjectGroup.roles, function(item, callback){
-                PeopleProjectRole.findByIdAndRemove(item._id, callback);
+                PeopleProjectRole.findByIdAndRemove(item._id, function(err){
+                    if(err){callback(err);} else {callback();}
+                });
             });
-            callback(null, 'three');
+            callback(null);
         },
         // PROJECTS: Delete group object from project.stakeholders
         function(callback){
             Project.find().exec(function(err, projects){
                 if (err) {
-                    return res.status(400).send({
-                        message: errorHandler.getErrorMessage(err)
-                    });
+                    callback(err);
                 } else {
                     async.each(projects, function(project, callback){
                         async.each(project.stakeholders, function(assignedGroup, callback){
                             if(assignedGroup.group.equals(peopleProjectGroup._id)){
-                                assignedGroup.remove();
+                                assignedGroup.remove(function(err){
+                                    if(err){callback(err);}
+                                });
                             }
                             callback();
                         });
-                        project.save();
-                        callback();
+                        project.save(function(err){
+                            if(err){callback(err);} else {callback();}
+                        });
                     });
+                    callback(null);
                 }
             });
-            callback(null, 'three');
         }
-    ],function(err, results){
-        // results is now equal to ['one', 'two']
+    ],function(err){
         if (err) {
             return res.status(400).send({
                 message: errorHandler.getErrorMessage(err)

@@ -28,18 +28,21 @@ exports.create = function(req, res) {
         // GROUP.IMPACTS: Add the impact to the group's "impacts" array
         function(callback){
             QualitativeImpactGroup.findById(req.query.groupId).exec(function(err, group){
-                group.impacts.push(qualitativeImpact._id);
-                group.save();
+                if(err){
+                    callback(err);
+                } else {
+                    group.impacts.push(qualitativeImpact._id);
+                    group.save(function(err){
+                        callback(err);
+                    });
+                }
             });
-            callback(null, 'two');
         },
         // PROJECTS.QUALITATIVE-ANALYSIS: Add the impact to all existing projects
         function(callback){
             Project.find().exec(function(err, projects){
                 if (err) {
-                    return res.status(400).send({
-                        message: errorHandler.getErrorMessage(err)
-                    });
+                    callback(err);
                 } else {
                     async.each(projects, function(project, callback){
                         async.each(project.qualitativeAnalysis, function(assignedGroup, callback){
@@ -51,15 +54,15 @@ exports.create = function(req, res) {
                             }
                             callback();
                         });
-                        project.save();
-                        callback();
+                        project.save(function(err){
+                            if(err){callback(err);} else {callback();}
+                        });
                     });
+                    callback(null);
                 }
             });
-            callback(null, 'three');
         }
-    ],function(err, results){
-        // results is now equal to ['one', 'two', 'three']
+    ],function(err){
         if (err) {
             return res.status(400).send({
                 message: errorHandler.getErrorMessage(err)
@@ -115,40 +118,45 @@ exports.delete = function(req, res) {
         // GROUP.IMPACTS: Delete impact from group where assigned
         function(callback){
             QualitativeImpactGroup.findById(req.query.groupId).exec(function(err, group){
-                group.impacts.splice(group.impacts.indexOf(qualitativeImpact._id), 1);
-                group.save();
+                if(err){
+                    callback(err);
+                } else {
+                    group.impacts.splice(group.impacts.indexOf(qualitativeImpact._id), 1);
+                    group.save(function(err){
+                        callback(err);
+                    });
+                }
             });
-            callback(null, 'three');
         },
         // PROJECTS.QUALITATIVE-ANALYSIS: Remove the impact from all existing projects
         function(callback){
             Project.find().exec(function(err, projects){
                 if (err) {
-                    return res.status(400).send({
-                        message: errorHandler.getErrorMessage(err)
-                    });
+                    callback(err);
                 } else {
                     async.each(projects, function(project, callback){
                         async.each(project.qualitativeAnalysis, function(assignedGroup, callback){
                             if(assignedGroup.group.equals(req.query.groupId)){
                                 async.each(assignedGroup.impacts, function(assignedImpact, callback){
                                     if(assignedImpact.impact.equals(qualitativeImpact._id)){
-                                        assignedImpact.remove();
+                                        assignedImpact.remove(function(err){
+                                            if(err){callback(err);}
+                                        });
                                     }
                                     callback();
                                 });
                             }
                             callback();
                         });
-                        project.save();
-                        callback();
+                        project.save(function(err){
+                            if(err){callback(err);} else {callback();}
+                        });
                     });
+                    callback(null);
                 }
             });
-            callback(null, 'four');
         }
-    ],function(err, results){
-        // results is now equal to ['one', 'two']
+    ],function(err){
         if (err) {
             return res.status(400).send({
                 message: errorHandler.getErrorMessage(err)

@@ -445,15 +445,8 @@ exports.delete = function(req, res) {
  */
 exports.list = function(req, res) {
     var Project = mongoose.mtModel(req.user.tenantId + '.' + 'Project');
-    var queryObj = {};
-    if(!_.isEmpty(req.query)){
-        for (var property in req.query) {
-            if (req.query.hasOwnProperty(property)) {
-                queryObj[property] = req.query[property];
-            }
-        }
-    }
-	Project.find(queryObj).populate('user', 'displayName').exec(function(err, projects) {
+
+	Project.find(req.query).populate('user', 'displayName').exec(function(err, projects) {
 		if (err) {
 			return res.status(400).send({
 				message: errorHandler.getErrorMessage(err)

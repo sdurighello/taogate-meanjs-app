@@ -63,29 +63,28 @@ exports.delete = function(req, res) {
     var financialBenefitGroup = req.financialBenefitGroup ;
 
     async.series([
+        // BENEFIT-GROUPS: Delete group
         function(callback){
-            // Delete all benefits (from "benefits" collection) belonging to this benefit Group
+            financialBenefitGroup.remove(function(err){
+                callback(err);
+            });
+        },
+        // GROUP.BENEFIT-TYPES: Delete all benefit-types belonging to the group
+        function(callback){
             async.each(financialBenefitGroup.benefitTypes, function(item, callback){
                 FinancialBenefitType.findById(item._id).exec(function(err, benefitType){
                     if (err) {
-                        return res.status(400).send({
-                            message: errorHandler.getErrorMessage(err)
-                        });
+                        callback(err);
                     } else {
-                        benefitType.remove();
+                        benefitType.remove(function(err){
+                            if(err){callback(err);} else {callback();}
+                        });
                     }
                 });
-                callback();
             });
-            callback(null, 'one');
-        },
-        function(callback){
-            // Delete Group from its collection
-            financialBenefitGroup.remove();
-            callback(null, 'two');
+            callback(null);
         }
-    ],function(err, results){
-        // results is now equal to ['one', 'two']
+    ],function(err){
         if (err) {
             return res.status(400).send({
                 message: errorHandler.getErrorMessage(err)
@@ -101,7 +100,7 @@ exports.delete = function(req, res) {
  */
 exports.list = function(req, res) {
     var FinancialBenefitGroup = mongoose.mtModel(req.user.tenantId + '.' + 'FinancialBenefitGroup');
-	FinancialBenefitGroup.find().sort('-created').deepPopulate(['benefitTypes']).populate('user', 'displayName').exec(function(err, financialBenefitGroups) {
+	FinancialBenefitGroup.find().deepPopulate(['benefitTypes']).populate('user', 'displayName').exec(function(err, financialBenefitGroups) {
 		if (err) {
 			return res.status(400).send({
 				message: errorHandler.getErrorMessage(err)

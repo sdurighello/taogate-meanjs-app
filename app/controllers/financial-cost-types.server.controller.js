@@ -20,19 +20,24 @@ exports.create = function(req, res) {
     async.series([
         // FINANCIAL COST TYPES: Save the new type to its collection
         function(callback){
-            financialCostType.save();
-            callback(null, 'one');
+            financialCostType.save(function(err){
+                callback(err);
+            });
         },
         // GROUP.COST-TYPES: Add the type to the group's "costTypes" array
         function(callback){
             FinancialCostGroup.findById(req.query.groupId).exec(function(err, group){
-                group.costTypes.push(financialCostType._id);
-                group.save();
+                if(err){
+                    callback(err);
+                } else {
+                    group.costTypes.push(financialCostType._id);
+                    group.save(function(err){
+                        callback(err);
+                    });
+                }
             });
-            callback(null, 'two');
         }
-    ],function(err, results){
-        // results is now equal to ['one', 'two']
+    ],function(err){
         if (err) {
             return res.status(400).send({
                 message: errorHandler.getErrorMessage(err)
@@ -78,21 +83,26 @@ exports.delete = function(req, res) {
     var FinancialCostGroup = mongoose.mtModel(req.user.tenantId + '.' + 'FinancialCostGroup');
 
     async.series([
+        // COST-TYPES: Delete cost-type from its collection
         function(callback){
-            // Delete cost from its collection
-            financialCostType.remove();
-            callback(null, 'one');
+            financialCostType.remove(function(err){
+                callback(err);
+            });
         },
         // GROUP.COST-TYPES: Delete type from group where assigned
         function(callback){
             FinancialCostGroup.findById(req.query.groupId).exec(function(err, group){
-                group.costTypes.splice(group.costTypes.indexOf(financialCostType._id), 1);
-                group.save();
+                if(err){
+                    callback(err);
+                } else {
+                    group.costTypes.splice(group.costTypes.indexOf(financialCostType._id), 1);
+                    group.save(function(err){
+                        callback(err);
+                    });
+                }
             });
-            callback(null, 'three');
         }
-    ],function(err, results){
-        // results is now equal to ['one', 'two']
+    ],function(err){
         if (err) {
             return res.status(400).send({
                 message: errorHandler.getErrorMessage(err)
@@ -108,7 +118,7 @@ exports.delete = function(req, res) {
  */
 exports.list = function(req, res) {
     var FinancialCostType = mongoose.mtModel(req.user.tenantId + '.' + 'FinancialCostType');
-	FinancialCostType.find().sort('-created').populate('user', 'displayName').exec(function(err, financialCostTypes) {
+	FinancialCostType.find().populate('user', 'displayName').exec(function(err, financialCostTypes) {
 		if (err) {
 			return res.status(400).send({
 				message: errorHandler.getErrorMessage(err)

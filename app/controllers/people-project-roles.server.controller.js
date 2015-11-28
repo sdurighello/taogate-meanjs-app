@@ -177,7 +177,9 @@ exports.delete = function(req, res) {
                             if(assignedGroup.group.equals(req.query.groupId)){
                                 async.each(assignedGroup.roles, function(assignedRole, callback){
                                     if(assignedRole.role.equals(peopleProjectRole._id)){
-                                        assignedRole.remove();
+                                        assignedRole.remove(function(err){
+                                            if(err){callback(err);}
+                                        });
                                     }
                                     callback();
                                 });
@@ -192,9 +194,9 @@ exports.delete = function(req, res) {
                             }
                         });
                     });
+                    callback(null);
                 }
             });
-            callback(null);
         }
     ],function(err){
         if (err) {

@@ -118,50 +118,55 @@ exports.delete = function(req, res) {
     async.series([
         // CATEGORIES: Delete category from its collection
         function(callback){
-            category.remove();
-            callback(null, 'one');
+            category.remove(function(err){
+                callback(err);
+            });
         },
         // VALUES: Delete its values from the values collection
         function(callback){
             async.each(category.categoryValues, function(item, callback){
-                CategoryValue.findByIdAndRemove(item._id, callback);
+                CategoryValue.findByIdAndRemove(item._id, function(err){
+                    if(err){callback(err);} else {callback();}
+                });
             });
-            callback(null, 'two');
+            callback(null);
         },
         // GROUP.CATEGORIES: Delete category from group where assigned
         function(callback){
             CategoryGroup.findById(req.query.groupId).exec(function(err, group){
                 group.categories.splice(group.categories.indexOf(category._id), 1);
-                group.save();
+                group.save(function(err){
+                    callback(err);
+                });
             });
-            callback(null, 'three');
         },
         // PROJECTS.CATEGORIZATION: Remove the category to all existing projects
         function(callback){
             Project.find().exec(function(err, projects){
                 if (err) {
-                    return res.status(400).send({
-                        message: errorHandler.getErrorMessage(err)
-                    });
+                    callback(err);
                 } else {
                     async.each(projects, function(project, callback){
                         async.each(project.categorization, function(assignedGroup, callback){
                             if(assignedGroup.group.equals(req.query.groupId)){
                                 async.each(assignedGroup.categories, function(assignedCategory, callback){
                                     if(assignedCategory.category.equals(category._id)){
-                                        assignedCategory.remove();
+                                        assignedCategory.remove(function(err){
+                                            if(err) callback(err);
+                                        });
                                     }
                                     callback();
                                 });
                             }
                             callback();
                         });
-                        project.save();
-                        callback();
+                        project.save(function(err){
+                            if(err){callback(err);} else {callback();}
+                        });
                     });
+                    callback(null);
                 }
             });
-            callback(null, 'four');
         }
     ],function(err, results){
         // results is now equal to ['one', 'two']

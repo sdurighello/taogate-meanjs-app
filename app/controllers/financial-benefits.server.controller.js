@@ -20,7 +20,7 @@ exports.create = function(req, res) {
     async.series([
         // FINANCIAL BENEFIT: Save the new benefit to its collection
         function(callback){
-            financialBenefit.save(function(err, res){
+            financialBenefit.save(function(err){
                 callback(err);
             });
         },
@@ -31,14 +31,13 @@ exports.create = function(req, res) {
                     callback(err);
                 } else {
                     project.benefits.push(financialBenefit._id);
-                    project.save(function(err, res){
+                    project.save(function(err){
                         callback(err);
                     });
                 }
             });
         }
-    ],function(err, results){
-        // results is now equal to ['one', 'two']
+    ],function(err){
         if (err) {
             return res.status(400).send({
                 message: errorHandler.getErrorMessage(err)
@@ -84,27 +83,26 @@ exports.delete = function(req, res) {
 	var financialBenefit = req.financialBenefit ;
 
     async.series([
+        // BENEFITS: Delete the financial benefit
         function(callback){
-            // Delete benefit from its collection
-            financialBenefit.remove(function(err, res){
+            financialBenefit.remove(function(err){
                 callback(err);
             });
         },
-        // PROJECT.BENEFITS: Delete beenfit from project's benefits array
+        // PROJECT.BENEFITS: Delete benefit from project's benefits array
         function(callback){
             Project.findById(req.query.projectId).exec(function(err, project){
                 if(err){
                     callback(err);
                 } else {
                     project.benefits.splice(project.benefits.indexOf(financialBenefit._id), 1);
-                    project.save(function(err, res){
+                    project.save(function(err){
                         callback(err);
                     });
                 }
             });
         }
-    ],function(err, results){
-        // results is now equal to ['one', 'two']
+    ],function(err){
         if (err) {
             return res.status(400).send({
                 message: errorHandler.getErrorMessage(err)

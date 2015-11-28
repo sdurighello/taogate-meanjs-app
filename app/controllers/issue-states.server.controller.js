@@ -76,7 +76,7 @@ exports.delete = function(req, res) {
  */
 exports.list = function(req, res) {
     var IssueState = mongoose.mtModel(req.user.tenantId + '.' + 'IssueState');
-	IssueState.find().sort('-created').populate('user', 'displayName').exec(function(err, issueStates) {
+	IssueState.find().populate('user', 'displayName').exec(function(err, issueStates) {
 		if (err) {
 			return res.status(400).send({
 				message: errorHandler.getErrorMessage(err)

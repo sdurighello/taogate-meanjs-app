@@ -41,15 +41,15 @@ exports.create = function(req, res) {
                             });
                             callback();
                         });
-                        project.save();
-                        callback();
+                        project.save(function(err){
+                            if(err){callback(err);} else {callback();}
+                        });
                     });
                     callback(null);
                 }
             });
         }
-    ],function(err, results){
-        // results is now equal to ['one', 'two']
+    ],function(err){
         if (err) {
             return res.status(400).send({
                 message: errorHandler.getErrorMessage(err)
@@ -105,24 +105,26 @@ exports.delete = function(req, res) {
         // CATEGORY-VALUES: Delete all category values (from "categoryValues" collection) belonging to this Category
         function(callback){
             async.each(peopleCategory.categoryValues, function(item, callback){
-                PeopleCategoryValue.findByIdAndRemove(item._id, callback);
+                PeopleCategoryValue.findByIdAndRemove(item._id, function(err){
+                    if(err){callback(err);} else {callback();}
+                });
             });
-            callback(null, 'three');
+            callback(null);
         },
         // PROJECTS: Delete category from each role's categorization in project.stakeholders
         function(callback){
             Project.find().exec(function(err, projects){
                 if (err) {
-                    return res.status(400).send({
-                        message: errorHandler.getErrorMessage(err)
-                    });
+                    callback(err);
                 } else {
                     async.each(projects, function(project, callback){
                         async.each(project.stakeholders, function(assignedGroup, callback){
                             async.each(assignedGroup.roles, function(assignedRole, callback){
                                 async.each(assignedRole.categorization, function(assignedCategory, callback){
                                     if(assignedCategory.category.equals(peopleCategory._id)){
-                                        assignedCategory.remove();
+                                        assignedCategory.remove(function(err){
+                                            if(err){callback(err);}
+                                        });
                                     }
                                     callback();
                                 });
@@ -130,15 +132,15 @@ exports.delete = function(req, res) {
                             });
                             callback();
                         });
-                        project.save();
-                        callback();
+                        project.save(function(err){
+                            if(err){callback(err);} else {callback();}
+                        });
                     });
                 }
             });
-            callback(null, 'three');
+            callback(null);
         }
-    ],function(err, results){
-        // results is now equal to ['one', 'two']
+    ],function(err){
         if (err) {
             return res.status(400).send({
                 message: errorHandler.getErrorMessage(err)

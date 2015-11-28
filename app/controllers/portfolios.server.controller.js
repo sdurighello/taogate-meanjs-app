@@ -18,22 +18,23 @@ exports.create = function(req, res) {
 	portfolio.user = req.user;
 
     async.series([
+        // PORTFOLIO: Save new portfolio
         function(callback){
-            // PORTFOLIO: Save new portfolio
-            portfolio.save();
-            callback(null, 'one');
+            portfolio.save(function(err){
+                callback(err);
+            });
         },
+        // PORTFOLIO-RANKINGS: Add portfolio to rankings
         function(callback){
-            // PORTFOLIO-RANKINGS: Add portfolio to rankings
             var portfolioRanking = new PortfolioRanking({
                 portfolio: portfolio._id,
                 projects: []
             });
-            portfolioRanking.save();
-            callback(null, 'two');
+            portfolioRanking.save(function(err){
+                callback(err);
+            });
         }
-    ],function(err, results){
-        // results is now equal to ['one', 'two']
+    ],function(err){
         if (err) {
             return res.status(400).send({
                 message: errorHandler.getErrorMessage(err)
@@ -82,60 +83,77 @@ exports.delete = function(req, res) {
 	var portfolio = req.portfolio ;
 
     async.series([
+        // PORTFOLIOS: Delete portfolio from portfolios
         function(callback){
-            // Delete portfolio from portfolios
-            portfolio.remove();
-            callback(null, 'one');
+            portfolio.remove(function(err){
+                callback(err);
+            });
         },
+        // 1st DEGREE CHILDREN: Delete portfolio from first degree children portfolios (parent and ancestors)
         function(callback){
-            // Delete portfolio from first degree children portfolios (parent and ancestors)
             Portfolio.find({parent: portfolio._id}).exec(function(err, portfolios){
-                async.each(portfolios, function(item, callback){
-                    item.parent = null;
-                    item.ancestors = [];
-                    item.save();
-                    callback();
-                });
-            });
-            callback(null, 'two');
-        },
-        function(callback){
-            // Delete portfolio from second degree children portfolios (in ancestors only)
-            Portfolio.find({ancestors: {$in: [portfolio._id]}}).exec(function(err, portfolios){
-                async.each(portfolios, function(item, callback){
-                    item.ancestors.splice(item.ancestors.indexOf(portfolio._id), 1);
-                    item.save();
-                    callback();
-                });
-            });
-            callback(null, 'three');
-        },
-        function(callback){
-            // PROJECTS: Delete portfolio from assigned projects and set project's "portfolio" property to null
-            Project.find({portfolio: portfolio._id}).exec(function(err, projects){
-                async.each(projects, function(project, callback){
-                    project.portfolio = null;
-                    project.save();
-                    callback();
-                });
-            });
-            callback(null, 'four');
-        },
-        function(callback){
-            // RANKING: Delete portfolio ranking
-            PortfolioRanking.findOne({portfolio: portfolio._id}).exec(function(err, portfolioRanking){
-                if (err) {
-                    return res.status(400).send({
-                        message: errorHandler.getErrorMessage(err)
-                    });
+                if(err){
+                    callback(err);
                 } else {
-                    if(portfolioRanking){ portfolioRanking.remove();}
+                    async.each(portfolios, function(item, callback){
+                        item.parent = null;
+                        item.ancestors = [];
+                        item.save(function(err){
+                            if(err){callback(err);} else {callback();}
+                        });
+                    });
+                    callback(null);
                 }
             });
-            callback(null, 'five');
+        },
+        // 2nd DEGREE CHILDREN: Delete portfolio from second degree children portfolios (in ancestors only)
+        function(callback){
+            Portfolio.find({ancestors: {$in: [portfolio._id]}}).exec(function(err, portfolios){
+                if(err){
+                    callback(err);
+                } else {
+                    async.each(portfolios, function(item, callback){
+                        item.ancestors.splice(item.ancestors.indexOf(portfolio._id), 1);
+                        item.save(function(err){
+                            if(err){callback(err);} else {callback();}
+                        });
+                    });
+                    callback(null);
+                }
+            });
+        },
+        // PROJECTS: Delete portfolio from assigned projects and set project's "portfolio" property to null (important since ranking checks if null)
+        function(callback){
+            Project.find({portfolio: portfolio._id}).exec(function(err, projects){
+                if(err){
+                    callback(err);
+                } else {
+                    async.each(projects, function(project, callback){
+                        project.portfolio = null;
+                        project.save(function(err){
+                            if(err){callback(err);} else {callback();}
+                        });
+                    });
+                    callback(null);
+                }
+            });
+        },
+        // RANKING: Delete portfolio ranking
+        function(callback){
+            PortfolioRanking.findOne({portfolio: portfolio._id}).exec(function(err, portfolioRanking){
+                if (err) {
+                    callback(err);
+                } else {
+                    if(portfolioRanking){ // This check shouldn't be necessary since when I create a portfolio I also create a ranking
+                        portfolioRanking.remove(function(err){
+                            if(err){callback(err);}
+                        });
+                    }
+                    callback(null);
+                }
+            });
         }
-    ],function(err, results){
-        // results is now equal to ['one', 'two']
+    ],function(err){
         if (err) {
             return res.status(400).send({
                 message: errorHandler.getErrorMessage(err)

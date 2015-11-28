@@ -20,7 +20,7 @@ exports.create = function(req, res) {
     async.series([
         // GROUP: Save Group in its collection
         function(callback){
-            qualitativeImpactGroup.save(function(err, res){
+            qualitativeImpactGroup.save(function(err){
                 callback(err);
             });
         },
@@ -28,24 +28,22 @@ exports.create = function(req, res) {
         function(callback){
             Project.find().exec(function(err, projects){
                 if (err) {
-                    return res.status(400).send({
-                        message: errorHandler.getErrorMessage(err)
-                    });
+                    callback(err);
                 } else {
                     async.each(projects, function(project, callback){
                         project.qualitativeAnalysis.push({
                             group: qualitativeImpactGroup._id,
                             impacts: []
                         });
-                        project.save();
-                        callback();
+                        project.save(function(err){
+                            if(err){callback(err);} else {callback();}
+                        });
                     });
+                    callback(null);
                 }
             });
-            callback(null, 'two');
         }
-    ],function(err, results){
-        // results is now equal to ['one', 'two']
+    ],function(err){
         if (err) {
             return res.status(400).send({
                 message: errorHandler.getErrorMessage(err)
@@ -99,37 +97,39 @@ exports.delete = function(req, res) {
                 callback(err);
             });
         },
-        // QUALITATIVE-IMPACTS: Delete all priorities (from "priorities" collection) belonging to this Group
+        // QUALITATIVE-IMPACTS: Delete all impacts (from "impacts" collection) belonging to this Group
         function(callback){
             async.each(qualitativeImpactGroup.impacts, function(item, callback){
-                QualitativeImpact.findByIdAndRemove(item._id, callback);
+                QualitativeImpact.findByIdAndRemove(item._id, function(err){
+                    if(err){callback(err);} else {callback();}
+                });
             });
-            callback(null, 'three');
+            callback(null);
         },
-        // PROJECTS: Delete group object from project.prioritization
+        // PROJECTS: Delete group object from project.qualitativeAnalysis
         function(callback){
             Project.find().exec(function(err, projects){
                 if (err) {
-                    return res.status(400).send({
-                        message: errorHandler.getErrorMessage(err)
-                    });
+                    callback(err);
                 } else {
                     async.each(projects, function(project, callback){
                         async.each(project.qualitativeAnalysis, function(assignedGroup, callback){
                             if(assignedGroup.group.equals(qualitativeImpactGroup._id)){
-                                assignedGroup.remove();
+                                assignedGroup.remove(function(err){
+                                    if(err){callback(err);}
+                                });
                             }
                             callback();
                         });
-                        project.save();
-                        callback();
+                        project.save(function(err){
+                            if(err){callback(err);} else {callback();}
+                        });
                     });
+                    callback(null);
                 }
             });
-            callback(null, 'three');
         }
-    ],function(err, results){
-        // results is now equal to ['one', 'two']
+    ],function(err){
         if (err) {
             return res.status(400).send({
                 message: errorHandler.getErrorMessage(err)

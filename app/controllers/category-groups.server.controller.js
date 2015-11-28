@@ -20,31 +20,30 @@ exports.create = function(req, res) {
     async.series([
         // GROUP: Save Group in its collection
         function(callback){
-            categoryGroup.save();
-            callback(null, 'one');
+            categoryGroup.save(function(err){
+                callback(err);
+            });
         },
         // PROJECTS: Add new group to all projects
         function(callback){
             Project.find().exec(function(err, projects){
                 if (err) {
-                    return res.status(400).send({
-                        message: errorHandler.getErrorMessage(err)
-                    });
+                    callback(err);
                 } else {
                     async.each(projects, function(project, callback){
                         project.categorization.push({
                             group: categoryGroup._id,
                             categories: []
                         });
-                        project.save();
-                        callback();
+                        project.save(function(err){
+                            if(err){callback(err);} else {callback();}
+                        });
                     });
+                    callback(null);
                 }
             });
-            callback(null, 'two');
         }
-    ],function(err, results){
-        // results is now equal to ['one', 'two']
+    ],function(err){
         if (err) {
             return res.status(400).send({
                 message: errorHandler.getErrorMessage(err)
@@ -97,58 +96,61 @@ exports.delete = function(req, res) {
     async.series([
         // CATEGORY-GROUP: Delete Group from its collection
         function(callback){
-            categoryGroup.remove();
-            callback(null, 'one');
+            categoryGroup.remove(function(err){
+                callback(err);
+            });
         },
         // CATEGORY-VALUES: Delete all values of the categories in the group
         function(callback){
             async.each(categoryGroup.categories, function(item, callback){
                 Category.findById(item._id).exec(function(err, category){
                     if (err) {
-                        return res.status(400).send({
-                            message: errorHandler.getErrorMessage(err)
-                        });
+                        callback(err);
                     } else {
                         async.each(category.categoryValues, function(item2, callback){
-                            CategoryValue.findByIdAndRemove(item2, callback);
+                            CategoryValue.findByIdAndRemove(item2, function(err){
+                                if(err){callback(err);} else {callback();}
+                            });
                         });
+                        callback();
                     }
                 });
-                callback();
             });
-            callback(null, 'two');
+            callback(null);
         },
         // CATEGORIES: Delete all categories (from "categories" collection) belonging to this category Group
         function(callback){
             async.each(categoryGroup.categories, function(item, callback){
-                Category.findByIdAndRemove(item._id, callback);
+                Category.findByIdAndRemove(item._id, function(err){
+                    if(err){callback(err);} else {callback();}
+                });
             });
-            callback(null, 'three');
+            callback(null);
         },
         // PROJECTS: Delete group object from project.categorization
         function(callback){
             Project.find().exec(function(err, projects){
                 if (err) {
-                    return res.status(400).send({
-                        message: errorHandler.getErrorMessage(err)
-                    });
+                    callback(err);
                 } else {
                     async.each(projects, function(project, callback){
                         async.each(project.categorization, function(assignedGroup, callback){
                             if(assignedGroup.group.equals(categoryGroup._id)){
-                                assignedGroup.remove();
+                                assignedGroup.remove(function(err){
+                                    if(err){callback(err);}
+                                });
                             }
                             callback();
                         });
-                        project.save();
-                        callback();
+                        project.save(function(err){
+                            if(err){callback(err);} else {callback();}
+                        });
                     });
+                    callback(null);
                 }
             });
-            callback(null, 'three');
         }
-    ],function(err, results){
-        // results is now equal to ['one', 'two']
+    ],function(err){
         if (err) {
             return res.status(400).send({
                 message: errorHandler.getErrorMessage(err)

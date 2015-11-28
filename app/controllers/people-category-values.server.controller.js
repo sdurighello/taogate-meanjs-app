@@ -27,13 +27,17 @@ exports.create = function(req, res) {
         // CATEGORY.CATEGORY-VALUES: Add the value to the category's "categoryValues" array
         function(callback){
             PeopleCategory.findById(req.query.categoryId).exec(function(err, category){
-                category.categoryValues.push(peopleCategoryValue._id);
-                category.save();
+                if(err){
+                    callback(err);
+                } else {
+                    category.categoryValues.push(peopleCategoryValue._id);
+                    category.save(function(err){
+                        callback(err);
+                    });
+                }
             });
-            callback(null, 'two');
         }
-    ],function(err, results){
-        // results is now equal to ['one', 'two', 'three']
+    ],function(err){
         if (err) {
             return res.status(400).send({
                 message: errorHandler.getErrorMessage(err)
@@ -89,13 +93,17 @@ exports.delete = function(req, res) {
         // CATEGORY.CATEGORY-VALUES: Delete value from category where assigned
         function(callback){
             PeopleCategory.findById(req.query.categoryId).exec(function(err, category){
-                category.categoryValues.splice(category.categoryValues.indexOf(peopleCategoryValue._id), 1);
-                category.save();
+                if(err){
+                    callback(err);
+                } else {
+                    category.categoryValues.splice(category.categoryValues.indexOf(peopleCategoryValue._id), 1);
+                    category.save(function(err){
+                        callback(err);
+                    });
+                }
             });
-            callback(null, 'three');
         }
-    ],function(err, results){
-        // results is now equal to ['one', 'two']
+    ],function(err){
         if (err) {
             return res.status(400).send({
                 message: errorHandler.getErrorMessage(err)

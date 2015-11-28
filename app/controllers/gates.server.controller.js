@@ -64,31 +64,38 @@ exports.delete = function(req, res) {
     var GateOutcome = mongoose.mtModel(req.user.tenantId + '.' + 'GateOutcome');
 
     async.series([
+        // GATES: Delete gate from its collection
         function(callback){
-            // Delete gate from its collection
-            gate.remove();
-            callback(null, 'one');
-        },
-        function(callback){
-            // Delete its outcomes from the outcomes collection
-            async.each(gate.gateOutcomes, function(item, callback){
-                GateOutcome.findByIdAndRemove(item._id, callback);
+            gate.remove(function(err){
+                callback(err);
             });
-            callback(null, 'two');
         },
+        // OUTCOMES: Delete its outcomes from the outcomes collection
         function(callback){
-            // Delete gate from processes where assigned
-            GateProcess.find({gates: {$in: [gate._id]}}).exec(function(err, processes){
-                async.each(processes, function(item, callback){
-                    item.gates.splice(item.gates.indexOf(gate._id), 1);
-                    item.save();
-                    callback();
+            async.each(gate.gateOutcomes, function(item, callback){
+                GateOutcome.findByIdAndRemove(item._id, function(err){
+                    if(err){callback(err);} else {callback();}
                 });
             });
-            callback(null, 'three');
+            callback(null);
+        },
+        // PROCESS-GATES: Delete gate from processes where assigned
+        function(callback){
+            GateProcess.find({gates: {$in: [gate._id]}}).exec(function(err, processes){
+                if(err){
+                    callback(err);
+                } else {
+                    async.each(processes, function(item, callback){
+                        item.gates.splice(item.gates.indexOf(gate._id), 1);
+                        item.save(function(err){
+                            if(err){callback(err);} else {callback();}
+                        });
+                    });
+                    callback(null);
+                }
+            });
         }
-    ],function(err, results){
-        // results is now equal to ['one', 'two']
+    ],function(err){
         if (err) {
             return res.status(400).send({
                 message: errorHandler.getErrorMessage(err)
@@ -104,7 +111,7 @@ exports.delete = function(req, res) {
  */
 exports.list = function(req, res) {
     var Gate = mongoose.mtModel(req.user.tenantId + '.' + 'Gate');
-	Gate.find().sort('-created').populate('user', 'displayName').exec(function(err, gates) {
+	Gate.find().populate('user', 'displayName').exec(function(err, gates) {
 		if (err) {
 			return res.status(400).send({
 				message: errorHandler.getErrorMessage(err)

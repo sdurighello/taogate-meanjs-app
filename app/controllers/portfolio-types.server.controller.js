@@ -58,39 +58,19 @@ exports.update = function(req, res) {
  * Delete an portfolioType
  */
 exports.delete = function(req, res) {
-
 	var PortfolioType = mongoose.mtModel(req.user.tenantId + '.' + 'PortfolioType');
 	var portfolioType = req.portfolioType;
 
-	var Portfolio = mongoose.mtModel(req.user.tenantId + '.' + 'Portfolio');
+    portfolioType.remove(function(err, portfolioType){
+        if (err) {
+            return res.status(400).send({
+                message: errorHandler.getErrorMessage(err)
+            });
+        } else {
+            res.jsonp(portfolioType);
+        }
+    });
 
-	async.series([
-		function(callback){
-			// Delete portfolio type from portfolio types
-			portfolioType.remove();
-			callback(null, 'one');
-		},
-		function(callback){
-			// Remove portfolio type assignment from portfolios
-			Portfolio.find({type: portfolioType._id}).exec(function(err, portfolios){
-				async.each(portfolios, function(item, callback){
-					item.type = null;
-					item.save();
-					callback();
-				});
-			});
-			callback(null, 'two');
-		}
-	],function(err, results){
-		// results is now equal to ['one', 'two']
-		if (err) {
-			return res.status(400).send({
-				message: errorHandler.getErrorMessage(err)
-			});
-		} else {
-			res.jsonp(portfolioType);
-		}
-	});
 };
 
 /**
@@ -98,7 +78,7 @@ exports.delete = function(req, res) {
  */
 exports.list = function(req, res) {
 	var PortfolioType = mongoose.mtModel(req.user.tenantId + '.' + 'PortfolioType');
-	PortfolioType.find().sort('-created').populate('user', 'displayName').exec(function(err, portfolioTypes) {
+	PortfolioType.find().populate('user', 'displayName').exec(function(err, portfolioTypes) {
 		if (err) {
 			return res.status(400).send({
 				message: errorHandler.getErrorMessage(err)

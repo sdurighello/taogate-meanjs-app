@@ -21,24 +21,28 @@ exports.create = function(req, res) {
     async.series([
         // RISKS: Save the new risk to its collection
         function(callback){
-            risk.save();
-            callback(null, 'one');
+            risk.save(function(err){
+                callback(err);
+            });
         },
-        // RISK-CATEGORY.RISKS: Add the priority to the group's "priorities" array
+        // RISK-CATEGORY.RISKS: Add the risk to the risk-category's "risks" array
         function(callback){
             RiskCategory.findById(req.query.groupId).exec(function(err, group){
-                group.risks.push(risk._id);
-                group.save();
+                if(err){
+                    callback(err);
+                } else {
+                    group.risks.push(risk._id);
+                    group.save(function(err){
+                        callback(err);
+                    });
+                }
             });
-            callback(null, 'two');
         },
         // PROJECTS.RISK-ANALYSIS: Add the risk to all existing projects (in the right category)
         function(callback){
             Project.find().exec(function(err, projects){
                 if (err) {
-                    return res.status(400).send({
-                        message: errorHandler.getErrorMessage(err)
-                    });
+                    callback(err);
                 } else {
                     async.each(projects, function(project, callback){
                         async.each(project.riskAnalysis, function(assignedGroup, callback){
@@ -52,15 +56,15 @@ exports.create = function(req, res) {
                             }
                             callback();
                         });
-                        project.save();
-                        callback();
+                        project.save(function(err){
+                            if(err){callback(err);} else {callback();}
+                        });
                     });
+                    callback(null);
                 }
             });
-            callback(null, 'three');
         }
-    ],function(err, results){
-        // results is now equal to ['one', 'two', 'three']
+    ],function(err){
         if (err) {
             return res.status(400).send({
                 message: errorHandler.getErrorMessage(err)
@@ -109,46 +113,52 @@ exports.delete = function(req, res) {
     async.series([
         // RISKS: Delete risk from its collection
         function(callback){
-            risk.remove();
-            callback(null, 'one');
+            risk.remove(function(err){
+                callback(err);
+            });
         },
         // CATEGORY.RISKS: Delete risk from group where assigned
         function(callback){
             RiskCategory.findById(req.query.groupId).exec(function(err, group){
-                group.risks.splice(group.risks.indexOf(risk._id), 1);
-                group.save();
+                if(err){
+                    callback(err);
+                } else {
+                    group.risks.splice(group.risks.indexOf(risk._id), 1);
+                    group.save(function(err){
+                        callback(err);
+                    });
+                }
             });
-            callback(null, 'three');
         },
         // PROJECTS.RISK-ANALYSIS: Remove the risk from all existing projects
         function(callback){
             Project.find().exec(function(err, projects){
                 if (err) {
-                    return res.status(400).send({
-                        message: errorHandler.getErrorMessage(err)
-                    });
+                    callback(err);
                 } else {
                     async.each(projects, function(project, callback){
                         async.each(project.riskAnalysis, function(assignedGroup, callback){
                             if(assignedGroup.category.equals(req.query.groupId)){
                                 async.each(assignedGroup.risks, function(assignedRisk, callback){
                                     if(assignedRisk.risk.equals(risk._id)){
-                                        assignedRisk.remove();
+                                        assignedRisk.remove(function(err){
+                                            callback(err);
+                                        });
                                     }
                                     callback();
                                 });
                             }
                             callback();
                         });
-                        project.save();
-                        callback();
+                        project.save(function(err){
+                            if(err){callback(err);} else {callback();}
+                        });
                     });
+                    callback(null);
                 }
             });
-            callback(null, 'four');
         }
-    ],function(err, results){
-        // results is now equal to ['one', 'two']
+    ],function(err){
         if (err) {
             return res.status(400).send({
                 message: errorHandler.getErrorMessage(err)

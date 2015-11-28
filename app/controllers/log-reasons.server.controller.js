@@ -76,7 +76,7 @@ exports.delete = function(req, res) {
  */
 exports.list = function(req, res) {
 	var LogReason = mongoose.mtModel(req.user.tenantId + '.' + 'LogReason');
-	LogReason.find().sort('-created').populate('user', 'displayName').exec(function(err, logReasons) {
+	LogReason.find().populate('user', 'displayName').exec(function(err, logReasons) {
 		if (err) {
 			return res.status(400).send({
 				message: errorHandler.getErrorMessage(err)

@@ -29,9 +29,7 @@ exports.create = function(req, res) {
         function(callback) {
             RiskImpact.find().exec(function(err, impacts){
                 if (err) {
-                    return res.status(400).send({
-                        message: errorHandler.getErrorMessage(err)
-                    });
+                    callback(err);
                 } else {
                     async.each(impacts, function(impact, callback){
                         var severityAssignment = new RiskSeverityAssignment({
@@ -39,14 +37,15 @@ exports.create = function(req, res) {
                             probability : riskProbability._id,
                             severity : null
                         });
-                        severityAssignment.save();
-                        callback();
+                        severityAssignment.save(function(err){
+                            if(err){callback(err);} else {callback();}
+                        });
                     });
+                    callback(null);
                 }
             });
-            callback(null);
         }
-    ], function (err, results) {
+    ], function (err) {
         if (err) {
             return res.status(400).send({
                 message: errorHandler.getErrorMessage(err)
@@ -101,19 +100,18 @@ exports.delete = function(req, res) {
         function(callback) {
             RiskSeverityAssignment.find({probability: riskProbability._id}).exec(function(err, assignments){
                 if(err){
-                    return res.status(400).send({
-                        message: errorHandler.getErrorMessage(err)
-                    });
+                    callback(err);
                 } else {
                     async.each(assignments, function(assignment, callback){
-                        assignment.remove();
-                        callback();
+                        assignment.remove(function(err){
+                            if(err){callback(err);} else {callback();}
+                        });
                     });
+                    callback(null);
                 }
             });
-            callback(null);
         }
-    ], function (err, results) {
+    ], function (err) {
         if (err) {
             return res.status(400).send({
                 message: errorHandler.getErrorMessage(err)

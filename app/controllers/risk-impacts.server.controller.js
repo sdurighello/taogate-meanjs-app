@@ -29,9 +29,7 @@ exports.create = function(req, res) {
         function(callback) {
             RiskProbability.find().exec(function(err, probabilities){
                 if (err) {
-                    return res.status(400).send({
-                        message: errorHandler.getErrorMessage(err)
-                    });
+                    callback(err);
                 } else {
                     async.each(probabilities, function(probability, callback){
                         var severityAssignment = new RiskSeverityAssignment({
@@ -39,15 +37,15 @@ exports.create = function(req, res) {
                             probability : probability._id,
                             severity : null
                         });
-                        severityAssignment.save();
-
-                        callback();
+                        severityAssignment.save(function(err){
+                            if(err){callback(err);} else {callback();}
+                        });
                     });
+                    callback(null);
                 }
             });
-            callback(null);
         }
-    ], function (err, results) {
+    ], function (err) {
         if (err) {
             return res.status(400).send({
                 message: errorHandler.getErrorMessage(err)
@@ -102,17 +100,16 @@ exports.delete = function(req, res) {
         function(callback) {
             RiskSeverityAssignment.find({impact: riskImpact._id}).exec(function(err, assignments){
                 if(err){
-                    return res.status(400).send({
-                        message: errorHandler.getErrorMessage(err)
-                    });
+                    callback(err);
                 } else {
                     async.each(assignments, function(assignment, callback){
-                        assignment.remove();
-                        callback();
+                        assignment.remove(function(err){
+                            if(err){callback(err);} else {callback();}
+                        });
                     });
+                    callback(null);
                 }
             });
-            callback(null);
         }
     ], function (err, results) {
         if (err) {
