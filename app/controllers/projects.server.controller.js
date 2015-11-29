@@ -34,7 +34,7 @@ exports.create = function(req, res) {
     async.series([
         // PROJECT: Save project in its collection
         function(callback){
-            project.save(function(err, res){
+            project.save(function(err){
                 callback(err);
             });
         },
@@ -42,9 +42,7 @@ exports.create = function(req, res) {
         function(callback){
             CategoryGroup.find().exec(function(err, groups){
                 if (err) {
-                    return res.status(400).send({
-                        message: errorHandler.getErrorMessage(err)
-                    });
+                    callback(err);
                 } else {
                     async.each(groups, function(group, callback){
                         var obj = {group: group._id, categories: []};
@@ -56,20 +54,19 @@ exports.create = function(req, res) {
                             callback();
                         });
                         project.categorization.push(obj);
-                        project.save();
-                        callback();
+                        project.save(function(err){
+                            if(err){callback(err);} else {callback();}
+                        });
                     });
+                    callback(null);
                 }
             });
-            callback(null, 'two');
         },
         // PROJECT.PRIORITIZATION: Add all existing groups (and their priorities) to new project
         function(callback){
             PriorityGroup.find().exec(function(err, groups){
                 if (err) {
-                    return res.status(400).send({
-                        message: errorHandler.getErrorMessage(err)
-                    });
+                    callback(err);
                 } else {
                     async.each(groups, function(group, callback){
                         var obj = {group: group._id, priorities: []};
@@ -81,20 +78,19 @@ exports.create = function(req, res) {
                             callback();
                         });
                         project.prioritization.push(obj);
-                        project.save();
-                        callback();
+                        project.save(function(err){
+                            if(err){callback(err);} else {callback();}
+                        });
                     });
+                    callback(null);
                 }
             });
-            callback(null, 'three');
         },
         // PROJECT.QUALITATIVE-ANALYSIS: Add all existing qualitative-groups (and their impacts) to new project
         function(callback){
             QualitativeImpactGroup.find().exec(function(err, groups){
                 if (err) {
-                    return res.status(400).send({
-                        message: errorHandler.getErrorMessage(err)
-                    });
+                    callback(err);
                 } else {
                     async.each(groups, function(group, callback){
                         var obj = {group: group._id, impacts: []};
@@ -106,20 +102,19 @@ exports.create = function(req, res) {
                             callback();
                         });
                         project.qualitativeAnalysis.push(obj);
-                        project.save();
-                        callback();
+                        project.save(function(err){
+                            if(err){callback(err);} else {callback();}
+                        });
                     });
+                    callback(null);
                 }
             });
-            callback(null, 'four');
         },
         // PROJECT.RISK-ANALYSIS: Add all existing risks to new project
         function(callback){
             RiskCategory.find().exec(function(err, categories){
                 if (err) {
-                    return res.status(400).send({
-                        message: errorHandler.getErrorMessage(err)
-                    });
+                    callback(err);
                 } else {
                     async.each(categories, function(category, callback){
                         var obj = {category: category._id, risks: []};
@@ -133,12 +128,13 @@ exports.create = function(req, res) {
                             callback();
                         });
                         project.riskAnalysis.push(obj);
-                        project.save();
-                        callback();
+                        project.save(function(err){
+                            if(err){callback(err);} else {callback();}
+                        });
                     });
+                    callback(null);
                 }
             });
-            callback(null, 'five');
         },
         // PROJECT.STAKEHOLDERS: Add all existing groups/roles + categories/values to new project
         function(callback){
@@ -178,14 +174,15 @@ exports.create = function(req, res) {
                                     callback();
                                 });
                                 project.stakeholders.push(obj);
-                                project.save();
-                                callback();
+                                project.save(function(err){
+                                    if(err){callback(err);} else {callback();}
+                                });
                             });
                             callback(null);
                         }
                     });
                 }
-            ],function(err, severityAssignment, done){
+            ],function(err){
                 if (err) {
                     callback(err);
                 } else {
@@ -193,8 +190,7 @@ exports.create = function(req, res) {
                 }
             });
         }
-    ],function(err, results){
-        // results is now equal to ['one', 'two']
+    ],function(err){
         if (err) {
             return res.status(400).send({
                 message: errorHandler.getErrorMessage(err)
@@ -236,6 +232,7 @@ exports.update = function(req, res) {
  *  Update a Category Assignment
  */
 exports.updateCategoryAssignment = function(req, res) {
+    console.log(req);
     var project = req.project ;
     project.user = req.user;
     project.created = Date.now();
@@ -245,7 +242,9 @@ exports.updateCategoryAssignment = function(req, res) {
             async.each(assignedGroup.categories, function(assignedCategory, callback){
                 if(assignedCategory._id.equals(req.params.assignedCategoryId)){
                     assignedCategory.categoryValue = req.params.valueId;
-                    project.save();
+                    project.save(function(err){
+                        if(err){callback(err);}
+                    });
                 }
                 callback();
             });
@@ -276,7 +275,9 @@ exports.updatePriorityAssignment = function(req, res) {
             async.each(assignedGroup.priorities, function(assignedPriority, callback){
                 if(assignedPriority._id.equals(req.params.assignedPriorityId)){
                     assignedPriority.priorityValue = req.params.valueId;
-                    project.save();
+                    project.save(function(err){
+                        if(err){callback(err);}
+                    });
                 }
                 callback();
             });
@@ -307,7 +308,9 @@ exports.updateImpactAssignment = function(req, res) {
             async.each(assignedGroup.impacts, function(assignedImpact, callback){
                 if(assignedImpact._id.equals(req.params.assignedImpactId)){
                     assignedImpact.score = req.params.scoreId;
-                    project.save();
+                    project.save(function(err){
+                        if(err){callback(err);}
+                    });
                 }
                 callback();
             });
@@ -361,16 +364,18 @@ exports.updateRiskAssignment = function(req, res) {
                             } else {
                                 assignedRisk.severityAssignment = null;
                             }
-                            project.save();
+                            project.save(function(err){
+                                if(err){callback(err);}
+                            });
                         }
                         callback();
                     });
                 }
                 callback();
             });
-            callback(null, 'done');
+            callback(null);
         }
-    ],function(err, severityAssignment, done){
+    ],function(err){
         if (err) {
             return res.status(400).send({
                 message: errorHandler.getErrorMessage(err)
@@ -381,6 +386,43 @@ exports.updateRiskAssignment = function(req, res) {
     });
 
 
+
+};
+
+
+
+
+/**
+ *  Update Stakeholders
+ */
+
+exports.updatePeopleAssignment = function(req, res) {
+    var project = req.project ;
+    project.user = req.user;
+    project.created = Date.now();
+
+    async.each(project.stakeholders, function(assignedGroup, callback) {
+        if(assignedGroup._id.equals(req.params.assignedGroupId)){
+            async.each(assignedGroup.roles, function(assignedRole, callback){
+                if(assignedRole._id.equals(req.params.assignedRoleId)){
+                    assignedRole = _.extend(assignedRole, req.body);
+                    project.save(function(err){
+                        if(err){callback(err);}
+                    });
+                }
+                callback();
+            });
+        }
+        callback();
+    }, function(err){
+        if( err ) {
+            return res.status(400).send({
+                message: errorHandler.getErrorMessage(err)
+            });
+        } else {
+            res.jsonp(project);
+        }
+    });
 
 };
 
@@ -398,38 +440,45 @@ exports.delete = function(req, res) {
     async.series([
         // PROJECT: Delete project in its collection
         function(callback){
-            project.remove(function(err, res){
+            project.remove(function(err){
                 callback(err);
             });
         },
         // PORTFOLIO RANKINGS: Delete project from the "projects" array if project assigned to a portfolio
         function(callback){
-            if(project.portfolio){
+            if(project.portfolio){ // IF to check that it is assigned to a portfolio otherwise this field id null
                 PortfolioRanking.findOne({portfolio: project.portfolio}).exec(function(err, portfolioRanking){
-                    if(portfolioRanking){
+                    if(err){
+                        callback(err);
+                    } else {
                         portfolioRanking.projects.splice(portfolioRanking.projects.indexOf(project._id), 1);
-                        portfolioRanking.save();
+                        portfolioRanking.save(function(err){
+                            if(err){callback(err);}
+                        });
                     }
                 });
             }
-            callback(null, 'two');
+            callback(null);
         },
         // FINANCIAL COSTS: Delete all costs belonging to the project
         function(callback){
             async.each(project.costs, function(item, callback){
-                FinancialCost.findByIdAndRemove(item, callback);
+                FinancialCost.findByIdAndRemove(item, function(err){
+                    if(err){callback(err);} else {callback();}
+                });
             });
-            callback(null, 'three');
+            callback(null);
         },
         // FINANCIAL BENEFITS: Delete all benefits belonging to the project
         function(callback){
             async.each(project.benefits, function(item, callback){
-                FinancialBenefit.findByIdAndRemove(item, callback);
+                FinancialBenefit.findByIdAndRemove(item, function(err){
+                    if(err){callback(err);} else {callback();}
+                });
             });
-            callback(null, 'four');
+            callback(null);
         }
-    ],function(err, results){
-        // results is now equal to ['one', 'two']
+    ],function(err){
         if (err) {
             return res.status(400).send({
                 message: errorHandler.getErrorMessage(err)

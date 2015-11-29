@@ -130,6 +130,7 @@ angular.module('qualitative-analysis').controller('QualitativeAnalysisController
 		// ------------- EDIT IMPACT ASSIGNMENT ---------
 
 		$scope.saveAssignedImpact = function(project, assignedGroup, assignedImpact){
+            console.log(assignedImpact.score);
 			Projects.updateImpactAssignment(
 				{
 					projectId: project._id,

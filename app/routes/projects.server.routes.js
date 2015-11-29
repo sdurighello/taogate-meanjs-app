@@ -30,6 +30,10 @@ module.exports = function(app) {
     app.route('/projects/riskAssignment/:projectId/:assignedCategoryId/:assignedRiskId/:impactId/:probabilityId')
         .put(users.requiresLogin, projects.hasAuthorization, projects.updateRiskAssignment);
 
-	// Finish by binding the Project middleware
+    // Stakeholders
+    app.route('/projects/:projectId/stakeholders/:assignedGroupId/:assignedRoleId')
+        .put(users.requiresLogin, projects.hasAuthorization, projects.updatePeopleAssignment);
+
+    // Finish by binding the Project middleware
 	app.param('projectId', projects.projectByID);
 };

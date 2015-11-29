@@ -23,6 +23,10 @@ angular.module('projects').factory('Projects', ['$resource',
             updateRiskAssignment: {
                 method: 'PUT',
                 url: 'projects/riskAssignment/:projectId/:assignedCategoryId/:assignedRiskId/:impactId/:probabilityId'
+            },
+            updatePeopleAssignment: {
+                method: 'PUT',
+                url: 'projects/:projectId/stakeholders/:assignedGroupId/:assignedRoleId'
             }
 		});
 	}
