@@ -1,0 +1,341 @@
+<section data-ng-controller="DependencyAnalysisController" data-ng-init="init()">
+	<br>
+	<div class="row">
+		<div class="col-sm-12">
+			<div class="panel-heading">
+				<ol class="breadcrumb">
+					<li>Portfolio evaluation</li>
+					<li>Dependencies</li>
+					<li class="active">Projects dependencies</li>
+				</ol>
+			</div>
+		</div>
+	</div>
+	<div data-ng-show="initError" class="text-danger">
+		<strong data-ng-bind="initError"></strong>
+	</div>
+	<div class="row">
+		<div class="col-sm-6">
+			<div class="panel panel-default">
+				<div class="panel-heading">
+					<h6 class="panel-title text-center">Dependencies</h6>
+				</div>
+				<div class="panel-body">
+					<div class="row">
+						<div class=" form-group col-md-4">
+							<label for="selectSourcePortfolio">Source</label>
+							<select id="selectSourcePortfolio" class="form-control input-sm" ng-model="filterDependency.sourcePortfolio"
+									ng-options="portfolio.name for portfolio in portfolios">
+								<option value="">--Source portfolio</option>
+							</select>
+						</div>
+						<div class=" form-group col-md-4">
+							<label for="selectTargetPortfolio">Target</label>
+							<select id="selectTargetPortfolio" class="form-control input-sm" ng-model="filterDependency.targetPortfolio"
+									ng-options="portfolio.name for portfolio in portfolios">
+								<option value="">--Target portfolio</option>
+							</select>
+						</div>
+						<div class="form-group col-md-4">
+							<label for="type">Type</label>
+							<select id="type" class="form-control input-sm" ng-model = "filterDependency.depType"
+									ng-options="depType.depTypeName for depType in dependencyTypes">
+								<option value="">--Dependency type</option>
+							</select>
+						</div>
+					</div>
+					<div class="row">
+						<div class="form-group col-md-4">
+							<select id="selectSourceProject" class="form-control input-sm" ng-model="filterDependency.sourceProject"
+									ng-options="project.identificationData.projectName for project in projects | filter: project.identificationData.portfolio._id = filterDependency.sourcePortfolio._id">
+								<option value="">--Source project</option>
+							</select>
+						</div>
+						<div class="form-group col-md-4">
+							<select id="selectTargetProject" class="form-control input-sm" ng-model="filterDependency.targetProject"
+									ng-options="project.identificationData.projectName for project in projects | filter: project.identificationData.portfolio._id = filterDependency.targetPortfolio._id">
+								<option value="">--Target project</option>
+							</select>
+						</div>
+					</div>
+					<hr>
+					<div class="row" style="min-height: 350px; max-height: 350px; overflow-y: auto">
+						<div class="col-md-12">
+							<button type="button" ng-repeat="project in projects | filter:filterProject"
+									ng-click="selectProject(project)" class="btn btn-default btn-sm center-block btn-block" style="overflow: hidden;">
+								{{project.identification.idNumber}} {{project.identification.name}}
+							</button>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="col-md-6" data-ng-switch="switchProjectForm">
+			<div ng-switch-default="default">
+				<div class="row" ng-show="userHasAuthorization">
+					<div class="col-md-12">
+						<button class="btn btn-primary" data-ng-click="selectProjectForm('new')">
+							New project
+						</button>
+					</div>
+					<hr>
+				</div>
+				<div class="row">
+					<div class="col-md-12">
+						<div data-ng-hide="selectedProject || projects.length === 0" class="alert alert-warning text-center">
+							Select a project to see its details
+						</div>
+						<div data-ng-show="projects.length === 0" class="alert alert-warning text-center">
+							There are no projects created yet
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="panel panel-default" data-ng-switch-when="new">
+				<div class="panel-heading">
+					<h6 class="panel-title text-center">Add new project</h6>
+				</div>
+				<div class="panel-body" style="min-height: 450px;  max-height: 450px; overflow-y: auto;">
+					<form class="form" data-ng-submit="createProject()" novalidate name="newProjectForm">
+						<fieldset>
+							<div class="row">
+								<div class="form-group-sm col-md-3">
+									<label for="uid">Project ID</label>
+									<input id="uid" type="text" class="form-control" placeholder="Enter identifier"
+										   ng-model="newProject.idNumber">
+								</div>
+								<div class="form-group-sm col-md-9">
+									<label for="projectName">Project name</label>
+									<input id="projectName" type="text" class="form-control" placeholder="Enter name"
+										   ng-model="newProject.name" required>
+								</div>
+							</div>
+							<br>
+							<div class="row">
+								<div class="form-group-sm col-md-4">
+									<label for="projectStart">Requested Start</label>
+									<div class="input-group">
+										<input type="text" id="projectStart" class="form-control" datepicker-popup="dd-MMMM-yyyy" data-ng-model="newProject.reqStartDate"
+											   placeholder="YYYY/MM/dd" is-open="$parent.startDatePickerOpenedNew" min-date="" max-date="newProject.reqEndDate" />
+                                        <span class="input-group-btn">
+                                            <button type="button" class="btn btn-default btn-sm" ng-click="openStartDatePickerNew($event)"><i class="glyphicon glyphicon-calendar"></i></button>
+                                        </span>
+									</div>
+								</div>
+								<div class="form-group-sm col-md-4">
+									<label for="projectEnd">Requested End</label>
+									<div class="input-group">
+										<input id="projectEnd" type="text" class="form-control" datepicker-popup="dd-MMMM-yyyy" data-ng-model="newProject.reqEndDate"
+											   placeholder="YYYY/MM/dd" is-open="$parent.endDatePickerOpenedNew" min-date="newProject.reqStartDate" max-date="" />
+                                        <span class="input-group-btn">
+                                            <button type="button" class="btn btn-default btn-sm" ng-click="openEndDatePickerNew($event)"><i class="glyphicon glyphicon-calendar"></i></button>
+                                        </span>
+									</div>
+								</div>
+								<div class="form-group-sm col-md-4">
+									<label for="projectFunds">Earmarked funds</label>
+									<input id="projectFunds" type="number" min="0" class="form-control"
+										   ng-model="newProject.earmarkedFunds" placeholder="Enter amount">
+								</div>
+							</div>
+							<br>
+							<div class="row">
+								<div class="form-group-sm col-md-4">
+									<label for="projectManagerNew">Project Manager</label>
+									<select id="projectManagerNew" class="form-control" data-ng-model = "newProject.projectManager"
+											ng-options="projectManager.displayName for projectManager in projectManagers">
+										<option value="">--choose person</option>
+									</select>
+								</div>
+								<div class="form-group-sm col-md-4">
+									<label for="backupProjectManagerNew">Backup Project Manager</label>
+									<select id="backupProjectManagerNew" class="form-control" data-ng-model = "newProject.backupProjectManager"
+											ng-options="projectManager.displayName for projectManager in projectManagers">
+										<option value="">--choose person</option>
+									</select>
+								</div>
+							</div>
+							<br>
+							<div class="row">
+								<div class="form-group-sm col-md-12">
+									<label for="projectDescription">Project description</label>
+									<textarea id="projectDescription" class="form-control" placeholder="Enter description" data-ng-model="newProject.description"></textarea>
+								</div>
+							</div>
+							<hr>
+							<div class="row">
+								<div class="col-md-12 form-group">
+									<div class="pull-right">
+										<input type="submit" value="Save" class="btn btn-success btn-sm">
+										<button class="btn btn-info btn-sm" ng-click="cancelNewProject()">Cancel</button>
+									</div>
+								</div>
+							</div>
+						</fieldset>
+					</form>
+				</div>
+			</div>
+			<div class="panel panel-default" data-ng-switch-when="view">
+				<div class="panel-heading">
+					<h6 class="panel-title text-center" data-ng-bind="selectedProject.identification.name"></h6>
+				</div>
+				<div class="panel-body" style="min-height: 450px;  max-height: 450px; overflow-y: auto;">
+					<form class="form">
+						<fieldset>
+							<div class="row">
+								<div class="form-group-sm col-md-3">
+									<label for="uid">Project ID</label>
+									<input id="uid" type="text" class="form-control" disabled placeholder="Enter identifier"
+										   ng-model="selectedProject.identification.idNumber">
+								</div>
+								<div class="form-group-sm col-md-9">
+									<label for="projectName">Project name</label>
+									<input id="projectName" type="text" class="form-control" disabled placeholder="Enter name"
+										   ng-model="selectedProject.identification.name">
+								</div>
+							</div>
+							<br>
+							<div class="row">
+								<div class="form-group-sm col-md-4">
+									<label for="projectStart">Requested Start</label>
+									<input id="projectStart" type="text" class="form-control" datepicker-popup="dd-MMMM-yyyy"
+										   data-ng-model="selectedProject.identification.reqStartDate" disabled/>
+								</div>
+								<div class="form-group-sm col-md-4">
+									<label for="projectEnd">Requested End</label>
+									<input id="projectEnd" type="text" class="form-control" datepicker-popup="dd-MMMM-yyyy"
+										   data-ng-model="selectedProject.identification.reqEndDate" disabled/>
+								</div>
+								<div class="form-group-sm col-md-4">
+									<label for="projectFunds">Earmarked funds</label>
+									<input id="projectFunds" type="number" min="0" class="form-control" disabled
+										   ng-model="selectedProject.identification.earmarkedFunds">
+								</div>
+							</div>
+							<br>
+							<div class="row">
+								<div class="form-group-sm col-md-4">
+									<label for="projectManagerNew">Project Manager</label>
+									<select id="projectManagerNew" class="form-control" data-ng-model = "selectedProject.identification.projectManager"
+											ng-options="projectManager.displayName for projectManager in projectManagers" disabled>
+										<option value="">--choose person</option>
+									</select>
+								</div>
+								<div class="form-group-sm col-md-4">
+									<label for="backupProjectManagerNew">Backup Project Manager</label>
+									<select id="backupProjectManagerNew" class="form-control" data-ng-model = "selectedProject.identification.backupProjectManager"
+											ng-options="projectManager.displayName for projectManager in projectManagers" disabled>
+										<option value="">--choose person</option>
+									</select>
+								</div>
+							</div>
+							<br>
+							<div class="row">
+								<div class="form-group-sm col-md-12">
+									<label for="projectDescription">Project description</label>
+									<textarea id="projectDescription" class="form-control" placeholder="Enter description" data-ng-model="selectedProject.identification.description" disabled></textarea>
+								</div>
+							</div>
+							<hr>
+							<div class="row">
+								<div class="col-md-12">
+									<div class="pull-right">
+										<button class="btn btn-success btn-sm" ng-click="selectProjectForm('edit')">Edit</button>
+										<button class="btn btn-info btn-sm" ng-click="cancelViewProject()">Close</button>
+									</div>
+								</div>
+							</div>
+						</fieldset>
+					</form>
+				</div>
+			</div>
+			<div class="panel panel-default" data-ng-switch-when="edit">
+				<div class="panel-heading">
+					<h6 class="panel-title text-center" data-ng-bind="selectedProject.identification.name"></h6>
+				</div>
+				<div class="panel-body" style="min-height: 450px;  max-height: 450px; overflow-y: auto;">
+					<form class="form" data-ng-submit="editProject()" novalidate name="editProjectForm">
+						<fieldset>
+							<div class="row">
+								<div class="form-group-sm col-md-3">
+									<label for="uid">Project ID</label>
+									<input id="uid" type="text" class="form-control" placeholder="Enter identifier"
+										   ng-model="selectedProject.identification.idNumber">
+								</div>
+								<div class="form-group-sm col-md-9">
+									<label for="projectName">Project name</label>
+									<input id="projectName" type="text" class="form-control" placeholder="Enter name"
+										   ng-model="selectedProject.identification.name">
+								</div>
+							</div>
+							<br>
+							<div class="row">
+								<div class="form-group-sm col-md-4">
+									<label for="projectStartEdit">Requested Start</label>
+									<div class="input-group">
+										<input type="text" id="projectStartEdit" class="form-control" datepicker-popup="dd-MMMM-yyyy" data-ng-model="selectedProject.identification.reqStartDate"
+											   is-open="$parent.startDatePickerOpenedEdit" min-date="" max-date="selectedProject.identification.reqEndDate" />
+                                        <span class="input-group-btn">
+                                            <button type="button" class="btn btn-default btn-sm" ng-click="openStartDatePickerEdit($event)"><i class="glyphicon glyphicon-calendar"></i></button>
+                                        </span>
+									</div>
+								</div>
+								<div class="form-group-sm col-md-4">
+									<label for="projectEndEdit">Requested End</label>
+									<div class="input-group">
+										<input id="projectEndEdit" type="text" class="form-control" datepicker-popup="dd-MMMM-yyyy" data-ng-model="selectedProject.identification.reqEndDate"
+											   is-open="$parent.endDatePickerOpenedEdit" min-date="selectedProject.identification.reqStartDate" max-date="" />
+                                        <span class="input-group-btn">
+                                            <button type="button" class="btn btn-default btn-sm" ng-click="openEndDatePickerEdit($event)"><i class="glyphicon glyphicon-calendar"></i></button>
+                                        </span>
+									</div>
+								</div>
+								<div class="form-group-sm col-md-4">
+									<label for="projectFunds">Earmarked funds</label>
+									<input id="projectFunds" type="number" min="0" class="form-control"
+										   ng-model="selectedProject.identification.earmarkedFunds">
+								</div>
+							</div>
+							<br>
+							<div class="row">
+								<div class="form-group-sm col-md-4">
+									<label for="projectManagerNew">Project Manager</label>
+									<select id="projectManagerNew" class="form-control" data-ng-model = "selectedProject.identification.projectManager"
+											ng-options="projectManager.displayName for projectManager in projectManagers" >
+										<option value="">--choose person</option>
+									</select>
+								</div>
+								<div class="form-group-sm col-md-4">
+									<label for="backupProjectManagerNew">Backup Project Manager</label>
+									<select id="backupProjectManagerNew" class="form-control" data-ng-model = "selectedProject.identification.backupProjectManager"
+											ng-options="projectManager.displayName for projectManager in projectManagers" >
+										<option value="">--choose person</option>
+									</select>
+								</div>
+							</div>
+							<br>
+							<div class="row">
+								<div class="form-group-sm col-md-12">
+									<label for="projectDescription">Project description</label>
+									<textarea id="projectDescription" class="form-control" placeholder="Enter description" data-ng-model="selectedProject.identification.description" ></textarea>
+								</div>
+							</div>
+							<hr>
+							<div class="row">
+								<div class="col-md-12">
+									<div class="pull-right">
+										<input type="submit" value="Save" class="btn btn-success btn-sm">
+										<button type="button" class="btn btn-sm btn-danger" data-ng-click="deleteProject()">
+											Delete
+										</button>
+										<button class="btn btn-info btn-sm" ng-click="cancelEditProject()">Cancel</button>
+									</div>
+								</div>
+							</div>
+						</fieldset>
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+</section>

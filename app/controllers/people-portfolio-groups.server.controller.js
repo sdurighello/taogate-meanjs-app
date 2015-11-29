@@ -12,19 +12,46 @@ var mongoose = require('mongoose'),
  * Create a People portfolio group
  */
 exports.create = function(req, res) {
+	var Portfolio = mongoose.mtModel(req.user.tenantId + '.' + 'Portfolio');
 	var PeoplePortfolioGroup = mongoose.mtModel(req.user.tenantId + '.' + 'PeoplePortfolioGroup');
 	var peoplePortfolioGroup = new PeoplePortfolioGroup(req.body);
 	peoplePortfolioGroup.user = req.user;
 
-	peoplePortfolioGroup.save(function(err) {
-		if (err) {
-			return res.status(400).send({
-				message: errorHandler.getErrorMessage(err)
-			});
-		} else {
-			res.jsonp(peoplePortfolioGroup);
-		}
-	});
+    async.series([
+        // GROUP: Save Group in its collection
+        function(callback){
+            peoplePortfolioGroup.save(function(err){
+                callback(err);
+            });
+        },
+        // PORTFOLIOS: Add new group to all portfolios
+        function(callback){
+            Portfolio.find().exec(function(err, portfolios){
+                if (err) {
+                    callback(err);
+                } else {
+                    async.each(portfolios, function(portfolio, callback){
+                        portfolio.stakeholders.push({
+                            group: peoplePortfolioGroup._id,
+                            roles: []
+                        });
+                        portfolio.save(function(err){
+                            if(err){callback(err);} else {callback();}
+                        });
+                    });
+                    callback(null);
+                }
+            });
+        }
+    ],function(err){
+        if (err) {
+            return res.status(400).send({
+                message: errorHandler.getErrorMessage(err)
+            });
+        } else {
+            res.jsonp(peoplePortfolioGroup);
+        }
+    });
 };
 
 /**
@@ -58,42 +85,59 @@ exports.update = function(req, res) {
  * Delete an People Portfolio group
  */
 exports.delete = function(req, res) {
-	var PeoplePortfolioGroup = mongoose.mtModel(req.user.tenantId + '.' + 'PeoplePortfolioGroup');
+    var Portfolio = mongoose.mtModel(req.user.tenantId + '.' + 'Portfolio');
+    var PeoplePortfolioGroup = mongoose.mtModel(req.user.tenantId + '.' + 'PeoplePortfolioGroup');
 	var PeoplePortfolioRole = mongoose.mtModel(req.user.tenantId + '.' + 'PeoplePortfolioRole');
 	var peoplePortfolioGroup = req.peoplePortfolioGroup ;
 
-	async.series([
-		function(callback){
-			// Delete roles in group from "people roles" collection
-			async.each(peoplePortfolioGroup.roles, function(item, callback){
-				PeoplePortfolioRole.findById(item._id).exec(function(err, role){
-					if (err) {
-						return res.status(400).send({
-							message: errorHandler.getErrorMessage(err)
-						});
-					} else {
-						role.remove();
-					}
-				});
-				callback();
-			});
-			callback(null, 'one');
-		},
-		function(callback){
-			// Delete group from groups
-			peoplePortfolioGroup.remove();
-			callback(null, 'two');
-		}
-	],function(err, results){
-		// results is now equal to ['one', 'two']
-		if (err) {
-			return res.status(400).send({
-				message: errorHandler.getErrorMessage(err)
-			});
-		} else {
-			res.jsonp(peoplePortfolioGroup);
-		}
-	});
+    async.series([
+        // PEOPLE-PORTFOLIO-GROUP: Delete Group from its collection
+        function(callback){
+            peoplePortfolioGroup.remove(function(err){
+                callback(err);
+            });
+        },
+        // ROLES: Delete all roles (from "people-portfolio-roles" collection) belonging to this Group
+        function(callback){
+            async.each(peoplePortfolioGroup.roles, function(item, callback){
+                PeoplePortfolioRole.findByIdAndRemove(item._id, function(err){
+                    if(err){callback(err);} else {callback();}
+                });
+            });
+            callback(null);
+        },
+        // PORTFOLIOS: Delete group object from portfolio.stakeholders
+        function(callback){
+            Portfolio.find().exec(function(err, portfolios){
+                if (err) {
+                    callback(err);
+                } else {
+                    async.each(portfolios, function(portfolio, callback){
+                        async.each(portfolio.stakeholders, function(assignedGroup, callback){
+                            if(assignedGroup.group.equals(peoplePortfolioGroup._id)){
+                                assignedGroup.remove(function(err){
+                                    if(err){callback(err);}
+                                });
+                            }
+                            callback();
+                        });
+                        portfolio.save(function(err){
+                            if(err){callback(err);} else {callback();}
+                        });
+                    });
+                    callback(null);
+                }
+            });
+        }
+    ],function(err){
+        if (err) {
+            return res.status(400).send({
+                message: errorHandler.getErrorMessage(err)
+            });
+        } else {
+            res.jsonp(peoplePortfolioGroup);
+        }
+    });
 };
 
 /**

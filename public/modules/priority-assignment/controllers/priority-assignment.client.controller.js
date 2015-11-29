@@ -133,9 +133,8 @@ angular.module('priority-assignment').controller('PriorityAssignmentController',
 				{
 					projectId: project._id,
 					assignedGroupId: assignedGroup._id,
-					assignedPriorityId: assignedPriority._id,
-					valueId: assignedPriority.priorityValue
-				},{}, function(res){
+					assignedPriorityId: assignedPriority._id
+				},{valueId: assignedPriority.priorityValue}, function(res){
 					$scope.selectPriorityForm(assignedPriority, 'view');
 				}, function(err){
 					$scope.error = err.data.message;

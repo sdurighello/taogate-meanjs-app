@@ -241,7 +241,7 @@ exports.updateCategoryAssignment = function(req, res) {
         if(assignedGroup._id.equals(req.params.assignedGroupId)){
             async.each(assignedGroup.categories, function(assignedCategory, callback){
                 if(assignedCategory._id.equals(req.params.assignedCategoryId)){
-                    assignedCategory.categoryValue = req.params.valueId;
+                    assignedCategory.categoryValue = req.body.valueId;
                     project.save(function(err){
                         if(err){callback(err);}
                     });
@@ -274,7 +274,7 @@ exports.updatePriorityAssignment = function(req, res) {
         if(assignedGroup._id.equals(req.params.assignedGroupId)){
             async.each(assignedGroup.priorities, function(assignedPriority, callback){
                 if(assignedPriority._id.equals(req.params.assignedPriorityId)){
-                    assignedPriority.priorityValue = req.params.valueId;
+                    assignedPriority.priorityValue = req.body.valueId;
                     project.save(function(err){
                         if(err){callback(err);}
                     });
@@ -307,7 +307,7 @@ exports.updateImpactAssignment = function(req, res) {
         if(assignedGroup._id.equals(req.params.assignedGroupId)){
             async.each(assignedGroup.impacts, function(assignedImpact, callback){
                 if(assignedImpact._id.equals(req.params.assignedImpactId)){
-                    assignedImpact.score = req.params.scoreId;
+                    assignedImpact.score = req.body.scoreId;
                     project.save(function(err){
                         if(err){callback(err);}
                     });
@@ -342,7 +342,7 @@ exports.updateRiskAssignment = function(req, res) {
     async.waterfall([
         // Find the SEVERITY ASSIGNMENT based on impact and probability
         function(callback){
-            RiskSeverityAssignment.findOne({probability: req.params.probabilityId, impact:req.params.impactId},
+            RiskSeverityAssignment.findOne({probability: req.body.probabilityId, impact:req.body.impactId},
                 function(err, severityAssignment) {
                 if (err) {
                     callback(err);
@@ -357,8 +357,8 @@ exports.updateRiskAssignment = function(req, res) {
                 if(assignedCategory._id.equals(req.params.assignedCategoryId)){
                     async.each(assignedCategory.risks, function(assignedRisk, callback){
                         if(assignedRisk._id.equals(req.params.assignedRiskId)){
-                            assignedRisk.impact = req.params.impactId;
-                            assignedRisk.probability = req.params.probabilityId;
+                            assignedRisk.impact = req.body.impactId;
+                            assignedRisk.probability = req.body.probabilityId;
                             if(severityAssignment){
                                 assignedRisk.severityAssignment = severityAssignment._id;
                             } else {

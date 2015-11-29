@@ -15,19 +15,19 @@ module.exports = function(app) {
 		.delete(users.requiresLogin, projects.hasAuthorization, projects.delete);
 
 	// Category Assignment
-	app.route('/projects/categoryAssignment/:projectId/:assignedGroupId/:assignedCategoryId/:valueId')
+	app.route('/projects/:projectId/categoryAssignment/:assignedGroupId/:assignedCategoryId')
 		.put(users.requiresLogin, projects.hasAuthorization, projects.updateCategoryAssignment);
 
     // Priority Assignment
-    app.route('/projects/priorityAssignment/:projectId/:assignedGroupId/:assignedPriorityId/:valueId')
+    app.route('/projects/:projectId/priorityAssignment/:assignedGroupId/:assignedPriorityId')
         .put(users.requiresLogin, projects.hasAuthorization, projects.updatePriorityAssignment);
 
     // Impact Assignment
-    app.route('/projects/impactAssignment/:projectId/:assignedGroupId/:assignedImpactId/:scoreId')
+    app.route('/projects/:projectId/impactAssignment/:assignedGroupId/:assignedImpactId')
         .put(users.requiresLogin, projects.hasAuthorization, projects.updateImpactAssignment);
 
     // Risk Assignment
-    app.route('/projects/riskAssignment/:projectId/:assignedCategoryId/:assignedRiskId/:impactId/:probabilityId')
+    app.route('/projects/:projectId/riskAssignment/:assignedCategoryId/:assignedRiskId')
         .put(users.requiresLogin, projects.hasAuthorization, projects.updateRiskAssignment);
 
     // Stakeholders

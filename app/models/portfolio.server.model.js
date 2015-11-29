@@ -6,12 +6,43 @@
 var mongoose = require('mongoose'),
 	Schema = mongoose.Schema,
 	deepPopulate = require('mongoose-deep-populate');
-
 require('mongoose-multitenant');
+
+
 
 /**
  * Portfolio Schema
  */
+
+
+
+// ------------------------------------------------ SUB-SCHEMAS --------------------------------------------------
+
+
+// --- Portfolio Stakeholders ---
+
+var AssignedPeopleCategorySchema = new Schema({
+    category : {type: Schema.Types.ObjectId, ref: 'PeopleCategory', $tenant:true},
+    categoryValue : {type: Schema.Types.ObjectId, ref: 'PeopleCategoryValue', $tenant:true}
+});
+
+var AssignedPeoplePortfolioRoleSchema = new Schema({
+    role : {type: Schema.Types.ObjectId, ref: 'PeoplePortfolioRole', $tenant:true},
+    person: {type: Schema.Types.ObjectId, ref: 'Person', $tenant:true},
+    categorization : [AssignedPeopleCategorySchema]
+});
+
+var AssignedPeoplePortfolioGroupSchema = new Schema({
+    group : {type: Schema.Types.ObjectId, ref: 'PeoplePortfolioGroup', $tenant:true},
+    roles : [AssignedPeoplePortfolioRoleSchema]
+});
+
+
+
+// ------------------------------------------------ BIG FAT PORTFOLIO SCHEMA --------------------------------------------------
+
+
+
 var PortfolioSchema = new Schema({
 	name: {
 		type: String,
@@ -25,10 +56,9 @@ var PortfolioSchema = new Schema({
 	parent : {type: Schema.Types.ObjectId, ref: 'Portfolio', default:null, $tenant:true},
 	ancestors : [{type: Schema.Types.ObjectId, ref: 'Portfolio', default:null, $tenant:true}],
 	funds : {type: Number, default:null},
-	//milestones : [{type: Schema.Types.ObjectId, ref: 'Portfoliomilestone', $tenant:true}],
-	//portfolioIssues : [{type: Schema.Types.ObjectId, ref: 'Portfolioissue', $tenant:true}],
-	//portfolioChangeRequests : [{type: Schema.Types.ObjectId, ref: 'Portfoliochangerequest', $tenant:true}],
-	//portfolioStatuses : [{type: Schema.Types.ObjectId, ref: 'Portfoliostatus', $tenant:true}],
+
+	stakeholders: [AssignedPeoplePortfolioGroupSchema],
+
 	created: {
 		type: Date,
 		default: Date.now

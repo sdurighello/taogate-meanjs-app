@@ -157,10 +157,8 @@ angular.module('risk-analysis').controller('RiskAnalysisController', ['$scope', 
 				{
 					projectId: project._id,
 					assignedCategoryId: assignedCategory._id,
-					assignedRiskId: assignedRisk._id,
-					impactId: assignedRisk.impact,
-                    probabilityId: assignedRisk.probability
-				},{}, function(res){
+					assignedRiskId: assignedRisk._id
+				},{impactId: assignedRisk.impact, probabilityId: assignedRisk.probability}, function(res){
 					$scope.selectRiskForm(assignedRisk, 'view');
 				}, function(err){
 					$scope.error = err.data.message;

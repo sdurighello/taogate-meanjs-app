@@ -204,7 +204,11 @@ angular.module('portfolio-setup').controller('PortfolioSetupController', ['$scop
 
 		$scope.selectPortfolio = function(portfolioId){
 			$scope.selectPortfolioForm('view');
-			Portfolios.get({portfolioId:portfolioId}, function(portfolio){
+			Portfolios.get({
+				portfolioId:portfolioId,
+				retPropertiesString : 'user created name parent ancestors type portfolioManager backupPortfolioManager funds',
+				deepPopulateArray : ['parent','type','portfolioManager','backupPortfolioManager']
+			}, function(portfolio){
 				masterPortfolio = portfolio;
 				$scope.viewPortfolio = _.clone(portfolio);
 				$scope.editPortfolio = _.clone(portfolio);

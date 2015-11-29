@@ -169,6 +169,7 @@ angular.module('core').service('Menus', [
 
 		// SETUP
 		this.addMenuItem('topbar','Setup','setup','dropdown','setup',false,['superAdmin','admin','PMO','projectManager','portfolioManager','executive'],2);
+
 			// Portfolio Definition
 		this.addSubMenuItem('topbar', 'setup', 'Portfolio definition', 'menuTitle','menuTitle',false,
 			['superAdmin','admin','PMO','projectManager','portfolioManager','executive'],0);
@@ -178,32 +179,34 @@ angular.module('core').service('Menus', [
 				// Portfolios
 		this.addSubMenuItem('topbar', 'setup', 'Portfolios', 'portfolio-setup','portfolio-setup',false,
 			['superAdmin','admin','PMO','projectManager','portfolioManager','executive'],2);
-				// Stakeholders
-		this.addSubMenuItem('topbar', 'setup', 'Stakeholders', 'people-setup','people-setup',false,
-			['superAdmin','admin','PMO','projectManager','portfolioManager','executive'],3);
 				// Priorities
 		this.addSubMenuItem('topbar', 'setup', 'Priorities', 'priority-setup','priority-setup',false,
-			['superAdmin','admin','PMO','projectManager','portfolioManager','executive'],4);
+			['superAdmin','admin','PMO','projectManager','portfolioManager','executive'],3);
 				// Categories
 		this.addSubMenuItem('topbar', 'setup', 'Categories', 'category-setup','category-setup',false,
-			['superAdmin','admin','PMO','projectManager','portfolioManager','executive'],5);
-                // Dependencies
-        this.addSubMenuItem('topbar', 'setup', 'Dependencies', 'dependency-setup','dependency-setup',false,
-            ['superAdmin','admin','PMO','projectManager','portfolioManager','executive'],6);
+			['superAdmin','admin','PMO','projectManager','portfolioManager','executive'],4);
+
 			// Portfolio Evaluation
 		this.addSubMenuItem('topbar', 'setup', '', 'divider','divider',false,
-			['superAdmin','admin','PMO','projectManager','portfolioManager','executive'],7);
+			['superAdmin','admin','PMO','projectManager','portfolioManager','executive'],5);
 		this.addSubMenuItem('topbar', 'setup', 'Portfolio evaluation', 'menuTitle','menuTitle',false,
-			['superAdmin','admin','PMO','projectManager','portfolioManager','executive'],8);
+			['superAdmin','admin','PMO','projectManager','portfolioManager','executive'],6);
                 // Financial analysis
         this.addSubMenuItem('topbar', 'setup', 'Financial analysis', 'financial-analysis-setup','financial-analysis-setup',false,
-            ['superAdmin','admin','PMO','projectManager','portfolioManager','executive'],9);
+            ['superAdmin','admin','PMO','projectManager','portfolioManager','executive'],7);
                 // Qualitative analysis
         this.addSubMenuItem('topbar', 'setup', 'Qualitative analysis', 'qualitative-analysis-setup','qualitative-analysis-setup',false,
-            ['superAdmin','admin','PMO','projectManager','portfolioManager','executive'],10);
+            ['superAdmin','admin','PMO','projectManager','portfolioManager','executive'],8);
                 // Risk analysis
         this.addSubMenuItem('topbar', 'setup', 'Risk analysis', 'risk-analysis-setup','risk-analysis-setup',false,
-            ['superAdmin','admin','PMO','projectManager','portfolioManager','executive'],11);
+            ['superAdmin','admin','PMO','projectManager','portfolioManager','executive'],9);
+				// Stakeholders
+		this.addSubMenuItem('topbar', 'setup', 'Stakeholders', 'people-setup','people-setup',false,
+			['superAdmin','admin','PMO','projectManager','portfolioManager','executive'],10);
+				// Dependencies
+		this.addSubMenuItem('topbar', 'setup', 'Dependencies', 'dependency-setup','dependency-setup',false,
+			['superAdmin','admin','PMO','projectManager','portfolioManager','executive'],11);
+
         // Portfolio Delivery
         this.addSubMenuItem('topbar', 'setup', '', 'divider','divider',false,
             ['superAdmin','admin','PMO','projectManager','portfolioManager','executive'],12);
@@ -305,7 +308,7 @@ angular.module('core').service('Menus', [
         this.addSubMenuItem('topbar', 'evaluation', 'Dependencies', 'menuTitle','menuTitle',false,
             ['superAdmin','admin','PMO','projectManager','portfolioManager','executive'],9);
                 // Project dependencies
-        this.addSubMenuItem('topbar', 'evaluation', 'Project dependencies', 'dependency-assignment','dependency-assignment',false,
+        this.addSubMenuItem('topbar', 'evaluation', 'Project dependencies', 'dependency-analysis','dependency-analysis',false,
             ['superAdmin','admin','PMO','projectManager','portfolioManager','executive'],10);
 
 

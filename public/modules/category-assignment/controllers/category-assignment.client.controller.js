@@ -133,9 +133,8 @@ angular.module('category-assignment').controller('CategoryAssignmentController',
                 {
                     projectId: project._id,
                     assignedGroupId: assignedGroup._id,
-                    assignedCategoryId: assignedCategory._id,
-                    valueId: assignedCategory.categoryValue
-                },{}, function(res){
+                    assignedCategoryId: assignedCategory._id
+                },{valueId: assignedCategory.categoryValue}, function(res){
                     $scope.selectCategoryForm(assignedCategory, 'view');
                 }, function(err){
                     $scope.error = err.data.message;

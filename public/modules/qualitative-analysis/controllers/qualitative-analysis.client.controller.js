@@ -130,14 +130,12 @@ angular.module('qualitative-analysis').controller('QualitativeAnalysisController
 		// ------------- EDIT IMPACT ASSIGNMENT ---------
 
 		$scope.saveAssignedImpact = function(project, assignedGroup, assignedImpact){
-            console.log(assignedImpact.score);
 			Projects.updateImpactAssignment(
 				{
 					projectId: project._id,
 					assignedGroupId: assignedGroup._id,
-					assignedImpactId: assignedImpact._id,
-					scoreId: assignedImpact.score
-				},{}, function(res){
+					assignedImpactId: assignedImpact._id
+				},{scoreId: assignedImpact.score}, function(res){
 					$scope.selectImpactForm(assignedImpact, 'view');
 				}, function(err){
 					$scope.error = err.data.message;

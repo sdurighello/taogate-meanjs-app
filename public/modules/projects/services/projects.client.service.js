@@ -10,23 +10,28 @@ angular.module('projects').factory('Projects', ['$resource',
 			},
             updateCategoryAssignment: {
                 method: 'PUT',
-                url: 'projects/categoryAssignment/:projectId/:assignedGroupId/:assignedCategoryId/:valueId'
+                url: 'projects/:projectId/categoryAssignment/:assignedGroupId/:assignedCategoryId'
+                // req.body: {valueId: category value id}
             },
             updatePriorityAssignment: {
                 method: 'PUT',
-                url: 'projects/priorityAssignment/:projectId/:assignedGroupId/:assignedPriorityId/:valueId'
+                url: 'projects/:projectId/priorityAssignment/:assignedGroupId/:assignedPriorityId'
+                // req.body: {valueId: priority value id}
             },
             updateImpactAssignment: {
                 method: 'PUT',
-                url: 'projects/impactAssignment/:projectId/:assignedGroupId/:assignedImpactId/:scoreId'
+                url: 'projects/:projectId/impactAssignment/:assignedGroupId/:assignedImpactId'
+                // req.body: {scoreId: impact score id}
             },
             updateRiskAssignment: {
                 method: 'PUT',
-                url: 'projects/riskAssignment/:projectId/:assignedCategoryId/:assignedRiskId/:impactId/:probabilityId'
+                url: 'projects/:projectId/riskAssignment/:assignedCategoryId/:assignedRiskId'
+                // req.body: {probabilityId: risk probability id, impactId: risk impact id}
             },
             updatePeopleAssignment: {
                 method: 'PUT',
                 url: 'projects/:projectId/stakeholders/:assignedGroupId/:assignedRoleId'
+                // req.body: {the whole "assignedRole" object}
             }
 		});
 	}

@@ -120,7 +120,8 @@ exports.read = function(req, res) {
  */
 exports.update = function(req, res) {
 	var peopleProjectRole = req.peopleProjectRole ;
-
+    peopleProjectRole.user = req.user;
+    peopleProjectRole.created = Date.now();
 	peopleProjectRole = _.extend(peopleProjectRole , req.body);
 
 	peopleProjectRole.save(function(err) {

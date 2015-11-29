@@ -12,6 +12,7 @@ var mongoose = require('mongoose'),
  * Create a People category
  */
 exports.create = function(req, res) {
+    var Portfolio = mongoose.mtModel(req.user.tenantId + '.' + 'Portfolio');
 	var Project = mongoose.mtModel(req.user.tenantId + '.' + 'Project');
 	var PeopleCategory = mongoose.mtModel(req.user.tenantId + '.' + 'PeopleCategory');
 	var peopleCategory = new PeopleCategory(req.body);
@@ -42,6 +43,31 @@ exports.create = function(req, res) {
                             callback();
                         });
                         project.save(function(err){
+                            if(err){callback(err);} else {callback();}
+                        });
+                    });
+                    callback(null);
+                }
+            });
+        },
+        // PORTFOLIO: Add new people-category to all roles in portfolio-stakeholders
+        function(callback){
+            Portfolio.find().exec(function(err, portfolios){
+                if (err) {
+                    callback(err);
+                } else {
+                    async.each(portfolios, function(portfolio, callback){
+                        async.each(portfolio.stakeholders, function(assignedGroup, callback){
+                            async.each(assignedGroup.roles, function(assignedRole, callback){
+                                assignedRole.categorization.push({
+                                    category: peopleCategory._id,
+                                    categoryValue: null
+                                });
+                                callback();
+                            });
+                            callback();
+                        });
+                        portfolio.save(function(err){
                             if(err){callback(err);} else {callback();}
                         });
                     });
@@ -91,6 +117,7 @@ exports.update = function(req, res) {
  * Delete an People category
  */
 exports.delete = function(req, res) {
+    var Portfolio = mongoose.mtModel(req.user.tenantId + '.' + 'Portfolio');
     var Project = mongoose.mtModel(req.user.tenantId + '.' + 'Project');
     var PeopleCategoryValue = mongoose.mtModel(req.user.tenantId + '.' + 'PeopleCategoryValue');
     var peopleCategory = req.peopleCategory ;
@@ -133,6 +160,35 @@ exports.delete = function(req, res) {
                             callback();
                         });
                         project.save(function(err){
+                            if(err){callback(err);} else {callback();}
+                        });
+                    });
+                }
+            });
+            callback(null);
+        },
+        // PORTFOLIOS: Delete category from each role's categorization in portfolio.stakeholders
+        function(callback){
+            Portfolio.find().exec(function(err, portfolios){
+                if (err) {
+                    callback(err);
+                } else {
+                    async.each(portfolios, function(portfolio, callback){
+                        async.each(portfolio.stakeholders, function(assignedGroup, callback){
+                            async.each(assignedGroup.roles, function(assignedRole, callback){
+                                async.each(assignedRole.categorization, function(assignedCategory, callback){
+                                    if(assignedCategory.category.equals(peopleCategory._id)){
+                                        assignedCategory.remove(function(err){
+                                            if(err){callback(err);}
+                                        });
+                                    }
+                                    callback();
+                                });
+                                callback();
+                            });
+                            callback();
+                        });
+                        portfolio.save(function(err){
                             if(err){callback(err);} else {callback();}
                         });
                     });
