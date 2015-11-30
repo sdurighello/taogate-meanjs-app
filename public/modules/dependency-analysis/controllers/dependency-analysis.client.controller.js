@@ -92,8 +92,8 @@ angular.module('dependency-analysis').controller('DependencyAnalysisController',
 			var newDependency = new Dependencies({
                 name: $scope.newDependency.name,
                 description: $scope.newDependency.description,
-                type: allowNull($scope.newDependency.type),
-                impact: allowNull($scope.newDependency.impact),
+                type: $scope.newDependency.type,
+                impact: $scope.newDependency.impact,
                 source: $scope.newDependency.source,
                 target: $scope.newDependency.target,
                 requiredByDate: $scope.newDependency.requiredByDate
