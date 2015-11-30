@@ -1,8 +1,8 @@
 'use strict';
 
 angular.module('dependency-analysis').controller('DependencyAnalysisController', ['$scope', '$stateParams', '$location', 'Authentication',
-	'Projects','Portfolios', 'DependencyTypes', 'DependencyImpacts', '_','$q',
-	function($scope, $stateParams, $location, Authentication, Projects, Portfolios, DependencyTypes, DependencyImpacts, _ , $q) {
+	'Projects','Portfolios', 'DependencyTypes', 'DependencyImpacts', 'Dependencies', '_','$q',
+	function($scope, $stateParams, $location, Authentication, Projects, Portfolios, DependencyTypes, DependencyImpacts, Dependencies, _ , $q) {
 
 		// ----------- INIT ---------------
 
@@ -27,6 +27,11 @@ angular.module('dependency-analysis').controller('DependencyAnalysisController',
             });
             DependencyImpacts.query(function(dependencyImpacts){
                 $scope.dependencyImpacts = dependencyImpacts;
+            }, function(err){
+                $scope.initError.push(err.data.message);
+            });
+            Dependencies.query(function(dependencies){
+                $scope.dependencies = dependencies;
             }, function(err){
                 $scope.initError.push(err.data.message);
             });
@@ -65,13 +70,13 @@ angular.module('dependency-analysis').controller('DependencyAnalysisController',
 
 		// ------------------- NG-SWITCH ---------------------
 
-		$scope.switchProjectForm = {};
+		$scope.switchDependencyForm = {};
 
-		$scope.selectProjectForm = function(string){
-			if(string === 'default'){ $scope.switchProjectForm = 'default';}
-			if(string === 'new'){$scope.switchProjectForm = 'new';}
-			if(string === 'view'){ $scope.switchProjectForm = 'view';}
-			if(string === 'edit'){$scope.switchProjectForm = 'edit';}
+		$scope.selectDependencyForm = function(string){
+			if(string === 'default'){ $scope.switchDependencyForm = 'default';}
+			if(string === 'new'){$scope.switchDependencyForm = 'new';}
+			if(string === 'view'){ $scope.switchDependencyForm = 'view';}
+			if(string === 'edit'){$scope.switchDependencyForm = 'edit';}
 		};
 
 		var allowNull = function(obj){
@@ -79,119 +84,98 @@ angular.module('dependency-analysis').controller('DependencyAnalysisController',
 		};
 
 
-		// ------------- CREATE NEW PROJECT -----------
+		// ------------- CREATE NEW DEPENDENCY -----------
 
-		$scope.newProject = {};
+		$scope.newDependency = {};
 
-		$scope.createProject = function(){
-			var newProject = new Projects({
-				// Definition
-				parent: null,
-				portfolio: null,
-				identification: {
-					idNumber : $scope.newProject.idNumber,
-					name : $scope.newProject.name,
-					description : $scope.newProject.description,
-					reqStartDate: $scope.newProject.reqStartDate,
-					reqEndDate : $scope.newProject.reqEndDate,
-					earmarkedFunds : $scope.newProject.earmarkedFunds,
-					projectManager: allowNull($scope.newProject.projectManager),
-					backupProjectManager: allowNull($scope.newProject.backupProjectManager)
-				},
-				categorization: [],
-				prioritization: [],
-				selection: {active : true},
-				// Evaluation
-				costs: [],
-				benefits: [],
-				qualitativeAnalysis: [],
-				riskAnalysis: [],
-				stakeholders: [],
-				// Delivery
-				process: null
-
+		$scope.createDependency = function(){
+			var newDependency = new Dependencies({
+                name: $scope.newDependency.name,
+                description: $scope.newDependency.description,
+                type: allowNull($scope.newDependency.type),
+                impact: allowNull($scope.newDependency.impact),
+                source: $scope.newDependency.source,
+                target: $scope.newDependency.target,
+                requiredByDate: $scope.newDependency.requiredByDate
 			});
-			newProject.$save(function(response) {
-				// Add new project to view after saving to server
-				$scope.projects.unshift(newProject);
+			newDependency.$save(function(response) {
+				// Add new dependency to view after saving to server
+				$scope.dependencies.unshift(newDependency);
 				// Clear form fields
-				$scope.newProject = {};
-				$scope.selectProjectForm('default');
+				$scope.newDependency = {};
+				$scope.selectDependencyForm('default');
 			}, function(errorResponse) {
 				$scope.error = errorResponse.data.message;
 			});
 		};
 
-		$scope.cancelNewProject = function(){
-			$scope.newProject = {};
-			$scope.selectProjectForm('default');
+		$scope.cancelNewDependency = function(){
+			$scope.newDependency = {};
+			$scope.selectDependencyForm('default');
 		};
 
 
-		// ------------- SELECT VIEW PROJECT ------------
+		// ------------- SELECT VIEW DEPENDENCY ------------
 
-		var originalProject;
-		var clickedProject;
-		$scope.selectProject = function(project){
-			// Save the clicked project to update its text if changes to name happen
-			clickedProject = project;
-			// Get the full project fat object from the "projectById" server function that populates everything
-			Projects.get({
-				projectId:project._id,
-				retPropertiesString : 'identification',
-				deepPopulateArray : ['identification.projectManager','identification.backupProjectManager']
+		var originalDependency;
+		var clickedDependency;
+		$scope.selectDependency = function(dependency){
+			// Save the clicked dependency to update its text if changes to name happen
+			clickedDependency = dependency;
+			// Get the full dependency fat object from the "dependencyById" server function that populates everything
+			Dependencies.get({
+                dependencyId:dependency._id,
+				retPropertiesString : 'user created name description type impact source target requiredByDate',
+				deepPopulateArray : []
 			}, function(res){
-				$scope.selectedProject = res;
-				originalProject = _.cloneDeep(res);
-				$scope.selectProjectForm('view');
+				$scope.selectedDependency = res;
+				originalDependency = _.cloneDeep(res);
+				$scope.selectDependencyForm('view');
 			},function(errorResponse){
 				$scope.error = errorResponse.data.message;
 			});
 		};
 
 
-		$scope.cancelViewProject = function(){
-			$scope.selectedProject = null;
-			clickedProject = null;
-			$scope.selectProjectForm('default');
+		$scope.cancelViewDependency = function(){
+			$scope.selectedDependency = null;
+			clickedDependency = null;
+			$scope.selectDependencyForm('default');
 		};
 
 
-		// ------------- EDIT PROJECT ------------
+		// ------------- EDIT DEPENDENCY ------------
 
-		$scope.editProject = function(){
+		$scope.editDependency = function(){
 			// Clean up the deep populate
-			var projectCopy = _.cloneDeep($scope.selectedProject);
-			projectCopy.identification.projectManager = allowNull($scope.selectedProject.identification.projectManager);
-			projectCopy.identification.backupProjectManager = allowNull($scope.selectedProject.identification.backupProjectManager);
+			var dependencyCopy = _.cloneDeep($scope.selectedDependency);
 
-			// Save the project to the server
-			Projects.update(projectCopy, function(res) {
-				// Update the text on the project list (project from $scope.projects)
-				clickedProject.identification.idNumber = res.identification.idNumber;
-				clickedProject.identification.name = res.identification.name;
-				$scope.selectProject($scope.selectedProject);
+			// Save the dependency to the server
+			Dependencies.update(dependencyCopy, function(res) {
+				// Update the text on the dependency list (dependency from $scope.dependencies)
+				clickedDependency.name = res.name;
+				$scope.selectDependency($scope.selectedDependency);
 			}, function(errorResponse) {
 				$scope.error = errorResponse.data.message;
 			});
 		};
 
-		$scope.cancelEditProject = function(){
-			$scope.selectedProject = _.cloneDeep(originalProject);
-			$scope.selectProject($scope.selectedProject);
+		$scope.cancelEditDependency = function(){
+			$scope.selectedDependency = _.cloneDeep(originalDependency);
+			$scope.selectDependency($scope.selectedDependency);
 		};
 
 
 
-		// ------------- DELETE PROJECT ------------
+		// ------------- DELETE DEPENDENCY ------------
 
-		$scope.deleteProject = function(){
-			Projects.remove({},{_id: $scope.selectedProject._id}, function(projectRes){
-				// Remove project from the "projects" collection
-				$scope.projects = _.without($scope.projects, clickedProject);
-				$scope.selectedProject = null;
-				clickedProject = null;
-				$scope.selectProjectForm('default');
+		$scope.deleteDependency = function(){
+			Dependencies.remove({},{_id: $scope.selectedDependency._id}, function(dependencyRes){
+				// Remove dependency from the "dependencies" collection
+				$scope.dependencies = _.without($scope.dependencies, clickedDependency);
+				$scope.selectedDependency = null;
+				clickedDependency = null;
+				$scope.selectDependencyForm('default');
 			}, function(err){
 				$scope.error = err.data.message;
 			});

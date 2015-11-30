@@ -24,142 +24,154 @@
 					<div class="row">
 						<div class=" form-group col-md-4">
 							<label for="selectSourcePortfolio">Source</label>
-							<select id="selectSourcePortfolio" class="form-control input-sm" ng-model="filterDependency.sourcePortfolio"
-									ng-options="portfolio.name for portfolio in portfolios">
+							<select id="selectSourcePortfolio" class="form-control input-sm" data-ng-model="filterDependency.sourcePortfolio"
+									data-ng-options="portfolio._id as portfolio.name for portfolio in portfolios">
 								<option value="">--Source portfolio</option>
 							</select>
 						</div>
 						<div class=" form-group col-md-4">
 							<label for="selectTargetPortfolio">Target</label>
-							<select id="selectTargetPortfolio" class="form-control input-sm" ng-model="filterDependency.targetPortfolio"
-									ng-options="portfolio.name for portfolio in portfolios">
+							<select id="selectTargetPortfolio" class="form-control input-sm" data-ng-model="filterDependency.targetPortfolio"
+									data-ng-options="portfolio._id as portfolio.name for portfolio in portfolios">
 								<option value="">--Target portfolio</option>
 							</select>
 						</div>
 						<div class="form-group col-md-4">
 							<label for="type">Type</label>
-							<select id="type" class="form-control input-sm" ng-model = "filterDependency.depType"
-									ng-options="depType.depTypeName for depType in dependencyTypes">
+							<select id="type" class="form-control input-sm" data-ng-model = "filterDependency.type"
+									data-ng-options="type._id as type.name for type in dependencyTypes">
 								<option value="">--Dependency type</option>
 							</select>
 						</div>
 					</div>
 					<div class="row">
 						<div class="form-group col-md-4">
-							<select id="selectSourceProject" class="form-control input-sm" ng-model="filterDependency.sourceProject"
-									ng-options="project.identificationData.projectName for project in projects | filter: project.identificationData.portfolio._id = filterDependency.sourcePortfolio._id">
+							<select id="selectSourceProject" class="form-control input-sm" data-ng-model="filterDependency.source"
+									data-ng-options="project._id as project.identification.name for project in projects | filter: project.portfolio = filterDependency.sourcePortfolio">
 								<option value="">--Source project</option>
 							</select>
 						</div>
 						<div class="form-group col-md-4">
-							<select id="selectTargetProject" class="form-control input-sm" ng-model="filterDependency.targetProject"
-									ng-options="project.identificationData.projectName for project in projects | filter: project.identificationData.portfolio._id = filterDependency.targetPortfolio._id">
+							<select id="selectTargetProject" class="form-control input-sm" data-ng-model="filterDependency.target"
+									data-ng-options="project._id as project.identification.name for project in projects | filter: project.portfolio = filterDependency.targetPortfolio">
 								<option value="">--Target project</option>
 							</select>
 						</div>
 					</div>
 					<hr>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div data-ng-show="dependencies.length === 0" class="alert alert-warning text-center">
+                                There are no dependencies created yet
+                            </div>
+                        </div>
+                    </div>
 					<div class="row" style="min-height: 350px; max-height: 350px; overflow-y: auto">
 						<div class="col-md-12">
-							<button type="button" ng-repeat="project in projects | filter:filterProject"
-									ng-click="selectProject(project)" class="btn btn-default btn-sm center-block btn-block" style="overflow: hidden;">
-								{{project.identification.idNumber}} {{project.identification.name}}
+							<button type="button" ng-repeat="dependency in dependencies | filter:filterDependency"
+									data-ng-click="selectDependency(dependency)" class="btn btn-default btn-sm center-block btn-block" style="overflow: hidden;">
+								{{dependency.name}} - {{dependency.requiredByDate}}
 							</button>
 						</div>
 					</div>
 				</div>
 			</div>
 		</div>
-		<div class="col-md-6" data-ng-switch="switchProjectForm">
+		<div class="col-md-6" data-ng-switch="switchDependencyForm">
 			<div ng-switch-default="default">
 				<div class="row" ng-show="userHasAuthorization">
 					<div class="col-md-12">
-						<button class="btn btn-primary" data-ng-click="selectProjectForm('new')">
-							New project
+						<button class="btn btn-primary" data-ng-click="selectDependencyForm('new')">
+							New dependency
 						</button>
 					</div>
 					<hr>
 				</div>
 				<div class="row">
 					<div class="col-md-12">
-						<div data-ng-hide="selectedProject || projects.length === 0" class="alert alert-warning text-center">
-							Select a project to see its details
-						</div>
-						<div data-ng-show="projects.length === 0" class="alert alert-warning text-center">
-							There are no projects created yet
+                        <div data-ng-hide="selectedDependency || dependencies.length === 0" class="alert alert-warning text-center">
+							Select a dependency to see its details
 						</div>
 					</div>
 				</div>
 			</div>
 			<div class="panel panel-default" data-ng-switch-when="new">
 				<div class="panel-heading">
-					<h6 class="panel-title text-center">Add new project</h6>
+					<h6 class="panel-title text-center">Add new dependency</h6>
 				</div>
 				<div class="panel-body" style="min-height: 450px;  max-height: 450px; overflow-y: auto;">
-					<form class="form" data-ng-submit="createProject()" novalidate name="newProjectForm">
+					<form class="form" data-ng-submit="createDependency()" novalidate name="newDependencyForm">
 						<fieldset>
 							<div class="row">
-								<div class="form-group-sm col-md-3">
-									<label for="uid">Project ID</label>
-									<input id="uid" type="text" class="form-control" placeholder="Enter identifier"
-										   ng-model="newProject.idNumber">
-								</div>
 								<div class="form-group-sm col-md-9">
-									<label for="projectName">Project name</label>
-									<input id="projectName" type="text" class="form-control" placeholder="Enter name"
-										   ng-model="newProject.name" required>
+									<label for="dependencyName">Dependency name</label>
+									<input id="dependencyName" type="text" class="form-control" placeholder="Enter name"
+										   ng-model="newDependency.name" required>
 								</div>
 							</div>
 							<br>
+                            <div class="row">
+                                <div class=" form-group col-md-4">
+                                    <label for="selectSourcePortfolio">Source</label>
+                                    <select id="selectSourcePortfolio" class="form-control input-sm" data-ng-model="filterDependencyNew.sourcePortfolio"
+                                            data-ng-options="portfolio._id as portfolio.name for portfolio in portfolios">
+                                        <option value="">--source portfolio</option>
+                                    </select>
+                                </div>
+                                <div class=" form-group col-md-4">
+                                    <label for="selectTargetPortfolio">Target</label>
+                                    <select id="selectTargetPortfolio" class="form-control input-sm" data-ng-model="filterDependencyNew.targetPortfolio"
+                                            data-ng-options="portfolio._id as portfolio.name for portfolio in portfolios">
+                                        <option value="">--target portfolio</option>
+                                    </select>
+                                </div>
+                                <div class="form-group-sm col-md-4">
+                                    <label for="typeNew">Type</label>
+                                    <select id="typeNew" class="form-control" data-ng-model = "newDependency.type"
+                                            data-ng-options="type._id as type.name for type in dependencyTypes">
+                                        <option value="">--choose type</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="form-group-sm col-md-4">
+                                    <select id="sourceNew" class="form-control" data-ng-model = "newDependency.source"
+                                            ng-options="project._id as project.identification.name for project in projects | filter: project.portfolio = filterDependencyNew.sourcePortfolio">
+                                        <option value="">--source project</option>
+                                    </select>
+                                </div>
+                                <div class="form-group-sm col-md-4">
+                                    <select id="sourceNew" class="form-control" data-ng-model = "newDependency.target"
+                                            ng-options="project._id as project.identification.name for project in projects | filter: project.portfolio = filterDependencyNew.targetPortfolio">
+                                        <option value="">--target project</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <br>
 							<div class="row">
-								<div class="form-group-sm col-md-4">
-									<label for="projectStart">Requested Start</label>
+								<div class="form-group-sm col-md-5">
+									<label for="requiredByDate">Required by</label>
 									<div class="input-group">
-										<input type="text" id="projectStart" class="form-control" datepicker-popup="dd-MMMM-yyyy" data-ng-model="newProject.reqStartDate"
-											   placeholder="YYYY/MM/dd" is-open="$parent.startDatePickerOpenedNew" min-date="" max-date="newProject.reqEndDate" />
+										<input type="text" id="requiredByDate" class="form-control" datepicker-popup="dd-MMMM-yyyy" data-ng-model="newDependency.requiredByDate"
+											   placeholder="YYYY/MM/dd" is-open="$parent.requiredByDatePickerOpenedNew" />
                                         <span class="input-group-btn">
-                                            <button type="button" class="btn btn-default btn-sm" ng-click="openStartDatePickerNew($event)"><i class="glyphicon glyphicon-calendar"></i></button>
+                                            <button type="button" class="btn btn-default btn-sm" ng-click="openRequiredByDatePickerNew($event)"><i class="glyphicon glyphicon-calendar"></i></button>
                                         </span>
 									</div>
 								</div>
-								<div class="form-group-sm col-md-4">
-									<label for="projectEnd">Requested End</label>
-									<div class="input-group">
-										<input id="projectEnd" type="text" class="form-control" datepicker-popup="dd-MMMM-yyyy" data-ng-model="newProject.reqEndDate"
-											   placeholder="YYYY/MM/dd" is-open="$parent.endDatePickerOpenedNew" min-date="newProject.reqStartDate" max-date="" />
-                                        <span class="input-group-btn">
-                                            <button type="button" class="btn btn-default btn-sm" ng-click="openEndDatePickerNew($event)"><i class="glyphicon glyphicon-calendar"></i></button>
-                                        </span>
-									</div>
-								</div>
-								<div class="form-group-sm col-md-4">
-									<label for="projectFunds">Earmarked funds</label>
-									<input id="projectFunds" type="number" min="0" class="form-control"
-										   ng-model="newProject.earmarkedFunds" placeholder="Enter amount">
-								</div>
-							</div>
-							<br>
-							<div class="row">
-								<div class="form-group-sm col-md-4">
-									<label for="projectManagerNew">Project Manager</label>
-									<select id="projectManagerNew" class="form-control" data-ng-model = "newProject.projectManager"
-											ng-options="projectManager.displayName for projectManager in projectManagers">
-										<option value="">--choose person</option>
-									</select>
-								</div>
-								<div class="form-group-sm col-md-4">
-									<label for="backupProjectManagerNew">Backup Project Manager</label>
-									<select id="backupProjectManagerNew" class="form-control" data-ng-model = "newProject.backupProjectManager"
-											ng-options="projectManager.displayName for projectManager in projectManagers">
-										<option value="">--choose person</option>
-									</select>
-								</div>
+                                <div class="form-group-sm col-md-5">
+                                    <label for="impactNew">Impact</label>
+                                    <select id="impactNew" class="form-control" data-ng-model = "newDependency.impact"
+                                            data-ng-options="impact._id as impact.name for impact in impacts">
+                                        <option value="">--choose impact</option>
+                                    </select>
+                                </div>
 							</div>
 							<br>
 							<div class="row">
 								<div class="form-group-sm col-md-12">
-									<label for="projectDescription">Project description</label>
-									<textarea id="projectDescription" class="form-control" placeholder="Enter description" data-ng-model="newProject.description"></textarea>
+									<label for="dependencyDescription">Description</label>
+									<textarea id="dependencyDescription" class="form-control" placeholder="Enter description" data-ng-model="newDependency.description"></textarea>
 								</div>
 							</div>
 							<hr>
@@ -167,7 +179,7 @@
 								<div class="col-md-12 form-group">
 									<div class="pull-right">
 										<input type="submit" value="Save" class="btn btn-success btn-sm">
-										<button class="btn btn-info btn-sm" ng-click="cancelNewProject()">Cancel</button>
+										<button class="btn btn-info btn-sm" ng-click="cancelNewDependency()">Cancel</button>
 									</div>
 								</div>
 							</div>
@@ -177,71 +189,68 @@
 			</div>
 			<div class="panel panel-default" data-ng-switch-when="view">
 				<div class="panel-heading">
-					<h6 class="panel-title text-center" data-ng-bind="selectedProject.identification.name"></h6>
+					<h6 class="panel-title text-center" data-ng-bind="selectedDependency.name"></h6>
 				</div>
 				<div class="panel-body" style="min-height: 450px;  max-height: 450px; overflow-y: auto;">
 					<form class="form">
 						<fieldset>
-							<div class="row">
-								<div class="form-group-sm col-md-3">
-									<label for="uid">Project ID</label>
-									<input id="uid" type="text" class="form-control" disabled placeholder="Enter identifier"
-										   ng-model="selectedProject.identification.idNumber">
-								</div>
-								<div class="form-group-sm col-md-9">
-									<label for="projectName">Project name</label>
-									<input id="projectName" type="text" class="form-control" disabled placeholder="Enter name"
-										   ng-model="selectedProject.identification.name">
-								</div>
-							</div>
-							<br>
-							<div class="row">
-								<div class="form-group-sm col-md-4">
-									<label for="projectStart">Requested Start</label>
-									<input id="projectStart" type="text" class="form-control" datepicker-popup="dd-MMMM-yyyy"
-										   data-ng-model="selectedProject.identification.reqStartDate" disabled/>
-								</div>
-								<div class="form-group-sm col-md-4">
-									<label for="projectEnd">Requested End</label>
-									<input id="projectEnd" type="text" class="form-control" datepicker-popup="dd-MMMM-yyyy"
-										   data-ng-model="selectedProject.identification.reqEndDate" disabled/>
-								</div>
-								<div class="form-group-sm col-md-4">
-									<label for="projectFunds">Earmarked funds</label>
-									<input id="projectFunds" type="number" min="0" class="form-control" disabled
-										   ng-model="selectedProject.identification.earmarkedFunds">
-								</div>
-							</div>
-							<br>
-							<div class="row">
-								<div class="form-group-sm col-md-4">
-									<label for="projectManagerNew">Project Manager</label>
-									<select id="projectManagerNew" class="form-control" data-ng-model = "selectedProject.identification.projectManager"
-											ng-options="projectManager.displayName for projectManager in projectManagers" disabled>
-										<option value="">--choose person</option>
-									</select>
-								</div>
-								<div class="form-group-sm col-md-4">
-									<label for="backupProjectManagerNew">Backup Project Manager</label>
-									<select id="backupProjectManagerNew" class="form-control" data-ng-model = "selectedProject.identification.backupProjectManager"
-											ng-options="projectManager.displayName for projectManager in projectManagers" disabled>
-										<option value="">--choose person</option>
-									</select>
-								</div>
-							</div>
-							<br>
-							<div class="row">
-								<div class="form-group-sm col-md-12">
-									<label for="projectDescription">Project description</label>
-									<textarea id="projectDescription" class="form-control" placeholder="Enter description" data-ng-model="selectedProject.identification.description" disabled></textarea>
-								</div>
-							</div>
+                            <div class="row">
+                                <div class="form-group-sm col-md-9">
+                                    <label for="dependencyName">Dependency name</label>
+                                    <input id="dependencyName" type="text" class="form-control" placeholder="Enter name"
+                                           ng-model="selectedDependency.name" disabled>
+                                </div>
+                            </div>
+                            <br>
+                            <div class="row">
+                                <div class="form-group-sm col-md-4">
+                                    <label for="sourceNew">Source</label>
+                                    <select id="sourceNew" class="form-control" data-ng-model = "selectedDependency.source"
+                                            ng-options="project._id as project.identification.name for project in projects" disabled>
+                                    </select>
+                                </div>
+                                <div class="form-group-sm col-md-4">
+                                    <label for="sourceNew">Target</label>
+                                    <select id="sourceNew" class="form-control" data-ng-model = "selectedDependency.target"
+                                            ng-options="project._id as project.identification.name for project in projects" disabled>
+                                    </select>
+                                </div>
+                                <div class="form-group-sm col-md-4">
+                                    <label for="typeNew">Type</label>
+                                    <select id="typeNew" class="form-control" data-ng-model = "selectedDependency.type"
+                                            data-ng-options="type._id as type.name for type in dependencyTypes" disabled>
+                                    </select>
+                                </div>
+                            </div>
+                            <br>
+                            <div class="row">
+                                <div class="form-group-sm col-md-5">
+                                    <label for="requiredByDate">Required by</label>
+                                    <div class="input-group">
+                                        <input type="text" id="requiredByDate" class="form-control" datepicker-popup="dd-MMMM-yyyy" data-ng-model="selectedDependency.requiredByDate"
+                                               placeholder="YYYY/MM/dd" disabled/>
+                                    </div>
+                                </div>
+                                <div class="form-group-sm col-md-5">
+                                    <label for="impactNew">Impact</label>
+                                    <select id="impactNew" class="form-control" data-ng-model = "selectedDependency.impact"
+                                            data-ng-options="impact._id as impact.name for impact in impacts" disabled>
+                                    </select>
+                                </div>
+                            </div>
+                            <br>
+                            <div class="row">
+                                <div class="form-group-sm col-md-12">
+                                    <label for="dependencyDescription">Description</label>
+                                    <textarea id="dependencyDescription" class="form-control" placeholder="Enter description" data-ng-model="selectedDependency.description" disabled></textarea>
+                                </div>
+                            </div>
 							<hr>
 							<div class="row">
 								<div class="col-md-12">
 									<div class="pull-right">
-										<button class="btn btn-success btn-sm" ng-click="selectProjectForm('edit')">Edit</button>
-										<button class="btn btn-info btn-sm" ng-click="cancelViewProject()">Close</button>
+										<button class="btn btn-success btn-sm" ng-click="selectDependencyForm('edit')">Edit</button>
+										<button class="btn btn-info btn-sm" ng-click="cancelViewDependency()">Close</button>
 									</div>
 								</div>
 							</div>
@@ -251,84 +260,78 @@
 			</div>
 			<div class="panel panel-default" data-ng-switch-when="edit">
 				<div class="panel-heading">
-					<h6 class="panel-title text-center" data-ng-bind="selectedProject.identification.name"></h6>
+					<h6 class="panel-title text-center" data-ng-bind="selectedDependency.name"></h6>
 				</div>
 				<div class="panel-body" style="min-height: 450px;  max-height: 450px; overflow-y: auto;">
-					<form class="form" data-ng-submit="editProject()" novalidate name="editProjectForm">
+					<form class="form" data-ng-submit="editDependency()" novalidate name="editDependencyForm">
 						<fieldset>
-							<div class="row">
-								<div class="form-group-sm col-md-3">
-									<label for="uid">Project ID</label>
-									<input id="uid" type="text" class="form-control" placeholder="Enter identifier"
-										   ng-model="selectedProject.identification.idNumber">
-								</div>
-								<div class="form-group-sm col-md-9">
-									<label for="projectName">Project name</label>
-									<input id="projectName" type="text" class="form-control" placeholder="Enter name"
-										   ng-model="selectedProject.identification.name">
-								</div>
-							</div>
-							<br>
-							<div class="row">
-								<div class="form-group-sm col-md-4">
-									<label for="projectStartEdit">Requested Start</label>
-									<div class="input-group">
-										<input type="text" id="projectStartEdit" class="form-control" datepicker-popup="dd-MMMM-yyyy" data-ng-model="selectedProject.identification.reqStartDate"
-											   is-open="$parent.startDatePickerOpenedEdit" min-date="" max-date="selectedProject.identification.reqEndDate" />
+                            <div class="row">
+                                <div class="form-group-sm col-md-9">
+                                    <label for="dependencyName">Dependency name</label>
+                                    <input id="dependencyName" type="text" class="form-control" placeholder="Enter name"
+                                           ng-model="selectedDependency.name" required>
+                                </div>
+                            </div>
+                            <br>
+                            <div class="row">
+                                <div class="form-group-sm col-md-4">
+                                    <label for="sourceNew">Source</label>
+                                    <select id="sourceNew" class="form-control" data-ng-model = "selectedDependency.source"
+                                            ng-options="project._id as project.identification.name for project in projects">
+                                        <option value="">--choose project</option>
+                                    </select>
+                                </div>
+                                <div class="form-group-sm col-md-4">
+                                    <label for="sourceNew">Target</label>
+                                    <select id="sourceNew" class="form-control" data-ng-model = "selectedDependency.target"
+                                            ng-options="project._id as project.identification.name for project in projects">
+                                        <option value="">--choose project</option>
+                                    </select>
+                                </div>
+                                <div class="form-group-sm col-md-4">
+                                    <label for="typeNew">Type</label>
+                                    <select id="typeNew" class="form-control" data-ng-model = "selectedDependency.type"
+                                            data-ng-options="type._id as type.name for type in dependencyTypes">
+                                        <option value="">--choose type</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <br>
+                            <div class="row">
+                                <div class="form-group-sm col-md-5">
+                                    <label for="requiredByDate">Required by</label>
+                                    <div class="input-group">
+                                        <input type="text" id="requiredByDate" class="form-control" datepicker-popup="dd-MMMM-yyyy" data-ng-model="selectedDependency.requiredByDate"
+                                               placeholder="YYYY/MM/dd" is-open="$parent.requiredByDatePickerOpenedNew" />
                                         <span class="input-group-btn">
-                                            <button type="button" class="btn btn-default btn-sm" ng-click="openStartDatePickerEdit($event)"><i class="glyphicon glyphicon-calendar"></i></button>
+                                            <button type="button" class="btn btn-default btn-sm" ng-click="openRequiredByDatePickerNew($event)"><i class="glyphicon glyphicon-calendar"></i></button>
                                         </span>
-									</div>
-								</div>
-								<div class="form-group-sm col-md-4">
-									<label for="projectEndEdit">Requested End</label>
-									<div class="input-group">
-										<input id="projectEndEdit" type="text" class="form-control" datepicker-popup="dd-MMMM-yyyy" data-ng-model="selectedProject.identification.reqEndDate"
-											   is-open="$parent.endDatePickerOpenedEdit" min-date="selectedProject.identification.reqStartDate" max-date="" />
-                                        <span class="input-group-btn">
-                                            <button type="button" class="btn btn-default btn-sm" ng-click="openEndDatePickerEdit($event)"><i class="glyphicon glyphicon-calendar"></i></button>
-                                        </span>
-									</div>
-								</div>
-								<div class="form-group-sm col-md-4">
-									<label for="projectFunds">Earmarked funds</label>
-									<input id="projectFunds" type="number" min="0" class="form-control"
-										   ng-model="selectedProject.identification.earmarkedFunds">
-								</div>
-							</div>
-							<br>
-							<div class="row">
-								<div class="form-group-sm col-md-4">
-									<label for="projectManagerNew">Project Manager</label>
-									<select id="projectManagerNew" class="form-control" data-ng-model = "selectedProject.identification.projectManager"
-											ng-options="projectManager.displayName for projectManager in projectManagers" >
-										<option value="">--choose person</option>
-									</select>
-								</div>
-								<div class="form-group-sm col-md-4">
-									<label for="backupProjectManagerNew">Backup Project Manager</label>
-									<select id="backupProjectManagerNew" class="form-control" data-ng-model = "selectedProject.identification.backupProjectManager"
-											ng-options="projectManager.displayName for projectManager in projectManagers" >
-										<option value="">--choose person</option>
-									</select>
-								</div>
-							</div>
-							<br>
-							<div class="row">
-								<div class="form-group-sm col-md-12">
-									<label for="projectDescription">Project description</label>
-									<textarea id="projectDescription" class="form-control" placeholder="Enter description" data-ng-model="selectedProject.identification.description" ></textarea>
-								</div>
-							</div>
+                                    </div>
+                                </div>
+                                <div class="form-group-sm col-md-5">
+                                    <label for="impactNew">Impact</label>
+                                    <select id="impactNew" class="form-control" data-ng-model = "selectedDependency.impact"
+                                            data-ng-options="impact._id as impact.name for impact in impacts">
+                                        <option value="">--choose impact</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <br>
+                            <div class="row">
+                                <div class="form-group-sm col-md-12">
+                                    <label for="dependencyDescription">Description</label>
+                                    <textarea id="dependencyDescription" class="form-control" placeholder="Enter description" data-ng-model="selectedDependency.description"></textarea>
+                                </div>
+                            </div>
 							<hr>
 							<div class="row">
 								<div class="col-md-12">
 									<div class="pull-right">
 										<input type="submit" value="Save" class="btn btn-success btn-sm">
-										<button type="button" class="btn btn-sm btn-danger" data-ng-click="deleteProject()">
+										<button type="button" class="btn btn-sm btn-danger" data-ng-click="deleteDependency()">
 											Delete
 										</button>
-										<button class="btn btn-info btn-sm" ng-click="cancelEditProject()">Cancel</button>
+										<button class="btn btn-info btn-sm" ng-click="cancelEditDependency()">Cancel</button>
 									</div>
 								</div>
 							</div>

@@ -157,7 +157,7 @@ angular.module('project-identification').controller('ProjectIdentificationContro
             // Get the full project fat object from the "projectById" server function that populates everything
             Projects.get({
                 projectId:project._id,
-                retPropertiesString : 'identification',
+                retPropertiesString : 'user created identification',
                 deepPopulateArray : ['identification.projectManager','identification.backupProjectManager']
             }, function(res){
                 $scope.selectedProject = res;
