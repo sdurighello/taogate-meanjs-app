@@ -295,6 +295,9 @@ exports.updatePriorityAssignment = function(req, res) {
 };
 
 
+// ------------------------------ DEFINITION ------------------------------
+
+
 /**
  *  Update a Qualitative Impact Assignment
  */
@@ -384,12 +387,7 @@ exports.updateRiskAssignment = function(req, res) {
             res.jsonp(project);
         }
     });
-
-
-
 };
-
-
 
 
 /**
@@ -427,6 +425,138 @@ exports.updatePeopleAssignment = function(req, res) {
 };
 
 
+// ------------------------------ DELIVERY ------------------------------
+
+
+/**
+ *  Update Gate process
+ */
+
+exports.updateProcessAssignment = function(req, res) {
+    var project = req.project ;
+    project.user = req.user;
+    project.created = Date.now();
+
+    var BaselineDuration = mongoose.mtModel(req.user.tenantId + '.' + 'BaselineDuration');
+    var BaselineCost = mongoose.mtModel(req.user.tenantId + '.' + 'BaselineCost');
+    var BaselineCompletion = mongoose.mtModel(req.user.tenantId + '.' + 'BaselineCompletion');
+    var EstimateDuration = mongoose.mtModel(req.user.tenantId + '.' + 'EstimateDuration');
+    var EstimateCost = mongoose.mtModel(req.user.tenantId + '.' + 'EstimateCost');
+    var EstimateCompletion = mongoose.mtModel(req.user.tenantId + '.' + 'EstimateCompletion');
+    var ActualDuration = mongoose.mtModel(req.user.tenantId + '.' + 'ActualDuration');
+    var ActualCost = mongoose.mtModel(req.user.tenantId + '.' + 'ActualCost');
+    var ActualCompletion = mongoose.mtModel(req.user.tenantId + '.' + 'ActualCompletion');
+
+    var GateProcess = mongoose.mtModel(req.user.tenantId + '.' + 'GateProcess');
+
+    async.series([
+        // PROJECT: Save the process
+        function(callback){
+            project.process = req.body.processId;
+            project.save(function(err){
+                callback(err);
+            });
+        },
+        // Create an expected performance for each gate in the process
+        function(callback){
+            GateProcess.findOne({_id: req.body.processId}).exec(function(err, process){
+                if(err){
+                    callback(err);
+                } else {
+                    async.each(process.gates, function(sourceGate, callback){
+                        if(sourceGate.equals(process.startupGate)){
+                            var actualDurationStartup = new EstimateDuration({sourceGate: sourceGate, targetGate: sourceGate, currentRecord: null, history: []});
+                            var actualCostStartup = new EstimateCost({sourceGate: sourceGate, targetGate: sourceGate, currentRecord: null, history: []});
+                            var actualCompletionStartup = new EstimateCompletion({sourceGate: sourceGate, targetGate: sourceGate, currentRecord: null, history: []});
+                            actualDurationStartup.save(function(err){if(err){callback(err);}});
+                            actualCostStartup.save(function(err){if(err){callback(err);}});
+                            actualCompletionStartup.save(function(err){if(err){callback(err);}});
+                            async.each(process.gates, function(targetGate, callback){
+                                var baselineDuration = new BaselineDuration({sourceGate: sourceGate, targetGate: targetGate, currentRecord: null, history: []});
+                                var baselineCost = new BaselineCost({sourceGate: sourceGate, targetGate: targetGate, currentRecord: null, history: []});
+                                var baselineCompletion = new BaselineCompletion({sourceGate: sourceGate, targetGate: targetGate, currentRecord: null, history: []});
+                                var estimateDuration = new EstimateDuration({sourceGate: sourceGate, targetGate: targetGate, currentRecord: null, history: []});
+                                var estimateCost = new EstimateCost({sourceGate: sourceGate, targetGate: targetGate, currentRecord: null, history: []});
+                                var estimateCompletion = new EstimateCompletion({sourceGate: sourceGate, targetGate: targetGate, currentRecord: null, history: []});
+                                baselineDuration.save(function(err){if(err){callback(err);}});
+                                baselineCost.save(function(err){if(err){callback(err);}});
+                                baselineCompletion.save(function(err){if(err){callback(err);}});
+                                estimateDuration.save(function(err){if(err){callback(err);}});
+                                estimateCost.save(function(err){if(err){callback(err);}});
+                                estimateCompletion.save(function(err){if(err){callback(err);}});
+                                callback();
+                            });
+                        }
+                        if(sourceGate.equals(process.closureGate)){
+                            var actualDurationClosure = new EstimateDuration({sourceGate: sourceGate, targetGate: sourceGate, currentRecord: null, history: []});
+                            var actualCostClosure = new EstimateCost({sourceGate: sourceGate, targetGate: sourceGate, currentRecord: null, history: []});
+                            var actualCompletionClosure = new EstimateCompletion({sourceGate: sourceGate, targetGate: sourceGate, currentRecord: null, history: []});
+                            actualDurationClosure.save(function(err){if(err){callback(err);}});
+                            actualCostClosure.save(function(err){if(err){callback(err);}});
+                            actualCompletionClosure.save(function(err){if(err){callback(err);}});
+                            var baselineDuration = new BaselineDuration({sourceGate: sourceGate, targetGate: targetGate, currentRecord: null, history: []});
+                            var baselineCost = new BaselineCost({sourceGate: sourceGate, targetGate: targetGate, currentRecord: null, history: []});
+                            var baselineCompletion = new BaselineCompletion({sourceGate: sourceGate, targetGate: targetGate, currentRecord: null, history: []});
+                            var estimateDuration = new EstimateDuration({sourceGate: sourceGate, targetGate: targetGate, currentRecord: null, history: []});
+                            var estimateCost = new EstimateCost({sourceGate: sourceGate, targetGate: targetGate, currentRecord: null, history: []});
+                            var estimateCompletion = new EstimateCompletion({sourceGate: sourceGate, targetGate: targetGate, currentRecord: null, history: []});
+                            baselineDuration.save(function(err){if(err){callback(err);}});
+                            baselineCost.save(function(err){if(err){callback(err);}});
+                            baselineCompletion.save(function(err){if(err){callback(err);}});
+                            estimateDuration.save(function(err){if(err){callback(err);}});
+                            estimateCost.save(function(err){if(err){callback(err);}});
+                            estimateCompletion.save(function(err){if(err){callback(err);}});
+                        }
+                        if(!sourceGate.equals(process.startupGate) && !sourceGate.equals(process.closureGate)){
+                            var actualDurationOther = new EstimateDuration({sourceGate: sourceGate, targetGate: sourceGate, currentRecord: null, history: []});
+                            var actualCostOther = new EstimateCost({sourceGate: sourceGate, targetGate: sourceGate, currentRecord: null, history: []});
+                            var actualCompletionOther = new EstimateCompletion({sourceGate: sourceGate, targetGate: sourceGate, currentRecord: null, history: []});
+                            actualDurationOther.save(function(err){if(err){callback(err);}});
+                            actualCostOther.save(function(err){if(err){callback(err);}});
+                            actualCompletionOther.save(function(err){if(err){callback(err);}});
+                            async.each(process.gates, function(targetGate, callback){
+                                // Only if gate is =>
+                                var baselineDuration = new BaselineDuration({sourceGate: sourceGate, targetGate: targetGate, currentRecord: null, history: []});
+                                var baselineCost = new BaselineCost({sourceGate: sourceGate, targetGate: targetGate, currentRecord: null, history: []});
+                                var baselineCompletion = new BaselineCompletion({sourceGate: sourceGate, targetGate: targetGate, currentRecord: null, history: []});
+                                var estimateDuration = new EstimateDuration({sourceGate: sourceGate, targetGate: targetGate, currentRecord: null, history: []});
+                                var estimateCost = new EstimateCost({sourceGate: sourceGate, targetGate: targetGate, currentRecord: null, history: []});
+                                var estimateCompletion = new EstimateCompletion({sourceGate: sourceGate, targetGate: targetGate, currentRecord: null, history: []});
+                                baselineDuration.save(function(err){if(err){callback(err);}});
+                                baselineCost.save(function(err){if(err){callback(err);}});
+                                baselineCompletion.save(function(err){if(err){callback(err);}});
+                                estimateDuration.save(function(err){if(err){callback(err);}});
+                                estimateCost.save(function(err){if(err){callback(err);}});
+                                estimateCompletion.save(function(err){if(err){callback(err);}});
+                                callback();
+                            });
+                        }
+
+                        callback();
+                    });
+                }
+            });
+
+
+
+
+            callback(null);
+        },
+
+    ],function(err){
+        if (err) {
+            return res.status(400).send({
+                message: errorHandler.getErrorMessage(err)
+            });
+        } else {
+            res.jsonp(project);
+        }
+    });
+
+};
+
+
+// -----------------------------------------------------------------------
 
 /**
  * Delete an Project

@@ -1,15 +1,14 @@
+
 'use strict';
 
-angular.module('gate-management-review').factory('EstimateCosts', [
-	function() {
-		// Estimate costs service logic
-		// ...
-
-		// Public API
-		return {
-			someMethod: function() {
-				return true;
+//Estimate costs service used to communicate Estimate costs REST endpoints
+angular.module('gate-management-review').factory('EstimateCosts', ['$resource',
+	function($resource) {
+		return $resource('estimate-costs/:estimateCostId', { estimateCostId: '@_id'
+		}, {
+			update: {
+				method: 'PUT'
 			}
-		};
+		});
 	}
 ]);

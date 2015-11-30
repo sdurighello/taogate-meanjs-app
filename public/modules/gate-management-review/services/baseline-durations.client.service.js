@@ -1,15 +1,14 @@
+
 'use strict';
 
-angular.module('gate-management-review').factory('BaselineDurations', [
-	function() {
-		// Baseline durations service logic
-		// ...
-
-		// Public API
-		return {
-			someMethod: function() {
-				return true;
+//Baseline durations service used to communicate Baseline durations REST endpoints
+angular.module('gate-management-review').factory('BaselineDurations', ['$resource',
+	function($resource) {
+		return $resource('baseline-durations/:baselineDurationId', { baselineDurationId: '@_id'
+		}, {
+			update: {
+				method: 'PUT'
 			}
-		};
+		});
 	}
 ]);

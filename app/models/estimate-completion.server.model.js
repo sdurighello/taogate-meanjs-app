@@ -7,11 +7,23 @@ var mongoose = require('mongoose'),
 	Schema = mongoose.Schema;
 
 /**
- * EstimateCompletion Schema
+ * Estimate completion Schema
  */
 var EstimateCompletionSchema = new Schema({
-	// EstimateCompletion model fields   
-	// ...
+	name: {
+		type: String,
+		default: '',
+		required: 'Please fill Estimate completion name',
+		trim: true
+	},
+	created: {
+		type: Date,
+		default: Date.now
+	},
+	user: {
+		type: Schema.ObjectId,
+		ref: 'User'
+	}
 });
 
 mongoose.model('EstimateCompletion', EstimateCompletionSchema);

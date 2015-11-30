@@ -7,11 +7,23 @@ var mongoose = require('mongoose'),
 	Schema = mongoose.Schema;
 
 /**
- * ActualCompletion Schema
+ * Actual completion Schema
  */
 var ActualCompletionSchema = new Schema({
-	// ActualCompletion model fields   
-	// ...
+	name: {
+		type: String,
+		default: '',
+		required: 'Please fill Actual completion name',
+		trim: true
+	},
+	created: {
+		type: Date,
+		default: Date.now
+	},
+	user: {
+		type: Schema.ObjectId,
+		ref: 'User'
+	}
 });
 
 mongoose.model('ActualCompletion', ActualCompletionSchema);

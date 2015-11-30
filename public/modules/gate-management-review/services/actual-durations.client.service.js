@@ -1,15 +1,14 @@
+
 'use strict';
 
-angular.module('gate-management-review').factory('ActualDurations', [
-	function() {
-		// Actual durations service logic
-		// ...
-
-		// Public API
-		return {
-			someMethod: function() {
-				return true;
+//Actual durations service used to communicate Actual durations REST endpoints
+angular.module('gate-management-review').factory('ActualDurations', ['$resource',
+	function($resource) {
+		return $resource('actual-durations/:actualDurationId', { actualDurationId: '@_id'
+		}, {
+			update: {
+				method: 'PUT'
 			}
-		};
+		});
 	}
 ]);

@@ -85,7 +85,10 @@ angular.module('gate-management-assignment').controller('GateManagementAssignmen
 
 		$scope.editProject = function(){
 			// Save the project to the server
-			Projects.update($scope.selectedProject, function(res) {
+			Projects.updateProcessAssignment(
+                {projectId: $scope.selectedProject._id},
+                {processId: $scope.selectedProject.process},
+                function(res) {
 				$scope.selectProject($scope.selectedProject);
 			}, function(errorResponse) {
 				$scope.error = errorResponse.data.message;

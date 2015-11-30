@@ -7,11 +7,23 @@ var mongoose = require('mongoose'),
 	Schema = mongoose.Schema;
 
 /**
- * ActualDuration Schema
+ * Actual duration Schema
  */
 var ActualDurationSchema = new Schema({
-	// ActualDuration model fields   
-	// ...
+	name: {
+		type: String,
+		default: '',
+		required: 'Please fill Actual duration name',
+		trim: true
+	},
+	created: {
+		type: Date,
+		default: Date.now
+	},
+	user: {
+		type: Schema.ObjectId,
+		ref: 'User'
+	}
 });
 
 mongoose.model('ActualDuration', ActualDurationSchema);

@@ -32,6 +32,11 @@ angular.module('projects').factory('Projects', ['$resource',
                 method: 'PUT',
                 url: 'projects/:projectId/stakeholders/:assignedGroupId/:assignedRoleId'
                 // req.body: {the whole "assignedRole" object}
+            },
+            updateProcessAssignment: {
+                method: 'PUT',
+                url: 'projects/:projectId/process'
+                // req.body: {processId: gate process id}
             }
 		});
 	}

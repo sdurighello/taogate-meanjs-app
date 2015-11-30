@@ -7,11 +7,23 @@ var mongoose = require('mongoose'),
 	Schema = mongoose.Schema;
 
 /**
- * BaselineDuration Schema
+ * Baseline duration Schema
  */
 var BaselineDurationSchema = new Schema({
-	// BaselineDuration model fields   
-	// ...
+	name: {
+		type: String,
+		default: '',
+		required: 'Please fill Baseline duration name',
+		trim: true
+	},
+	created: {
+		type: Date,
+		default: Date.now
+	},
+	user: {
+		type: Schema.ObjectId,
+		ref: 'User'
+	}
 });
 
 mongoose.model('BaselineDuration', BaselineDurationSchema);

@@ -4,6 +4,9 @@ module.exports = function(app) {
 	var users = require('../../app/controllers/users.server.controller');
 	var projects = require('../../app/controllers/projects.server.controller');
 
+
+    // -------------------------- DEFINITION -----------------------------
+
 	// Projects Routes
 	app.route('/projects')
 		.get(users.requiresLogin, projects.list)
@@ -33,6 +36,14 @@ module.exports = function(app) {
     // Stakeholders
     app.route('/projects/:projectId/stakeholders/:assignedGroupId/:assignedRoleId')
         .put(users.requiresLogin, projects.hasAuthorization, projects.updatePeopleAssignment);
+
+
+    // -------------------------- DELIVERY -----------------------------
+
+    // Gate process
+    app.route('/projects/:projectId/process')
+        .put(users.requiresLogin, projects.hasAuthorization, projects.updateProcessAssignment);
+
 
     // Finish by binding the Project middleware
 	app.param('projectId', projects.projectByID);
