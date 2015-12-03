@@ -6,11 +6,11 @@ module.exports = function(app) {
 
 	// Actual completions Routes
 	app.route('/actual-completions')
-		.get(actualCompletions.list)
-		.post(users.requiresLogin, actualCompletions.create);
+		.get(users.requiresLogin, actualCompletions.list)
+		.post(users.requiresLogin, actualCompletions.hasAuthorization, actualCompletions.create);
 
 	app.route('/actual-completions/:actualCompletionId')
-		.get(actualCompletions.read)
+		.get(users.requiresLogin, actualCompletions.read)
 		.put(users.requiresLogin, actualCompletions.hasAuthorization, actualCompletions.update)
 		.delete(users.requiresLogin, actualCompletions.hasAuthorization, actualCompletions.delete);
 

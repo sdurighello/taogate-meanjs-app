@@ -6,11 +6,11 @@ module.exports = function(app) {
 
 	// Baseline durations Routes
 	app.route('/baseline-durations')
-		.get(baselineDurations.list)
-		.post(users.requiresLogin, baselineDurations.create);
+		.get(users.requiresLogin, baselineDurations.list)
+		.post(users.requiresLogin, baselineDurations.hasAuthorization, baselineDurations.create);
 
 	app.route('/baseline-durations/:baselineDurationId')
-		.get(baselineDurations.read)
+		.get(users.requiresLogin, baselineDurations.read)
 		.put(users.requiresLogin, baselineDurations.hasAuthorization, baselineDurations.update)
 		.delete(users.requiresLogin, baselineDurations.hasAuthorization, baselineDurations.delete);
 

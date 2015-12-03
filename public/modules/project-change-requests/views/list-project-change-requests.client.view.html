@@ -1,0 +1,19 @@
+<section data-ng-controller="ProjectChangeRequestsController" data-ng-init="find()">
+    <div class="page-header">
+        <h1>Project change requests</h1>
+    </div>
+    <div class="list-group">
+        <a data-ng-repeat="projectChangeRequest in projectChangeRequests" data-ng-href="#!/project-change-requests/{{projectChangeRequest._id}}" class="list-group-item">
+			<small class="list-group-item-text">
+				Posted on
+				<span data-ng-bind="projectChangeRequest.created | date:'medium'"></span>
+				by
+				<span data-ng-bind="projectChangeRequest.user.displayName"></span>
+			</small>
+			<h4 class="list-group-item-heading" data-ng-bind="projectChangeRequest.name"></h4>
+        </a>
+    </div>
+    <div class="alert alert-warning text-center" data-ng-hide="!projectChangeRequests.$resolved || projectChangeRequests.length">
+    	No Project change requests yet, why don't you <a href="/#!/project-change-requests/create">create one</a>?
+    </div>
+</section>

@@ -5,13 +5,14 @@
  */
 var mongoose = require('mongoose'),
 	errorHandler = require('./errors.server.controller'),
-	EstimateDuration = mongoose.model('EstimateDuration'),
+	async = require('async'),
 	_ = require('lodash');
 
 /**
  * Create a Estimate duration
  */
 exports.create = function(req, res) {
+	var EstimateDuration = mongoose.mtModel(req.user.tenantId + '.' + 'EstimateDuration');
 	var estimateDuration = new EstimateDuration(req.body);
 	estimateDuration.user = req.user;
 
@@ -72,8 +73,9 @@ exports.delete = function(req, res) {
 /**
  * List of Estimate durations
  */
-exports.list = function(req, res) { 
-	EstimateDuration.find().sort('-created').populate('user', 'displayName').exec(function(err, estimateDurations) {
+exports.list = function(req, res) {
+	var EstimateDuration = mongoose.mtModel(req.user.tenantId + '.' + 'EstimateDuration');
+	EstimateDuration.find().populate('user', 'displayName').exec(function(err, estimateDurations) {
 		if (err) {
 			return res.status(400).send({
 				message: errorHandler.getErrorMessage(err)
@@ -87,7 +89,8 @@ exports.list = function(req, res) {
 /**
  * Estimate duration middleware
  */
-exports.estimateDurationByID = function(req, res, next, id) { 
+exports.estimateDurationByID = function(req, res, next, id) {
+	var EstimateDuration = mongoose.mtModel(req.user.tenantId + '.' + 'EstimateDuration');
 	EstimateDuration.findById(id).populate('user', 'displayName').exec(function(err, estimateDuration) {
 		if (err) return next(err);
 		if (! estimateDuration) return next(new Error('Failed to load Estimate duration ' + id));
@@ -100,8 +103,14 @@ exports.estimateDurationByID = function(req, res, next, id) {
  * Estimate duration authorization middleware
  */
 exports.hasAuthorization = function(req, res, next) {
-	if (req.estimateDuration.user.id !== req.user.id) {
-		return res.status(403).send('User is not authorized');
+	// User role check
+	if(!_.find(req.user.roles, function(role){
+			return (role === 'superAdmin' || role === 'admin' || role === 'pmo');
+		})
+	){
+		return res.status(403).send({
+			message: 'User is not authorized'
+		});
 	}
 	next();
 };

@@ -6,11 +6,11 @@ module.exports = function(app) {
 
 	// Estimate costs Routes
 	app.route('/estimate-costs')
-		.get(estimateCosts.list)
-		.post(users.requiresLogin, estimateCosts.create);
+		.get(users.requiresLogin, estimateCosts.list)
+		.post(users.requiresLogin, estimateCosts.hasAuthorization, estimateCosts.create);
 
 	app.route('/estimate-costs/:estimateCostId')
-		.get(estimateCosts.read)
+		.get(users.requiresLogin, estimateCosts.read)
 		.put(users.requiresLogin, estimateCosts.hasAuthorization, estimateCosts.update)
 		.delete(users.requiresLogin, estimateCosts.hasAuthorization, estimateCosts.delete);
 

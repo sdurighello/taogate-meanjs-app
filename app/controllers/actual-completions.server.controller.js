@@ -5,13 +5,14 @@
  */
 var mongoose = require('mongoose'),
 	errorHandler = require('./errors.server.controller'),
-	ActualCompletion = mongoose.model('ActualCompletion'),
+	async = require('async'),
 	_ = require('lodash');
 
 /**
  * Create a Actual completion
  */
 exports.create = function(req, res) {
+    var ActualCompletion = mongoose.mtModel(req.user.tenantId + '.' + 'ActualCompletion');
 	var actualCompletion = new ActualCompletion(req.body);
 	actualCompletion.user = req.user;
 
@@ -72,8 +73,9 @@ exports.delete = function(req, res) {
 /**
  * List of Actual completions
  */
-exports.list = function(req, res) { 
-	ActualCompletion.find().sort('-created').populate('user', 'displayName').exec(function(err, actualCompletions) {
+exports.list = function(req, res) {
+    var ActualCompletion = mongoose.mtModel(req.user.tenantId + '.' + 'ActualCompletion');
+    ActualCompletion.find().populate('user', 'displayName').exec(function(err, actualCompletions) {
 		if (err) {
 			return res.status(400).send({
 				message: errorHandler.getErrorMessage(err)
@@ -87,7 +89,8 @@ exports.list = function(req, res) {
 /**
  * Actual completion middleware
  */
-exports.actualCompletionByID = function(req, res, next, id) { 
+exports.actualCompletionByID = function(req, res, next, id) {
+    var ActualCompletion = mongoose.mtModel(req.user.tenantId + '.' + 'ActualCompletion');
 	ActualCompletion.findById(id).populate('user', 'displayName').exec(function(err, actualCompletion) {
 		if (err) return next(err);
 		if (! actualCompletion) return next(new Error('Failed to load Actual completion ' + id));
@@ -100,8 +103,14 @@ exports.actualCompletionByID = function(req, res, next, id) {
  * Actual completion authorization middleware
  */
 exports.hasAuthorization = function(req, res, next) {
-	if (req.actualCompletion.user.id !== req.user.id) {
-		return res.status(403).send('User is not authorized');
-	}
-	next();
+    // User role check
+    if(!_.find(req.user.roles, function(role){
+            return (role === 'superAdmin' || role === 'admin' || role === 'pmo');
+        })
+    ){
+        return res.status(403).send({
+            message: 'User is not authorized'
+        });
+    }
+    next();
 };

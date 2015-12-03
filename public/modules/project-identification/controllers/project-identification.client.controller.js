@@ -128,7 +128,6 @@ angular.module('project-identification').controller('ProjectIdentificationContro
                 stakeholders: [],
                 // Delivery
                 process: null
-
             });
             newProject.$save(function(response) {
                 // Add new project to view after saving to server

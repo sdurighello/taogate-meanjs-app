@@ -6,11 +6,11 @@ module.exports = function(app) {
 
 	// Actual costs Routes
 	app.route('/actual-costs')
-		.get(actualCosts.list)
-		.post(users.requiresLogin, actualCosts.create);
+		.get(users.requiresLogin, actualCosts.list)
+		.post(users.requiresLogin, actualCosts.hasAuthorization, actualCosts.create);
 
 	app.route('/actual-costs/:actualCostId')
-		.get(actualCosts.read)
+		.get(users.requiresLogin, actualCosts.read)
 		.put(users.requiresLogin, actualCosts.hasAuthorization, actualCosts.update)
 		.delete(users.requiresLogin, actualCosts.hasAuthorization, actualCosts.delete);
 

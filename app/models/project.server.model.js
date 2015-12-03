@@ -153,10 +153,7 @@ var ProjectSchema = new Schema({
 
     // ----------------- DELIVERY ---------------------
 
-
-
     process: {type: Schema.ObjectId, ref: 'GateProcess', default:null, $tenant:true}
-
 
 
 });

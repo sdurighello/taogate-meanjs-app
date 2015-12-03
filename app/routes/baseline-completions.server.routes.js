@@ -6,11 +6,11 @@ module.exports = function(app) {
 
 	// Baseline completions Routes
 	app.route('/baseline-completions')
-		.get(baselineCompletions.list)
-		.post(users.requiresLogin, baselineCompletions.create);
+		.get(users.requiresLogin, baselineCompletions.list)
+		.post(users.requiresLogin, baselineCompletions.hasAuthorization, baselineCompletions.create);
 
 	app.route('/baseline-completions/:baselineCompletionId')
-		.get(baselineCompletions.read)
+		.get(users.requiresLogin, baselineCompletions.read)
 		.put(users.requiresLogin, baselineCompletions.hasAuthorization, baselineCompletions.update)
 		.delete(users.requiresLogin, baselineCompletions.hasAuthorization, baselineCompletions.delete);
 

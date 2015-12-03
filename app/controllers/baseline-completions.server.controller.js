@@ -5,13 +5,14 @@
  */
 var mongoose = require('mongoose'),
 	errorHandler = require('./errors.server.controller'),
-	BaselineCompletion = mongoose.model('BaselineCompletion'),
+	async = require('async'),
 	_ = require('lodash');
 
 /**
  * Create a Baseline completion
  */
 exports.create = function(req, res) {
+	var BaselineCompletion = mongoose.mtModel(req.user.tenantId + '.' + 'BaselineCompletion');
 	var baselineCompletion = new BaselineCompletion(req.body);
 	baselineCompletion.user = req.user;
 
@@ -72,8 +73,9 @@ exports.delete = function(req, res) {
 /**
  * List of Baseline completions
  */
-exports.list = function(req, res) { 
-	BaselineCompletion.find().sort('-created').populate('user', 'displayName').exec(function(err, baselineCompletions) {
+exports.list = function(req, res) {
+	var BaselineCompletion = mongoose.mtModel(req.user.tenantId + '.' + 'BaselineCompletion');
+	BaselineCompletion.find().populate('user', 'displayName').exec(function(err, baselineCompletions) {
 		if (err) {
 			return res.status(400).send({
 				message: errorHandler.getErrorMessage(err)
@@ -87,7 +89,8 @@ exports.list = function(req, res) {
 /**
  * Baseline completion middleware
  */
-exports.baselineCompletionByID = function(req, res, next, id) { 
+exports.baselineCompletionByID = function(req, res, next, id) {
+	var BaselineCompletion = mongoose.mtModel(req.user.tenantId + '.' + 'BaselineCompletion');
 	BaselineCompletion.findById(id).populate('user', 'displayName').exec(function(err, baselineCompletion) {
 		if (err) return next(err);
 		if (! baselineCompletion) return next(new Error('Failed to load Baseline completion ' + id));
@@ -100,8 +103,14 @@ exports.baselineCompletionByID = function(req, res, next, id) {
  * Baseline completion authorization middleware
  */
 exports.hasAuthorization = function(req, res, next) {
-	if (req.baselineCompletion.user.id !== req.user.id) {
-		return res.status(403).send('User is not authorized');
+	// User role check
+	if(!_.find(req.user.roles, function(role){
+			return (role === 'superAdmin' || role === 'admin' || role === 'pmo');
+		})
+	){
+		return res.status(403).send({
+			message: 'User is not authorized'
+		});
 	}
 	next();
 };

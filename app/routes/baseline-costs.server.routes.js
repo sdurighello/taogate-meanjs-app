@@ -6,11 +6,11 @@ module.exports = function(app) {
 
 	// Baseline costs Routes
 	app.route('/baseline-costs')
-		.get(baselineCosts.list)
-		.post(users.requiresLogin, baselineCosts.create);
+		.get(users.requiresLogin, baselineCosts.list)
+		.post(users.requiresLogin, baselineCosts.hasAuthorization, baselineCosts.create);
 
 	app.route('/baseline-costs/:baselineCostId')
-		.get(baselineCosts.read)
+		.get(users.requiresLogin, baselineCosts.read)
 		.put(users.requiresLogin, baselineCosts.hasAuthorization, baselineCosts.update)
 		.delete(users.requiresLogin, baselineCosts.hasAuthorization, baselineCosts.delete);
 

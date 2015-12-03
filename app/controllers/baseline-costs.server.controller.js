@@ -5,13 +5,14 @@
  */
 var mongoose = require('mongoose'),
 	errorHandler = require('./errors.server.controller'),
-	BaselineCost = mongoose.model('BaselineCost'),
+	async = require('async'),
 	_ = require('lodash');
 
 /**
  * Create a Baseline cost
  */
 exports.create = function(req, res) {
+	var BaselineCost = mongoose.mtModel(req.user.tenantId + '.' + 'BaselineCost');
 	var baselineCost = new BaselineCost(req.body);
 	baselineCost.user = req.user;
 
@@ -72,8 +73,9 @@ exports.delete = function(req, res) {
 /**
  * List of Baseline costs
  */
-exports.list = function(req, res) { 
-	BaselineCost.find().sort('-created').populate('user', 'displayName').exec(function(err, baselineCosts) {
+exports.list = function(req, res) {
+	var BaselineCost = mongoose.mtModel(req.user.tenantId + '.' + 'BaselineCost');
+	BaselineCost.find().populate('user', 'displayName').exec(function(err, baselineCosts) {
 		if (err) {
 			return res.status(400).send({
 				message: errorHandler.getErrorMessage(err)
@@ -87,7 +89,8 @@ exports.list = function(req, res) {
 /**
  * Baseline cost middleware
  */
-exports.baselineCostByID = function(req, res, next, id) { 
+exports.baselineCostByID = function(req, res, next, id) {
+	var BaselineCost = mongoose.mtModel(req.user.tenantId + '.' + 'BaselineCost');
 	BaselineCost.findById(id).populate('user', 'displayName').exec(function(err, baselineCost) {
 		if (err) return next(err);
 		if (! baselineCost) return next(new Error('Failed to load Baseline cost ' + id));
@@ -100,8 +103,14 @@ exports.baselineCostByID = function(req, res, next, id) {
  * Baseline cost authorization middleware
  */
 exports.hasAuthorization = function(req, res, next) {
-	if (req.baselineCost.user.id !== req.user.id) {
-		return res.status(403).send('User is not authorized');
+	// User role check
+	if(!_.find(req.user.roles, function(role){
+			return (role === 'superAdmin' || role === 'admin' || role === 'pmo');
+		})
+	){
+		return res.status(403).send({
+			message: 'User is not authorized'
+		});
 	}
 	next();
 };

@@ -5,13 +5,14 @@
  */
 var mongoose = require('mongoose'),
 	errorHandler = require('./errors.server.controller'),
-	EstimateCost = mongoose.model('EstimateCost'),
+	async = require('async'),
 	_ = require('lodash');
 
 /**
  * Create a Estimate cost
  */
 exports.create = function(req, res) {
+	var EstimateCost = mongoose.mtModel(req.user.tenantId + '.' + 'EstimateCost');
 	var estimateCost = new EstimateCost(req.body);
 	estimateCost.user = req.user;
 
@@ -72,8 +73,9 @@ exports.delete = function(req, res) {
 /**
  * List of Estimate costs
  */
-exports.list = function(req, res) { 
-	EstimateCost.find().sort('-created').populate('user', 'displayName').exec(function(err, estimateCosts) {
+exports.list = function(req, res) {
+	var EstimateCost = mongoose.mtModel(req.user.tenantId + '.' + 'EstimateCost');
+	EstimateCost.find().populate('user', 'displayName').exec(function(err, estimateCosts) {
 		if (err) {
 			return res.status(400).send({
 				message: errorHandler.getErrorMessage(err)
@@ -87,7 +89,8 @@ exports.list = function(req, res) {
 /**
  * Estimate cost middleware
  */
-exports.estimateCostByID = function(req, res, next, id) { 
+exports.estimateCostByID = function(req, res, next, id) {
+	var EstimateCost = mongoose.mtModel(req.user.tenantId + '.' + 'EstimateCost');
 	EstimateCost.findById(id).populate('user', 'displayName').exec(function(err, estimateCost) {
 		if (err) return next(err);
 		if (! estimateCost) return next(new Error('Failed to load Estimate cost ' + id));
@@ -100,8 +103,14 @@ exports.estimateCostByID = function(req, res, next, id) {
  * Estimate cost authorization middleware
  */
 exports.hasAuthorization = function(req, res, next) {
-	if (req.estimateCost.user.id !== req.user.id) {
-		return res.status(403).send('User is not authorized');
+	// User role check
+	if(!_.find(req.user.roles, function(role){
+			return (role === 'superAdmin' || role === 'admin' || role === 'pmo');
+		})
+	){
+		return res.status(403).send({
+			message: 'User is not authorized'
+		});
 	}
 	next();
 };

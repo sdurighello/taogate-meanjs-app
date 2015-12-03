@@ -6,11 +6,11 @@ module.exports = function(app) {
 
 	// Actual durations Routes
 	app.route('/actual-durations')
-		.get(actualDurations.list)
-		.post(users.requiresLogin, actualDurations.create);
+		.get(users.requiresLogin, actualDurations.list)
+		.post(users.requiresLogin, actualDurations.hasAuthorization, actualDurations.create);
 
 	app.route('/actual-durations/:actualDurationId')
-		.get(actualDurations.read)
+		.get(users.requiresLogin, actualDurations.read)
 		.put(users.requiresLogin, actualDurations.hasAuthorization, actualDurations.update)
 		.delete(users.requiresLogin, actualDurations.hasAuthorization, actualDurations.delete);
 

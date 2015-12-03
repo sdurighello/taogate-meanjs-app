@@ -6,11 +6,11 @@ module.exports = function(app) {
 
 	// Estimate durations Routes
 	app.route('/estimate-durations')
-		.get(estimateDurations.list)
-		.post(users.requiresLogin, estimateDurations.create);
+		.get(users.requiresLogin, estimateDurations.list)
+		.post(users.requiresLogin, estimateDurations.hasAuthorization, estimateDurations.create);
 
 	app.route('/estimate-durations/:estimateDurationId')
-		.get(estimateDurations.read)
+		.get(users.requiresLogin, estimateDurations.read)
 		.put(users.requiresLogin, estimateDurations.hasAuthorization, estimateDurations.update)
 		.delete(users.requiresLogin, estimateDurations.hasAuthorization, estimateDurations.delete);
 

@@ -185,7 +185,7 @@ exports.delete = function(req, res) {
  */
 exports.list = function(req, res) {
     var Category = mongoose.mtModel(req.user.tenantId + '.' + 'Category');
-	Category.find().sort('-created').populate('user', 'displayName').exec(function(err, categories) {
+	Category.find().populate('user', 'displayName').exec(function(err, categories) {
 		if (err) {
 			return res.status(400).send({
 				message: errorHandler.getErrorMessage(err)
