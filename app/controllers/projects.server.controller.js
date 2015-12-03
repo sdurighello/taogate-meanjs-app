@@ -52,10 +52,13 @@ exports.create = function(req, res) {
                                 categoryValue: null
                             });
                             callback();
-                        });
-                        project.categorization.push(obj);
-                        project.save(function(err){
-                            if(err){callback(err);} else {callback();}
+                        }, function(err){
+                            if(err){callback(err);} else {
+                                project.categorization.push(obj);
+                                project.save(function(err){
+                                    callback(err);
+                                });
+                            }
                         });
                     });
                     callback(null);
@@ -76,10 +79,13 @@ exports.create = function(req, res) {
                                 priorityValue: null
                             });
                             callback();
-                        });
-                        project.prioritization.push(obj);
-                        project.save(function(err){
-                            if(err){callback(err);} else {callback();}
+                        }, function(err){
+                            if(err){callback(err);} else {
+                                project.prioritization.push(obj);
+                                project.save(function(err){
+                                    callback(err);
+                                });
+                            }
                         });
                     });
                     callback(null);
@@ -232,7 +238,6 @@ exports.update = function(req, res) {
  *  Update a Category Assignment
  */
 exports.updateCategoryAssignment = function(req, res) {
-    console.log(req);
     var project = req.project ;
     project.user = req.user;
     project.created = Date.now();
