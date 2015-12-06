@@ -75,7 +75,18 @@ exports.delete = function(req, res) {
  */
 exports.list = function(req, res) {
 	var BaselineCompletion = mongoose.mtModel(req.user.tenantId + '.' + 'BaselineCompletion');
-	BaselineCompletion.find().populate('user', 'displayName').exec(function(err, baselineCompletions) {
+
+	var queryObject = {};
+	var deepPopulateArray = [];
+
+	if(req.query.queryObject){
+		queryObject = req.query.queryObject;
+	}
+	if(req.query.deepPopulateArray){
+		deepPopulateArray = req.query.deepPopulateArray;
+	}
+
+	BaselineCompletion.find(queryObject).deepPopulate(deepPopulateArray).populate('user', 'displayName').exec(function(err, baselineCompletions) {
 		if (err) {
 			return res.status(400).send({
 				message: errorHandler.getErrorMessage(err)

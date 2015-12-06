@@ -58,6 +58,7 @@ exports.delete = require('./projects/projects.delete.server.controller').delete;
  */
 
 exports.list = function(req, res) {
+
     var Project = mongoose.mtModel(req.user.tenantId + '.' + 'Project');
 
     Project.find(req.query).populate('user', 'displayName').exec(function(err, projects) {

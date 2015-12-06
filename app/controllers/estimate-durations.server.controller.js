@@ -75,7 +75,18 @@ exports.delete = function(req, res) {
  */
 exports.list = function(req, res) {
 	var EstimateDuration = mongoose.mtModel(req.user.tenantId + '.' + 'EstimateDuration');
-	EstimateDuration.find().populate('user', 'displayName').exec(function(err, estimateDurations) {
+
+    var queryObject = {};
+    var deepPopulateArray = [];
+
+    if(req.query.queryObject){
+        queryObject = req.query.queryObject;
+    }
+    if(req.query.deepPopulateArray){
+        deepPopulateArray = req.query.deepPopulateArray;
+    }
+
+	EstimateDuration.find(queryObject).deepPopulate(deepPopulateArray).populate('user', 'displayName').exec(function(err, estimateDurations) {
 		if (err) {
 			return res.status(400).send({
 				message: errorHandler.getErrorMessage(err)

@@ -6,11 +6,11 @@ module.exports = function(app) {
 
 	// Gate reviews Routes
 	app.route('/gate-reviews')
-		.get(gateReviews.list)
-		.post(users.requiresLogin, gateReviews.create);
+		.get(users.requiresLogin, gateReviews.list)
+		.post(users.requiresLogin, gateReviews.hasAuthorization, gateReviews.create);
 
 	app.route('/gate-reviews/:gateReviewId')
-		.get(gateReviews.read)
+		.get(users.requiresLogin, gateReviews.read)
 		.put(users.requiresLogin, gateReviews.hasAuthorization, gateReviews.update)
 		.delete(users.requiresLogin, gateReviews.hasAuthorization, gateReviews.delete);
 

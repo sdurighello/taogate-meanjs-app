@@ -75,7 +75,18 @@ exports.delete = function(req, res) {
  */
 exports.list = function(req, res) {
     var ActualCost = mongoose.mtModel(req.user.tenantId + '.' + 'ActualCost');
-	ActualCost.find().populate('user', 'displayName').exec(function(err, actualCosts) {
+
+	var queryObject = {};
+	var deepPopulateArray = [];
+
+	if(req.query.queryObject){
+		queryObject = req.query.queryObject;
+	}
+	if(req.query.deepPopulateArray){
+		deepPopulateArray = req.query.deepPopulateArray;
+	}
+
+	ActualCost.find(queryObject).deepPopulate(deepPopulateArray).populate('user', 'displayName').exec(function(err, actualCosts) {
 		if (err) {
 			return res.status(400).send({
 				message: errorHandler.getErrorMessage(err)

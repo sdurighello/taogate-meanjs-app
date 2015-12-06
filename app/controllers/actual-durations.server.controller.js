@@ -75,7 +75,18 @@ exports.delete = function(req, res) {
  */
 exports.list = function(req, res) {
     var ActualDuration = mongoose.mtModel(req.user.tenantId + '.' + 'ActualDuration');
-	ActualDuration.find().populate('user', 'displayName').exec(function(err, actualDurations) {
+
+	var queryObject = {};
+	var deepPopulateArray = [];
+
+	if(req.query.queryObject){
+		queryObject = req.query.queryObject;
+	}
+	if(req.query.deepPopulateArray){
+		deepPopulateArray = req.query.deepPopulateArray;
+	}
+
+	ActualDuration.find(queryObject).deepPopulate(deepPopulateArray).populate('user', 'displayName').exec(function(err, actualDurations) {
 		if (err) {
 			return res.status(400).send({
 				message: errorHandler.getErrorMessage(err)
