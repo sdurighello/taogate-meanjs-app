@@ -89,135 +89,41 @@ angular.module('gate-management-review').controller('GateManagementReviewControl
         });
 
 
-
+        var originalGateReview;
 
         // ------------- SELECT VIEW PROJECT ------------
 
 
-        $scope.selectProject = function(project){
-
+        $scope.selectProject = function(project) {
             $scope.error = {};
             $scope.selectedProject = null;
             $scope.gateReviewList = null;
+
+            $scope.selectedGateReview = null;
+            originalGateReview = null;
 
             var copyProject = _.cloneDeep(project);
             copyProject.process = _.find($scope.gateProcesses, _.matchesProperty('_id', copyProject.process));
             copyProject.process.gates = _.sortBy(copyProject.process.gates, 'position');
             $scope.selectedProject = copyProject;
 
-            GateReviews.query({project: copyProject._id}, function(gReviews){
+            GateReviews.query({
+                queryObject:{
+                    project: copyProject._id
+                },
+                deepPopulateArray: ['overallScore', 'status']
+            }, function (gReviews) {
                 var gateReviews = gReviews;
-                $scope.gateReviewList = _.map(copyProject.process.gates, function(gate){
+                $scope.gateReviewList = _.map(copyProject.process.gates, function (gate) {
                     return {
                         gate: gate,
                         gateReviews: _.filter(gateReviews, _.matchesProperty('gate', gate._id))
                     };
                 });
-            }, function(err){
+            }, function (err) {
                 $scope.error.gateReviews = err.data.message;
             });
-
-            BaselineDurations.query({
-                queryObject:{
-                    project: copyProject._id
-                },
-                deepPopulateArray: ['sourceGate', 'targetGate']
-            }, function(baselineDurations){
-                $scope.baselineDurations = baselineDurations;
-            }, function(err){
-                $scope.error.baselineDurations = err.data.message;
-            });
-
-            EstimateDurations.query({
-                queryObject:{
-                    project: copyProject._id
-                },
-                deepPopulateArray: ['sourceGate', 'targetGate']
-            }, function(estimateDurations){
-                $scope.estimateDurations = estimateDurations;
-            }, function(err){
-                $scope.error.estimateDurations = err.data.message;
-            });
-
-            ActualDurations.query({
-                queryObject:{
-                    project: copyProject._id
-                },
-                deepPopulateArray: ['sourceGate', 'targetGate']
-            }, function(actualDurations){
-                $scope.actualDurations = actualDurations;
-            }, function(err){
-                $scope.error.estimateDurations = err.data.message;
-            });
-
-            BaselineCosts.query({
-                queryObject:{
-                    project: copyProject._id
-                },
-                deepPopulateArray: ['sourceGate', 'targetGate']
-            }, function(baselineCosts){
-                $scope.baselineCosts = baselineCosts;
-            }, function(err){
-                $scope.error.baselineCosts = err.data.message;
-            });
-
-            EstimateCosts.query({
-                queryObject:{
-                    project: copyProject._id
-                },
-                deepPopulateArray: ['sourceGate', 'targetGate']
-            }, function(estimateCosts){
-                $scope.estimateCosts = estimateCosts;
-            }, function(err){
-                $scope.error.estimateCosts = err.data.message;
-            });
-
-            ActualCosts.query({
-                queryObject:{
-                    project: copyProject._id
-                },
-                deepPopulateArray: ['sourceGate', 'targetGate']
-            }, function(actualCosts){
-                $scope.actualCosts = actualCosts;
-            }, function(err){
-                $scope.error.actualCosts = err.data.message;
-            });
-
-            BaselineCompletions.query({
-                queryObject:{
-                    project: copyProject._id
-                },
-                deepPopulateArray: ['sourceGate', 'targetGate']
-            }, function(baselineCompletions){
-                $scope.baselineCompletions = baselineCompletions;
-            }, function(err){
-                $scope.error.baselineCompletions = err.data.message;
-            });
-
-            EstimateCompletions.query({
-                queryObject:{
-                    project: copyProject._id
-                },
-                deepPopulateArray: ['sourceGate', 'targetGate']
-            }, function(estimateCompletions){
-                $scope.estimateCompletions = estimateCompletions;
-            }, function(err){
-                $scope.error.estimateCompletions = err.data.message;
-            });
-
-            ActualCompletions.query({
-                queryObject:{
-                    project: copyProject._id
-                },
-                deepPopulateArray: ['sourceGate', 'targetGate']
-            }, function(actualCompletions){
-                $scope.actualCompletions = actualCompletions;
-            }, function(err){
-                $scope.error.actualCompletions = err.data.message;
-            });
-
         };
-
 
         $scope.cancelViewProject = function(){
             $scope.error = null;
@@ -238,7 +144,7 @@ angular.module('gate-management-review').controller('GateManagementReviewControl
                 gate : gate._id,
                 status : $scope.newGateReview.status,
                 reviewDate : $scope.newGateReview.reviewDate,
-                reviewTitle : $scope.newGateReview.title,
+                title : $scope.newGateReview.title,
                 overallScore : $scope.newGateReview.overallScore,
                 overallComment : $scope.newGateReview.overallComment
             });
@@ -258,7 +164,30 @@ angular.module('gate-management-review').controller('GateManagementReviewControl
         };
 
 
+        // ------------- SELECT GATE REVIEW ------------
 
+
+        $scope.selectGateReview = function(gateReview){
+            GateReviews.get({
+                gateReviewId:gateReview._id,
+                retPropertiesString : 'user created project gate status reviewDate title overallScore overallComment completed outcomeReviews ' +
+                'baselineDurationReviews estimateDurationReviews actualDurationReviews' +
+                'baselineCostReviews estimateCostReviews actualCostReviews' +
+                'baselineCompletionReviews estimateCompletionReviews actualCompletionReviews',
+                deepPopulateArray : [
+                    'outcomeReviews.outcome',
+                    'baselineDurationReviews.baselineDuration', 'estimateDurationReviews.estimateDuration', 'actualDurationReviews.actualDuration',
+                    'baselineCostReviews.baselineCost', 'estimateCostReviews.estimateCost', 'actualCostReviews.actualCost',
+                    'baselineCompletionReviews.baselineCompletion', 'estimateCompletionReviews.baselineCompletion', 'actualCompletionReviews.actualCompletion'
+                ]
+            }, function(res){
+                $scope.selectedGateReview = res;
+                originalGateReview = _.cloneDeep(res);
+                //$scope.selectGateReviewForm('view');
+            },function(errorResponse){
+                $scope.error = errorResponse.data.message;
+            });
+        };
 
 
 

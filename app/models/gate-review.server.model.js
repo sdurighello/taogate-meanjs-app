@@ -70,7 +70,7 @@ var GateReviewSchema = new Schema({
     gate : {type: Schema.Types.ObjectId, ref: 'Gate', $tenant:true, required:'Gate for gate review required'},
     status : {type: Schema.Types.ObjectId, ref: 'GateStatus', $tenant:true},
     reviewDate : {type: Date, default: Date.now, required:'Review date required'},
-    reviewTitle : {type: String, default:'', required:'Review title required'},
+    title : {type: String, default:'', required:'Review title required'},
     overallScore : {type: Schema.Types.ObjectId, ref: 'GateOutcomeScore', $tenant:true},
     overallComment : {type: String},
     completed : {type: Boolean, default: false, required:'Completed flag required'},

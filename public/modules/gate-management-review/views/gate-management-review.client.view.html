@@ -139,7 +139,7 @@
                                                 </div>
                                                 <hr>
                                                 <div class="form-group-sm pull-right">
-                                                    <button class="btn btn-success btn-xs" data-ng-click="createNewGateReview(selectedProject, reviewObject.gate)">
+                                                    <button class="btn btn-success btn-xs" data-ng-click="createNewGateReview(selectedProject, reviewObject.gate); showNewGateReviewForm = false;">
                                                         Save
                                                     </button>
                                                     <button class="btn btn-info btn-xs" data-ng-click="cancelNewGateReview(); showNewGateReviewForm = false;">
@@ -160,7 +160,7 @@
                             </div>
                             <div class="row" data-ng-show="reviewObject.gateReviews.length !== 0 && !showNewGateReviewForm">
                                 <div class="col-md-12">
-                                    <form>
+                                    <div class="panel panel-default">
                                         <table class="table">
                                             <tr>
                                                 <th>Review date</th>
@@ -168,11 +168,10 @@
                                                 <th>Score</th>
                                                 <th>Gate status</th>
                                                 <th>Completed</th>
-                                                <th> </th>
                                             </tr>
-                                            <tr data-ng-repeat="gateReview in reviewObject.gateReviews track by $index">
+                                            <tr data-ng-repeat="gateReview in reviewObject.gateReviews track by $index" data-ng-click="selectGateReview(gateReview)" class="btn-link">
                                                 <td>
-                                                    {{gateReview.reviewDate}}
+                                                    {{gateReview.reviewDate | date:'EEE d, MMM yyyy'}}
                                                 </td>
                                                 <td>
                                                     {{gateReview.title}}
@@ -181,26 +180,30 @@
                                                     {{gateReview.overallScore.name}}
                                                 </td>
                                                 <td>
-                                                    {{gateReview.gateStatus.name}}
+                                                    {{gateReview.status.name}}
                                                 </td>
                                                 <td>
                                                     {{gateReview.completed}}
                                                 </td>
-                                                <td>
-                                                    <button class="btn btn-primary btn-xs" ng-click="showGateReviewDetails = !showGateReviewDetails">
-                                                        <span class="glyphicon glyphicon-plus small"></span>
-                                                    </button>
-                                                </td>
                                             </tr>
                                         </table>
-                                    </form>
+                                    </div>
                                 </div>
                             </div>
-                            <div class="row" data-ng-show="false">
+                            <div class="row" data-ng-show="selectedGateReview">
                                 <div class="col-md-12">
                                     <div class="panel panel-default">
                                         <div class="panel-heading">
-                                            <span class="text-center"><b><em>Gate review: </em></b></span>
+                                            <div class="row">
+                                                <div class="col-md-9 text-center">
+                                                    <b><em>{{selectedGateReview.reviewDate | date:'EEE d, MMM yyyy'}} - {{selectedGateReview.title}}</em></b>
+                                                </div>
+                                                <div class="col-md-3">
+                                                    <button class="btn btn-primary btn-xs pull-right" data-ng-click="">
+                                                        Close
+                                                    </button>
+                                                </div>
+                                            </div>
                                         </div>
                                         <div class="row">
                                             <div class="col-md-6 btn-group btn-group-xs btn-group-justified">
@@ -227,11 +230,11 @@
                                                     <div class="form-group-sm col-md-3">
                                                         <label for="prjCrEditRecDate">Review date</label>
                                                         <input id="prjCrEditRecDate" class="form-control" type="date" placeholder="Enter review date"
-                                                               data-ng-model="newGateReview.reviewDate" >
+                                                               data-ng-model="selectedGateReview.reviewDate" >
                                                     </div>
                                                     <div class="form-group-sm col-md-3">
                                                         <label for="prjCrEditStatus">Overall score</label>
-                                                        <select id="prjCrEditStatus" class="form-control" data-ng-model = "newGateReview.overallScore"
+                                                        <select id="prjCrEditStatus" class="form-control" data-ng-model = "selectedGateReview.overallScore"
                                                                 ng-options="score._id as score.scoreName for score in outcomeScores">
                                                             <option value="">--choose score</option>
                                                         </select>
@@ -241,14 +244,14 @@
                                                 <div class="row">
                                                     <div class="form-group-sm col-md-3">
                                                         <label for="prjCrEditState">Gate status</label>
-                                                        <select id="prjCrEditState" class="form-control" data-ng-model = "newGateReview.gateStatus"
+                                                        <select id="prjCrEditState" class="form-control" data-ng-model = "selectedGateReview.gateStatus"
                                                                 ng-options="gateStatus._id as gateStatus.statusName for gateStatus in gateStatuses">
                                                             <option value="">--choose status</option>
                                                         </select>
                                                     </div>
                                                     <div class="form-group-sm col-md-9">
                                                         <label for="prjCrEditComment">Review comment</label>
-                                                        <textarea id="prjCrEditComment" class="form-control" placeholder="Enter comment" data-ng-model="newGateReview.overallComment"></textarea>
+                                                        <textarea id="prjCrEditComment" class="form-control" placeholder="Enter comment" data-ng-model="selectedGateReview.overallComment"></textarea>
                                                     </div>
                                                 </div>
                                                 <br>
@@ -256,7 +259,7 @@
                                                     <div class="form-group-sm col-md-2">
                                                         <label for="prjCrEditCompleted">Completed</label>
                                                         <input id="prjCrEditCompleted" class="" type="checkbox"
-                                                               data-ng-model="newGateReview.completed" >
+                                                               data-ng-model="selectedGateReview.completed" >
                                                     </div>
                                                 </div>
                                                 <hr>
@@ -278,7 +281,7 @@
                                                     <th>Comment</th>
                                                     <th> </th>
                                                 </tr>
-                                                <tr ng-repeat="outcomeReview in gateReview.outcomeReviews track by $index">
+                                                <tr ng-repeat="outcomeReview in selectedGateReview.outcomeReviews track by $index">
                                                     <td>
                                                         {{outcomeReview.outcome.outcomeName}}
                                                     </td>

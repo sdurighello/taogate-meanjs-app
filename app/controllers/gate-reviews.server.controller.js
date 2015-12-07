@@ -81,7 +81,7 @@ exports.create = function(req, res) {
                             callback();
                         });
                         callback(null);
-                    })
+                    });
                 },
                 function(callback){
                     EstimateDuration.find({project: req.body.project, sourceGate: req.body.gate}, function(err, estimateDurations){
@@ -96,7 +96,7 @@ exports.create = function(req, res) {
                             callback();
                         });
                         callback(null);
-                    })
+                    });
                 },
                 function(callback){
                     ActualDuration.find({project: req.body.project, sourceGate: req.body.gate}, function(err, actualDurations){
@@ -111,7 +111,7 @@ exports.create = function(req, res) {
                             callback();
                         });
                         callback(null);
-                    })
+                    });
                 },
                 // Cost
                 function(callback){
@@ -127,7 +127,7 @@ exports.create = function(req, res) {
                             callback();
                         });
                         callback(null);
-                    })
+                    });
                 },
                 function(callback){
                     EstimateCost.find({project: req.body.project, sourceGate: req.body.gate}, function(err, estimateCosts){
@@ -142,7 +142,7 @@ exports.create = function(req, res) {
                             callback();
                         });
                         callback(null);
-                    })
+                    });
                 },
                 function(callback){
                     ActualCost.find({project: req.body.project, sourceGate: req.body.gate}, function(err, actualCosts){
@@ -157,7 +157,7 @@ exports.create = function(req, res) {
                             callback();
                         });
                         callback(null);
-                    })
+                    });
                 },
                 // Completion
                 function(callback){
@@ -173,7 +173,7 @@ exports.create = function(req, res) {
                             callback();
                         });
                         callback(null);
-                    })
+                    });
                 },
                 function(callback){
                     EstimateCompletion.find({project: req.body.project, sourceGate: req.body.gate}, function(err, estimateCompletions){
@@ -188,7 +188,7 @@ exports.create = function(req, res) {
                             callback();
                         });
                         callback(null);
-                    })
+                    });
                 },
                 function(callback){
                     ActualCompletion.find({project: req.body.project, sourceGate: req.body.gate}, function(err, actualCompletions){
@@ -203,13 +203,13 @@ exports.create = function(req, res) {
                             callback();
                         });
                         callback(null);
-                    })
+                    });
                 }
             ], function(err){
                 if(err){
                     return callback(err);
                 }
-                callback(null, retObjArrays)
+                callback(null, retObjArrays);
             });
         },
         // Assign the arrays and save the new gate review
@@ -291,7 +291,18 @@ exports.delete = function(req, res) {
  */
 exports.list = function(req, res) {
     var GateReview = mongoose.mtModel(req.user.tenantId + '.' + 'GateReview');
-    GateReview.find(req.query).populate('user', 'displayName').exec(function(err, gateReviews) {
+
+    var queryObject = {};
+    var deepPopulateArray = [];
+
+    if(req.query.queryObject){
+        queryObject = req.query.queryObject;
+    }
+    if(req.query.deepPopulateArray){
+        deepPopulateArray = req.query.deepPopulateArray;
+    }
+
+    GateReview.find(queryObject).deepPopulate(deepPopulateArray).populate('user', 'displayName').exec(function(err, gateReviews) {
 		if (err) {
 			return res.status(400).send({
 				message: errorHandler.getErrorMessage(err)
@@ -307,7 +318,18 @@ exports.list = function(req, res) {
  */
 exports.gateReviewByID = function(req, res, next, id) {
     var GateReview = mongoose.mtModel(req.user.tenantId + '.' + 'GateReview');
-	GateReview.findById(id).populate('user', 'displayName').exec(function(err, gateReview) {
+
+    var retPropertiesString = '';
+    var deepPopulateArray = [];
+
+    if(req.query.retPropertiesString){
+        retPropertiesString = req.query.retPropertiesString;
+    }
+    if(req.query.deepPopulateArray){
+        deepPopulateArray = req.query.deepPopulateArray;
+    }
+
+	GateReview.findById(id, retPropertiesString).deepPopulate(deepPopulateArray).populate('user', 'displayName').exec(function(err, gateReview) {
 		if (err) return next(err);
 		if (! gateReview) return next(new Error('Failed to load Gate review ' + id));
 		req.gateReview = gateReview ;
