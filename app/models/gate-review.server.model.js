@@ -66,14 +66,14 @@ var ActualCompletionReviewSchema = new Schema({
 });
 
 var GateReviewSchema = new Schema({
-    project: {type: Schema.Types.ObjectId, ref: 'Project', $tenant:true},
-    gate : {type: Schema.Types.ObjectId, ref: 'Gate', $tenant:true},
+    project: {type: Schema.Types.ObjectId, ref: 'Project', $tenant:true, required:'Project for gate review required'},
+    gate : {type: Schema.Types.ObjectId, ref: 'Gate', $tenant:true, required:'Gate for gate review required'},
     status : {type: Schema.Types.ObjectId, ref: 'GateStatus', $tenant:true},
-    reviewDate : {type: Date, default: Date.now},
+    reviewDate : {type: Date, default: Date.now, required:'Review date required'},
     reviewTitle : {type: String, default:'', required:'Review title required'},
     overallScore : {type: Schema.Types.ObjectId, ref: 'GateOutcomeScore', $tenant:true},
     overallComment : {type: String},
-    completed : {type: Boolean, default: null, required:true},
+    completed : {type: Boolean, default: false, required:'Completed flag required'},
     outcomeReviews : [OutcomeGateReviewSchema],
     baselineDurationReviews : [BaselineDurationReviewSchema],
     estimateDurationReviews : [EstimateDurationReviewSchema],

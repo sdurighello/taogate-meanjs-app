@@ -1,11 +1,13 @@
 'use strict';
 
 angular.module('gate-management-review').controller('GateManagementReviewController', ['$scope','$stateParams', '$location',
-	'Authentication', 'Projects', 'Portfolios', 'GateProcesses', 'GateReviews', '$q', '_',
+	'Authentication', 'Projects', 'Portfolios','$q', '_',
+    'GateProcesses', 'GateReviews', 'GateOutcomeScores', 'GateStatuses',
     'ActualCompletions', 'ActualCosts', 'ActualDurations',
     'BaselineCompletions', 'BaselineCosts', 'BaselineDurations',
     'EstimateCompletions', 'EstimateCosts', 'EstimateDurations',
-	function($scope, $stateParams, $location, Authentication, Projects, Portfolios, GateProcesses, GateReviews, $q, _,
+	function($scope, $stateParams, $location, Authentication, Projects, Portfolios, $q, _,
+             GateProcesses, GateReviews, GateOutcomeScores, GateStatuses,
              ActualCompletions, ActualCosts, ActualDurations, BaselineCompletions, BaselineCosts, BaselineDurations,
              EstimateCompletions, EstimateCosts, EstimateDurations) {
 
@@ -28,77 +30,30 @@ angular.module('gate-management-review').controller('GateManagementReviewControl
                 $scope.initError.push(err.data.message);
             });
 
-            GateProcesses.query(function(gateProcesses){
-                $scope.gateProcesses = gateProcesses;
-            }, function(err){
-                $scope.initError.push(err.data.message);
-            });
-
 			Portfolios.query(function(portfolios){
 				$scope.portfolios = portfolios;
 			}, function(err){
 				$scope.initError.push(err.data.message);
 			});
 
-            // --
-
-
-
-            // --
-
-            ActualCompletions.query(function(aCompletions){
-                actualCompletions = aCompletions;
+            GateProcesses.query(function(gateProcesses){
+                $scope.gateProcesses = gateProcesses;
             }, function(err){
                 $scope.initError.push(err.data.message);
             });
 
-            ActualCosts.query(function(aCosts){
-                actualCosts = aCosts;
+            GateOutcomeScores.query(function(outcomeScores){
+                $scope.outcomeScores = outcomeScores;
             }, function(err){
                 $scope.initError.push(err.data.message);
             });
 
-            ActualDurations.query(function(aDurations){
-                actualDurations = aDurations;
+            GateStatuses.query(function(gateStatuses){
+                $scope.gateStatuses = gateStatuses;
             }, function(err){
                 $scope.initError.push(err.data.message);
             });
 
-            // --
-
-            BaselineCompletions.query(function(bCompletions){
-                baselineCompletions = bCompletions;
-            }, function(err){
-                $scope.initError.push(err.data.message);
-            });
-
-            BaselineCosts.query(function(bCosts){
-                baselineCosts = bCosts;
-            }, function(err){
-                $scope.initError.push(err.data.message);
-            });
-
-
-
-            // --
-
-            EstimateCompletions.query(function(eCompletions){
-                estimateCompletions = eCompletions;
-            }, function(err){
-                $scope.initError.push(err.data.message);
-            });
-
-            EstimateCosts.query(function(eCosts){
-                estimateCosts = eCosts;
-            }, function(err){
-                $scope.initError.push(err.data.message);
-            });
-
-            EstimateDurations.query(function(eDurations){
-                estimateDurations = eDurations;
-            }, function(err){
-                $scope.initError.push(err.data.message);
-            });
 		};
 
 
@@ -270,6 +225,53 @@ angular.module('gate-management-review').controller('GateManagementReviewControl
             $scope.gateReviewList = null;
 
         };
+
+
+
+        // ------------- NEW GATE REVIEW ------------
+
+        $scope.newGateReview = {};
+
+        $scope.createNewGateReview = function(project, gate){
+            var newGateReview = new GateReviews({
+                project: project._id,
+                gate : gate._id,
+                status : $scope.newGateReview.status,
+                reviewDate : $scope.newGateReview.reviewDate,
+                reviewTitle : $scope.newGateReview.title,
+                overallScore : $scope.newGateReview.overallScore,
+                overallComment : $scope.newGateReview.overallComment
+            });
+            newGateReview.$save(function(res) {
+
+                // Clear new form
+                $scope.newGateReview = {};
+
+                // Close new cost form done directly in the view's html
+            }, function(err) {
+                $scope.error = err.data.message;
+            });
+        };
+
+        $scope.cancelNewGateReview = function(){
+            $scope.newGateReview = {};
+        };
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
         //

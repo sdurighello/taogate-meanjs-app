@@ -93,428 +93,64 @@
                                     </button>
                                 </div>
                             </div>
-                            <div data-ng-show="showNewGateReviewForm">
-                                <div class="row">
-                                    <div class="col-md-12">
-                                        <div class="panel panel-default">
-                                            <div class="panel-heading">
-                                                <span class="text-center"><b><em>New gate review</em></b></span>
+                            <br>
+                            <div class="row show-hide-animation" ng-show="showNewGateReviewForm">
+                                <div class="col-md-12">
+                                    <div class="panel panel-default">
+                                        <div class="panel-heading">
+                                            <h6 class="panel-title">
+                                                New gate review
+                                            </h6>
+                                        </div>
+                                        <div class="panel-body">
+                                            <form class="form" name="newGateReviewForm">
+                                                <div class="row">
+                                                    <div class="form-group-sm col-md-3">
+                                                        <label for="reviewDateNew">Review date</label>
+                                                        <input id="reviewDateNew" name="reviewDateNew" class="form-control" type="date" placeholder="Enter review date"
+                                                               data-ng-model="newGateReview.reviewDate" >
+                                                    </div>
+                                                    <div class="form-group-sm col-md-3">
+                                                        <label for="overallScoreNew">Overall score</label>
+                                                        <select id="overallScoreNew" name="overallScoreNew" class="form-control" data-ng-model = "newGateReview.overallScore"
+                                                                ng-options="score._id as score.name for score in outcomeScores">
+                                                            <option value="">--choose score</option>
+                                                        </select>
+                                                    </div>
+                                                    <div class="form-group-sm col-md-3">
+                                                        <label for="reviewTitleNew">Review title</label>
+                                                        <input id="reviewTitleNew" name="reviewTitleNew" class="form-control" type="text" placeholder="Enter review title"
+                                                               data-ng-model="newGateReview.title" >
+                                                    </div>
+                                                </div>
+                                                <br>
+                                                <div class="row">
+                                                    <div class="form-group-sm col-md-3">
+                                                        <label for="statusNew">Gate status</label>
+                                                        <select id="statusNew" class="form-control" data-ng-model = "newGateReview.status"
+                                                                ng-options="gateStatus._id as gateStatus.name for gateStatus in gateStatuses">
+                                                            <option value="">--choose status</option>
+                                                        </select>
+                                                    </div>
+                                                    <div class="form-group-sm col-md-9">
+                                                        <label for="commentNew">Review comment</label>
+                                                        <textarea id="commentNew" class="form-control" placeholder="Enter comment" data-ng-model="newGateReview.overallComment"></textarea>
+                                                    </div>
+                                                </div>
+                                                <hr>
                                                 <div class="form-group-sm pull-right">
-                                                    <button class="btn btn-success btn-xs" data-ng-click="">
+                                                    <button class="btn btn-success btn-xs" data-ng-click="createNewGateReview(selectedProject, reviewObject.gate)">
                                                         Save
                                                     </button>
-                                                    <button class="btn btn-info btn-xs" data-ng-click="showNewGateReviewForm = false">
+                                                    <button class="btn btn-info btn-xs" data-ng-click="cancelNewGateReview(); showNewGateReviewForm = false;">
                                                         Cancel
                                                     </button>
                                                 </div>
-                                            </div>
-                                            <div class="row">
-                                                <div class="col-md-6 btn-group btn-group-xs btn-group-justified">
-                                                    <label class="btn btn-info btn-xs" data-ng-model="gateReviewDetails" btn-radio="'header'">
-                                                        Header
-                                                    </label>
-                                                    <label class="btn btn-info btn-xs" data-ng-model="gateReviewDetails" btn-radio="'outcomes'">
-                                                        Outcomes
-                                                    </label>
-                                                    <label class="btn btn-info btn-xs" data-ng-model="gateReviewDetails" btn-radio="'duration'">
-                                                        Duration
-                                                    </label>
-                                                    <label class="btn btn-info btn-xs" data-ng-model="gateReviewDetails" btn-radio="'cost'">
-                                                        Cost
-                                                    </label>
-                                                    <label class="btn btn-info btn-xs" data-ng-model="gateReviewDetails" btn-radio="'completion'">
-                                                        Completion
-                                                    </label>
-                                                </div>
-                                            </div>
-                                            <div class="panel-body" data-ng-show="gateReviewDetails === 'header'">
-                                                <form>
-                                                    <div class="row">
-                                                        <div class="form-group-sm col-md-3">
-                                                            <label for="prjCrEditRecDate">Review date</label>
-                                                            <input id="prjCrEditRecDate" class="form-control" type="date" placeholder="Enter review date"
-                                                                   data-ng-model="newGateReview.reviewDate" >
-                                                        </div>
-                                                        <div class="form-group-sm col-md-3">
-                                                            <label for="prjCrEditStatus">Overall score</label>
-                                                            <select id="prjCrEditStatus" class="form-control" data-ng-model = "newGateReview.overallScore"
-                                                                    ng-options="score._id as score.scoreName for score in outcomeScores">
-                                                                <option value="">--choose score</option>
-                                                            </select>
-                                                        </div>
-                                                    </div>
-                                                    <br>
-                                                    <div class="row">
-                                                        <div class="form-group-sm col-md-3">
-                                                            <label for="prjCrEditState">Gate status</label>
-                                                            <select id="prjCrEditState" class="form-control" data-ng-model = "newGateReview.gateStatus"
-                                                                    ng-options="gateStatus._id as gateStatus.statusName for gateStatus in gateStatuses">
-                                                                <option value="">--choose status</option>
-                                                            </select>
-                                                        </div>
-                                                        <div class="form-group-sm col-md-9">
-                                                            <label for="prjCrEditComment">Review comment</label>
-                                                            <textarea id="prjCrEditComment" class="form-control" placeholder="Enter comment" data-ng-model="newGateReview.overallComment"></textarea>
-                                                        </div>
-                                                    </div>
-                                                    <br>
-                                                    <div class="row">
-                                                        <div class="form-group-sm col-md-2">
-                                                            <label for="prjCrEditCompleted">Completed</label>
-                                                            <input id="prjCrEditCompleted" class="" type="checkbox"
-                                                                   data-ng-model="newGateReview.completed" >
-                                                        </div>
-                                                    </div>
-                                                </form>
-                                            </div>
-                                            <div class="panel-body" data-ng-show="gateReviewDetails === 'outcomes'">
-                                                <table class="table small">
-                                                    <tr>
-                                                        <th>Outcome</th>
-                                                        <th>Score</th>
-                                                        <th>Comment</th>
-                                                        <th> </th>
-                                                    </tr>
-                                                    <tr ng-repeat="outcomeReview in gateReview.outcomeReviews track by $index">
-                                                        <td>
-                                                            {{outcomeReview.outcome.outcomeName}}
-                                                        </td>
-                                                        <td>
-                                                            {{outcomeReview.score.scoreName}}
-                                                        </td>
-                                                        <td>
-                                                            {{outcomeReview.reviewComment}}
-                                                        </td>
-                                                        <td>
-                                                            <button class="btn btn-danger btn-xs" ng-click="">
-                                                                <span class="glyphicon glyphicon-trash small"></span>
-                                                            </button>
-                                                        </td>
-                                                    </tr>
-                                                </table>
-                                            </div>
-                                            <div class="panel-body" data-ng-show="gateReviewDetails === 'duration'">
-                                                <table class="table small">
-                                                    <caption>
-                                                        Baseline duration
-                                                    </caption>
-                                                    <tr>
-                                                        <th>Target gate</th>
-                                                        <th>Current date</th>
-                                                        <th>New date</th>
-                                                        <th>Variance</th>
-                                                        <th> </th>
-                                                    </tr>
-                                                    <tr data-ng-repeat="baselineDuration in baselineDurations | filter:{sourceGate: reviewObject.gate._id} | orderBy: 'targetGate.position'">
-                                                        <td>
-                                                            {{baselineDuration.targetGate.name}}
-                                                        </td>
-                                                        <td>
-                                                            {{baselineDuration.currentRecord.gateDate}}
-                                                        </td>
-                                                        <td>
-                                                            <input id="" class="form-control input-sm" type="number" placeholder="Enter amount"
-                                                                   data-ng-model="newGateReview.baselineDuration.newDate" required>
-                                                        </td>
-                                                        <td>
-
-                                                        </td>
-                                                    </tr>
-                                                </table>
-                                                <table class="table small">
-                                                    <caption>
-                                                        Estimate duration
-                                                    </caption>
-                                                    <tr>
-                                                        <th>Target gate</th>
-                                                        <th colspan="3" class="text-center">Current</th>
-                                                        <th colspan="3" class="text-center">New</th>
-                                                    </tr>
-                                                    <tr>
-                                                        <th></th>
-                                                        <th>Start date</th>
-                                                        <th>End date</th>
-                                                        <th>Duration</th>
-                                                        <th>Start date</th>
-                                                        <th>End date</th>
-                                                        <th>Duration</th>
-                                                        <th> </th>
-                                                    </tr>
-                                                    <tr ng-repeat="estDurReview in gateReview.estimateDurationReviews">
-                                                        <td>
-                                                            {{estDurReview.estimateDuration.targetGate.gateName}}
-                                                        </td>
-                                                        <td>
-                                                            {{estDurReview.currentEstimateDuration.startDate}}
-                                                        </td>
-                                                        <td>
-                                                            {{estDurReview.currentEstimateDuration.endDate}}
-                                                        </td>
-                                                        <td>
-                                                            {{calculateDays(convertToDate(estDurReview.currentEstimateDuration.startDate),convertToDate(estDurReview.currentEstimateDuration.endDate))}}
-                                                        </td>
-                                                        <td>
-                                                            {{estDurReview.newStartDate}}
-                                                        </td>
-                                                        <td>
-                                                            {{estDurReview.newEndDate}}
-                                                        </td>
-                                                        <td>
-                                                            {{calculateDays(convertToDate(estDurReview.newStartDate),convertToDate(estDurReview.newEndDate))}}
-                                                        </td>
-                                                        <td>
-                                                            <button class="btn btn-danger btn-xs" ng-click="">
-                                                                <span class="glyphicon glyphicon-trash small"></span>
-                                                            </button>
-                                                        </td>
-                                                    </tr>
-                                                </table>
-                                                <table class="table small">
-                                                    <caption>
-                                                        Actual duration
-                                                    </caption>
-                                                    <tr>
-                                                        <th>Target gate</th>
-                                                        <th colspan="3" class="text-center">Current</th>
-                                                        <th colspan="3" class="text-center">New</th>
-                                                    </tr>
-                                                    <tr>
-                                                        <th></th>
-                                                        <th>Start date</th>
-                                                        <th>End date</th>
-                                                        <th>Duration</th>
-                                                        <th>Start date</th>
-                                                        <th>End date</th>
-                                                        <th>Duration</th>
-                                                        <th> </th>
-                                                    </tr>
-                                                    <tr ng-repeat="actDurReview in gateReview.actualDurationReviews">
-                                                        <td>
-                                                            {{actDurReview.actualDuration.targetGate.gateName}}
-                                                        </td>
-                                                        <td>
-                                                            {{actDurReview.currentActualDuration.startDate}}
-                                                        </td>
-                                                        <td>
-                                                            {{actDurReview.currentActualDuration.endDate}}
-                                                        </td>
-                                                        <td>
-                                                            {{calculateDays(convertToDate(actDurReview.currentActualDuration.startDate),convertToDate(actDurReview.currentActualDuration.endDate))}}
-                                                        </td>
-                                                        <td>
-                                                            {{actDurReview.newStartDate}}
-                                                        </td>
-                                                        <td>
-                                                            {{actDurReview.newEndDate}}
-                                                        </td>
-                                                        <td>
-                                                            {{calculateDays(convertToDate(actDurReview.newStartDate),convertToDate(actDurReview.newEndDate))}}
-                                                        </td>
-                                                        <td>
-                                                            <button class="btn btn-danger btn-xs" ng-click="">
-                                                                <span class="glyphicon glyphicon-trash small"></span>
-                                                            </button>
-                                                        </td>
-                                                    </tr>
-                                                </table>
-                                            </div>
-                                            <div class="panel-body" data-ng-show="gateReviewDetails === 'cost'">
-                                                <table class="table small">
-                                                    <caption>
-                                                        Baseline cost
-                                                    </caption>
-                                                    <tr>
-                                                        <th>Target gate</th>
-                                                        <th>Current cost</th>
-                                                        <th>New cost</th>
-                                                        <th>Variance</th>
-                                                        <th> </th>
-                                                    </tr>
-                                                    <tr data-ng-repeat="baselineCost in baselineCosts | filter:{sourceGate: reviewObject.gate._id} | orderBy: 'targetGate.position'">
-                                                        <td>
-                                                            {{baselineCost.targetGate.name}}
-                                                        </td>
-                                                        <td>
-                                                            {{baselineCost.currentRecord.cost}}
-                                                        </td>
-                                                        <td>
-                                                            <input id="" class="form-control input-sm" type="number"
-                                                                   data-ng-init="newGateReview.baselineCost[reviewObject.gate._id].newCost = baselineCost.currentRecord.cost"
-                                                                   data-ng-model="newGateReview.baselineCost[reviewObject.gate._id].newCost" required>
-                                                        </td>
-                                                        <td>
-
-                                                        </td>
-                                                        <td>
-                                                            <button class="btn btn-danger btn-xs" ng-click="">
-                                                                <span class="glyphicon glyphicon-trash small"></span>
-                                                            </button>
-                                                        </td>
-                                                    </tr>
-                                                </table>
-                                                <table class="table small">
-                                                    <caption>
-                                                        Estimate cost
-                                                    </caption>
-                                                    <tr>
-                                                        <th>Target gate</th>
-                                                        <th>Current cost</th>
-                                                        <th>New cost</th>
-                                                        <th>Variance</th>
-                                                        <th> </th>
-                                                    </tr>
-                                                    <tr ng-repeat="estCostReview in gateReview.estimateCostReviews">
-                                                        <td>
-                                                            {{estCostReview.estimateCost.targetGate.gateName}}
-                                                        </td>
-                                                        <td>
-                                                            {{estCostReview.currentEstimateCost.cost}}
-                                                        </td>
-                                                        <td>
-                                                            {{estCostReview.newCost}}
-                                                        </td>
-                                                        <td>
-                                                            {{(estCostReview.currentEstimateCost.cost) - (estCostReview.newCost)}}
-                                                        </td>
-                                                        <td>
-                                                            <button class="btn btn-danger btn-xs" ng-click="">
-                                                                <span class="glyphicon glyphicon-trash small"></span>
-                                                            </button>
-                                                        </td>
-                                                    </tr>
-                                                </table>
-                                                <table class="table small">
-                                                    <caption>
-                                                        Actual cost reviews
-                                                    </caption>
-                                                    <tr>
-                                                        <th>Target gate</th>
-                                                        <th>Current cost</th>
-                                                        <th>New cost</th>
-                                                        <th>Variance</th>
-                                                        <th> </th>
-                                                    </tr>
-                                                    <tr ng-repeat="actCostReview in gateReview.actualCostReviews">
-                                                        <td>
-                                                            {{actCostReview.actualCost.targetGate.gateName}}
-                                                        </td>
-                                                        <td>
-                                                            {{actCostReview.currentActualCost.cost}}
-                                                        </td>
-                                                        <td>
-                                                            {{actCostReview.newCost}}
-                                                        </td>
-                                                        <td>
-                                                            {{(actCostReview.currentActualCost.cost) - (actCostChange.newCost)}}
-                                                        </td>
-                                                        <td>
-                                                            <button class="btn btn-danger btn-xs" ng-click="">
-                                                                <span class="glyphicon glyphicon-trash small"></span>
-                                                            </button>
-                                                        </td>
-                                                    </tr>
-                                                </table>
-                                            </div>
-                                            <div class="panel-body" data-ng-show="gateReviewDetails === 'completion'">
-                                                <table class="table small">
-                                                    <caption>
-                                                        Baseline completion
-                                                    </caption>
-                                                    <tr>
-                                                        <th>Target gate</th>
-                                                        <th>Current completion</th>
-                                                        <th>New completion</th>
-                                                        <th>Variance</th>
-                                                        <th> </th>
-                                                    </tr>
-                                                    <tr ng-repeat="basCompletionReview in gateReview.baselineCompletionReviews">
-                                                        <td>
-                                                            {{basCompletionReview.baselineCompletion.targetGate.gateName}}
-                                                        </td>
-                                                        <td>
-                                                            {{basCompletionReview.currentBaselineCompletion.completion}}
-                                                        </td>
-                                                        <td>
-                                                            {{basCompletionReview.newCompletion}}
-                                                        </td>
-                                                        <td>
-                                                            {{round((basCompletionReview.currentBaselineCompletion.completion) - (basCompletionReview.newCompletion))}}
-                                                        </td>
-                                                        <td>
-                                                            <button class="btn btn-danger btn-xs" ng-click="">
-                                                                <span class="glyphicon glyphicon-trash small"></span>
-                                                            </button>
-                                                        </td>
-                                                    </tr>
-                                                </table>
-                                                <table class="table small">
-                                                    <caption>
-                                                        Estimate completion
-                                                    </caption>
-                                                    <tr>
-                                                        <th>Target gate</th>
-                                                        <th>Current completion</th>
-                                                        <th>New completion</th>
-                                                        <th>Variance</th>
-                                                        <th> </th>
-                                                    </tr>
-                                                    <tr ng-repeat="estCompReview in gateReview.estimateCompletionReviews">
-                                                        <td>
-                                                            {{estCompReview.estimateCompletion.targetGate.gateName}}
-                                                        </td>
-                                                        <td>
-                                                            {{estCompReview.currentEstimateCompletion.completion}}
-                                                        </td>
-                                                        <td>
-                                                            {{estCompReview.newCompletion}}
-                                                        </td>
-                                                        <td>
-                                                            {{round((estCompReview.currentEstimateCompletion.completion) - (estCompReview.newCompletion))}}
-                                                        </td>
-                                                        <td>
-                                                            <button class="btn btn-danger btn-xs" ng-click="">
-                                                                <span class="glyphicon glyphicon-trash small"></span>
-                                                            </button>
-                                                        </td>
-                                                    </tr>
-                                                </table>
-                                                <table class="table small">
-                                                    <caption>
-                                                        Actual completion
-                                                    </caption>
-                                                    <tr>
-                                                        <th>Target gate</th>
-                                                        <th>Current completion</th>
-                                                        <th>New completion</th>
-                                                        <th>Variance</th>
-                                                        <th> </th>
-                                                    </tr>
-                                                    <tr ng-repeat="actCompReview in gateReview.actualCompletionReviews">
-                                                        <td>
-                                                            {{actCompReview.actualCompletion.targetGate.gateName}}
-                                                        </td>
-                                                        <td>
-                                                            {{actCompReview.currentActualCompletion.completion}}
-                                                        </td>
-                                                        <td>
-                                                            {{actCompReview.newCompletion}}
-                                                        </td>
-                                                        <td>
-                                                            {{round((actCompReview.currentActualCompletion.completion) - (actCompReview.newCompletion))}}
-                                                        </td>
-                                                        <td>
-                                                            <button class="btn btn-danger btn-xs" ng-click="">
-                                                                <span class="glyphicon glyphicon-trash small"></span>
-                                                            </button>
-                                                        </td>
-                                                    </tr>
-                                                </table>
-                                            </div>
+                                            </form>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                            <br>
                             <div class="row">
                                 <div class="col-md-12">
                                     <div data-ng-show="reviewObject.gateReviews.length === 0 && !showNewGateReviewForm" class="alert alert-warning text-center">
@@ -533,15 +169,13 @@
                                                 <th>Gate status</th>
                                                 <th>Completed</th>
                                                 <th> </th>
-                                                <th> </th>
-                                                <th> </th>
                                             </tr>
-                                            <tr ng-repeat-start="gateReview in reviewObject.gateReviews track by $index">
+                                            <tr data-ng-repeat="gateReview in reviewObject.gateReviews track by $index">
                                                 <td>
                                                     {{gateReview.reviewDate}}
                                                 </td>
                                                 <td>
-                                                    {{gateReview.reviewTitle}}
+                                                    {{gateReview.title}}
                                                 </td>
                                                 <td>
                                                     {{gateReview.overallScore.name}}
@@ -557,713 +191,429 @@
                                                         <span class="glyphicon glyphicon-plus small"></span>
                                                     </button>
                                                 </td>
-                                                <td>
-                                                    <button class="btn btn-danger btn-xs" ng-click="">
-                                                        <span class="glyphicon glyphicon-trash small"></span>
-                                                    </button>
-                                                </td>
-                                            </tr>
-                                            <tr ng-repeat-end ng-show="showGateReviewDetails">
-                                                <td colspan="11">
-                                                    <div class="row">
-                                                        <div class="col-md-12">
-                                                            <div class="panel panel-default">
-                                                                <div class="panel-heading">
-                                                                    <div class="row">
-                                                                        <div class="col-md-6 btn-group btn-group-xs btn-group-justified">
-                                                                            <label class="btn btn-info btn-xs" ng-model="gateReviewDetails" btn-radio="'header'">
-                                                                                Header
-                                                                            </label>
-                                                                            <label class="btn btn-info btn-xs" ng-model="gateReviewDetails" btn-radio="'outcomes'">
-                                                                                Outcomes
-                                                                            </label>
-                                                                            <label class="btn btn-info btn-xs" ng-model="gateReviewDetails" btn-radio="'duration'">
-                                                                                Duration
-                                                                            </label>
-                                                                            <label class="btn btn-info btn-xs" ng-model="gateReviewDetails" btn-radio="'cost'">
-                                                                                Cost
-                                                                            </label>
-                                                                            <label class="btn btn-info btn-xs" ng-model="gateReviewDetails" btn-radio="'completion'">
-                                                                                Completion
-                                                                            </label>
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-                                                                <div class="panel-body">
-                                                                    <div class="row" ng-show="gateReviewDetails === 'header'">
-                                                                        <div class="col-md-12">
-                                                                            <div class="panel panel-default small">
-                                                                                <div class="panel-heading">
-                                                                                    <b>Header</b>
-                                                                                </div>
-                                                                                <div class="panel-body">
-                                                                                    <form>
-                                                                                        <div class="row">
-                                                                                            <div class="form-group-sm col-md-3">
-                                                                                                <label for="prjCrEditRecDate">Review date</label>
-                                                                                                <input id="prjCrEditRecDate" class="form-control" type="date" placeholder="Enter review date"
-                                                                                                       ng-model="gateReview.reviewDate" >
-                                                                                            </div>
-                                                                                            <div class="form-group-sm col-md-3">
-                                                                                                <label for="prjCrEditStatus">Overall score</label>
-                                                                                                <select id="prjCrEditStatus" class="form-control" ng-model = "gateReview.overallScore._id"
-                                                                                                        ng-options="score._id as score.scoreName for score in outcomeScores">
-                                                                                                    <option value="">--choose score</option>
-                                                                                                </select>
-                                                                                            </div>
-                                                                                        </div>
-                                                                                        <br>
-                                                                                        <div class="row">
-                                                                                            <div class="form-group-sm col-md-3">
-                                                                                                <label for="prjCrEditState">Gate status</label>
-                                                                                                <select id="prjCrEditState" class="form-control" ng-model = "gateReview.gateStatus._id"
-                                                                                                        ng-options="gateStatus._id as gateStatus.statusName for gateStatus in gateStatuses">
-                                                                                                    <option value="">--choose status</option>
-                                                                                                </select>
-                                                                                            </div>
-                                                                                            <div class="form-group-sm col-md-9">
-                                                                                                <label for="prjCrEditComment">Review comment</label>
-                                                <textarea id="prjCrEditComment" class="form-control" placeholder="Enter comment"
-                                                          ng-model="gateReview.overallComment"></textarea>
-                                                                                            </div>
-                                                                                        </div>
-                                                                                        <br>
-                                                                                        <div class="row">
-                                                                                            <div class="form-group-sm col-md-2">
-                                                                                                <label for="prjCrEditCompleted">Completed</label>
-                                                                                                <input id="prjCrEditCompleted" class="" type="checkbox"
-                                                                                                       ng-model="gateReview.completed" >
-                                                                                            </div>
-                                                                                        </div>
-                                                                                        <hr>
-                                                                                        <div class="row pull-right">
-                                                                                            <div class="form-group-sm">
-                                                                                                <div class="col-md-12">
-                                                                                                    <button class="btn btn-success btn-xs" ng-click="">
-                                                                                                        Save
-                                                                                                    </button>
-                                                                                                    <button class="btn btn-info btn-xs" ng-click="showGateReviewHeader = !showGateReviewHeader">
-                                                                                                        Cancel
-                                                                                                    </button>
-                                                                                                    <button class="btn btn-danger btn-xs" ng-click="">
-                                                                                                        Delete
-                                                                                                    </button>
-                                                                                                </div>
-                                                                                            </div>
-                                                                                        </div>
-                                                                                    </form>
-                                                                                </div>
-                                                                            </div>
-                                                                        </div>
-                                                                    </div>
-                                                                    <div class="row" ng-show="gateReviewDetails === 'outcomes'">
-                                                                        <div class="col-md-12">
-                                                                            <div class="panel panel-default small">
-                                                                                <div class="panel-heading">
-                                                                                    <b>Gate outcomes review</b>
-                                                                                    <button class="btn btn-success btn-xs pull-right" ng-click="showAddOutcomeReview = !showAddOutcomeReview">
-                                                                                        New outcome review
-                                                                                    </button>
-                                                                                </div>
-                                                                                <div class="panel-body">
-                                                                                    <div class="row" ng-show="showAddOutcomeReview">
-                                                                                        <div class="col-md-12">
-                                                                                            <div class="panel panel-default">
-                                                                                                <div class="panel-body">
-                                                                                                    <form>
-                                                                                                        <div class="row">
-                                                                                                            <div class="form-group-sm col-md-3">
-                                                                                                                <label for="addDurChangeGate">Target gate</label>
-                                                                                                                <select id="addDurChangeGate" class="form-control" ng-model = "addDurationChangeForm.targetGate"
-                                                                                                                        ng-options="gate.gateName for gate in selectedProject.assignedProcess.gates">
-                                                                                                                    <option value="">--choose gate</option>
-                                                                                                                </select>
-                                                                                                            </div>
-                                                                                                            <div class="form-group-sm col-md-3">
-                                                                                                                <label for="addDurChangeType">Performance type</label>
-                                                                                                                <select id="addDurChangeType" class="form-control" ng-model = "addDurationChangeForm.performanceType"
-                                                                                                                        ng-options="type.name for type in gateRevPerfTypeList">
-                                                                                                                    <option value="">--choose type</option>
-                                                                                                                </select>
-                                                                                                            </div>
-                                                                                                            <div class="form-group-sm col-md-3">
-                                                                                                                <label for="addDurChangeSDate">New start date</label>
-                                                                                                                <input id="addDurChangeSDate" class="form-control" type="date" placeholder="Enter date"
-                                                                                                                       ng-model="addDurationChangeForm.newStartDate" >
-                                                                                                            </div>
-                                                                                                            <div class="form-group-sm col-md-3">
-                                                                                                                <label for="addDurChangeEDate">New end date</label>
-                                                                                                                <input id="addDurChangeEDate" class="form-control" type="date" placeholder="Enter date"
-                                                                                                                       ng-model="addDurationChangeForm.newEndDate" >
-                                                                                                            </div>
-                                                                                                        </div>
-                                                                                                        <hr>
-                                                                                                        <div class="row pull-right">
-                                                                                                            <div class="form-group-sm">
-                                                                                                                <div class="col-md-12">
-                                                                                                                    <button class="btn btn-success btn-xs" ng-click="">
-                                                                                                                        Add
-                                                                                                                    </button>
-                                                                                                                    <button class="btn btn-info btn-xs" ng-click="showAddDurationReview = false">
-                                                                                                                        Cancel
-                                                                                                                    </button>
-                                                                                                                </div>
-                                                                                                            </div>
-                                                                                                        </div>
-                                                                                                    </form>
-                                                                                                </div>
-                                                                                            </div>
-                                                                                        </div>
-                                                                                    </div>
-                                                                                    <div class="row">
-                                                                                        <div class="col-md-12">
-                                                                                            <table class="table small">
-                                                                                                <tr>
-                                                                                                    <th>Outcome</th>
-                                                                                                    <th>Score</th>
-                                                                                                    <th>Comment</th>
-                                                                                                    <th> </th>
-                                                                                                </tr>
-                                                                                                <tr ng-repeat="outcomeReview in gateReview.outcomeReviews track by $index">
-                                                                                                    <td>
-                                                                                                        {{outcomeReview.outcome.outcomeName}}
-                                                                                                    </td>
-                                                                                                    <td>
-                                                                                                        {{outcomeReview.score.scoreName}}
-                                                                                                    </td>
-                                                                                                    <td>
-                                                                                                        {{outcomeReview.reviewComment}}
-                                                                                                    </td>
-                                                                                                    <td>
-                                                                                                        <button class="btn btn-danger btn-xs" ng-click="">
-                                                                                                            <span class="glyphicon glyphicon-trash small"></span>
-                                                                                                        </button>
-                                                                                                    </td>
-                                                                                                </tr>
-                                                                                            </table>
-                                                                                        </div>
-                                                                                    </div>
-                                                                                </div>
-                                                                            </div>
-                                                                        </div>
-                                                                    </div>
-                                                                    <div class="row" ng-show="gateReviewDetails === 'duration'">
-                                                                        <div class="col-md-12">
-                                                                            <div class="panel panel-default small">
-                                                                                <div class="panel-heading">
-                                                                                    <b>Duration performance</b>
-                                                                                    <button class="btn btn-success btn-xs pull-right" ng-click="showAddDurationReview = !showAddDurationReview">
-                                                                                        New duration reviews
-                                                                                    </button>
-                                                                                </div>
-                                                                                <div class="panel-body">
-                                                                                    <div class="row" ng-show="showAddDurationReview">
-                                                                                        <div class="col-md-12">
-                                                                                            <div class="panel panel-default">
-                                                                                                <div class="panel-body">
-                                                                                                    <form>
-                                                                                                        <div class="row">
-                                                                                                            <div class="form-group-sm col-md-3">
-                                                                                                                <label for="addDurChangeGate">Target gate</label>
-                                                                                                                <select id="addDurChangeGate" class="form-control" ng-model = "addDurationChangeForm.targetGate"
-                                                                                                                        ng-options="gate.gateName for gate in reviewObject.targetGateList">
-                                                                                                                    <option value="">--choose gate</option>
-                                                                                                                </select>
-                                                                                                            </div>
-                                                                                                            <div class="form-group-sm col-md-3">
-                                                                                                                <label for="addDurChangeType">Performance type</label>
-                                                                                                                <select id="addDurChangeType" class="form-control" ng-model = "addDurationChangeForm.performanceType"
-                                                                                                                        ng-options="type.name for type in gateRevPerfTypeList">
-                                                                                                                    <option value="">--choose type</option>
-                                                                                                                </select>
-                                                                                                            </div>
-                                                                                                            <div class="form-group-sm col-md-3">
-                                                                                                                <label for="addDurChangeSDate">New start date</label>
-                                                                                                                <input id="addDurChangeSDate" class="form-control" type="date" placeholder="Enter date"
-                                                                                                                       ng-model="addDurationChangeForm.newStartDate" >
-                                                                                                            </div>
-                                                                                                            <div class="form-group-sm col-md-3">
-                                                                                                                <label for="addDurChangeEDate">New end date</label>
-                                                                                                                <input id="addDurChangeEDate" class="form-control" type="date" placeholder="Enter date"
-                                                                                                                       ng-model="addDurationChangeForm.newEndDate" >
-                                                                                                            </div>
-                                                                                                        </div>
-                                                                                                        <hr>
-                                                                                                        <div class="row pull-right">
-                                                                                                            <div class="form-group-sm">
-                                                                                                                <div class="col-md-12">
-                                                                                                                    <button class="btn btn-success btn-xs" ng-click="">
-                                                                                                                        Add
-                                                                                                                    </button>
-                                                                                                                    <button class="btn btn-info btn-xs" ng-click="showAddDurationReview = false">
-                                                                                                                        Cancel
-                                                                                                                    </button>
-                                                                                                                </div>
-                                                                                                            </div>
-                                                                                                        </div>
-                                                                                                    </form>
-                                                                                                </div>
-                                                                                            </div>
-                                                                                        </div>
-                                                                                    </div>
-                                                                                    <table class="table small">
-                                                                                        <caption>
-                                                                                            Baseline duration
-                                                                                        </caption>
-                                                                                        <tr>
-                                                                                            <th>Target gate</th>
-                                                                                            <th colspan="3" class="text-center">Current</th>
-                                                                                            <th colspan="3" class="text-center">New</th>
-                                                                                        </tr>
-                                                                                        <tr>
-                                                                                            <th></th>
-                                                                                            <th>Start date</th>
-                                                                                            <th>End date</th>
-                                                                                            <th>Duration</th>
-                                                                                            <th>Start date</th>
-                                                                                            <th>End date</th>
-                                                                                            <th>Duration</th>
-                                                                                            <th> </th>
-                                                                                        </tr>
-                                                                                        <tr ng-repeat="basDurReview in gateReview.baselineDurationReviews">
-                                                                                            <td>
-                                                                                                {{basDurReview.baselineDuration.targetGate.gateName}}
-                                                                                            </td>
-                                                                                            <td>
-                                                                                                {{basDurReview.currentBaselineDuration.startDate}}
-                                                                                            </td>
-                                                                                            <td>
-                                                                                                {{basDurReview.currentBaselineDuration.endDate}}
-                                                                                            </td>
-                                                                                            <td>
-                                                                                                {{calculateDays(convertToDate(basDurReview.currentBaselineDuration.startDate),convertToDate(basDurReview.currentBaselineDuration.endDate))}}
-                                                                                            </td>
-                                                                                            <td>
-                                                                                                {{basDurReview.newStartDate}}
-                                                                                            </td>
-                                                                                            <td>
-                                                                                                {{basDurReview.newEndDate}}
-                                                                                            </td>
-                                                                                            <td>
-                                                                                                {{calculateDays(convertToDate(basDurReview.newStartDate),convertToDate(basDurReview.newEndDate))}}
-                                                                                            </td>
-                                                                                            <td>
-                                                                                                <button class="btn btn-danger btn-xs" ng-click="">
-                                                                                                    <span class="glyphicon glyphicon-trash small"></span>
-                                                                                                </button>
-                                                                                            </td>
-                                                                                        </tr>
-                                                                                    </table>
-                                                                                    <table class="table small">
-                                                                                        <caption>
-                                                                                            Estimate duration
-                                                                                        </caption>
-                                                                                        <tr>
-                                                                                            <th>Target gate</th>
-                                                                                            <th colspan="3" class="text-center">Current</th>
-                                                                                            <th colspan="3" class="text-center">New</th>
-                                                                                        </tr>
-                                                                                        <tr>
-                                                                                            <th></th>
-                                                                                            <th>Start date</th>
-                                                                                            <th>End date</th>
-                                                                                            <th>Duration</th>
-                                                                                            <th>Start date</th>
-                                                                                            <th>End date</th>
-                                                                                            <th>Duration</th>
-                                                                                            <th> </th>
-                                                                                        </tr>
-                                                                                        <tr ng-repeat="estDurReview in gateReview.estimateDurationReviews">
-                                                                                            <td>
-                                                                                                {{estDurReview.estimateDuration.targetGate.gateName}}
-                                                                                            </td>
-                                                                                            <td>
-                                                                                                {{estDurReview.currentEstimateDuration.startDate}}
-                                                                                            </td>
-                                                                                            <td>
-                                                                                                {{estDurReview.currentEstimateDuration.endDate}}
-                                                                                            </td>
-                                                                                            <td>
-                                                                                                {{calculateDays(convertToDate(estDurReview.currentEstimateDuration.startDate),convertToDate(estDurReview.currentEstimateDuration.endDate))}}
-                                                                                            </td>
-                                                                                            <td>
-                                                                                                {{estDurReview.newStartDate}}
-                                                                                            </td>
-                                                                                            <td>
-                                                                                                {{estDurReview.newEndDate}}
-                                                                                            </td>
-                                                                                            <td>
-                                                                                                {{calculateDays(convertToDate(estDurReview.newStartDate),convertToDate(estDurReview.newEndDate))}}
-                                                                                            </td>
-                                                                                            <td>
-                                                                                                <button class="btn btn-danger btn-xs" ng-click="">
-                                                                                                    <span class="glyphicon glyphicon-trash small"></span>
-                                                                                                </button>
-                                                                                            </td>
-                                                                                        </tr>
-                                                                                    </table>
-                                                                                    <table class="table small">
-                                                                                        <caption>
-                                                                                            Actual duration
-                                                                                        </caption>
-                                                                                        <tr>
-                                                                                            <th>Target gate</th>
-                                                                                            <th colspan="3" class="text-center">Current</th>
-                                                                                            <th colspan="3" class="text-center">New</th>
-                                                                                        </tr>
-                                                                                        <tr>
-                                                                                            <th></th>
-                                                                                            <th>Start date</th>
-                                                                                            <th>End date</th>
-                                                                                            <th>Duration</th>
-                                                                                            <th>Start date</th>
-                                                                                            <th>End date</th>
-                                                                                            <th>Duration</th>
-                                                                                            <th> </th>
-                                                                                        </tr>
-                                                                                        <tr ng-repeat="actDurReview in gateReview.actualDurationReviews">
-                                                                                            <td>
-                                                                                                {{actDurReview.actualDuration.targetGate.gateName}}
-                                                                                            </td>
-                                                                                            <td>
-                                                                                                {{actDurReview.currentActualDuration.startDate}}
-                                                                                            </td>
-                                                                                            <td>
-                                                                                                {{actDurReview.currentActualDuration.endDate}}
-                                                                                            </td>
-                                                                                            <td>
-                                                                                                {{calculateDays(convertToDate(actDurReview.currentActualDuration.startDate),convertToDate(actDurReview.currentActualDuration.endDate))}}
-                                                                                            </td>
-                                                                                            <td>
-                                                                                                {{actDurReview.newStartDate}}
-                                                                                            </td>
-                                                                                            <td>
-                                                                                                {{actDurReview.newEndDate}}
-                                                                                            </td>
-                                                                                            <td>
-                                                                                                {{calculateDays(convertToDate(actDurReview.newStartDate),convertToDate(actDurReview.newEndDate))}}
-                                                                                            </td>
-                                                                                            <td>
-                                                                                                <button class="btn btn-danger btn-xs" ng-click="">
-                                                                                                    <span class="glyphicon glyphicon-trash small"></span>
-                                                                                                </button>
-                                                                                            </td>
-                                                                                        </tr>
-                                                                                    </table>
-                                                                                </div>
-                                                                            </div>
-                                                                        </div>
-                                                                    </div>
-                                                                    <div class="row" ng-show="gateReviewDetails === 'cost'">
-                                                                        <div class="col-md-12">
-                                                                            <div class="panel panel-default small">
-                                                                                <div class="panel-heading">
-                                                                                    <b>Cost performance</b>
-                                                                                    <button class="btn btn-success btn-xs pull-right" ng-click="showAddCostReview = true">
-                                                                                        New cost review
-                                                                                    </button>
-                                                                                </div>
-                                                                                <div class="panel-body">
-                                                                                    <div class="row" ng-show="showAddCostReview">
-                                                                                        <div class="col-md-12">
-                                                                                            <div class="panel panel-default">
-                                                                                                <div class="panel-body">
-                                                                                                    <form>
-                                                                                                        <div class="row">
-                                                                                                            <div class="form-group-sm col-md-3">
-                                                                                                                <label for="addCostChangeGate">Target gate</label>
-                                                                                                                <select id="addCostChangeGate" class="form-control" ng-model = "addCostChangeForm.targetGate"
-                                                                                                                        ng-options="gate.gateName for gate in reviewObject.targetGateList">
-                                                                                                                    <option value="">--choose gate</option>
-                                                                                                                </select>
-                                                                                                            </div>
-                                                                                                            <div class="form-group-sm col-md-3">
-                                                                                                                <label for="addCostChangeType">Performance type</label>
-                                                                                                                <select id="addCostChangeType" class="form-control" ng-model = "addCostChangeForm.performanceType"
-                                                                                                                        ng-options="type.name for type in gateRevPerfTypeList">
-                                                                                                                    <option value="">--choose type</option>
-                                                                                                                </select>
-                                                                                                            </div>
-                                                                                                            <div class="form-group-sm col-md-3">
-                                                                                                                <label for="addCostChangeCost">New cost</label>
-                                                                                                                <input id="addCostChangeCost" class="form-control" type="number" min="0" placeholder="Enter amount"
-                                                                                                                       ng-model="addCostChangeForm.newCost" >
-                                                                                                            </div>
-                                                                                                        </div>
-                                                                                                        <hr>
-                                                                                                        <div class="row pull-right">
-                                                                                                            <div class="form-group-sm">
-                                                                                                                <div class="col-md-12">
-                                                                                                                    <button class="btn btn-success btn-xs" ng-click="">
-                                                                                                                        Add
-                                                                                                                    </button>
-                                                                                                                    <button class="btn btn-info btn-xs" ng-click="showAddCostReview = false">
-                                                                                                                        Cancel
-                                                                                                                    </button>
-                                                                                                                </div>
-                                                                                                            </div>
-                                                                                                        </div>
-                                                                                                    </form>
-                                                                                                </div>
-                                                                                            </div>
-                                                                                        </div>
-                                                                                    </div>
-                                                                                    <table class="table small">
-                                                                                        <caption>
-                                                                                            Baseline cost
-                                                                                        </caption>
-                                                                                        <tr>
-                                                                                            <th>Target gate</th>
-                                                                                            <th>Current cost</th>
-                                                                                            <th>New cost</th>
-                                                                                            <th>Variance</th>
-                                                                                            <th> </th>
-                                                                                        </tr>
-                                                                                        <tr ng-repeat="basCostReview in gateReview.baselineCostReviews">
-                                                                                            <td>
-                                                                                                {{basCostReview.baselineCost.targetGate.gateName}}
-                                                                                            </td>
-                                                                                            <td>
-                                                                                                {{basCostReview.currentBaselineCost.cost}}
-                                                                                            </td>
-                                                                                            <td>
-                                                                                                {{basCostReview.newCost}}
-                                                                                            </td>
-                                                                                            <td>
-                                                                                                {{(basCostReview.currentBaselineCost.cost) - (basCostChange.newCost)}}
-                                                                                            </td>
-                                                                                            <td>
-                                                                                                <button class="btn btn-danger btn-xs" ng-click="">
-                                                                                                    <span class="glyphicon glyphicon-trash small"></span>
-                                                                                                </button>
-                                                                                            </td>
-                                                                                        </tr>
-                                                                                    </table>
-                                                                                    <table class="table small">
-                                                                                        <caption>
-                                                                                            Estimate cost
-                                                                                        </caption>
-                                                                                        <tr>
-                                                                                            <th>Target gate</th>
-                                                                                            <th>Current cost</th>
-                                                                                            <th>New cost</th>
-                                                                                            <th>Variance</th>
-                                                                                            <th> </th>
-                                                                                        </tr>
-                                                                                        <tr ng-repeat="estCostReview in gateReview.estimateCostReviews">
-                                                                                            <td>
-                                                                                                {{estCostReview.estimateCost.targetGate.gateName}}
-                                                                                            </td>
-                                                                                            <td>
-                                                                                                {{estCostReview.currentEstimateCost.cost}}
-                                                                                            </td>
-                                                                                            <td>
-                                                                                                {{estCostReview.newCost}}
-                                                                                            </td>
-                                                                                            <td>
-                                                                                                {{(estCostReview.currentEstimateCost.cost) - (estCostReview.newCost)}}
-                                                                                            </td>
-                                                                                            <td>
-                                                                                                <button class="btn btn-danger btn-xs" ng-click="">
-                                                                                                    <span class="glyphicon glyphicon-trash small"></span>
-                                                                                                </button>
-                                                                                            </td>
-                                                                                        </tr>
-                                                                                    </table>
-                                                                                    <table class="table small">
-                                                                                        <caption>
-                                                                                            Actual cost reviews
-                                                                                        </caption>
-                                                                                        <tr>
-                                                                                            <th>Target gate</th>
-                                                                                            <th>Current cost</th>
-                                                                                            <th>New cost</th>
-                                                                                            <th>Variance</th>
-                                                                                            <th> </th>
-                                                                                        </tr>
-                                                                                        <tr ng-repeat="actCostReview in gateReview.actualCostReviews">
-                                                                                            <td>
-                                                                                                {{actCostReview.actualCost.targetGate.gateName}}
-                                                                                            </td>
-                                                                                            <td>
-                                                                                                {{actCostReview.currentActualCost.cost}}
-                                                                                            </td>
-                                                                                            <td>
-                                                                                                {{actCostReview.newCost}}
-                                                                                            </td>
-                                                                                            <td>
-                                                                                                {{(actCostReview.currentActualCost.cost) - (actCostChange.newCost)}}
-                                                                                            </td>
-                                                                                            <td>
-                                                                                                <button class="btn btn-danger btn-xs" ng-click="">
-                                                                                                    <span class="glyphicon glyphicon-trash small"></span>
-                                                                                                </button>
-                                                                                            </td>
-                                                                                        </tr>
-                                                                                    </table>
-                                                                                </div>
-                                                                            </div>
-                                                                        </div>
-                                                                    </div>
-                                                                    <div class="row" ng-show="gateReviewDetails === 'completion'">
-                                                                        <div class="col-md-12">
-                                                                            <div class="panel panel-default small">
-                                                                                <div class="panel-heading">
-                                                                                    <b>Completion performance</b>
-                                                                                    <button class="btn btn-success btn-xs pull-right" ng-click="showAddCompletionReview = true">
-                                                                                        New completion review
-                                                                                    </button>
-                                                                                </div>
-                                                                                <div class="panel-body">
-                                                                                    <div class="row" ng-show="showAddCompletionReview">
-                                                                                        <div class="col-md-12">
-                                                                                            <div class="panel panel-default">
-                                                                                                <div class="panel-body">
-                                                                                                    <form>
-                                                                                                        <div class="row">
-                                                                                                            <div class="form-group-sm col-md-3">
-                                                                                                                <label for="addCompletionChangeGate">Target gate</label>
-                                                                                                                <select id="addCompletionChangeGate" class="form-control" ng-model = "addCompletionChangeForm.targetGate"
-                                                                                                                        ng-options="gate.gateName for gate in reviewObject.targetGateList">
-                                                                                                                    <option value="">--choose gate</option>
-                                                                                                                </select>
-                                                                                                            </div>
-                                                                                                            <div class="form-group-sm col-md-3">
-                                                                                                                <label for="addCompletionChangeType">Performance type</label>
-                                                                                                                <select id="addCompletionChangeType" class="form-control" ng-model = "addCompletionChangeForm.performanceType"
-                                                                                                                        ng-options="type.name for type in gateRevPerfTypeList">
-                                                                                                                    <option value="">--choose type</option>
-                                                                                                                </select>
-                                                                                                            </div>
-                                                                                                            <div class="form-group-sm col-md-3">
-                                                                                                                <label for="addCompletionChangeComp">New completion</label>
-                                                                                                                <input id="addCompletionChangeComp" class="form-control" type="number" min="0" max="1" placeholder="Enter decimal from 0 to 1"
-                                                                                                                       ng-model="addCompletionChangeForm.newCompletion" >
-                                                                                                            </div>
-                                                                                                        </div>
-                                                                                                        <hr>
-                                                                                                        <div class="row pull-right">
-                                                                                                            <div class="form-group-sm">
-                                                                                                                <div class="col-md-12">
-                                                                                                                    <button class="btn btn-success btn-xs" ng-click="">
-                                                                                                                        Add
-                                                                                                                    </button>
-                                                                                                                    <button class="btn btn-info btn-xs" ng-click="showAddCompletionReview = false">
-                                                                                                                        Cancel
-                                                                                                                    </button>
-                                                                                                                </div>
-                                                                                                            </div>
-                                                                                                        </div>
-                                                                                                    </form>
-                                                                                                </div>
-                                                                                            </div>
-                                                                                        </div>
-                                                                                    </div>
-                                                                                    <table class="table small">
-                                                                                        <caption>
-                                                                                            Baseline completion
-                                                                                        </caption>
-                                                                                        <tr>
-                                                                                            <th>Target gate</th>
-                                                                                            <th>Current completion</th>
-                                                                                            <th>New completion</th>
-                                                                                            <th>Variance</th>
-                                                                                            <th> </th>
-                                                                                        </tr>
-                                                                                        <tr ng-repeat="basCompletionReview in gateReview.baselineCompletionReviews">
-                                                                                            <td>
-                                                                                                {{basCompletionReview.baselineCompletion.targetGate.gateName}}
-                                                                                            </td>
-                                                                                            <td>
-                                                                                                {{basCompletionReview.currentBaselineCompletion.completion}}
-                                                                                            </td>
-                                                                                            <td>
-                                                                                                {{basCompletionReview.newCompletion}}
-                                                                                            </td>
-                                                                                            <td>
-                                                                                                {{round((basCompletionReview.currentBaselineCompletion.completion) - (basCompletionReview.newCompletion))}}
-                                                                                            </td>
-                                                                                            <td>
-                                                                                                <button class="btn btn-danger btn-xs" ng-click="">
-                                                                                                    <span class="glyphicon glyphicon-trash small"></span>
-                                                                                                </button>
-                                                                                            </td>
-                                                                                        </tr>
-                                                                                    </table>
-                                                                                    <table class="table small">
-                                                                                        <caption>
-                                                                                            Estimate completion
-                                                                                        </caption>
-                                                                                        <tr>
-                                                                                            <th>Target gate</th>
-                                                                                            <th>Current completion</th>
-                                                                                            <th>New completion</th>
-                                                                                            <th>Variance</th>
-                                                                                            <th> </th>
-                                                                                        </tr>
-                                                                                        <tr ng-repeat="estCompReview in gateReview.estimateCompletionReviews">
-                                                                                            <td>
-                                                                                                {{estCompReview.estimateCompletion.targetGate.gateName}}
-                                                                                            </td>
-                                                                                            <td>
-                                                                                                {{estCompReview.currentEstimateCompletion.completion}}
-                                                                                            </td>
-                                                                                            <td>
-                                                                                                {{estCompReview.newCompletion}}
-                                                                                            </td>
-                                                                                            <td>
-                                                                                                {{round((estCompReview.currentEstimateCompletion.completion) - (estCompReview.newCompletion))}}
-                                                                                            </td>
-                                                                                            <td>
-                                                                                                <button class="btn btn-danger btn-xs" ng-click="">
-                                                                                                    <span class="glyphicon glyphicon-trash small"></span>
-                                                                                                </button>
-                                                                                            </td>
-                                                                                        </tr>
-                                                                                    </table>
-                                                                                    <table class="table small">
-                                                                                        <caption>
-                                                                                            Actual completion
-                                                                                        </caption>
-                                                                                        <tr>
-                                                                                            <th>Target gate</th>
-                                                                                            <th>Current completion</th>
-                                                                                            <th>New completion</th>
-                                                                                            <th>Variance</th>
-                                                                                            <th> </th>
-                                                                                        </tr>
-                                                                                        <tr ng-repeat="actCompReview in gateReview.actualCompletionReviews">
-                                                                                            <td>
-                                                                                                {{actCompReview.actualCompletion.targetGate.gateName}}
-                                                                                            </td>
-                                                                                            <td>
-                                                                                                {{actCompReview.currentActualCompletion.completion}}
-                                                                                            </td>
-                                                                                            <td>
-                                                                                                {{actCompReview.newCompletion}}
-                                                                                            </td>
-                                                                                            <td>
-                                                                                                {{round((actCompReview.currentActualCompletion.completion) - (actCompReview.newCompletion))}}
-                                                                                            </td>
-                                                                                            <td>
-                                                                                                <button class="btn btn-danger btn-xs" ng-click="">
-                                                                                                    <span class="glyphicon glyphicon-trash small"></span>
-                                                                                                </button>
-                                                                                            </td>
-                                                                                        </tr>
-                                                                                    </table>
-                                                                                </div>
-                                                                            </div>
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </td>
                                             </tr>
                                         </table>
                                     </form>
+                                </div>
+                            </div>
+                            <div class="row" data-ng-show="false">
+                                <div class="col-md-12">
+                                    <div class="panel panel-default">
+                                        <div class="panel-heading">
+                                            <span class="text-center"><b><em>Gate review: </em></b></span>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-6 btn-group btn-group-xs btn-group-justified">
+                                                <label class="btn btn-info btn-xs" data-ng-model="gateReviewDetails" btn-radio="'header'">
+                                                    Header
+                                                </label>
+                                                <label class="btn btn-info btn-xs" data-ng-model="gateReviewDetails" btn-radio="'outcomes'">
+                                                    Outcomes
+                                                </label>
+                                                <label class="btn btn-info btn-xs" data-ng-model="gateReviewDetails" btn-radio="'duration'">
+                                                    Duration
+                                                </label>
+                                                <label class="btn btn-info btn-xs" data-ng-model="gateReviewDetails" btn-radio="'cost'">
+                                                    Cost
+                                                </label>
+                                                <label class="btn btn-info btn-xs" data-ng-model="gateReviewDetails" btn-radio="'completion'">
+                                                    Completion
+                                                </label>
+                                            </div>
+                                        </div>
+                                        <div class="panel-body" data-ng-show="gateReviewDetails === 'header'">
+                                            <form>
+                                                <div class="row">
+                                                    <div class="form-group-sm col-md-3">
+                                                        <label for="prjCrEditRecDate">Review date</label>
+                                                        <input id="prjCrEditRecDate" class="form-control" type="date" placeholder="Enter review date"
+                                                               data-ng-model="newGateReview.reviewDate" >
+                                                    </div>
+                                                    <div class="form-group-sm col-md-3">
+                                                        <label for="prjCrEditStatus">Overall score</label>
+                                                        <select id="prjCrEditStatus" class="form-control" data-ng-model = "newGateReview.overallScore"
+                                                                ng-options="score._id as score.scoreName for score in outcomeScores">
+                                                            <option value="">--choose score</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                                <br>
+                                                <div class="row">
+                                                    <div class="form-group-sm col-md-3">
+                                                        <label for="prjCrEditState">Gate status</label>
+                                                        <select id="prjCrEditState" class="form-control" data-ng-model = "newGateReview.gateStatus"
+                                                                ng-options="gateStatus._id as gateStatus.statusName for gateStatus in gateStatuses">
+                                                            <option value="">--choose status</option>
+                                                        </select>
+                                                    </div>
+                                                    <div class="form-group-sm col-md-9">
+                                                        <label for="prjCrEditComment">Review comment</label>
+                                                        <textarea id="prjCrEditComment" class="form-control" placeholder="Enter comment" data-ng-model="newGateReview.overallComment"></textarea>
+                                                    </div>
+                                                </div>
+                                                <br>
+                                                <div class="row">
+                                                    <div class="form-group-sm col-md-2">
+                                                        <label for="prjCrEditCompleted">Completed</label>
+                                                        <input id="prjCrEditCompleted" class="" type="checkbox"
+                                                               data-ng-model="newGateReview.completed" >
+                                                    </div>
+                                                </div>
+                                                <hr>
+                                                <div class="form-group-sm pull-right">
+                                                    <button class="btn btn-success btn-xs" data-ng-click="">
+                                                        Save
+                                                    </button>
+                                                    <button class="btn btn-info btn-xs" data-ng-click="showNewGateReviewForm = false">
+                                                        Cancel
+                                                    </button>
+                                                </div>
+                                            </form>
+                                        </div>
+                                        <div class="panel-body" data-ng-show="gateReviewDetails === 'outcomes'">
+                                            <table class="table small">
+                                                <tr>
+                                                    <th>Outcome</th>
+                                                    <th>Score</th>
+                                                    <th>Comment</th>
+                                                    <th> </th>
+                                                </tr>
+                                                <tr ng-repeat="outcomeReview in gateReview.outcomeReviews track by $index">
+                                                    <td>
+                                                        {{outcomeReview.outcome.outcomeName}}
+                                                    </td>
+                                                    <td>
+                                                        {{outcomeReview.score.scoreName}}
+                                                    </td>
+                                                    <td>
+                                                        {{outcomeReview.reviewComment}}
+                                                    </td>
+                                                    <td>
+                                                        <button class="btn btn-danger btn-xs" ng-click="">
+                                                            <span class="glyphicon glyphicon-trash small"></span>
+                                                        </button>
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                        </div>
+                                        <div class="panel-body" data-ng-show="gateReviewDetails === 'duration'">
+                                            <table class="table small">
+                                                <caption>
+                                                    Baseline duration
+                                                </caption>
+                                                <tr>
+                                                    <th>Target gate</th>
+                                                    <th>Current date</th>
+                                                    <th>New date</th>
+                                                    <th>Variance</th>
+                                                    <th> </th>
+                                                </tr>
+                                                <tr data-ng-repeat="baselineDuration in baselineDurations | filter:{sourceGate: reviewObject.gate._id} | orderBy: 'targetGate.position'">
+                                                    <td>
+                                                        {{baselineDuration.targetGate.name}}
+                                                    </td>
+                                                    <td>
+                                                        {{baselineDuration.currentRecord.gateDate}}
+                                                    </td>
+                                                    <td>
+                                                        <input id="" class="form-control input-sm" type="number" placeholder="Enter amount"
+                                                               data-ng-model="newGateReview.baselineDuration.newDate" required>
+                                                    </td>
+                                                    <td>
+
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                            <table class="table small">
+                                                <caption>
+                                                    Estimate duration
+                                                </caption>
+                                                <tr>
+                                                    <th>Target gate</th>
+                                                    <th colspan="3" class="text-center">Current</th>
+                                                    <th colspan="3" class="text-center">New</th>
+                                                </tr>
+                                                <tr>
+                                                    <th></th>
+                                                    <th>Start date</th>
+                                                    <th>End date</th>
+                                                    <th>Duration</th>
+                                                    <th>Start date</th>
+                                                    <th>End date</th>
+                                                    <th>Duration</th>
+                                                    <th> </th>
+                                                </tr>
+                                                <tr ng-repeat="estDurReview in gateReview.estimateDurationReviews">
+                                                    <td>
+                                                        {{estDurReview.estimateDuration.targetGate.gateName}}
+                                                    </td>
+                                                    <td>
+                                                        {{estDurReview.currentEstimateDuration.startDate}}
+                                                    </td>
+                                                    <td>
+                                                        {{estDurReview.currentEstimateDuration.endDate}}
+                                                    </td>
+                                                    <td>
+                                                        {{calculateDays(convertToDate(estDurReview.currentEstimateDuration.startDate),convertToDate(estDurReview.currentEstimateDuration.endDate))}}
+                                                    </td>
+                                                    <td>
+                                                        {{estDurReview.newStartDate}}
+                                                    </td>
+                                                    <td>
+                                                        {{estDurReview.newEndDate}}
+                                                    </td>
+                                                    <td>
+                                                        {{calculateDays(convertToDate(estDurReview.newStartDate),convertToDate(estDurReview.newEndDate))}}
+                                                    </td>
+                                                    <td>
+                                                        <button class="btn btn-danger btn-xs" ng-click="">
+                                                            <span class="glyphicon glyphicon-trash small"></span>
+                                                        </button>
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                            <table class="table small">
+                                                <caption>
+                                                    Actual duration
+                                                </caption>
+                                                <tr>
+                                                    <th>Target gate</th>
+                                                    <th colspan="3" class="text-center">Current</th>
+                                                    <th colspan="3" class="text-center">New</th>
+                                                </tr>
+                                                <tr>
+                                                    <th></th>
+                                                    <th>Start date</th>
+                                                    <th>End date</th>
+                                                    <th>Duration</th>
+                                                    <th>Start date</th>
+                                                    <th>End date</th>
+                                                    <th>Duration</th>
+                                                    <th> </th>
+                                                </tr>
+                                                <tr ng-repeat="actDurReview in gateReview.actualDurationReviews">
+                                                    <td>
+                                                        {{actDurReview.actualDuration.targetGate.gateName}}
+                                                    </td>
+                                                    <td>
+                                                        {{actDurReview.currentActualDuration.startDate}}
+                                                    </td>
+                                                    <td>
+                                                        {{actDurReview.currentActualDuration.endDate}}
+                                                    </td>
+                                                    <td>
+                                                        {{calculateDays(convertToDate(actDurReview.currentActualDuration.startDate),convertToDate(actDurReview.currentActualDuration.endDate))}}
+                                                    </td>
+                                                    <td>
+                                                        {{actDurReview.newStartDate}}
+                                                    </td>
+                                                    <td>
+                                                        {{actDurReview.newEndDate}}
+                                                    </td>
+                                                    <td>
+                                                        {{calculateDays(convertToDate(actDurReview.newStartDate),convertToDate(actDurReview.newEndDate))}}
+                                                    </td>
+                                                    <td>
+                                                        <button class="btn btn-danger btn-xs" ng-click="">
+                                                            <span class="glyphicon glyphicon-trash small"></span>
+                                                        </button>
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                        </div>
+                                        <div class="panel-body" data-ng-show="gateReviewDetails === 'cost'">
+                                            <table class="table small">
+                                                <caption>
+                                                    Baseline cost
+                                                </caption>
+                                                <tr>
+                                                    <th>Target gate</th>
+                                                    <th>Current cost</th>
+                                                    <th>New cost</th>
+                                                    <th>Variance</th>
+                                                    <th> </th>
+                                                </tr>
+                                                <tr data-ng-repeat="baselineCost in baselineCosts | filter:{sourceGate: reviewObject.gate._id} | orderBy: 'targetGate.position'">
+                                                    <td>
+                                                        {{baselineCost.targetGate.name}}
+                                                    </td>
+                                                    <td>
+                                                        {{baselineCost.currentRecord.cost}}
+                                                    </td>
+                                                    <td>
+                                                        <input id="" class="form-control input-sm" type="number"
+                                                               data-ng-init="newGateReview.baselineCost[reviewObject.gate._id].newCost = baselineCost.currentRecord.cost"
+                                                               data-ng-model="newGateReview.baselineCost[reviewObject.gate._id].newCost" required>
+                                                    </td>
+                                                    <td>
+
+                                                    </td>
+                                                    <td>
+                                                        <button class="btn btn-danger btn-xs" ng-click="">
+                                                            <span class="glyphicon glyphicon-trash small"></span>
+                                                        </button>
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                            <table class="table small">
+                                                <caption>
+                                                    Estimate cost
+                                                </caption>
+                                                <tr>
+                                                    <th>Target gate</th>
+                                                    <th>Current cost</th>
+                                                    <th>New cost</th>
+                                                    <th>Variance</th>
+                                                    <th> </th>
+                                                </tr>
+                                                <tr ng-repeat="estCostReview in gateReview.estimateCostReviews">
+                                                    <td>
+                                                        {{estCostReview.estimateCost.targetGate.gateName}}
+                                                    </td>
+                                                    <td>
+                                                        {{estCostReview.currentEstimateCost.cost}}
+                                                    </td>
+                                                    <td>
+                                                        {{estCostReview.newCost}}
+                                                    </td>
+                                                    <td>
+                                                        {{(estCostReview.currentEstimateCost.cost) - (estCostReview.newCost)}}
+                                                    </td>
+                                                    <td>
+                                                        <button class="btn btn-danger btn-xs" ng-click="">
+                                                            <span class="glyphicon glyphicon-trash small"></span>
+                                                        </button>
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                            <table class="table small">
+                                                <caption>
+                                                    Actual cost reviews
+                                                </caption>
+                                                <tr>
+                                                    <th>Target gate</th>
+                                                    <th>Current cost</th>
+                                                    <th>New cost</th>
+                                                    <th>Variance</th>
+                                                    <th> </th>
+                                                </tr>
+                                                <tr ng-repeat="actCostReview in gateReview.actualCostReviews">
+                                                    <td>
+                                                        {{actCostReview.actualCost.targetGate.gateName}}
+                                                    </td>
+                                                    <td>
+                                                        {{actCostReview.currentActualCost.cost}}
+                                                    </td>
+                                                    <td>
+                                                        {{actCostReview.newCost}}
+                                                    </td>
+                                                    <td>
+                                                        {{(actCostReview.currentActualCost.cost) - (actCostChange.newCost)}}
+                                                    </td>
+                                                    <td>
+                                                        <button class="btn btn-danger btn-xs" ng-click="">
+                                                            <span class="glyphicon glyphicon-trash small"></span>
+                                                        </button>
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                        </div>
+                                        <div class="panel-body" data-ng-show="gateReviewDetails === 'completion'">
+                                            <table class="table small">
+                                                <caption>
+                                                    Baseline completion
+                                                </caption>
+                                                <tr>
+                                                    <th>Target gate</th>
+                                                    <th>Current completion</th>
+                                                    <th>New completion</th>
+                                                    <th>Variance</th>
+                                                    <th> </th>
+                                                </tr>
+                                                <tr ng-repeat="basCompletionReview in gateReview.baselineCompletionReviews">
+                                                    <td>
+                                                        {{basCompletionReview.baselineCompletion.targetGate.gateName}}
+                                                    </td>
+                                                    <td>
+                                                        {{basCompletionReview.currentBaselineCompletion.completion}}
+                                                    </td>
+                                                    <td>
+                                                        {{basCompletionReview.newCompletion}}
+                                                    </td>
+                                                    <td>
+                                                        {{round((basCompletionReview.currentBaselineCompletion.completion) - (basCompletionReview.newCompletion))}}
+                                                    </td>
+                                                    <td>
+                                                        <button class="btn btn-danger btn-xs" ng-click="">
+                                                            <span class="glyphicon glyphicon-trash small"></span>
+                                                        </button>
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                            <table class="table small">
+                                                <caption>
+                                                    Estimate completion
+                                                </caption>
+                                                <tr>
+                                                    <th>Target gate</th>
+                                                    <th>Current completion</th>
+                                                    <th>New completion</th>
+                                                    <th>Variance</th>
+                                                    <th> </th>
+                                                </tr>
+                                                <tr ng-repeat="estCompReview in gateReview.estimateCompletionReviews">
+                                                    <td>
+                                                        {{estCompReview.estimateCompletion.targetGate.gateName}}
+                                                    </td>
+                                                    <td>
+                                                        {{estCompReview.currentEstimateCompletion.completion}}
+                                                    </td>
+                                                    <td>
+                                                        {{estCompReview.newCompletion}}
+                                                    </td>
+                                                    <td>
+                                                        {{round((estCompReview.currentEstimateCompletion.completion) - (estCompReview.newCompletion))}}
+                                                    </td>
+                                                    <td>
+                                                        <button class="btn btn-danger btn-xs" ng-click="">
+                                                            <span class="glyphicon glyphicon-trash small"></span>
+                                                        </button>
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                            <table class="table small">
+                                                <caption>
+                                                    Actual completion
+                                                </caption>
+                                                <tr>
+                                                    <th>Target gate</th>
+                                                    <th>Current completion</th>
+                                                    <th>New completion</th>
+                                                    <th>Variance</th>
+                                                    <th> </th>
+                                                </tr>
+                                                <tr ng-repeat="actCompReview in gateReview.actualCompletionReviews">
+                                                    <td>
+                                                        {{actCompReview.actualCompletion.targetGate.gateName}}
+                                                    </td>
+                                                    <td>
+                                                        {{actCompReview.currentActualCompletion.completion}}
+                                                    </td>
+                                                    <td>
+                                                        {{actCompReview.newCompletion}}
+                                                    </td>
+                                                    <td>
+                                                        {{round((actCompReview.currentActualCompletion.completion) - (actCompReview.newCompletion))}}
+                                                    </td>
+                                                    <td>
+                                                        <button class="btn btn-danger btn-xs" ng-click="">
+                                                            <span class="glyphicon glyphicon-trash small"></span>
+                                                        </button>
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </tab>
