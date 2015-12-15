@@ -48,6 +48,9 @@
 						<div data-ng-show="projects.length === 0" class="alert alert-warning text-center">
 							There are no projects created yet
 						</div>
+                        <div data-ng-show="error" class="text-danger">
+                            <strong data-ng-bind="error"></strong>
+                        </div>
 					</div>
 				</div>
 			</div>
@@ -67,7 +70,7 @@
                                 <div class="row">
                                     <div class="form-group">
                                         <label>Assigned gate process</label>
-                                        <select id="" class="form-control" data-ng-model="selectedProject.process"
+                                        <select id="" class="form-control" data-ng-model="selectedProcessAssignment.process"
                                                 data-ng-options="process._id as process.name for process in gateProcesses" disabled>
                                         </select>
                                     </div>
@@ -100,7 +103,7 @@
                                 <div class="row">
                                     <div class="form-group">
                                         <label>Assigned gate process</label>
-                                        <select id="" class="form-control" data-ng-model="selectedProject.process"
+                                        <select id="" class="form-control" data-ng-model="selectedProcessAssignment.process"
                                                 data-ng-options="process._id as process.name for process in gateProcesses">
                                             <option value="">--gate process</option>
                                         </select>
