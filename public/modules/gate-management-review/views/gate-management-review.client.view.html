@@ -43,7 +43,7 @@
                     <div class="row" style="min-height: 350px; max-height: 350px; overflow-y: auto">
                         <div class="col-md-12">
                             <div data-ng-show="projects.length === 0" class="alert alert-warning text-center">
-                                There are no projects created or selected for evaluation
+                                There are no projects in delivery
                             </div>
                             <button type="button"
                                     data-ng-repeat="project in projects | filter:{identification: filterProfileProject, portfolio: filterProfilePortfolio._id, process: filterProfileProcess._id} "
@@ -86,7 +86,7 @@
                         <tab ng-repeat="reviewObject in gateReviewList track by $index"
                              heading="{{reviewObject.gate.name}}">
                             <hr>
-                            <div class="row" ng-show="!showNewGateReviewForm">
+                            <div class="row" data-ng-show="!showNewGateReviewForm && !selectedGateReview">
                                 <div class="col-md-12 form-group-sm">
                                     <button class="btn btn-warning btn-sm" ng-click="showNewGateReviewForm = true">
                                         New gate review
@@ -110,31 +110,10 @@
                                                         <input id="reviewDateNew" name="reviewDateNew" class="form-control" type="date" placeholder="Enter review date"
                                                                data-ng-model="newGateReview.reviewDate" >
                                                     </div>
-                                                    <div class="form-group-sm col-md-3">
-                                                        <label for="overallScoreNew">Overall score</label>
-                                                        <select id="overallScoreNew" name="overallScoreNew" class="form-control" data-ng-model = "newGateReview.overallScore"
-                                                                ng-options="score._id as score.name for score in outcomeScores">
-                                                            <option value="">--choose score</option>
-                                                        </select>
-                                                    </div>
-                                                    <div class="form-group-sm col-md-3">
+                                                    <div class="form-group-sm col-md-6">
                                                         <label for="reviewTitleNew">Review title</label>
                                                         <input id="reviewTitleNew" name="reviewTitleNew" class="form-control" type="text" placeholder="Enter review title"
                                                                data-ng-model="newGateReview.title" >
-                                                    </div>
-                                                </div>
-                                                <br>
-                                                <div class="row">
-                                                    <div class="form-group-sm col-md-3">
-                                                        <label for="statusNew">Gate status</label>
-                                                        <select id="statusNew" class="form-control" data-ng-model = "newGateReview.status"
-                                                                ng-options="gateStatus._id as gateStatus.name for gateStatus in gateStatuses">
-                                                            <option value="">--choose status</option>
-                                                        </select>
-                                                    </div>
-                                                    <div class="form-group-sm col-md-9">
-                                                        <label for="commentNew">Review comment</label>
-                                                        <textarea id="commentNew" class="form-control" placeholder="Enter comment" data-ng-model="newGateReview.overallComment"></textarea>
                                                     </div>
                                                 </div>
                                                 <hr>
@@ -158,7 +137,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="row" data-ng-show="reviewObject.gateReviews.length !== 0 && !showNewGateReviewForm">
+                            <div class="row" data-ng-show="reviewObject.gateReviews.length !== 0 && !showNewGateReviewForm && !selectedGateReview">
                                 <div class="col-md-12">
                                     <div class="panel panel-default">
                                         <table class="table">
@@ -210,6 +189,9 @@
                                                 <label class="btn btn-info btn-xs" data-ng-model="gateReviewDetails" btn-radio="'header'">
                                                     Header
                                                 </label>
+                                                <label class="btn btn-info btn-xs" data-ng-model="gateReviewDetails" btn-radio="'status'">
+                                                    Status & score
+                                                </label>
                                                 <label class="btn btn-info btn-xs" data-ng-model="gateReviewDetails" btn-radio="'outcomes'">
                                                     Outcomes
                                                 </label>
@@ -227,36 +209,71 @@
                                         <div class="panel-body" data-ng-show="gateReviewDetails === 'header'">
                                             <form>
                                                 <div class="row">
-                                                    <div class="form-group-sm col-md-3">
+                                                    <div class="form-group-sm col-md-4">
                                                         <label for="prjCrEditRecDate">Review date</label>
                                                         <input id="prjCrEditRecDate" class="form-control" type="date" placeholder="Enter review date"
                                                                data-ng-model="selectedGateReview.reviewDate" >
                                                     </div>
-                                                    <div class="form-group-sm col-md-3">
-                                                        <label for="prjCrEditStatus">Overall score</label>
-                                                        <select id="prjCrEditStatus" class="form-control" data-ng-model = "selectedGateReview.overallScore"
-                                                                ng-options="score._id as score.scoreName for score in outcomeScores">
+                                                    <div class="form-group-sm col-md-6">
+                                                        <label for="reviewTitleEdit">Review title</label>
+                                                        <input id="reviewTitleEdit" name="reviewTitleNew" class="form-control" type="text" placeholder="Enter review title"
+                                                               data-ng-model="selectedGateReview.title" >
+                                                    </div>
+                                                </div>
+                                                <br>
+                                                <div class="row">
+                                                    <div class="form-group-sm col-md-12">
+                                                        <label for="prjCrEditComment">Review comment</label>
+                                                        <textarea id="prjCrEditComment" class="form-control" placeholder="Enter comment" data-ng-model="selectedGateReview.overallComment"></textarea>
+                                                    </div>
+                                                </div>
+                                                <hr>
+                                                <div class="form-group-sm pull-right">
+                                                    <button class="btn btn-success btn-xs" data-ng-click="updateHeader(selectedGateReview)">
+                                                        Save
+                                                    </button>
+                                                    <button class="btn btn-info btn-xs" data-ng-click="showNewGateReviewForm = false">
+                                                        Cancel
+                                                    </button>
+                                                </div>
+                                            </form>
+                                        </div>
+                                        <div class="panel-body" data-ng-show="gateReviewDetails === 'status'">
+                                            <form>
+                                                <div class="row">
+                                                    <div class="form-group-sm col-md-4">
+                                                        <label for="currentScore">Current overall score</label>
+                                                        <select id="currentScore" class="form-control" data-ng-model = "selectedGateReview.gateStatusAssignment.currentRecord.overallScore"
+                                                                ng-options="score._id as score.name for score in outcomeScores" disabled>
+                                                        </select>
+                                                    </div>
+                                                    <div class="form-group-sm col-md-4">
+                                                        <label for="newScore">New overall score</label>
+                                                        <select id="newScore" class="form-control" data-ng-model = "selectedGateReview.overallScore"
+                                                                ng-options="score._id as score.name for score in outcomeScores">
                                                             <option value="">--choose score</option>
                                                         </select>
                                                     </div>
                                                 </div>
                                                 <br>
                                                 <div class="row">
-                                                    <div class="form-group-sm col-md-3">
-                                                        <label for="prjCrEditState">Gate status</label>
-                                                        <select id="prjCrEditState" class="form-control" data-ng-model = "selectedGateReview.gateStatus"
-                                                                ng-options="gateStatus._id as gateStatus.statusName for gateStatus in gateStatuses">
-                                                            <option value="">--choose status</option>
+                                                    <div class="form-group-sm col-md-4">
+                                                        <label for="currentStatus">Current gate status</label>
+                                                        <select id="currentStatus" class="form-control" data-ng-model = "selectedGateReview.gateStatusAssignment.currentRecord.status"
+                                                                ng-options="gateStatus._id as gateStatus.name for gateStatus in gateStatuses" disabled>
                                                         </select>
                                                     </div>
-                                                    <div class="form-group-sm col-md-9">
-                                                        <label for="prjCrEditComment">Review comment</label>
-                                                        <textarea id="prjCrEditComment" class="form-control" placeholder="Enter comment" data-ng-model="selectedGateReview.overallComment"></textarea>
+                                                    <div class="form-group-sm col-md-4">
+                                                        <label for="newStatus">New gate status</label>
+                                                        <select id="newStatus" class="form-control" data-ng-model = "selectedGateReview.status"
+                                                                ng-options="gateStatus._id as gateStatus.name for gateStatus in gateStatuses">
+                                                            <option value="">--choose status</option>
+                                                        </select>
                                                     </div>
                                                 </div>
                                                 <br>
                                                 <div class="row">
-                                                    <div class="form-group-sm col-md-2">
+                                                    <div class="form-group-sm col-md-3">
                                                         <label for="prjCrEditCompleted">Completed</label>
                                                         <input id="prjCrEditCompleted" class="" type="checkbox"
                                                                data-ng-model="selectedGateReview.completed" >
@@ -264,7 +281,7 @@
                                                 </div>
                                                 <hr>
                                                 <div class="form-group-sm pull-right">
-                                                    <button class="btn btn-success btn-xs" data-ng-click="">
+                                                    <button class="btn btn-success btn-xs" data-ng-click="updateStatus(selectedGateReview)">
                                                         Save
                                                     </button>
                                                     <button class="btn btn-info btn-xs" data-ng-click="showNewGateReviewForm = false">

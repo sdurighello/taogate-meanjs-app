@@ -14,7 +14,6 @@ var mongoose = require('mongoose'),
 exports.create = function(req, res) {
 	var EstimateCost = mongoose.mtModel(req.user.tenantId + '.' + 'EstimateCost');
 	var estimateCost = new EstimateCost(req.body);
-	estimateCost.user = req.user;
 
 	estimateCost.save(function(err) {
 		if (err) {

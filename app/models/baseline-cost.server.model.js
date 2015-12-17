@@ -26,10 +26,7 @@ var BaselineCostSchema = new Schema({
 	targetGate:{type: Schema.Types.ObjectId, ref: 'Gate', $tenant:true},
 
 	currentRecord: PerformanceReviewRecord,
-	history:[PerformanceReviewRecord],
-
-	created: {type: Date, default: Date.now},
-	user: {type: Schema.ObjectId, ref: 'User'}
+	history:[PerformanceReviewRecord]
 });
 
 BaselineCostSchema.plugin(deepPopulate);

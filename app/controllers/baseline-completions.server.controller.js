@@ -14,7 +14,6 @@ var mongoose = require('mongoose'),
 exports.create = function(req, res) {
 	var BaselineCompletion = mongoose.mtModel(req.user.tenantId + '.' + 'BaselineCompletion');
 	var baselineCompletion = new BaselineCompletion(req.body);
-	baselineCompletion.user = req.user;
 
 	baselineCompletion.save(function(err) {
 		if (err) {

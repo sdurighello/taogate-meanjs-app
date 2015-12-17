@@ -7,6 +7,11 @@ angular.module('gate-management-review').factory('GateReviews', ['$resource',
 		}, {
 			update: {
 				method: 'PUT'
+			},
+			updateHeader: {
+				method: 'PUT',
+				url: 'gate-reviews/:gateReviewId/header/:headerId'
+				// req.body: {whole gate review object}
 			}
 		});
 	}

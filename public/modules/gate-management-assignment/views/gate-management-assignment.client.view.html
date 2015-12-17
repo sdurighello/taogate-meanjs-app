@@ -1,59 +1,56 @@
 <section data-ng-controller="GateManagementAssignmentController" data-ng-init="init()">
-	<br>
-	<div class="row">
-		<div class="col-sm-12">
-			<div class="panel-heading">
-				<ol class="breadcrumb">
-					<li>Portfolio delivery</li>
-					<li>Gate management</li>
-					<li class="active">Gate process assignment</li>
-				</ol>
-			</div>
-		</div>
-	</div>
-	<div data-ng-show="initError" class="text-danger">
-		<strong data-ng-bind="initError"></strong>
-	</div>
-	<div class="row">
-		<div class="col-sm-3">
-			<div class="panel panel-default">
-				<div class="panel-heading">
-					<h6 class="panel-title text-center">Projects</h6>
-				</div>
-				<div class="panel-body">
-					<div class="row">
-						<div class="col-md-12 form-group-sm">
-							<input type="text" class="form-control" placeholder="Type to filter projects" data-ng-model="filterProject">
-						</div>
-					</div>
-					<hr>
-					<div class="row" style="min-height: 350px; max-height: 350px; overflow-y: auto">
-						<div class="col-md-12">
-							<button type="button" ng-repeat="project in projects | filter:filterProject"
-									ng-click="selectProject(project)" class="btn btn-default btn-sm center-block btn-block" style="overflow: hidden;">
-								{{project.identification.idNumber}} {{project.identification.name}}
-							</button>
-						</div>
-					</div>
-				</div>
-			</div>
-		</div>
-		<div class="col-md-9" data-ng-switch="switchProjectForm">
-			<div ng-switch-default="default">
-				<div class="row">
-					<div class="col-md-12">
-						<div data-ng-hide="selectedProject || projects.length === 0" class="alert alert-warning text-center">
-							Select a project to see its details
-						</div>
-						<div data-ng-show="projects.length === 0" class="alert alert-warning text-center">
-							There are no projects created yet
-						</div>
-                        <div data-ng-show="error" class="text-danger">
-                            <strong data-ng-bind="error"></strong>
+    <br>
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="panel-heading">
+                <ol class="breadcrumb">
+                    <li>Portfolio delivery</li>
+                    <li>Gate management</li>
+                    <li class="active">Gate process assignment</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+    <div data-ng-show="initError" class="text-danger">
+        <strong data-ng-bind="initError"></strong>
+    </div>
+    <div class="row">
+        <div class="col-sm-3">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h6 class="panel-title text-center">Projects</h6>
+                </div>
+                <div class="panel-body">
+                    <div class="row">
+                        <div class="col-md-12 form-group-sm">
+                            <input type="text" class="form-control" placeholder="Type to filter projects" data-ng-model="filterProject">
                         </div>
-					</div>
-				</div>
-			</div>
+                    </div>
+                    <hr>
+                    <div class="row" style="min-height: 350px; max-height: 350px; overflow-y: auto">
+                        <div class="col-md-12">
+                            <button type="button" ng-repeat="project in projects | filter:filterProject"
+                                    ng-click="selectProject(project)" class="btn btn-default btn-sm center-block btn-block" style="overflow: hidden;">
+                                {{project.identification.idNumber}} {{project.identification.name}}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-9" data-ng-switch="switchProjectForm">
+            <div ng-switch-default="default">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div data-ng-hide="selectedProject || projects.length === 0" class="alert alert-warning text-center">
+                            Select a project to see its details
+                        </div>
+                        <div data-ng-show="projects.length === 0" class="alert alert-warning text-center">
+                            There are no projects created yet
+                        </div>
+                    </div>
+                </div>
+            </div>
             <div data-ng-switch-when="view">
                 <div class="row">
                     <div class="col-sm-12">
@@ -70,7 +67,7 @@
                                 <div class="row">
                                     <div class="form-group">
                                         <label>Assigned gate process</label>
-                                        <select id="" class="form-control" data-ng-model="selectedProcessAssignment.process"
+                                        <select id="" class="form-control" data-ng-model="selectedProject.process"
                                                 data-ng-options="process._id as process.name for process in gateProcesses" disabled>
                                         </select>
                                     </div>
@@ -103,7 +100,7 @@
                                 <div class="row">
                                     <div class="form-group">
                                         <label>Assigned gate process</label>
-                                        <select id="" class="form-control" data-ng-model="selectedProcessAssignment.process"
+                                        <select id="" class="form-control" data-ng-model="selectedProject.process"
                                                 data-ng-options="process._id as process.name for process in gateProcesses">
                                             <option value="">--gate process</option>
                                         </select>
@@ -121,6 +118,6 @@
                     </div>
                 </div>
             </div>
-		</div>
-	</div>
+        </div>
+    </div>
 </section>

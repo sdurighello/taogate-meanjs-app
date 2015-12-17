@@ -1,8 +1,8 @@
 'use strict';
 
 angular.module('gate-management-assignment').controller('GateManagementAssignmentController', ['$scope','$stateParams', '$location',
-	'Authentication', 'Projects','Portfolios', 'GateProcesses', 'ProcessAssignments', '_','$q',
-	function($scope, $stateParams, $location, Authentication, Projects, Portfolios, GateProcesses, ProcessAssignments, _ , $q) {
+	'Authentication', 'Projects','Portfolios', 'GateProcesses', '_','$q',
+	function($scope, $stateParams, $location, Authentication, Projects, Portfolios, GateProcesses, _ , $q) {
 
 		// ----------- INIT ---------------
 
@@ -56,48 +56,47 @@ angular.module('gate-management-assignment').controller('GateManagementAssignmen
 		};
 
 
-		// ------------- SELECT VIEW PROCESS ASSIGNMENT ------------
+		// ------------- SELECT VIEW PROJECT ------------
 
-		var originalProcessAssignment;
+		var originalProject;
 		$scope.selectProject = function(project){
-            $scope.error = null;
-            $scope.selectedProject = project;
-            ProcessAssignments.findOneByProjectId(
-                { projectId: project._id },
-                function(res){
-				$scope.selectedProcessAssignment = res;
-                originalProcessAssignment = _.cloneDeep(res);
+			// Get the full project fat object from the "projectById" server function that populates everything
+			Projects.get({
+				projectId:project._id,
+				retPropertiesString : 'user created selection identification portfolio process',
+				deepPopulateArray : []
+			}, function(res){
+				$scope.selectedProject = res;
+				originalProject = _.cloneDeep(res);
 				$scope.selectProjectForm('view');
-			},function(err){
-                $scope.selectProjectForm('default');
-				$scope.error = err.data.message;
+			},function(errorResponse){
+				$scope.error = errorResponse.data.message;
 			});
 		};
 
 
 		$scope.cancelViewProject = function(){
-			$scope.selectedProcessAssignment = null;
-            $scope.selectedProject = null;
+			$scope.selectedProject = null;
 			$scope.selectProjectForm('default');
 		};
 
 
-		// ------------- EDIT PROCESS ASSIGNMENT ------------
+		// ------------- EDIT PROJECT ------------
 
 		$scope.editProject = function(){
 			// Save the project to the server
-            ProcessAssignments.updateProcess(
-                { processAssignmentId: $scope.selectedProcessAssignment._id },
-                { processId: $scope.selectedProcessAssignment.process },
-                function(res) {
-				$scope.selectProject($scope.selectedProject);
-			}, function(err) {
-				$scope.error = err.data.message;
-			});
+			Projects.updateProcessAssignment(
+				{projectId: $scope.selectedProject._id},
+				{processId: $scope.selectedProject.process},
+				function(res) {
+					$scope.selectProject($scope.selectedProject);
+				}, function(errorResponse) {
+					$scope.error = errorResponse.data.message;
+				});
 		};
 
 		$scope.cancelEditProject = function(){
-			$scope.selectedProcessAssignment = _.cloneDeep(originalProcessAssignment);
+			$scope.selectedProject = _.cloneDeep(originalProject);
 			$scope.selectProject($scope.selectedProject);
 		};
 

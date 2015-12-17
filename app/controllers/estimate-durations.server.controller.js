@@ -14,7 +14,6 @@ var mongoose = require('mongoose'),
 exports.create = function(req, res) {
 	var EstimateDuration = mongoose.mtModel(req.user.tenantId + '.' + 'EstimateDuration');
 	var estimateDuration = new EstimateDuration(req.body);
-	estimateDuration.user = req.user;
 
 	estimateDuration.save(function(err) {
 		if (err) {

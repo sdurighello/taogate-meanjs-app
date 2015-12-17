@@ -14,7 +14,6 @@ var mongoose = require('mongoose'),
 exports.create = function(req, res) {
 	var BaselineDuration = mongoose.mtModel(req.user.tenantId + '.' + 'BaselineDuration');
 	var baselineDuration = new BaselineDuration(req.body);
-	baselineDuration.user = req.user;
 
 	baselineDuration.save(function(err) {
 		if (err) {

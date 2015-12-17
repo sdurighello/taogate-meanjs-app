@@ -14,7 +14,6 @@ var mongoose = require('mongoose'),
 exports.create = function(req, res) {
     var ActualCompletion = mongoose.mtModel(req.user.tenantId + '.' + 'ActualCompletion');
 	var actualCompletion = new ActualCompletion(req.body);
-	actualCompletion.user = req.user;
 
 	actualCompletion.save(function(err) {
 		if (err) {

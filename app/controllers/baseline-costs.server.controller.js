@@ -14,7 +14,6 @@ var mongoose = require('mongoose'),
 exports.create = function(req, res) {
 	var BaselineCost = mongoose.mtModel(req.user.tenantId + '.' + 'BaselineCost');
 	var baselineCost = new BaselineCost(req.body);
-	baselineCost.user = req.user;
 
 	baselineCost.save(function(err) {
 		if (err) {

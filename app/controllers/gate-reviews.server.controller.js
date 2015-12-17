@@ -4,9 +4,9 @@
  * Module dependencies.
  */
 var mongoose = require('mongoose'),
-	errorHandler = require('./errors.server.controller'),
-	async = require('async'),
-	_ = require('lodash');
+    errorHandler = require('./errors.server.controller'),
+    async = require('async'),
+    _ = require('lodash');
 
 /**
  * Create a Gate review
@@ -14,11 +14,11 @@ var mongoose = require('mongoose'),
 exports.create = function(req, res) {
     var GateReview = mongoose.mtModel(req.user.tenantId + '.' + 'GateReview');
     var gateReview = new GateReview(req.body);
-	gateReview.user = req.user;
-
-    gateReview.completed = false;
+    gateReview.user = req.user;
 
     var Gate = mongoose.mtModel(req.user.tenantId + '.' + 'Gate');
+
+    var GateStatusAssignment = mongoose.mtModel(req.user.tenantId + '.' + 'GateStatusAssignment');
 
     var BaselineDuration = mongoose.mtModel(req.user.tenantId + '.' + 'BaselineDuration');
     var BaselineCost = mongoose.mtModel(req.user.tenantId + '.' + 'BaselineCost');
@@ -35,6 +35,8 @@ exports.create = function(req, res) {
         function(callback){
             var retObjArrays = {
 
+                gateStatusReview : {},
+
                 outcomeReviews : [],
 
                 baselineDurationReviews : [],
@@ -50,6 +52,20 @@ exports.create = function(req, res) {
                 actualCompletionReviews : []
             };
             async.parallel([
+                // Gate Status Assignment
+                function(callback){
+                    GateStatusAssignment.findOne({project: req.body.project, gate: req.body.gate}, function(err, assignment){
+                        if(err){
+                            return callback(err);
+                        }
+                        retObjArrays.gateStatusReview.gateStatusAssignment = assignment._id;
+                        retObjArrays.gateStatusReview.status = assignment.currentRecord.status;
+                        retObjArrays.gateStatusReview.overallScore = assignment.currentRecord.overallScore;
+                        retObjArrays.gateStatusReview.completed = assignment.currentRecord.completed;
+
+                        callback(null);
+                    });
+                },
                 // Outcomes
                 function(callback){
                     Gate.findById(req.body.gate).exec(function(err, gate){
@@ -215,6 +231,13 @@ exports.create = function(req, res) {
         // Assign the arrays and save the new gate review
         function(retObjArrays, callback){
 
+            gateReview.overallComment = '';
+
+            gateReview.gateStatusAssignment = retObjArrays.gateStatusReview.gateStatusAssignment;
+            gateReview.status = retObjArrays.gateStatusReview.status;
+            gateReview.overallScore = retObjArrays.gateStatusReview.overallScore;
+            gateReview.completed = retObjArrays.gateStatusReview.completed;
+
             gateReview.outcomeReviews = retObjArrays.outcomeReviews;
             gateReview.baselineDurationReviews = retObjArrays.baselineDurationReviews;
             gateReview.estimateDurationReviews = retObjArrays.estimateDurationReviews;
@@ -233,6 +256,7 @@ exports.create = function(req, res) {
         }
     ], function(err){
         if (err) {
+            console.log(err);
             return res.status(400).send({
                 message: errorHandler.getErrorMessage(err)
             });
@@ -246,44 +270,103 @@ exports.create = function(req, res) {
  * Show the current Gate review
  */
 exports.read = function(req, res) {
-	res.jsonp(req.gateReview);
+    res.jsonp(req.gateReview);
 };
 
 /**
  * Update a Gate review
  */
 exports.update = function(req, res) {
-	var gateReview = req.gateReview ;
+    var gateReview = req.gateReview ;
     gateReview.user = req.user;
     gateReview.created = Date.now();
-	gateReview = _.extend(gateReview , req.body);
+    gateReview = _.extend(gateReview , req.body);
 
-	gateReview.save(function(err) {
-		if (err) {
-			return res.status(400).send({
-				message: errorHandler.getErrorMessage(err)
-			});
-		} else {
-			res.jsonp(gateReview);
-		}
-	});
+    gateReview.save(function(err) {
+        if (err) {
+            return res.status(400).send({
+                message: errorHandler.getErrorMessage(err)
+            });
+        } else {
+            res.jsonp(gateReview);
+        }
+    });
+};
+
+/**
+ * Update a Gate review HEADER
+ */
+exports.updateHeader = function(req, res) {
+    var gateReview = req.gateReview ;
+    var GateStatusAssignment = mongoose.mtModel(req.user.tenantId + '.' + 'GateStatusAssignment');
+
+    async.series([
+        // GATE-REVIEW: Update only header and save gate review to its collection
+        function(callback){
+            gateReview.user = req.user;
+            gateReview.created = Date.now();
+            gateReview.reviewDate = req.body.reviewDate;
+            gateReview.title = req.body.title;
+            gateReview.overallComment = req.body.overallComment;
+            gateReview.status = req.body.status;
+            gateReview.overallScore = req.body.overallScore;
+            gateReview.completed = req.body.completed;
+
+            gateReview.save(function(err){
+                callback(err);
+            });
+        },
+        // GATE-STATUS-ASSIGNMENT: Update associated gate-status-assignment with the new gate data
+        function(callback){
+            GateStatusAssignment.findById(req.params.headerId).exec(function(err, assignment){
+                if(err){
+                    return callback(err);
+                } else if(! assignment){
+                    return callback(new Error('Cannot find gate status assignment ' + req.params.headerId));
+                } else {
+                    assignment.history.push(assignment.currentRecord);
+
+                    assignment.currentRecord.completed = req.body.completed;
+                    assignment.currentRecord.status = req.body.status;
+                    assignment.currentRecord.overallScore = req.body.overallScore;
+
+                    assignment.currentRecord.sourceReview = gateReview._id;
+
+                    assignment.currentRecord.created = Date.now();
+                    assignment.currentRecord.user = req.user;
+
+                    assignment.save(function(err){
+                        callback(err);
+                    });
+                }
+            });
+        }
+    ],function(err){
+        if (err) {
+            return res.status(400).send({
+                message: errorHandler.getErrorMessage(err)
+            });
+        } else {
+            res.jsonp(gateReview);
+        }
+    });
 };
 
 /**
  * Delete an Gate review
  */
 exports.delete = function(req, res) {
-	var gateReview = req.gateReview ;
+    var gateReview = req.gateReview ;
 
-	gateReview.remove(function(err) {
-		if (err) {
-			return res.status(400).send({
-				message: errorHandler.getErrorMessage(err)
-			});
-		} else {
-			res.jsonp(gateReview);
-		}
-	});
+    gateReview.remove(function(err) {
+        if (err) {
+            return res.status(400).send({
+                message: errorHandler.getErrorMessage(err)
+            });
+        } else {
+            res.jsonp(gateReview);
+        }
+    });
 };
 
 /**
@@ -292,25 +375,15 @@ exports.delete = function(req, res) {
 exports.list = function(req, res) {
     var GateReview = mongoose.mtModel(req.user.tenantId + '.' + 'GateReview');
 
-    var queryObject = {};
-    var deepPopulateArray = [];
-
-    if(req.query.queryObject){
-        queryObject = req.query.queryObject;
-    }
-    if(req.query.deepPopulateArray){
-        deepPopulateArray = req.query.deepPopulateArray;
-    }
-
-    GateReview.find(queryObject).deepPopulate(deepPopulateArray).populate('user', 'displayName').exec(function(err, gateReviews) {
-		if (err) {
-			return res.status(400).send({
-				message: errorHandler.getErrorMessage(err)
-			});
-		} else {
-			res.jsonp(gateReviews);
-		}
-	});
+    GateReview.find(req.query).deepPopulate(['overallScore', 'status']).populate('user', 'displayName').exec(function(err, gateReviews) {
+        if (err) {
+            return res.status(400).send({
+                message: errorHandler.getErrorMessage(err)
+            });
+        } else {
+            res.jsonp(gateReviews);
+        }
+    });
 };
 
 /**
@@ -319,22 +392,18 @@ exports.list = function(req, res) {
 exports.gateReviewByID = function(req, res, next, id) {
     var GateReview = mongoose.mtModel(req.user.tenantId + '.' + 'GateReview');
 
-    var retPropertiesString = '';
-    var deepPopulateArray = [];
-
-    if(req.query.retPropertiesString){
-        retPropertiesString = req.query.retPropertiesString;
-    }
-    if(req.query.deepPopulateArray){
-        deepPopulateArray = req.query.deepPopulateArray;
-    }
-
-	GateReview.findById(id, retPropertiesString).deepPopulate(deepPopulateArray).populate('user', 'displayName').exec(function(err, gateReview) {
-		if (err) return next(err);
-		if (! gateReview) return next(new Error('Failed to load Gate review ' + id));
-		req.gateReview = gateReview ;
-		next();
-	});
+    GateReview.findById(id).deepPopulate([
+        'gateStatusAssignment',
+        'outcomeReviews.outcome',
+        'baselineDurationReviews.baselineDuration', 'estimateDurationReviews.estimateDuration', 'actualDurationReviews.actualDuration',
+        'baselineCostReviews.baselineCost', 'estimateCostReviews.estimateCost', 'actualCostReviews.actualCost',
+        'baselineCompletionReviews.baselineCompletion', 'estimateCompletionReviews.estimateCompletion', 'actualCompletionReviews.actualCompletion'
+    ]).populate('user', 'displayName').exec(function(err, gateReview) {
+        if (err) return next(err);
+        if (! gateReview) return next(new Error('Failed to load Gate review ' + id));
+        req.gateReview = gateReview ;
+        next();
+    });
 };
 
 /**

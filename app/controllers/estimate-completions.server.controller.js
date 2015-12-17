@@ -14,7 +14,6 @@ var mongoose = require('mongoose'),
 exports.create = function(req, res) {
 	var EstimateCompletion = mongoose.mtModel(req.user.tenantId + '.' + 'EstimateCompletion');
 	var estimateCompletion = new EstimateCompletion(req.body);
-	estimateCompletion.user = req.user;
 
 	estimateCompletion.save(function(err) {
 		if (err) {

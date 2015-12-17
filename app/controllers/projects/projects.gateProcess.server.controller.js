@@ -19,6 +19,8 @@ exports.updateProcessAssignment = function(req, res) {
     project.user = req.user;
     project.created = Date.now();
 
+    var GateStatusAssignment = mongoose.mtModel(req.user.tenantId + '.' + 'GateStatusAssignment');
+
     var BaselineDuration = mongoose.mtModel(req.user.tenantId + '.' + 'BaselineDuration');
     var BaselineCost = mongoose.mtModel(req.user.tenantId + '.' + 'BaselineCost');
     var BaselineCompletion = mongoose.mtModel(req.user.tenantId + '.' + 'BaselineCompletion');
@@ -37,6 +39,21 @@ exports.updateProcessAssignment = function(req, res) {
         // OLD PERFORMANCE RECORDS: Delete all existing performance records associated with the project's process
         function(callback){
             async.series([
+                // Gates status assignment
+                function(callback){
+                    GateStatusAssignment.find({project: project._id}, function(err, assignments){
+                        if(err) { callback(err); } else {
+                            async.each(assignments, function(assignment, callback){
+                                assignment.remove(function(err){
+                                    callback(err);
+                                });
+                            }, function(err){
+                                if(err){ callback(err); }
+                            });
+                        }
+                        callback(null);
+                    });
+                },
                 // Duration
                 function(callback){
                     BaselineDuration.find({project: project._id}, function(err, performances){
@@ -186,6 +203,10 @@ exports.updateProcessAssignment = function(req, res) {
                     } else {
                         async.eachSeries(process.gates, function(sourceGate, callback){
                             async.series([
+                                function(callback){
+                                    var gateStatusAssignment = new GateStatusAssignment({project: project._id, gate: sourceGate, currentRecord: {user: req.user}, history: []});
+                                    gateStatusAssignment.save(function(err){ callback(err); });
+                                },
                                 function(callback){
                                     var actualDuration = new ActualDuration({project: project._id, sourceGate: sourceGate, targetGate: sourceGate, currentRecord: {user: req.user}, history: []});
                                     actualDuration.save(function(err){ callback(err); });

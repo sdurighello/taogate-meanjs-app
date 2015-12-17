@@ -1,19 +1,19 @@
 'use strict';
 
 angular.module('gate-management-review').controller('GateManagementReviewController', ['$scope','$stateParams', '$location',
-	'Authentication', 'Projects', 'Portfolios','$q', '_',
+    'Authentication', 'Projects', 'Portfolios','$q', '_',
     'GateProcesses', 'GateReviews', 'GateOutcomeScores', 'GateStatuses',
     'ActualCompletions', 'ActualCosts', 'ActualDurations',
     'BaselineCompletions', 'BaselineCosts', 'BaselineDurations',
     'EstimateCompletions', 'EstimateCosts', 'EstimateDurations',
-	function($scope, $stateParams, $location, Authentication, Projects, Portfolios, $q, _,
+    function($scope, $stateParams, $location, Authentication, Projects, Portfolios, $q, _,
              GateProcesses, GateReviews, GateOutcomeScores, GateStatuses,
              ActualCompletions, ActualCosts, ActualDurations, BaselineCompletions, BaselineCosts, BaselineDurations,
              EstimateCompletions, EstimateCosts, EstimateDurations) {
 
-		// ------------- INIT -------------
+        // ------------- INIT -------------
 
-		$scope.initError = [];
+        $scope.initError = [];
 
         $scope.ciao = 10;
 
@@ -22,7 +22,7 @@ angular.module('gate-management-review').controller('GateManagementReviewControl
             estimateCompletions = [], estimateCosts = [], estimateDurations = [];
 
 
-            $scope.init = function(){
+        $scope.init = function(){
 
             Projects.query({'selection.selectedForDelivery': true}, function(projects){
                 $scope.projects = _.filter(projects, function(project){return project.process !== null;});
@@ -30,11 +30,11 @@ angular.module('gate-management-review').controller('GateManagementReviewControl
                 $scope.initError.push(err.data.message);
             });
 
-			Portfolios.query(function(portfolios){
-				$scope.portfolios = portfolios;
-			}, function(err){
-				$scope.initError.push(err.data.message);
-			});
+            Portfolios.query(function(portfolios){
+                $scope.portfolios = portfolios;
+            }, function(err){
+                $scope.initError.push(err.data.message);
+            });
 
             GateProcesses.query(function(gateProcesses){
                 $scope.gateProcesses = gateProcesses;
@@ -54,7 +54,7 @@ angular.module('gate-management-review').controller('GateManagementReviewControl
                 $scope.initError.push(err.data.message);
             });
 
-		};
+        };
 
 
 
@@ -88,7 +88,6 @@ angular.module('gate-management-review').controller('GateManagementReviewControl
             });
         });
 
-
         var originalGateReview;
 
         // ------------- SELECT VIEW PROJECT ------------
@@ -108,10 +107,7 @@ angular.module('gate-management-review').controller('GateManagementReviewControl
             $scope.selectedProject = copyProject;
 
             GateReviews.query({
-                queryObject:{
-                    project: copyProject._id
-                },
-                deepPopulateArray: ['overallScore', 'status']
+                project: copyProject._id
             }, function (gReviews) {
                 var gateReviews = gReviews;
                 $scope.gateReviewList = _.map(copyProject.process.gates, function (gate) {
@@ -142,11 +138,8 @@ angular.module('gate-management-review').controller('GateManagementReviewControl
             var newGateReview = new GateReviews({
                 project: project._id,
                 gate : gate._id,
-                status : $scope.newGateReview.status,
                 reviewDate : $scope.newGateReview.reviewDate,
-                title : $scope.newGateReview.title,
-                overallScore : $scope.newGateReview.overallScore,
-                overallComment : $scope.newGateReview.overallComment
+                title : $scope.newGateReview.title
             });
             newGateReview.$save(function(res) {
 
@@ -169,127 +162,55 @@ angular.module('gate-management-review').controller('GateManagementReviewControl
 
         $scope.selectGateReview = function(gateReview){
             GateReviews.get({
-                gateReviewId:gateReview._id,
-                retPropertiesString : 'user created project gate status reviewDate title overallScore overallComment completed outcomeReviews ' +
-                'baselineDurationReviews estimateDurationReviews actualDurationReviews' +
-                'baselineCostReviews estimateCostReviews actualCostReviews' +
-                'baselineCompletionReviews estimateCompletionReviews actualCompletionReviews',
-                deepPopulateArray : [
-                    'outcomeReviews.outcome',
-                    'baselineDurationReviews.baselineDuration', 'estimateDurationReviews.estimateDuration', 'actualDurationReviews.actualDuration',
-                    'baselineCostReviews.baselineCost', 'estimateCostReviews.estimateCost', 'actualCostReviews.actualCost',
-                    'baselineCompletionReviews.baselineCompletion', 'estimateCompletionReviews.baselineCompletion', 'actualCompletionReviews.actualCompletion'
-                ]
+                gateReviewId:gateReview._id
             }, function(res){
                 $scope.selectedGateReview = res;
                 originalGateReview = _.cloneDeep(res);
+                console.log(res);
                 //$scope.selectGateReviewForm('view');
             },function(errorResponse){
                 $scope.error = errorResponse.data.message;
             });
         };
 
+        // -------------------------------------------------------- HEADER -------------------------------------------------
+
+        $scope.updateHeader = function(gateReview){
+            // Clean-up deepPopulate
+            var copyGateReview = _.cloneDeep(gateReview);
+            copyGateReview.project = _.get(copyGateReview.project, '_id');
+            copyGateReview.gate = _.get(copyGateReview.gate, '_id');
+            copyGateReview.gateStatusAssignment = _.get(copyGateReview.gateStatusAssignment, '_id');
+            // Update server header
+            GateReviews.updateHeader(
+                {
+                    gateReviewId : copyGateReview._id,
+                    headerId: copyGateReview.gateStatusAssignment
+                }, copyGateReview,
+                function(res){ },
+                function(err){$scope.error = err.data.message;}
+            );
+        };
+
+        $scope.cancelUpdateHeader = function(gateReview){
+            gateReview.reviewDate = originalGateReview.reviewDate;
+            gateReview.title = originalGateReview.title;
+            gateReview.overallScore = originalGateReview.overallScore;
+            gateReview.status = originalGateReview.status;
+            gateReview.overallComment = originalGateReview.overallComment;
+            gateReview.completed = originalGateReview.completed;
+        };
 
 
+        $scope.deleteGateReview = function(gateReview){
 
+            GateReviews.remove({gateReviewId: gateReview._id}, gateReview, function(res){
+                //project.costs = _.without(project.costs, assignedCost);
+            }, function(err){
+                $scope.error = err.data.message;
+            });
 
-
-
-
-
-
-
-
-
-
-
-        //
-        //
-        //// -------------------------------------------------------- COSTS -------------------------------------------------
-        //
-        //
-        //// ------------- NEW COST ASSIGNMENT ---------
-        //
-        //$scope.newCostAssignment = {};
-        //$scope.newCostAssignment.group = {};
-        //$scope.newCostAssignment.type = {};
-        //$scope.newCostAssignment.name = '';
-        //$scope.newCostAssignment.year = null;
-        //$scope.newCostAssignment.amount = null;
-        //
-        //$scope.createNewCostAssignment = function(project){
-        //    var newCostAssignment = new FinancialCosts({
-        //        group : $scope.newCostAssignment.group._id,
-        //        type : $scope.newCostAssignment.type._id,
-        //        name : $scope.newCostAssignment.name,
-        //        year : $scope.newCostAssignment.year,
-        //        amount : $scope.newCostAssignment.amount
-        //    });
-        //
-        //    newCostAssignment.$save({projectId: project._id}, function(res) {
-        //        // Populate group and type since res doesn't
-        //        res.group = $scope.newCostAssignment.group;
-        //        res.type = $scope.newCostAssignment.type;
-        //        // Add new category to the view group
-        //        project.costs.unshift(res);
-        //        // Clear new cost form
-        //        $scope.newCostAssignment = {};
-        //        $scope.newCostAssignment.group = {};
-        //        $scope.newCostAssignment.type = {};
-        //        $scope.newCostAssignment.name = '';
-        //        $scope.newCostAssignment.year = null;
-        //        $scope.newCostAssignment.amount = null;
-        //        // Close new cost form done directly in the view's html
-        //    }, function(errorResponse) {
-        //        $scope.error = errorResponse.data.message;
-        //    });
-        //};
-        //
-        //
-        //// ------------- SELECT COST ASSIGNMENT ---------
-        //
-        //$scope.selectCostAssignment = function(assignedCost){
-        //    originalCostAssignment[assignedCost._id] = _.clone(assignedCost);
-        //};
-        //
-        //
-        //
-        //// ------------- EDIT COST ASSIGNMENT ---------
-        //
-        //$scope.editAssignedCost = function(project, assignedCost){
-        //    // Check cost type since ngOptions doesn't update it if group changed but user didn't specifically selected a new type
-        //    if(!_.find(assignedCost.group.costTypes, assignedCost.type)){
-        //        assignedCost.type = null;
-        //    }
-        //    var copyAssignedCost = _.clone(assignedCost);
-        //    copyAssignedCost.group = allowNull(copyAssignedCost.group);
-        //    copyAssignedCost.type = allowNull(copyAssignedCost.type);
-        //    FinancialCosts.update(copyAssignedCost,
-        //        function(res){ },
-        //        function(err){$scope.error = err.data.message;}
-        //    );
-        //};
-        //
-        //$scope.cancelEditAssignedCost = function(assignedCost){
-        //    assignedCost.group = originalCostAssignment[assignedCost._id].group;
-        //    assignedCost.type = originalCostAssignment[assignedCost._id].type;
-        //    assignedCost.name = originalCostAssignment[assignedCost._id].name;
-        //    assignedCost.year = originalCostAssignment[assignedCost._id].year;
-        //    assignedCost.amount = originalCostAssignment[assignedCost._id].amount;
-        //};
-        //
-        //
-        //// ------------- DELETE COST ASSIGNMENT ---------
-        //
-        //$scope.deleteAssignedCost = function(project, assignedCost){
-        //
-        //    FinancialCosts.remove({projectId: project._id}, assignedCost, function(res){
-        //        project.costs = _.without(project.costs, assignedCost);
-        //    }, function(err){
-        //        $scope.error = err.data.message;
-        //    });
-        //
-        //};
+        };
 
 
     }

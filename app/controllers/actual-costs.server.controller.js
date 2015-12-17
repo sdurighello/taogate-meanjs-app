@@ -14,7 +14,6 @@ var mongoose = require('mongoose'),
 exports.create = function(req, res) {
 	var ActualCost = mongoose.mtModel(req.user.tenantId + '.' + 'ActualCost');
 	var actualCost = new ActualCost(req.body);
-	actualCost.user = req.user;
 
 	actualCost.save(function(err) {
 		if (err) {

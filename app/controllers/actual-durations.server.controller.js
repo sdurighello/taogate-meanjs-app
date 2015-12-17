@@ -14,7 +14,6 @@ var mongoose = require('mongoose'),
 exports.create = function(req, res) {
 	var ActualDuration = mongoose.mtModel(req.user.tenantId + '.' + 'ActualDuration');
 	var actualDuration = new ActualDuration(req.body);
-	actualDuration.user = req.user;
 
 	actualDuration.save(function(err) {
 		if (err) {
