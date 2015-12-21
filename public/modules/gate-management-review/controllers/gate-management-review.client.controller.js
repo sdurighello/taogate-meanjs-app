@@ -60,13 +60,24 @@ angular.module('gate-management-review').controller('GateManagementReviewControl
 
         // ------------------- NG-SWITCH ---------------------
 
-        $scope.switchProjectForm = {};
-
+        $scope.switchProjectForm = '';
         $scope.selectProjectForm = function(string){
             if(string === 'default'){ $scope.switchProjectForm = 'default';}
             if(string === 'new'){$scope.switchProjectForm = 'new';}
             if(string === 'view'){ $scope.switchProjectForm = 'view';}
             if(string === 'edit'){$scope.switchProjectForm = 'edit';}
+        };
+
+        $scope.switchOutcomeReviewForm = {};
+        $scope.selectOutcomeReviewForm = function(string, outcomeReview){
+            if(string === 'view'){ $scope.switchOutcomeReviewForm[outcomeReview._id] = 'view';}
+            if(string === 'edit'){$scope.switchOutcomeReviewForm[outcomeReview._id] = 'edit';}
+        };
+
+        $scope.switchBaselineDurationForm = {};
+        $scope.selectBaselineDurationForm = function(string, baselineDuration){
+            if(string === 'view'){ $scope.switchBaselineDurationForm[baselineDuration._id] = 'view';}
+            if(string === 'edit'){$scope.switchBaselineDurationForm[baselineDuration._id] = 'edit';}
         };
 
         var allowNull = function(obj){
@@ -164,14 +175,26 @@ angular.module('gate-management-review').controller('GateManagementReviewControl
             GateReviews.get({
                 gateReviewId:gateReview._id
             }, function(res){
+                console.log(res);
                 $scope.selectedGateReview = res;
                 originalGateReview = _.cloneDeep(res);
-                console.log(res);
                 //$scope.selectGateReviewForm('view');
             },function(errorResponse){
                 $scope.error = errorResponse.data.message;
+                $scope.selectedGateReview = null;
+                originalGateReview = null;
             });
         };
+
+        // ------------- CHANGE GATE ------------
+
+        $scope.changeGate = function(){
+            $scope.cancelNewGateReview();
+            $scope.selectedGateReview = null;
+            originalGateReview = null;
+        };
+
+
 
         // -------------------------------------------------------- HEADER -------------------------------------------------
 
@@ -184,8 +207,7 @@ angular.module('gate-management-review').controller('GateManagementReviewControl
             // Update server header
             GateReviews.updateHeader(
                 {
-                    gateReviewId : copyGateReview._id,
-                    headerId: copyGateReview.gateStatusAssignment
+                    gateReviewId : copyGateReview._id
                 }, copyGateReview,
                 function(res){ },
                 function(err){$scope.error = err.data.message;}
@@ -195,10 +217,7 @@ angular.module('gate-management-review').controller('GateManagementReviewControl
         $scope.cancelUpdateHeader = function(gateReview){
             gateReview.reviewDate = originalGateReview.reviewDate;
             gateReview.title = originalGateReview.title;
-            gateReview.overallScore = originalGateReview.overallScore;
-            gateReview.status = originalGateReview.status;
             gateReview.overallComment = originalGateReview.overallComment;
-            gateReview.completed = originalGateReview.completed;
         };
 
 
@@ -211,6 +230,76 @@ angular.module('gate-management-review').controller('GateManagementReviewControl
             });
 
         };
+
+        // -------------------------------------------------------- STATUS -------------------------------------------------
+
+        $scope.updateStatus = function(gateReview){
+            // Clean-up deepPopulate
+            var copyGateReview = _.cloneDeep(gateReview);
+            copyGateReview.project = _.get(copyGateReview.project, '_id');
+            copyGateReview.gate = _.get(copyGateReview.gate, '_id');
+            copyGateReview.gateStatusAssignment = _.get(copyGateReview.gateStatusAssignment, '_id');
+            // Update server header
+            GateReviews.updateStatus(
+                {
+                    gateReviewId : copyGateReview._id,
+                    gateStatusAssignmentId: copyGateReview.gateStatusAssignment
+                }, copyGateReview,
+                function(res){ },
+                function(err){$scope.error = err.data.message;}
+            );
+        };
+
+        $scope.cancelUpdateStatus = function(gateReview){
+            gateReview.overallScore = originalGateReview.overallScore;
+            gateReview.status = originalGateReview.status;
+            gateReview.completed = originalGateReview.completed;
+        };
+
+
+        // -------------------------------------------------------- BASELINE DURATION -------------------------------------------------
+
+        $scope.baselineDurationDateOpened = {};
+        $scope.openBaselineDurationDate = function(baselineDurationReview, $event){
+            $event.preventDefault();
+            $event.stopPropagation();
+            $scope.baselineDurationDateOpened[baselineDurationReview._id] = true;
+        };
+
+        var originalBaselineDurationReview = {};
+
+        $scope.editBaselineDuration = function(baselineDurationReview){
+            originalBaselineDurationReview[baselineDurationReview._id] = _.cloneDeep(baselineDurationReview);
+            $scope.selectBaselineDurationForm('edit', baselineDurationReview);
+        };
+
+        $scope.saveEditBaselineDuration = function(gateReview, baselineDurationReview, baselineDuration){
+
+            GateReviews.updateBaselineDuration(
+                {
+                    gateReviewId: gateReview._id,
+                    baselineDurationReviewId : baselineDurationReview._id,
+                    baselineDurationId : baselineDuration._id
+                }, baselineDurationReview,
+                function(res){
+                    baselineDurationReview.baselineDuration.currentRecord.gateDate = baselineDurationReview.newDate;
+                },
+                function(err){
+                    $scope.error = err.data.message;
+                }
+            );
+
+            $scope.selectBaselineDurationForm('view', baselineDurationReview);
+        };
+
+        $scope.cancelEditBaselineDuration = function(baselineDurationReview){
+            $scope.selectBaselineDurationForm('view', baselineDurationReview);
+        };
+
+
+
+
+
 
 
     }

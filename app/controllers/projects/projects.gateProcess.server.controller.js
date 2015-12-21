@@ -20,6 +20,7 @@ exports.updateProcessAssignment = function(req, res) {
     project.created = Date.now();
 
     var GateStatusAssignment = mongoose.mtModel(req.user.tenantId + '.' + 'GateStatusAssignment');
+    var GateOutcomeReview = mongoose.mtModel(req.user.tenantId + '.' + 'GateOutcomeReview');
 
     var BaselineDuration = mongoose.mtModel(req.user.tenantId + '.' + 'BaselineDuration');
     var BaselineCost = mongoose.mtModel(req.user.tenantId + '.' + 'BaselineCost');
@@ -33,6 +34,7 @@ exports.updateProcessAssignment = function(req, res) {
 
     var GateProcess = mongoose.mtModel(req.user.tenantId + '.' + 'GateProcess');
     var Gate = mongoose.mtModel(req.user.tenantId + '.' + 'Gate');
+    var GateReview = mongoose.mtModel(req.user.tenantId + '.' + 'GateReview');
 
 
     async.series([
@@ -45,6 +47,21 @@ exports.updateProcessAssignment = function(req, res) {
                         if(err) { callback(err); } else {
                             async.each(assignments, function(assignment, callback){
                                 assignment.remove(function(err){
+                                    callback(err);
+                                });
+                            }, function(err){
+                                if(err){ callback(err); }
+                            });
+                        }
+                        callback(null);
+                    });
+                },
+                // Outcomes
+                function(callback){
+                    GateOutcomeReview.find({project: project._id}, function(err, outcomeReviews){
+                        if(err) { callback(err); } else {
+                            async.each(outcomeReviews, function(outcomeReview, callback){
+                                outcomeReview.remove(function(err){
                                     callback(err);
                                 });
                             }, function(err){
@@ -187,6 +204,28 @@ exports.updateProcessAssignment = function(req, res) {
                 callback(err);
             });
         },
+        // OLD DELIVERY DOCUMENTS: Delete all project's delivery documents associated with the old process
+        function(callback){
+            async.series([
+                // Gate Reviews
+                function(callback){
+                    GateReview.find({project: project._id}, function(err, gateReviews){
+                        if(err) { callback(err); } else {
+                            async.each(gateReviews, function(gateReview, callback){
+                                gateReview.remove(function(err){
+                                    callback(err);
+                                });
+                            }, function(err){
+                                if(err){ callback(err); }
+                            });
+                        }
+                        callback(null);
+                    });
+                }
+            ], function(err){
+                callback(err);
+            });
+        },
         // PROJECT.PROCESS: Assign the new process to the project
         function(callback){
             project.process = req.body.processId;
@@ -199,13 +238,31 @@ exports.updateProcessAssignment = function(req, res) {
             if(req.body.processId){ // Check project.process is set to a new process or just to "null", then find one
                 GateProcess.findOne({_id: req.body.processId}).exec(function(err, process){
                     if(err){
-                        callback(err);
-                    } else {
+                        return callback(err);
+                    } else if(process.gates.length !==0){
                         async.eachSeries(process.gates, function(sourceGate, callback){
                             async.series([
                                 function(callback){
                                     var gateStatusAssignment = new GateStatusAssignment({project: project._id, gate: sourceGate, currentRecord: {user: req.user}, history: []});
                                     gateStatusAssignment.save(function(err){ callback(err); });
+                                },
+                                function(callback){
+                                    Gate.findById(sourceGate).exec(function(err, retGate){
+                                        if(err){
+                                            return callback(err);
+                                        } else {
+                                            if(retGate.gateOutcomes){
+                                                async.eachSeries(retGate.gateOutcomes, function(outcome, callback){
+                                                    var gateOutcomeReview = new GateOutcomeReview({project: project._id, gate: sourceGate, outcome: outcome, currentRecord: {user: req.user}, history: []});
+                                                    gateOutcomeReview.save(function(err){
+                                                        if(err){ return callback(err); }
+                                                    });
+                                                    callback();
+                                                });
+                                            }
+                                            callback(null);
+                                        }
+                                    });
                                 },
                                 function(callback){
                                     var actualDuration = new ActualDuration({project: project._id, sourceGate: sourceGate, targetGate: sourceGate, currentRecord: {user: req.user}, history: []});
@@ -243,7 +300,7 @@ exports.updateProcessAssignment = function(req, res) {
                                                         });
                                                     },
                                                     function(targetGatePosition, callback){
-                                                        if(sourceGatePosition <= targetGatePosition){
+                                                        if(sourceGatePosition < targetGatePosition){
                                                             async.series([
                                                                 function(callback){
                                                                     var baselineDuration = new BaselineDuration({project: project._id, sourceGate: sourceGate, targetGate: targetGate, currentRecord: {user: req.user}, history: []});

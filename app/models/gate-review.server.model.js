@@ -14,9 +14,9 @@ require('mongoose-multitenant');
  */
 
 
-var OutcomeGateReviewSchema = new Schema({
-    outcome : {type: Schema.Types.ObjectId, ref: 'GateOutcome', $tenant:true},
-    score : {type: Schema.Types.ObjectId, ref: 'GateOutcomeScore', $tenant:true},
+var OutcomeReviewSchema = new Schema({
+    outcomeReview : {type: Schema.Types.ObjectId, ref: 'GateOutcomeReview', $tenant:true},
+    newScore : {type: Schema.Types.ObjectId, ref: 'GateOutcomeScore', $tenant:true},
     reviewComment : {type: String}
 });
 
@@ -79,7 +79,7 @@ var GateReviewSchema = new Schema({
     overallScore : {type: Schema.Types.ObjectId, ref: 'GateOutcomeScore', $tenant:true},
     completed : {type: Boolean, default: false, required:'Completed flag required'},
 
-    outcomeReviews : [OutcomeGateReviewSchema],
+    outcomeReviews : [OutcomeReviewSchema],
     baselineDurationReviews : [BaselineDurationReviewSchema],
     estimateDurationReviews : [EstimateDurationReviewSchema],
     actualDurationReviews : [ActualDurationReviewSchema],

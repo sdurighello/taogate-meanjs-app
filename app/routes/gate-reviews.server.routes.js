@@ -14,8 +14,14 @@ module.exports = function(app) {
 		.put(users.requiresLogin, gateReviews.hasAuthorization, gateReviews.update)
 		.delete(users.requiresLogin, gateReviews.hasAuthorization, gateReviews.delete);
 
-	app.route('/gate-reviews/:gateReviewId/header/:headerId')
+	app.route('/gate-reviews/:gateReviewId/header')
 		.put(users.requiresLogin, gateReviews.hasAuthorization, gateReviews.updateHeader);
+
+	app.route('/gate-reviews/:gateReviewId/gate-status-assignments/:gateStatusAssignmentId')
+		.put(users.requiresLogin, gateReviews.hasAuthorization, gateReviews.updateStatus);
+
+    app.route('/gate-reviews/:gateReviewId/baseline-duration-reviews/:baselineDurationReviewId/baseline-durations/:baselineDurationId')
+        .put(users.requiresLogin, gateReviews.hasAuthorization, gateReviews.updateBaselineDuration);
 
 
 	// Finish by binding the Gate review middleware
