@@ -244,14 +244,15 @@ exports.create = function(req, res) {
         },
         // Assign the arrays and save the new gate review
         function(retObjArrays, callback){
-
+                // Header
             gateReview.overallComment = '';
-
+            gateReview.final = false;
+                // Status & Score
             gateReview.gateStatusAssignment = retObjArrays.gateStatusReview.gateStatusAssignment;
             gateReview.status = retObjArrays.gateStatusReview.status;
             gateReview.overallScore = retObjArrays.gateStatusReview.overallScore;
             gateReview.completed = retObjArrays.gateStatusReview.completed;
-
+                // Performances
             gateReview.outcomeReviews = retObjArrays.outcomeReviews;
             gateReview.baselineDurationReviews = retObjArrays.baselineDurationReviews;
             gateReview.estimateDurationReviews = retObjArrays.estimateDurationReviews;

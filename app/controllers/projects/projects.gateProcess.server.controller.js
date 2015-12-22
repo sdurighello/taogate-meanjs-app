@@ -300,7 +300,7 @@ exports.updateProcessAssignment = function(req, res) {
                                                         });
                                                     },
                                                     function(targetGatePosition, callback){
-                                                        if(sourceGatePosition < targetGatePosition){
+                                                        if(sourceGatePosition <= targetGatePosition){
                                                             async.series([
                                                                 function(callback){
                                                                     var baselineDuration = new BaselineDuration({project: project._id, sourceGate: sourceGate, targetGate: targetGate, currentRecord: {user: req.user}, history: []});

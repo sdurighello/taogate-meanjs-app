@@ -14,16 +14,58 @@ module.exports = function(app) {
 		.put(users.requiresLogin, gateReviews.hasAuthorization, gateReviews.update)
 		.delete(users.requiresLogin, gateReviews.hasAuthorization, gateReviews.delete);
 
+    // Final
+
+    app.route('/gate-reviews/:gateReviewId/final')
+        .put(users.requiresLogin, gateReviews.hasAuthorization, gateReviews.setFinal);
+
+    // Header & Status
+
 	app.route('/gate-reviews/:gateReviewId/header')
 		.put(users.requiresLogin, gateReviews.hasAuthorization, gateReviews.updateHeader);
 
-	app.route('/gate-reviews/:gateReviewId/gate-status-assignments/:gateStatusAssignmentId')
+	app.route('/gate-reviews/:gateReviewId/status')
 		.put(users.requiresLogin, gateReviews.hasAuthorization, gateReviews.updateStatus);
 
-    app.route('/gate-reviews/:gateReviewId/baseline-duration-reviews/:baselineDurationReviewId/baseline-durations/:baselineDurationId')
+    // Outcomes
+
+    app.route('/gate-reviews/:gateReviewId/outcome-reviews/:outcomeReviewId')
+        .put(users.requiresLogin, gateReviews.hasAuthorization, gateReviews.updateOutcome);
+
+    // Baseline
+
+    app.route('/gate-reviews/:gateReviewId/baseline-duration-reviews/:baselineDurationReviewId')
         .put(users.requiresLogin, gateReviews.hasAuthorization, gateReviews.updateBaselineDuration);
 
+    app.route('/gate-reviews/:gateReviewId/baseline-cost-reviews/:baselineCostReviewId')
+        .put(users.requiresLogin, gateReviews.hasAuthorization, gateReviews.updateBaselineCost);
 
-	// Finish by binding the Gate review middleware
+    app.route('/gate-reviews/:gateReviewId/baseline-completion-reviews/:baselineCompletionReviewId')
+        .put(users.requiresLogin, gateReviews.hasAuthorization, gateReviews.updateBaselineCompletion);
+
+    // Estimate
+
+    app.route('/gate-reviews/:gateReviewId/estimate-duration-reviews/:estimateDurationReviewId')
+        .put(users.requiresLogin, gateReviews.hasAuthorization, gateReviews.updateEstimateDuration);
+
+    app.route('/gate-reviews/:gateReviewId/estimate-cost-reviews/:estimateCostReviewId')
+        .put(users.requiresLogin, gateReviews.hasAuthorization, gateReviews.updateEstimateCost);
+
+    app.route('/gate-reviews/:gateReviewId/estimate-completion-reviews/:estimateCompletionReviewId')
+        .put(users.requiresLogin, gateReviews.hasAuthorization, gateReviews.updateEstimateCompletion);
+
+    // Actual
+
+    app.route('/gate-reviews/:gateReviewId/actual-duration-reviews/:actualDurationReviewId')
+        .put(users.requiresLogin, gateReviews.hasAuthorization, gateReviews.updateActualDuration);
+
+    app.route('/gate-reviews/:gateReviewId/actual-cost-reviews/:actualCostReviewId')
+        .put(users.requiresLogin, gateReviews.hasAuthorization, gateReviews.updateActualCost);
+
+    app.route('/gate-reviews/:gateReviewId/actual-completion-reviews/:actualCompletionReviewId')
+        .put(users.requiresLogin, gateReviews.hasAuthorization, gateReviews.updateActualCompletion);
+
+
+    // Finish by binding the Gate review middleware
 	app.param('gateReviewId', gateReviews.gateReviewByID);
 };

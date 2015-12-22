@@ -9,18 +9,18 @@ var mongoose = require('mongoose'),
     _ = require('lodash');
 
 
-exports.updateHeader = function(req, res) {
+// --------- Update OUTCOME ---------
 
-    var GateStatusAssignment = mongoose.mtModel(req.user.tenantId + '.' + 'GateStatusAssignment');
+exports.updateOutcome = function(req, res) {
 
     var gateReview = req.gateReview ;
 
     gateReview.user = req.user;
     gateReview.created = Date.now();
-    gateReview.reviewDate = req.body.reviewDate;
-    gateReview.title = req.body.title;
-    gateReview.overallComment = req.body.overallComment;
-    // gateReview.approved -> managed separately in gate-review.approve route
+
+    var outcomeReview = gateReview.outcomeReviews.id(req.params.outcomeReviewId);
+    outcomeReview.newScore = req.body.newScore;
+    outcomeReview.reviewComment = req.body.reviewComment;
 
     gateReview.save(function(err){
         if (err) {
@@ -31,5 +31,4 @@ exports.updateHeader = function(req, res) {
             res.jsonp(gateReview);
         }
     });
-
 };

@@ -72,7 +72,12 @@ var GateReviewSchema = new Schema({
 
     reviewDate : {type: Date, default: Date.now, required:'Review date required'},
     title : {type: String, default:'', required:'Review title required'},
-    overallComment : {type: String},
+    overallComment : {type: String, default:''},
+    // This "final" refers to the gate review document and not to the gate
+    // So it doesn't belong to gate-status-assignment but to the header
+    // When the gate review is approved, it will apply the changes to the performances
+    // and the gate-review document cannot be changed or deleted anymore
+    final : {type: Boolean, default: false, required:'Final flag required'},
 
     gateStatusAssignment: {type: Schema.Types.ObjectId, ref: 'GateStatusAssignment', $tenant:true},
     status : {type: Schema.Types.ObjectId, ref: 'GateStatus', $tenant:true},

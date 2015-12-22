@@ -23,7 +23,7 @@ exports.read = function(req, res) {
 
 
 /**
- * Update a Gate review
+ * UPDATE a Gate review
  */
 
 exports.update = function(req, res) {
@@ -47,7 +47,35 @@ exports.updateHeader = require('./gate-reviews/gate-reviews.updateHeader.server.
 
 exports.updateStatus = require('./gate-reviews/gate-reviews.updateStatus.server.controller').updateStatus;
 
-exports.updateBaselineDuration = require('./gate-reviews/gate-reviews.updateBaselineDuration.server.controller').updateBaselineDuration;
+exports.updateOutcome = require('./gate-reviews/gate-reviews.updateOutcome.server.controller').updateOutcome;
+
+    // --- Final ---
+
+exports.setFinal = require('./gate-reviews/gate-reviews.setFinal.server.controller.js').setFinal;
+
+    // --- Baseline ---
+
+exports.updateBaselineDuration = require('./gate-reviews/gate-reviews.updatePerformance.server.controller.js').updateBaselineDuration;
+
+exports.updateBaselineCost = require('./gate-reviews/gate-reviews.updatePerformance.server.controller.js').updateBaselineCost;
+
+exports.updateBaselineCompletion = require('./gate-reviews/gate-reviews.updatePerformance.server.controller.js').updateBaselineCompletion;
+
+    // --- Estimate ---
+
+exports.updateEstimateDuration = require('./gate-reviews/gate-reviews.updatePerformance.server.controller.js').updateEstimateDuration;
+
+exports.updateEstimateCost = require('./gate-reviews/gate-reviews.updatePerformance.server.controller.js').updateEstimateCost;
+
+exports.updateEstimateCompletion = require('./gate-reviews/gate-reviews.updatePerformance.server.controller.js').updateEstimateCompletion;
+
+    // --- Actual ---
+
+exports.updateActualDuration = require('./gate-reviews/gate-reviews.updatePerformance.server.controller.js').updateActualDuration;
+
+exports.updateActualCost = require('./gate-reviews/gate-reviews.updatePerformance.server.controller.js').updateActualCost;
+
+exports.updateActualCompletion = require('./gate-reviews/gate-reviews.updatePerformance.server.controller.js').updateActualCompletion;
 
 
 
@@ -95,9 +123,9 @@ exports.gateReviewByID = function(req, res, next, id) {
     GateReview.findById(id).deepPopulate([
         'gateStatusAssignment',
         'outcomeReviews.outcomeReview.outcome',
-        'baselineDurationReviews.baselineDuration.targetGate', 'estimateDurationReviews.estimateDuration', 'actualDurationReviews.actualDuration',
-        'baselineCostReviews.baselineCost', 'estimateCostReviews.estimateCost', 'actualCostReviews.actualCost',
-        'baselineCompletionReviews.baselineCompletion', 'estimateCompletionReviews.estimateCompletion', 'actualCompletionReviews.actualCompletion'
+        'baselineDurationReviews.baselineDuration.targetGate', 'estimateDurationReviews.estimateDuration.targetGate', 'actualDurationReviews.actualDuration.targetGate',
+        'baselineCostReviews.baselineCost.targetGate', 'estimateCostReviews.estimateCost.targetGate', 'actualCostReviews.actualCost.targetGate',
+        'baselineCompletionReviews.baselineCompletion.targetGate', 'estimateCompletionReviews.estimateCompletion.targetGate', 'actualCompletionReviews.actualCompletion.targetGate'
     ]).populate('user', 'displayName').exec(function(err, gateReview) {
         if (err) return next(err);
         if (! gateReview) return next(new Error('Failed to load Gate review ' + id));
