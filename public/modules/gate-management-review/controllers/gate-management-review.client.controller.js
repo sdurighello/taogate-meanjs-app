@@ -66,16 +66,16 @@ angular.module('gate-management-review').controller('GateManagementReviewControl
             if(string === 'edit'){$scope.switchProjectForm = 'edit';}
         };
 
-        $scope.switchHeaderForm = '';
-        $scope.selectHeaderForm = function(string){
-            if(string === 'view'){ $scope.switchHeaderForm = 'view';}
-            if(string === 'edit'){$scope.switchHeaderForm = 'edit';}
+        $scope.switchHeaderForm = {};
+        $scope.selectHeaderForm = function(string, gateReview){
+            if(string === 'view'){ $scope.switchHeaderForm[gateReview._id] = 'view';}
+            if(string === 'edit'){$scope.switchHeaderForm[gateReview._id] = 'edit';}
         };
 
-        $scope.switchStatusForm = '';
-        $scope.selectStatusForm = function(string){
-            if(string === 'view'){ $scope.switchStatusForm = 'view';}
-            if(string === 'edit'){$scope.switchStatusForm = 'edit';}
+        $scope.switchStatusForm = {};
+        $scope.selectStatusForm = function(string, gateReview){
+            if(string === 'view'){ $scope.switchStatusForm[gateReview._id] = 'view';}
+            if(string === 'edit'){$scope.switchStatusForm[gateReview._id] = 'edit';}
         };
 
         $scope.switchOutcomeReviewForm = {};
@@ -156,10 +156,9 @@ angular.module('gate-management-review').controller('GateManagementReviewControl
 
         $scope.gateReviewDetails = 'header';
 
-        var originalGateReview;
-
         // ------------- SELECT VIEW PROJECT ------------
 
+        var originalGateReview = {};
 
         $scope.selectProject = function(project) {
             $scope.error = {};
@@ -167,23 +166,21 @@ angular.module('gate-management-review').controller('GateManagementReviewControl
             $scope.gateReviewList = null;
 
             $scope.selectedGateReview = null;
-            originalGateReview = null;
+            originalGateReview = {};
 
-            var copyProject = _.cloneDeep(project);
-            copyProject.process = _.find($scope.gateProcesses, _.matchesProperty('_id', copyProject.process));
-            copyProject.process.gates = _.sortBy(copyProject.process.gates, 'position');
-            $scope.selectedProject = copyProject;
+            $scope.selectedProject = project;
 
             GateReviews.query({
-                project: copyProject._id
-            }, function (gReviews) {
-                var gateReviews = gReviews;
-                $scope.gateReviewList = _.map(copyProject.process.gates, function (gate) {
-                    return {
-                        gate: gate,
-                        gateReviews: _.filter(gateReviews, _.matchesProperty('gate', gate._id))
-                    };
-                });
+                project: project._id
+            }, function (reviews) {
+                $scope.gateReviewList = _.chain(_.get(project, 'process.gates'))
+                    .map(function (gate) {
+                        return {
+                            gate: gate,
+                            gateReviews: _.filter(reviews, _.matchesProperty('gate', gate._id))};
+                    })
+                    .sortBy('gate.position')
+                    .value();
             }, function (err) {
                 $scope.error.gateReviews = err.data.message;
             });
@@ -200,6 +197,14 @@ angular.module('gate-management-review').controller('GateManagementReviewControl
 
         // ------------- NEW GATE REVIEW ------------
 
+        $scope.newGateReviewDateOpened = {};
+
+        $scope.openNewGateReviewDate = function(gate, $event){
+            $event.preventDefault();
+            $event.stopPropagation();
+            $scope.newGateReviewDateOpened[gate._id] = true;
+        };
+
         $scope.newGateReview = {};
 
         $scope.createNewGateReview = function(project, gate){
@@ -210,10 +215,10 @@ angular.module('gate-management-review').controller('GateManagementReviewControl
                 title : $scope.newGateReview.title
             });
             newGateReview.$save(function(res) {
-
                 // Clear new form
                 $scope.newGateReview = {};
-
+                // Refresh the list of gate reviews
+                $scope.selectProject(project);
                 // Close new cost form done directly in the view's html
             }, function(err) {
                 $scope.error = err.data.message;
@@ -227,19 +232,23 @@ angular.module('gate-management-review').controller('GateManagementReviewControl
 
         // ------------- SELECT GATE REVIEW ------------
 
+        var gateReviewFromList = {};
+        // Required to update the list when changes details
+        // in the details pane that are also reported in the list of gate reviews
 
         $scope.selectGateReview = function(gateReview){
+            gateReviewFromList[gateReview._id] = gateReview;
             GateReviews.get({
                 gateReviewId:gateReview._id
             }, function(res){
                 console.log(res);
                 $scope.selectedGateReview = res;
-                originalGateReview = _.cloneDeep(res);
+                originalGateReview[gateReview._id] = _.cloneDeep(res);
                 //$scope.selectGateReviewForm('view');
             },function(errorResponse){
                 $scope.error = errorResponse.data.message;
                 $scope.selectedGateReview = null;
-                originalGateReview = null;
+                originalGateReview = {};
             });
         };
 
@@ -248,7 +257,7 @@ angular.module('gate-management-review').controller('GateManagementReviewControl
         $scope.changeGate = function(){
             $scope.cancelNewGateReview();
             $scope.selectedGateReview = null;
-            originalGateReview = null;
+            originalGateReview = {};
         };
 
 
@@ -262,8 +271,8 @@ angular.module('gate-management-review').controller('GateManagementReviewControl
             $scope.headerDateOpened[gateReview._id] = true;
         };
 
-        $scope.editHeader = function(){
-          $scope.selectHeaderForm('edit');
+        $scope.editHeader = function(gateReview){
+          $scope.selectHeaderForm('edit', gateReview);
         };
 
         $scope.saveEditHeader = function(gateReview){
@@ -278,20 +287,25 @@ angular.module('gate-management-review').controller('GateManagementReviewControl
                     gateReviewId : copyGateReview._id
                 }, copyGateReview,
                 function(res){
-                    originalGateReview.reviewDate = gateReview.reviewDate;
-                    originalGateReview.title = gateReview.title;
-                    originalGateReview.overallComment = gateReview.overallComment;
-                    $scope.selectHeaderForm('view');
+                    // Update details pane view with new saved details
+                    originalGateReview[gateReview._id].reviewDate = gateReview.reviewDate;
+                    originalGateReview[gateReview._id].title = gateReview.title;
+                    originalGateReview[gateReview._id].overallComment = gateReview.overallComment;
+                    // Update list of reviews with new date / title
+                    gateReviewFromList[gateReview._id].reviewDate = gateReview.reviewDate;
+                    gateReviewFromList[gateReview._id].title = gateReview.title;
+                    // Close edit header form and back to view
+                    $scope.selectHeaderForm('view', gateReview);
                 },
                 function(err){$scope.error = err.data.message;}
             );
         };
 
         $scope.cancelEditHeader = function(gateReview){
-            gateReview.reviewDate = originalGateReview.reviewDate;
-            gateReview.title = originalGateReview.title;
-            gateReview.overallComment = originalGateReview.overallComment;
-            $scope.selectHeaderForm('view');
+            gateReview.reviewDate = originalGateReview[gateReview._id].reviewDate;
+            gateReview.title = originalGateReview[gateReview._id].title;
+            gateReview.overallComment = originalGateReview[gateReview._id].overallComment;
+            $scope.selectHeaderForm('view', gateReview);
         };
 
 
@@ -300,7 +314,7 @@ angular.module('gate-management-review').controller('GateManagementReviewControl
                 reviewObject.gateReviews = _.without(reviewObject.gateReviews, _.find(reviewObject.gateReviews, _.matchesProperty('_id',gateReview._id)));
                 $scope.cancelNewGateReview();
                 $scope.selectedGateReview = null;
-                originalGateReview = null;
+                originalGateReview = {};
             }, function(err){
                 $scope.error = err.data.message;
             });
@@ -308,8 +322,8 @@ angular.module('gate-management-review').controller('GateManagementReviewControl
 
         // -------------------------------------------------------- STATUS -------------------------------------------------
 
-        $scope.editStatus = function(){
-            $scope.selectStatusForm('edit');
+        $scope.editStatus = function(gateReview){
+            $scope.selectStatusForm('edit', gateReview);
         };
 
         $scope.saveEditStatus = function(gateReview){
@@ -321,10 +335,10 @@ angular.module('gate-management-review').controller('GateManagementReviewControl
             // Update server header
             GateReviews.updateStatus( { gateReviewId : copyGateReview._id }, copyGateReview,
                 function(res){
-                    originalGateReview.overallScore = gateReview.overallScore;
-                    originalGateReview.status = gateReview.status;
-                    originalGateReview.completed = gateReview.completed;
-                    $scope.selectStatusForm('view');
+                    originalGateReview[gateReview._id].overallScore = gateReview.overallScore;
+                    originalGateReview[gateReview._id].status = gateReview.status;
+                    originalGateReview[gateReview._id].completed = gateReview.completed;
+                    $scope.selectStatusForm('view', gateReview);
                 },
                 function(err){
                     $scope.error = err.data.message;
@@ -333,10 +347,10 @@ angular.module('gate-management-review').controller('GateManagementReviewControl
         };
 
         $scope.cancelEditStatus = function(gateReview){
-            gateReview.overallScore = originalGateReview.overallScore;
-            gateReview.status = originalGateReview.status;
-            gateReview.completed = originalGateReview.completed;
-            $scope.selectStatusForm('view');
+            gateReview.overallScore = originalGateReview[gateReview._id].overallScore;
+            gateReview.status = originalGateReview[gateReview._id].status;
+            gateReview.completed = originalGateReview[gateReview._id].completed;
+            $scope.selectStatusForm('view', gateReview);
         };
 
 

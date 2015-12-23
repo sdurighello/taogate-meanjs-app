@@ -61,7 +61,7 @@ exports.list = function(req, res) {
 
     var Project = mongoose.mtModel(req.user.tenantId + '.' + 'Project');
 
-    Project.find(req.query).populate('user', 'displayName').exec(function(err, projects) {
+    Project.find(req.query).deepPopulate(['process.gates']).populate('user', 'displayName').exec(function(err, projects) {
         if (err) {
             return res.status(400).send({
                 message: errorHandler.getErrorMessage(err)
