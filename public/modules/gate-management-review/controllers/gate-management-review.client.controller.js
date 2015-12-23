@@ -72,6 +72,12 @@ angular.module('gate-management-review').controller('GateManagementReviewControl
             if(string === 'edit'){$scope.switchHeaderForm[gateReview._id] = 'edit';}
         };
 
+        $scope.switchSetFinalForm = {};
+        $scope.selectSetFinalForm = function(string, gateReview){
+            if(string === 'view'){ $scope.switchSetFinalForm[gateReview._id] = 'view';}
+            if(string === 'edit'){$scope.switchSetFinalForm[gateReview._id] = 'edit';}
+        };
+
         $scope.switchStatusForm = {};
         $scope.selectStatusForm = function(string, gateReview){
             if(string === 'view'){ $scope.switchStatusForm[gateReview._id] = 'view';}
@@ -193,6 +199,10 @@ angular.module('gate-management-review').controller('GateManagementReviewControl
 
         };
 
+        $scope.sortGateReviews = function(gateReview) {
+            return new Date(gateReview.reviewDate);
+        };
+
 
 
         // ------------- NEW GATE REVIEW ------------
@@ -241,7 +251,6 @@ angular.module('gate-management-review').controller('GateManagementReviewControl
             GateReviews.get({
                 gateReviewId:gateReview._id
             }, function(res){
-                console.log(res);
                 $scope.selectedGateReview = res;
                 originalGateReview[gateReview._id] = _.cloneDeep(res);
                 //$scope.selectGateReviewForm('view');
@@ -319,6 +328,42 @@ angular.module('gate-management-review').controller('GateManagementReviewControl
                 $scope.error = err.data.message;
             });
         };
+
+
+        // -------------------------------------------------------- SET FINAL -------------------------------------------------
+
+        $scope.editSetFinal = function(gateReview){
+            $scope.selectSetFinalForm('edit', gateReview);
+        };
+
+        $scope.saveEditSetFinal = function(project, gateReview){
+            // Clean-up deepPopulate
+            var copyGateReview = _.cloneDeep(gateReview);
+            copyGateReview.project = _.get(copyGateReview.project, '_id');
+            copyGateReview.gate = _.get(copyGateReview.gate, '_id');
+            copyGateReview.gateStatusAssignment = _.get(copyGateReview.gateStatusAssignment, '_id');
+            // Update server header
+            GateReviews.setFinal(
+                {
+                    gateReviewId : copyGateReview._id
+                }, copyGateReview,
+                function(res){
+                    // Update details pane view with new saved details
+                    originalGateReview[gateReview._id].final = gateReview.final;
+                    // Close edit header form and back to view
+                    $scope.selectSetFinalForm('view', gateReview);
+                    // Refresh the list of gate reviews to pick-up the "current" performances that have changed
+                    $scope.selectProject(project);
+                },
+                function(err){$scope.error = err.data.message;}
+            );
+        };
+
+        $scope.cancelEditSetFinal = function(gateReview){
+            gateReview.final = originalGateReview[gateReview._id].final;
+            $scope.selectSetFinalForm('view', gateReview);
+        };
+
 
         // -------------------------------------------------------- STATUS -------------------------------------------------
 
