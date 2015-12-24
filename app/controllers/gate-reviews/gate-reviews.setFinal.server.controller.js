@@ -44,7 +44,14 @@ exports.setFinal = function(req, res) {
                             } else if(!statusAssignment){
                                 return callback(new Error('Cannot find gateStatusAssignment ' + gateReview.gateStatusAssignment));
                             } else {
-                                statusAssignment.history.push(statusAssignment.currentRecord);
+                                statusAssignment.history.push({
+                                    user : statusAssignment.currentRecord.user,
+                                    created: statusAssignment.currentRecord.created,
+                                    sourceReview : statusAssignment.currentRecord.sourceReview,
+                                    status : statusAssignment.currentRecord.status,
+                                    overallScore : statusAssignment.currentRecord.overallScore,
+                                    completed : statusAssignment.currentRecord.completed
+                                });
                                 statusAssignment.currentRecord.status = req.body.status;
                                 statusAssignment.currentRecord.overallScore = req.body.overallScore;
                                 statusAssignment.currentRecord.completed = req.body.completed;
@@ -66,7 +73,13 @@ exports.setFinal = function(req, res) {
                                 } else if(!outcomeReview){
                                     return callback(new Error('Cannot find gateOutcomeReview ' + grOutcomeReview.outcomeReview._id));
                                 } else {
-                                    outcomeReview.history.push(outcomeReview.currentRecord);
+                                    outcomeReview.history.push({
+                                        created: outcomeReview.currentRecord.created,
+                                        user: outcomeReview.currentRecord.user,
+                                        sourceReview: outcomeReview.currentRecord.sourceReview,
+                                        score: outcomeReview.currentRecord.score,
+                                        comment: outcomeReview.currentRecord.comment
+                                    });
                                     outcomeReview.currentRecord.score = grOutcomeReview.newScore;
                                     outcomeReview.currentRecord.comment = grOutcomeReview.reviewComment;
                                     outcomeReview.currentRecord.sourceReview = req.body._id;
@@ -90,7 +103,13 @@ exports.setFinal = function(req, res) {
                                 } else if(! performance){
                                     return callback(new Error('Cannot find baseline duration ' + baselineDurationReview.baselineDuration._id));
                                 } else {
-                                    performance.history.push(performance.currentRecord);
+                                    performance.history.push({
+                                        user : performance.currentRecord.user,
+                                        created : performance.currentRecord.created,
+                                        sourceDoc : performance.currentRecord.sourceDoc,
+                                        sourceReview : performance.currentRecord.sourceReview,
+                                        gateDate : performance.currentRecord.gateDate
+                                    });
                                     performance.currentRecord.gateDate = baselineDurationReview.newDate;
                                     performance.currentRecord.sourceReview = req.body._id;
                                     performance.currentRecord.sourceDoc = null;
@@ -114,7 +133,13 @@ exports.setFinal = function(req, res) {
                                 } else if(! performance){
                                     return callback(new Error('Cannot find estimate duration ' + estimateDurationReview.estimateDuration._id));
                                 } else {
-                                    performance.history.push(performance.currentRecord);
+                                    performance.history.push({
+                                        user : performance.currentRecord.user,
+                                        created : performance.currentRecord.created,
+                                        sourceDoc : performance.currentRecord.sourceDoc,
+                                        sourceReview : performance.currentRecord.sourceReview,
+                                        gateDate : performance.currentRecord.gateDate
+                                    });
                                     performance.currentRecord.gateDate = estimateDurationReview.newDate;
                                     performance.currentRecord.sourceReview = req.body._id;
                                     performance.currentRecord.sourceDoc = null;
@@ -138,7 +163,13 @@ exports.setFinal = function(req, res) {
                                 } else if(! performance){
                                     return callback(new Error('Cannot find actual duration ' + actualDurationReview.actualDuration._id));
                                 } else {
-                                    performance.history.push(performance.currentRecord);
+                                    performance.history.push({
+                                        user : performance.currentRecord.user,
+                                        created : performance.currentRecord.created,
+                                        sourceDoc : performance.currentRecord.sourceDoc,
+                                        sourceReview : performance.currentRecord.sourceReview,
+                                        gateDate : performance.currentRecord.gateDate
+                                    });
                                     performance.currentRecord.gateDate = actualDurationReview.newDate;
                                     performance.currentRecord.sourceReview = req.body._id;
                                     performance.currentRecord.sourceDoc = null;
@@ -162,7 +193,13 @@ exports.setFinal = function(req, res) {
                                 } else if(! performance){
                                     return callback(new Error('Cannot find baseline cost ' + baselineCostReview.baselineCost._id));
                                 } else {
-                                    performance.history.push(performance.currentRecord);
+                                    performance.history.push({
+                                        user : performance.currentRecord.user,
+                                        created : performance.currentRecord.created,
+                                        sourceDoc : performance.currentRecord.sourceDoc,
+                                        sourceReview : performance.currentRecord.sourceReview,
+                                        cost : performance.currentRecord.cost
+                                    });
                                     performance.currentRecord.cost = baselineCostReview.newCost;
                                     performance.currentRecord.sourceReview = req.body._id;
                                     performance.currentRecord.sourceDoc = null;
@@ -186,7 +223,13 @@ exports.setFinal = function(req, res) {
                                 } else if(! performance){
                                     return callback(new Error('Cannot find estimate cost ' + estimateCostReview.estimateCost._id));
                                 } else {
-                                    performance.history.push(performance.currentRecord);
+                                    performance.history.push({
+                                        user : performance.currentRecord.user,
+                                        created : performance.currentRecord.created,
+                                        sourceDoc : performance.currentRecord.sourceDoc,
+                                        sourceReview : performance.currentRecord.sourceReview,
+                                        cost : performance.currentRecord.cost
+                                    });
                                     performance.currentRecord.cost = estimateCostReview.newCost;
                                     performance.currentRecord.sourceReview = req.body._id;
                                     performance.currentRecord.sourceDoc = null;
@@ -210,7 +253,13 @@ exports.setFinal = function(req, res) {
                                 } else if(! performance){
                                     return callback(new Error('Cannot find actual cost ' + actualCostReview.actualCost._id));
                                 } else {
-                                    performance.history.push(performance.currentRecord);
+                                    performance.history.push({
+                                        user : performance.currentRecord.user,
+                                        created : performance.currentRecord.created,
+                                        sourceDoc : performance.currentRecord.sourceDoc,
+                                        sourceReview : performance.currentRecord.sourceReview,
+                                        cost : performance.currentRecord.cost
+                                    });
                                     performance.currentRecord.cost = actualCostReview.newCost;
                                     performance.currentRecord.sourceReview = req.body._id;
                                     performance.currentRecord.sourceDoc = null;
@@ -234,7 +283,13 @@ exports.setFinal = function(req, res) {
                                 } else if(! performance){
                                     return callback(new Error('Cannot find baseline completion ' + baselineCompletionReview.baselineCompletion._id));
                                 } else {
-                                    performance.history.push(performance.currentRecord);
+                                    performance.history.push({
+                                        user : performance.currentRecord.user,
+                                        created : performance.currentRecord.created,
+                                        sourceDoc : performance.currentRecord.sourceDoc,
+                                        sourceReview : performance.currentRecord.sourceReview,
+                                        completion : performance.currentRecord.completion
+                                    });
                                     performance.currentRecord.completion = baselineCompletionReview.newCompletion;
                                     performance.currentRecord.sourceReview = req.body._id;
                                     performance.currentRecord.sourceDoc = null;
@@ -258,7 +313,13 @@ exports.setFinal = function(req, res) {
                                 } else if(! performance){
                                     return callback(new Error('Cannot find estimate completion ' + estimateCompletionReview.estimateCompletion._id));
                                 } else {
-                                    performance.history.push(performance.currentRecord);
+                                    performance.history.push({
+                                        user : performance.currentRecord.user,
+                                        created : performance.currentRecord.created,
+                                        sourceDoc : performance.currentRecord.sourceDoc,
+                                        sourceReview : performance.currentRecord.sourceReview,
+                                        completion : performance.currentRecord.completion
+                                    });
                                     performance.currentRecord.completion = estimateCompletionReview.newCompletion;
                                     performance.currentRecord.sourceReview = req.body._id;
                                     performance.currentRecord.sourceDoc = null;
@@ -282,7 +343,13 @@ exports.setFinal = function(req, res) {
                                 } else if(! performance){
                                     return callback(new Error('Cannot find actual completion ' + actualCompletionReview.actualCompletion._id));
                                 } else {
-                                    performance.history.push(performance.currentRecord);
+                                    performance.history.push({
+                                        user : performance.currentRecord.user,
+                                        created : performance.currentRecord.created,
+                                        sourceDoc : performance.currentRecord.sourceDoc,
+                                        sourceReview : performance.currentRecord.sourceReview,
+                                        completion : performance.currentRecord.completion
+                                    });
                                     performance.currentRecord.completion = actualCompletionReview.newCompletion;
                                     performance.currentRecord.sourceReview = req.body._id;
                                     performance.currentRecord.sourceDoc = null;

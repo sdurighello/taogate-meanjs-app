@@ -16,7 +16,8 @@ module.exports = {
 				'public/lib/bootstrap/dist/css/bootstrap.css',
 				'public/lib/bootstrap/dist/css/bootstrap-theme.css',
 				'public/lib/ng-sortable/dist/ng-sortable.css',
-				'public/lib/ng-sortable/dist/ng-sortable.style.css'
+				'public/lib/ng-sortable/dist/ng-sortable.style.css',
+				'public/lib/angular-loading-bar/build/loading-bar.css'
 			],
 			js: [
 				'public/lib/lodash/lodash.js',
@@ -30,7 +31,8 @@ module.exports = {
 				'public/lib/angular-ui-utils/ui-utils.js',
 				'public/lib/angular-bootstrap/ui-bootstrap-tpls.js',
 				'public/lib/checklist-model/checklist-model.js',
-				'public/lib/ng-sortable/dist/ng-sortable.js'
+				'public/lib/ng-sortable/dist/ng-sortable.js',
+				'public/lib/angular-loading-bar/build/loading-bar.js'
             ]
 		},
 		css: [

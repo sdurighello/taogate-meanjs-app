@@ -10,6 +10,13 @@ angular.module(ApplicationConfiguration.applicationModuleName).config(['$locatio
 	}
 ]);
 
+// Library: Angular-loading-bar
+angular.module(ApplicationConfiguration.applicationModuleName).config(['cfpLoadingBarProvider',
+	function(cfpLoadingBarProvider) {
+        cfpLoadingBarProvider.includeSpinner = true;
+	}
+]);
+
 // Loading bar
 
 angular.module(ApplicationConfiguration.applicationModuleName).run(function($rootScope){

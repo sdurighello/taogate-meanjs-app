@@ -158,6 +158,15 @@ angular.module('gate-management-review').controller('GateManagementReviewControl
             if(obj){return obj._id;} else {return null;}
         };
 
+        $scope.sortGateReviews = function(gateReview) {
+            return new Date(gateReview.reviewDate);
+        };
+
+        $scope.sortHistoryRecords = function(historyRecord) {
+            return new Date(historyRecord.created);
+        };
+
+
         // ------------------- OTHER VARIABLES ---------------------
 
         $scope.gateReviewDetails = 'header';
@@ -197,10 +206,6 @@ angular.module('gate-management-review').controller('GateManagementReviewControl
             $scope.selectedProject = null;
             $scope.gateReviewList = null;
 
-        };
-
-        $scope.sortGateReviews = function(gateReview) {
-            return new Date(gateReview.reviewDate);
         };
 
 
