@@ -139,11 +139,11 @@
                                     <br>
                                     <div class="row">
                                         <div class="col-md-12">
-                                            <div class="panel panel-default" style="min-height: 390px; max-height: 390px; overflow-y: auto">
+                                            <div class="panel panel-default">
                                                 <div class="panel-heading">
                                                     <h6 class="panel-title text-center">Gate reviews</h6>
                                                 </div>
-                                                <div class="panel-body">
+                                                <div class="panel-body" style="min-height: 350px; max-height: 350px; overflow-y: auto">
                                                     <div data-ng-show="reviewObject.gateReviews.length === 0" class="alert alert-warning text-center">
                                                         There are no gate reviews for this gate
                                                     </div>
@@ -223,7 +223,7 @@
                                                                     </div>
                                                                 </div>
                                                                 <hr>
-                                                                <div class="form-group-sm pull-right" data-ng-show="userHasAuthorization">
+                                                                <div class="form-group-sm pull-right" data-ng-show="userHasAuthorization && !selectedGateReview.final">
                                                                     <button class="btn btn-success btn-xs" data-ng-click="editHeader(selectedGateReview)">
                                                                         Edit
                                                                     </button>
@@ -312,7 +312,7 @@
                                                                     </div>
                                                                 </div>
                                                                 <hr>
-                                                                <div class="pull-right" data-ng-show="userHasAuthorization">
+                                                                <div class="pull-right" data-ng-show="userHasAuthorization && !selectedGateReview.final">
                                                                     <button class="btn btn-success btn-xs" data-ng-click="editStatus(selectedGateReview)">
                                                                         Edit
                                                                     </button>
@@ -407,11 +407,8 @@
                                                                                 <br>
                                                                                 <div class="pull-right">
                                                                                     <button class="btn btn-success btn-xs" data-ng-click="editOutcomeReview(selectedOutcomeReview)"
-                                                                                            data-ng-show="userHasAuthorization">
+                                                                                            data-ng-show="userHasAuthorization && !selectedGateReview.final">
                                                                                         Edit
-                                                                                    </button>
-                                                                                    <button class="btn btn-info btn-xs" data-ng-click="showOutcomeReviewHistory[selectedOutcomeReview._id] = !showOutcomeReviewHistory[selectedOutcomeReview._id]">
-                                                                                        History
                                                                                     </button>
                                                                                 </div>
                                                                             </form>
@@ -482,7 +479,7 @@
                                                                         <div data-ng-switch-default="view">
                                                                             <span data-ng-show="!baselineDurationReview.newDate">No new baseline yet</span>
                                                                             <span data-ng-bind="baselineDurationReview.newDate | date:'EEE d, MMM yyyy'"></span>
-                                                                            <button class="btn btn-primary btn-xs" data-ng-show="userHasAuthorization" data-ng-click="editBaselineDuration(baselineDurationReview)">
+                                                                            <button class="btn btn-primary btn-xs" data-ng-show="userHasAuthorization && !selectedGateReview.final" data-ng-click="editBaselineDuration(baselineDurationReview)">
                                                                                 <span class="glyphicon glyphicon-pencil"></span>
                                                                             </button>
                                                                         </div>
@@ -529,7 +526,7 @@
                                                                         <div data-ng-switch-default="view">
                                                                             <span data-ng-show="!estimateDurationReview.newDate">No new estimate yet</span>
                                                                             <span data-ng-bind="estimateDurationReview.newDate | date:'EEE d, MMM yyyy'"></span>
-                                                                            <button class="btn btn-primary btn-xs" data-ng-show="userHasAuthorization" data-ng-click="editEstimateDuration(estimateDurationReview)">
+                                                                            <button class="btn btn-primary btn-xs" data-ng-show="userHasAuthorization && !selectedGateReview.final" data-ng-click="editEstimateDuration(estimateDurationReview)">
                                                                                 <span class="glyphicon glyphicon-pencil"></span>
                                                                             </button>
                                                                         </div>
@@ -576,7 +573,7 @@
                                                                         <div data-ng-switch-default="view">
                                                                             <span data-ng-show="!actualDurationReview.newDate">No new actual yet</span>
                                                                             <span data-ng-bind="actualDurationReview.newDate | date:'EEE d, MMM yyyy'"></span>
-                                                                            <button class="btn btn-primary btn-xs" data-ng-show="userHasAuthorization" data-ng-click="editActualDuration(actualDurationReview)">
+                                                                            <button class="btn btn-primary btn-xs" data-ng-show="userHasAuthorization && !selectedGateReview.final" data-ng-click="editActualDuration(actualDurationReview)">
                                                                                 <span class="glyphicon glyphicon-pencil"></span>
                                                                             </button>
                                                                         </div>
@@ -625,7 +622,7 @@
                                                                         <div data-ng-switch-default="view">
                                                                             <span data-ng-show="!baselineCostReview.newCost">No new baseline yet</span>
                                                                             <span data-ng-bind="baselineCostReview.newCost"></span>
-                                                                            <button class="btn btn-primary btn-xs" data-ng-show="userHasAuthorization" data-ng-click="editBaselineCost(baselineCostReview)">
+                                                                            <button class="btn btn-primary btn-xs" data-ng-show="userHasAuthorization && !selectedGateReview.final" data-ng-click="editBaselineCost(baselineCostReview)">
                                                                                 <span class="glyphicon glyphicon-pencil"></span>
                                                                             </button>
                                                                         </div>
@@ -668,7 +665,7 @@
                                                                         <div data-ng-switch-default="view">
                                                                             <span data-ng-show="!estimateCostReview.newCost">No new estimate yet</span>
                                                                             <span data-ng-bind="estimateCostReview.newCost"></span>
-                                                                            <button class="btn btn-primary btn-xs" data-ng-show="userHasAuthorization" data-ng-click="editEstimateCost(estimateCostReview)">
+                                                                            <button class="btn btn-primary btn-xs" data-ng-show="userHasAuthorization && !selectedGateReview.final" data-ng-click="editEstimateCost(estimateCostReview)">
                                                                                 <span class="glyphicon glyphicon-pencil"></span>
                                                                             </button>
                                                                         </div>
@@ -711,7 +708,7 @@
                                                                         <div data-ng-switch-default="view">
                                                                             <span data-ng-show="!actualCostReview.newCost">No new actual yet</span>
                                                                             <span data-ng-bind="actualCostReview.newCost"></span>
-                                                                            <button class="btn btn-primary btn-xs" data-ng-show="userHasAuthorization" data-ng-click="editActualCost(actualCostReview)">
+                                                                            <button class="btn btn-primary btn-xs" data-ng-show="userHasAuthorization && !selectedGateReview.final" data-ng-click="editActualCost(actualCostReview)">
                                                                                 <span class="glyphicon glyphicon-pencil"></span>
                                                                             </button>
                                                                         </div>
@@ -756,7 +753,7 @@
                                                                         <div data-ng-switch-default="view">
                                                                             <span data-ng-show="!baselineCompletionReview.newCompletion">No new baseline yet</span>
                                                                             <span data-ng-bind="baselineCompletionReview.newCompletion"></span>
-                                                                            <button class="btn btn-primary btn-xs" data-ng-show="userHasAuthorization" data-ng-click="editBaselineCompletion(baselineCompletionReview)">
+                                                                            <button class="btn btn-primary btn-xs" data-ng-show="userHasAuthorization && !selectedGateReview.final" data-ng-click="editBaselineCompletion(baselineCompletionReview)">
                                                                                 <span class="glyphicon glyphicon-pencil"></span>
                                                                             </button>
                                                                         </div>
@@ -799,7 +796,7 @@
                                                                         <div data-ng-switch-default="view">
                                                                             <span data-ng-show="!estimateCompletionReview.newCompletion">No new estimate yet</span>
                                                                             <span data-ng-bind="estimateCompletionReview.newCompletion"></span>
-                                                                            <button class="btn btn-primary btn-xs" data-ng-show="userHasAuthorization" data-ng-click="editEstimateCompletion(estimateCompletionReview)">
+                                                                            <button class="btn btn-primary btn-xs" data-ng-show="userHasAuthorization && !selectedGateReview.final" data-ng-click="editEstimateCompletion(estimateCompletionReview)">
                                                                                 <span class="glyphicon glyphicon-pencil"></span>
                                                                             </button>
                                                                         </div>
@@ -842,7 +839,7 @@
                                                                         <div data-ng-switch-default="view">
                                                                             <span data-ng-show="!actualCompletionReview.newCompletion">No new actual yet</span>
                                                                             <span data-ng-bind="actualCompletionReview.newCompletion"></span>
-                                                                            <button class="btn btn-primary btn-xs" data-ng-show="userHasAuthorization" data-ng-click="editActualCompletion(actualCompletionReview)">
+                                                                            <button class="btn btn-primary btn-xs" data-ng-show="userHasAuthorization && !selectedGateReview.final" data-ng-click="editActualCompletion(actualCompletionReview)">
                                                                                 <span class="glyphicon glyphicon-pencil"></span>
                                                                             </button>
                                                                         </div>
@@ -879,7 +876,7 @@
                                                                     </div>
                                                                 </div>
                                                                 <hr>
-                                                                <div class="form-group-sm pull-right" data-ng-show="userHasAuthorization">
+                                                                <div class="form-group-sm pull-right" data-ng-show="userHasAuthorization && !selectedGateReview.final">
                                                                     <button class="btn btn-success btn-xs" data-ng-click="editSetFinal(selectedGateReview)">
                                                                         Edit
                                                                     </button>

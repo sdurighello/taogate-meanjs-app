@@ -127,8 +127,8 @@ exports.gateReviewByID = function(req, res, next, id) {
         'baselineCostReviews.baselineCost.targetGate', 'estimateCostReviews.estimateCost.targetGate', 'actualCostReviews.actualCost.targetGate',
         'baselineCompletionReviews.baselineCompletion.targetGate', 'estimateCompletionReviews.estimateCompletion.targetGate', 'actualCompletionReviews.actualCompletion.targetGate'
     ]).populate('user', 'displayName').exec(function(err, gateReview) {
-        if (err) return next(err);
-        if (! gateReview) return next(new Error('Failed to load Gate review ' + id));
+        if (err){ return next(err); }
+        if (! gateReview){ return next(new Error('Failed to load Gate review ' + id)); }
         req.gateReview = gateReview ;
         next();
     });
@@ -138,14 +138,24 @@ exports.gateReviewByID = function(req, res, next, id) {
  * Gate review authorization middleware
  */
 exports.hasAuthorization = function(req, res, next) {
-    // User role check
-    if(!_.find(req.user.roles, function(role){
-            return (role === 'superAdmin' || role === 'admin' || role === 'pmo');
-        })
-    ){
+
+    var roleIsAuthorized = _.some(req.user.roles, function(role){
+        return (role === 'superAdmin' || role === 'admin' || role === 'pmo');
+    });
+    if(!roleIsAuthorized){
         return res.status(403).send({
-            message: 'User is not authorized'
+            message: 'Role is not authorized'
         });
     }
+
+    if(req.gateReview){ // When you create the object doesn't exist in the req
+        var objectIsAuthorized = _.isEqual(req.gateReview.final, false);
+        if(!objectIsAuthorized){
+            return res.status(403).send({
+                message: 'Object is not authorized'
+            });
+        }
+    }
+
     next();
 };

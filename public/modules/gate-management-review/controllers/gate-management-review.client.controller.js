@@ -229,8 +229,10 @@ angular.module('gate-management-review').controller('GateManagementReviewControl
                 // Clear new form
                 $scope.newGateReview = {};
                 // Refresh the list of gate reviews
-                $scope.selectProject(project);
-                // Close new cost form done directly in the view's html
+                _.find($scope.gateReviewList, _.matchesProperty('gate._id', gate._id)).gateReviews.push(res);
+                // Select in view mode the new review
+                $scope.selectGateReview(res);
+                // Close new review form done directly in the view's html
             }, function(err) {
                 $scope.error = err.data.message;
             });
@@ -349,12 +351,11 @@ angular.module('gate-management-review').controller('GateManagementReviewControl
                     gateReviewId : copyGateReview._id
                 }, copyGateReview,
                 function(res){
-                    // Update details pane view with new saved details
-                    originalGateReview[gateReview._id].final = gateReview.final;
-                    // Close edit header form and back to view
+                    // Set the "final" in the gate from the list
+                    gateReviewFromList[gateReview._id].final = gateReview.final;
+                    // Refresh the object with the current performances values
+                    $scope.selectGateReview(gateReview);
                     $scope.selectSetFinalForm('view', gateReview);
-                    // Refresh the list of gate reviews to pick-up the "current" performances that have changed
-                    $scope.selectProject(project);
                 },
                 function(err){$scope.error = err.data.message;}
             );
