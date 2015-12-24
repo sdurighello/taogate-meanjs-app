@@ -415,13 +415,6 @@
                                                                                     </button>
                                                                                 </div>
                                                                             </form>
-                                                                            <br>
-                                                                            <div data-ng-show="showOutcomeReviewHistory[selectedOutcomeReview._id]">
-                                                                                <hr>
-                                                                                <div data-ng-repeat="historyRecord in selectedOutcomeReview.outcomeReview.history | orderBy: sortHistoryRecords : true">
-                                                                                    <span>Set to <select data-ng-model="historyRecord.score" data-ng-options="score._id as score.name for score in outcomeScores" disabled></select><i data-ng-show="!historyRecord.score">no score</i> on <i>{{historyRecord.created | date:'EEE d, MMM yyyy'}}</i></span>
-                                                                                </div>
-                                                                            </div>
                                                                         </div>
                                                                         <div data-ng-switch-when="edit">
                                                                             <form>
@@ -476,16 +469,13 @@
                                                                 <th>New date</th>
                                                                 <th> </th>
                                                             </tr>
-                                                            <tr data-ng-repeat-start="baselineDurationReview in selectedGateReview.baselineDurationReviews | orderBy: 'baselineDuration.targetGate.position'">
+                                                            <tr data-ng-repeat="baselineDurationReview in selectedGateReview.baselineDurationReviews | orderBy: 'baselineDuration.targetGate.position'">
                                                                 <td>
                                                                     <span data-ng-bind="baselineDurationReview.baselineDuration.targetGate.name"></span>
                                                                 </td>
                                                                 <td>
                                                                     <span data-ng-show="!baselineDurationReview.baselineDuration.currentRecord.gateDate">No baseline yet</span>
                                                                     <span data-ng-bind="baselineDurationReview.baselineDuration.currentRecord.gateDate | date:'EEE d, MMM yyyy'"></span>
-                                                                    <button class="btn btn-info btn-xs" data-ng-click="showBaselineDurationHistory[baselineDurationReview._id] = !showBaselineDurationHistory[baselineDurationReview._id]">
-                                                                        <span class="glyphicon glyphicon-time"></span>
-                                                                    </button>
                                                                 </td>
                                                                 <td colspan="2">
                                                                     <div data-ng-switch="switchBaselineDurationForm[baselineDurationReview._id]">
@@ -515,14 +505,6 @@
                                                                     </div>
                                                                 </td>
                                                             </tr>
-                                                            <tr data-ng-repeat-end data-ng-show="showBaselineDurationHistory[baselineDurationReview._id]">
-                                                                <td colspan="4">
-                                                                    <div data-ng-repeat="historyRecord in baselineDurationReview.baselineDuration.history | orderBy: sortHistoryRecords : true">
-                                                                        <span>Set to <i>{{historyRecord.gateDate | date:'EEE d, MMM yyyy'}}</i><i data-ng-show="!historyRecord.gateDate">no value</i> on <i>{{historyRecord.created | date:'EEE d, MMM yyyy'}}</i></span>
-                                                                        <span data-ng-show="historyRecord.sourceReview"> through gate review</span><span data-ng-show="historyRecord.sourceDoc"> through delivery document</span>
-                                                                    </div>
-                                                                </td>
-                                                            </tr>
                                                         </table>
                                                         <table class="table small">
                                                             <caption>
@@ -534,16 +516,13 @@
                                                                 <th>New date</th>
                                                                 <th> </th>
                                                             </tr>
-                                                            <tr data-ng-repeat-start="estimateDurationReview in selectedGateReview.estimateDurationReviews | orderBy: 'estimateDuration.targetGate.position'">
+                                                            <tr data-ng-repeat="estimateDurationReview in selectedGateReview.estimateDurationReviews | orderBy: 'estimateDuration.targetGate.position'">
                                                                 <td>
                                                                     <span data-ng-bind="estimateDurationReview.estimateDuration.targetGate.name"></span>
                                                                 </td>
                                                                 <td>
                                                                     <span data-ng-show="!estimateDurationReview.estimateDuration.currentRecord.gateDate">No estimate yet</span>
                                                                     <span data-ng-bind="estimateDurationReview.estimateDuration.currentRecord.gateDate | date:'EEE d, MMM yyyy'"></span>
-                                                                    <button class="btn btn-info btn-xs" data-ng-click="showEstimateDurationHistory[estimateDurationReview._id] = !showEstimateDurationHistory[estimateDurationReview._id]">
-                                                                        <span class="glyphicon glyphicon-time"></span>
-                                                                    </button>
                                                                 </td>
                                                                 <td colspan="2">
                                                                     <div data-ng-switch="switchEstimateDurationForm[estimateDurationReview._id]">
@@ -573,14 +552,6 @@
                                                                     </div>
                                                                 </td>
                                                             </tr>
-                                                            <tr data-ng-repeat-end data-ng-show="showEstimateDurationHistory[estimateDurationReview._id]">
-                                                                <td colspan="4">
-                                                                    <div data-ng-repeat="historyRecord in estimateDurationReview.estimateDuration.history | orderBy: sortHistoryRecords : true">
-                                                                        <span>Set to <i>{{historyRecord.gateDate | date:'EEE d, MMM yyyy'}}</i><i data-ng-show="!historyRecord.gateDate">no value</i> on <i>{{historyRecord.created | date:'EEE d, MMM yyyy'}}</i></span>
-                                                                        <span data-ng-show="historyRecord.sourceReview"> through gate review</span><span data-ng-show="historyRecord.sourceDoc"> through delivery document</span>
-                                                                    </div>
-                                                                </td>
-                                                            </tr>
                                                         </table>
                                                         <table class="table small">
                                                             <caption>
@@ -592,16 +563,13 @@
                                                                 <th>New date</th>
                                                                 <th> </th>
                                                             </tr>
-                                                            <tr data-ng-repeat-start="actualDurationReview in selectedGateReview.actualDurationReviews | orderBy: 'actualDuration.targetGate.position'">
+                                                            <tr data-ng-repeat="actualDurationReview in selectedGateReview.actualDurationReviews | orderBy: 'actualDuration.targetGate.position'">
                                                                 <td>
                                                                     <span data-ng-bind="actualDurationReview.actualDuration.targetGate.name"></span>
                                                                 </td>
                                                                 <td>
                                                                     <span data-ng-show="!actualDurationReview.actualDuration.currentRecord.gateDate">No actual yet</span>
                                                                     <span data-ng-bind="actualDurationReview.actualDuration.currentRecord.gateDate | date:'EEE d, MMM yyyy'"></span>
-                                                                    <button class="btn btn-info btn-xs" data-ng-click="showActualDurationHistory[actualDurationReview._id] = !showActualDurationHistory[actualDurationReview._id]">
-                                                                        <span class="glyphicon glyphicon-time"></span>
-                                                                    </button>
                                                                 </td>
                                                                 <td colspan="2">
                                                                     <div data-ng-switch="switchActualDurationForm[actualDurationReview._id]">
@@ -631,14 +599,6 @@
                                                                     </div>
                                                                 </td>
                                                             </tr>
-                                                            <tr data-ng-repeat-end data-ng-show="showActualDurationHistory[actualDurationReview._id]">
-                                                                <td colspan="4">
-                                                                    <div data-ng-repeat="historyRecord in actualDurationReview.actualDuration.history | orderBy: sortHistoryRecords : true">
-                                                                        <span>Set to <i>{{historyRecord.gateDate | date:'EEE d, MMM yyyy'}}</i><i data-ng-show="!historyRecord.gateDate">no value</i> on <i>{{historyRecord.created | date:'EEE d, MMM yyyy'}}</i></span>
-                                                                        <span data-ng-show="historyRecord.sourceReview"> through gate review</span><span data-ng-show="historyRecord.sourceDoc"> through delivery document</span>
-                                                                    </div>
-                                                                </td>
-                                                            </tr>
                                                         </table>
                                                     </div>
                                                     <div data-ng-show="gateReviewDetails === 'cost'">
@@ -652,16 +612,13 @@
                                                                 <th>New cost</th>
                                                                 <th> </th>
                                                             </tr>
-                                                            <tr data-ng-repeat-start="baselineCostReview in selectedGateReview.baselineCostReviews | orderBy: 'baselineCost.targetGate.position'">
+                                                            <tr data-ng-repeat="baselineCostReview in selectedGateReview.baselineCostReviews | orderBy: 'baselineCost.targetGate.position'">
                                                                 <td>
                                                                     <span data-ng-bind="baselineCostReview.baselineCost.targetGate.name"></span>
                                                                 </td>
                                                                 <td>
                                                                     <span data-ng-show="!baselineCostReview.baselineCost.currentRecord.cost">No baseline yet</span>
                                                                     <span data-ng-bind="baselineCostReview.baselineCost.currentRecord.cost"></span>
-                                                                    <button class="btn btn-info btn-xs" data-ng-click="showBaselineCostHistory[baselineCostReview._id] = !showBaselineCostHistory[baselineCostReview._id]">
-                                                                        <span class="glyphicon glyphicon-time"></span>
-                                                                    </button>
                                                                 </td>
                                                                 <td colspan="2">
                                                                     <div data-ng-switch="switchBaselineCostForm[baselineCostReview._id]">
@@ -687,14 +644,6 @@
                                                                     </div>
                                                                 </td>
                                                             </tr>
-                                                            <tr data-ng-repeat-end data-ng-show="showBaselineCostHistory[baselineCostReview._id]">
-                                                                <td colspan="4">
-                                                                    <div data-ng-repeat="historyRecord in baselineCostReview.baselineCost.history | orderBy: sortHistoryRecords : true">
-                                                                        <span>Set to <i>{{historyRecord.cost}}</i><i data-ng-show="!historyRecord.cost">no value</i> on <i>{{historyRecord.created | date:'EEE d, MMM yyyy'}}</i></span>
-                                                                        <span data-ng-show="historyRecord.sourceReview"> through gate review</span><span data-ng-show="historyRecord.sourceDoc"> through delivery document</span>
-                                                                    </div>
-                                                                </td>
-                                                            </tr>
                                                         </table>
                                                         <table class="table small">
                                                             <caption>
@@ -706,16 +655,13 @@
                                                                 <th>New cost</th>
                                                                 <th> </th>
                                                             </tr>
-                                                            <tr data-ng-repeat-start="estimateCostReview in selectedGateReview.estimateCostReviews | orderBy: 'estimateCost.targetGate.position'">
+                                                            <tr data-ng-repeat="estimateCostReview in selectedGateReview.estimateCostReviews | orderBy: 'estimateCost.targetGate.position'">
                                                                 <td>
                                                                     <span data-ng-bind="estimateCostReview.estimateCost.targetGate.name"></span>
                                                                 </td>
                                                                 <td>
                                                                     <span data-ng-show="!estimateCostReview.estimateCost.currentRecord.cost">No estimate yet</span>
                                                                     <span data-ng-bind="estimateCostReview.estimateCost.currentRecord.cost"></span>
-                                                                    <button class="btn btn-info btn-xs" data-ng-click="showEstimateCostHistory[estimateCostReview._id] = !showEstimateCostHistory[estimateCostReview._id]">
-                                                                        <span class="glyphicon glyphicon-time"></span>
-                                                                    </button>
                                                                 </td>
                                                                 <td colspan="2">
                                                                     <div data-ng-switch="switchEstimateCostForm[estimateCostReview._id]">
@@ -741,14 +687,6 @@
                                                                     </div>
                                                                 </td>
                                                             </tr>
-                                                            <tr data-ng-repeat-end data-ng-show="showEstimateCostHistory[estimateCostReview._id]">
-                                                                <td colspan="4">
-                                                                    <div data-ng-repeat="historyRecord in estimateCostReview.estimateCost.history | orderBy: sortHistoryRecords : true">
-                                                                        <span>Set to <i>{{historyRecord.cost}}</i><i data-ng-show="!historyRecord.cost">no value</i> on <i>{{historyRecord.created | date:'EEE d, MMM yyyy'}}</i></span>
-                                                                        <span data-ng-show="historyRecord.sourceReview"> through gate review</span><span data-ng-show="historyRecord.sourceDoc"> through delivery document</span>
-                                                                    </div>
-                                                                </td>
-                                                            </tr>
                                                         </table>
                                                         <table class="table small">
                                                             <caption>
@@ -760,16 +698,13 @@
                                                                 <th>New cost</th>
                                                                 <th> </th>
                                                             </tr>
-                                                            <tr data-ng-repeat-start="actualCostReview in selectedGateReview.actualCostReviews | orderBy: 'actualCost.targetGate.position'">
+                                                            <tr data-ng-repeat="actualCostReview in selectedGateReview.actualCostReviews | orderBy: 'actualCost.targetGate.position'">
                                                                 <td>
                                                                     <span data-ng-bind="actualCostReview.actualCost.targetGate.name"></span>
                                                                 </td>
                                                                 <td>
                                                                     <span data-ng-show="!actualCostReview.actualCost.currentRecord.cost">No actual yet</span>
                                                                     <span data-ng-bind="actualCostReview.actualCost.currentRecord.cost"></span>
-                                                                    <button class="btn btn-info btn-xs" data-ng-click="showActualCostHistory[actualCostReview._id] = !showActualCostHistory[actualCostReview._id]">
-                                                                        <span class="glyphicon glyphicon-time"></span>
-                                                                    </button>
                                                                 </td>
                                                                 <td colspan="2">
                                                                     <div data-ng-switch="switchActualCostForm[actualCostReview._id]">
@@ -795,14 +730,6 @@
                                                                     </div>
                                                                 </td>
                                                             </tr>
-                                                            <tr data-ng-repeat-end data-ng-show="showActualCostHistory[actualCostReview._id]">
-                                                                <td colspan="4">
-                                                                    <div data-ng-repeat="historyRecord in actualCostReview.actualCost.history | orderBy: sortHistoryRecords : true">
-                                                                        <span>Set to <i>{{historyRecord.cost}}</i><i data-ng-show="!historyRecord.cost">no value</i> on <i>{{historyRecord.created | date:'EEE d, MMM yyyy'}}</i></span>
-                                                                        <span data-ng-show="historyRecord.sourceReview"> through gate review</span><span data-ng-show="historyRecord.sourceDoc"> through delivery document</span>
-                                                                    </div>
-                                                                </td>
-                                                            </tr>
                                                         </table>
                                                     </div>
                                                     <div data-ng-show="gateReviewDetails === 'completion'">
@@ -816,16 +743,13 @@
                                                                 <th>New completion</th>
                                                                 <th> </th>
                                                             </tr>
-                                                            <tr data-ng-repeat-start="baselineCompletionReview in selectedGateReview.baselineCompletionReviews | orderBy: 'baselineCompletion.targetGate.position'">
+                                                            <tr data-ng-repeat="baselineCompletionReview in selectedGateReview.baselineCompletionReviews | orderBy: 'baselineCompletion.targetGate.position'">
                                                                 <td>
                                                                     <span data-ng-bind="baselineCompletionReview.baselineCompletion.targetGate.name"></span>
                                                                 </td>
                                                                 <td>
                                                                     <span data-ng-show="!baselineCompletionReview.baselineCompletion.currentRecord.completion">No baseline yet</span>
                                                                     <span data-ng-bind="baselineCompletionReview.baselineCompletion.currentRecord.completion"></span>
-                                                                    <button class="btn btn-info btn-xs" data-ng-click="showBaselineCompletionHistory[baselineCompletionReview._id] = !showBaselineCompletionHistory[baselineCompletionReview._id]">
-                                                                        <span class="glyphicon glyphicon-time"></span>
-                                                                    </button>
                                                                 </td>
                                                                 <td colspan="2">
                                                                     <div data-ng-switch="switchBaselineCompletionForm[baselineCompletionReview._id]">
@@ -851,14 +775,6 @@
                                                                     </div>
                                                                 </td>
                                                             </tr>
-                                                            <tr data-ng-repeat-end data-ng-show="showBaselineCompletionHistory[baselineCompletionReview._id]">
-                                                                <td colspan="4">
-                                                                    <div data-ng-repeat="historyRecord in baselineCompletionReview.baselineCompletion.history | orderBy: sortHistoryRecords : true">
-                                                                        <span>Set to <i>{{historyRecord.completion}}</i><i data-ng-show="!historyRecord.completion">no value</i> on <i>{{historyRecord.created | date:'EEE d, MMM yyyy'}}</i></span>
-                                                                        <span data-ng-show="historyRecord.sourceReview"> through gate review</span><span data-ng-show="historyRecord.sourceDoc"> through delivery document</span>
-                                                                    </div>
-                                                                </td>
-                                                            </tr>
                                                         </table>
                                                         <table class="table small">
                                                             <caption>
@@ -870,16 +786,13 @@
                                                                 <th>New completion</th>
                                                                 <th> </th>
                                                             </tr>
-                                                            <tr data-ng-repeat-start="estimateCompletionReview in selectedGateReview.estimateCompletionReviews | orderBy: 'estimateCompletion.targetGate.position'">
+                                                            <tr data-ng-repeat="estimateCompletionReview in selectedGateReview.estimateCompletionReviews | orderBy: 'estimateCompletion.targetGate.position'">
                                                                 <td>
                                                                     <span data-ng-bind="estimateCompletionReview.estimateCompletion.targetGate.name"></span>
                                                                 </td>
                                                                 <td>
                                                                     <span data-ng-show="!estimateCompletionReview.estimateCompletion.currentRecord.completion">No estimate yet</span>
                                                                     <span data-ng-bind="estimateCompletionReview.estimateCompletion.currentRecord.completion"></span>
-                                                                    <button class="btn btn-info btn-xs" data-ng-click="showEstimateCompletionHistory[estimateCompletionReview._id] = !showEstimateCompletionHistory[estimateCompletionReview._id]">
-                                                                        <span class="glyphicon glyphicon-time"></span>
-                                                                    </button>
                                                                 </td>
                                                                 <td colspan="2">
                                                                     <div data-ng-switch="switchEstimateCompletionForm[estimateCompletionReview._id]">
@@ -905,14 +818,6 @@
                                                                     </div>
                                                                 </td>
                                                             </tr>
-                                                            <tr data-ng-repeat-end data-ng-show="showEstimateCompletionHistory[estimateCompletionReview._id]">
-                                                                <td colspan="4">
-                                                                    <div data-ng-repeat="historyRecord in estimateCompletionReview.estimateCompletion.history | orderBy: sortHistoryRecords : true">
-                                                                        <span>Set to <i>{{historyRecord.completion}}</i><i data-ng-show="!historyRecord.completion">no value</i> on <i>{{historyRecord.created | date:'EEE d, MMM yyyy'}}</i></span>
-                                                                        <span data-ng-show="historyRecord.sourceReview"> through gate review</span><span data-ng-show="historyRecord.sourceDoc"> through delivery document</span>
-                                                                    </div>
-                                                                </td>
-                                                            </tr>
                                                         </table>
                                                         <table class="table small">
                                                             <caption>
@@ -924,16 +829,13 @@
                                                                 <th>New completion</th>
                                                                 <th> </th>
                                                             </tr>
-                                                            <tr data-ng-repeat-start="actualCompletionReview in selectedGateReview.actualCompletionReviews | orderBy: 'actualCompletion.targetGate.position'">
+                                                            <tr data-ng-repeat="actualCompletionReview in selectedGateReview.actualCompletionReviews | orderBy: 'actualCompletion.targetGate.position'">
                                                                 <td>
                                                                     <span data-ng-bind="actualCompletionReview.actualCompletion.targetGate.name"></span>
                                                                 </td>
                                                                 <td>
                                                                     <span data-ng-show="!actualCompletionReview.actualCompletion.currentRecord.completion">No actual yet</span>
                                                                     <span data-ng-bind="actualCompletionReview.actualCompletion.currentRecord.completion"></span>
-                                                                    <button class="btn btn-info btn-xs" data-ng-click="showActualCompletionHistory[actualCompletionReview._id] = !showActualCompletionHistory[actualCompletionReview._id]">
-                                                                        <span class="glyphicon glyphicon-time"></span>
-                                                                    </button>
                                                                 </td>
                                                                 <td colspan="2">
                                                                     <div data-ng-switch="switchActualCompletionForm[actualCompletionReview._id]">
@@ -956,14 +858,6 @@
                                                                                 <span class="glyphicon glyphicon-remove"></span>
                                                                             </button>
                                                                         </div>
-                                                                    </div>
-                                                                </td>
-                                                            </tr>
-                                                            <tr data-ng-repeat-end data-ng-show="showActualCompletionHistory[actualCompletionReview._id]">
-                                                                <td colspan="4">
-                                                                    <div data-ng-repeat="historyRecord in actualCompletionReview.actualCompletion.history | orderBy: sortHistoryRecords : true">
-                                                                        <span>Set to <i>{{historyRecord.completion}}</i><i data-ng-show="!historyRecord.completion">no value</i> on <i>{{historyRecord.created | date:'EEE d, MMM yyyy'}}</i></span>
-                                                                        <span data-ng-show="historyRecord.sourceReview"> through gate review</span><span data-ng-show="historyRecord.sourceDoc"> through delivery document</span>
                                                                     </div>
                                                                 </td>
                                                             </tr>

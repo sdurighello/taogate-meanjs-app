@@ -162,10 +162,6 @@ angular.module('gate-management-review').controller('GateManagementReviewControl
             return new Date(gateReview.reviewDate);
         };
 
-        $scope.sortHistoryRecords = function(historyRecord) {
-            return new Date(historyRecord.created);
-        };
-
 
         // ------------------- OTHER VARIABLES ---------------------
 
