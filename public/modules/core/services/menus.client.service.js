@@ -218,15 +218,12 @@ angular.module('core').service('Menus', [
             // Gate Review
         this.addSubMenuItem('topbar', 'setup', 'Gate review', 'gate-review-setup','gate-review-setup',false,
             ['superAdmin','admin','PMO','projectManager','portfolioManager','executive'],15);
-            // Delivery logs
-        this.addSubMenuItem('topbar', 'setup', 'Delivery logs', 'log-general-setup','log-general-setup',false,
-            ['superAdmin','admin','PMO','projectManager','portfolioManager','executive'],16);
             // Issues & Changes
         this.addSubMenuItem('topbar', 'setup', 'Issues & Changes', 'log-delivery-setup','log-delivery-setup',false,
-            ['superAdmin','admin','PMO','projectManager','portfolioManager','executive'],17);
+            ['superAdmin','admin','PMO','projectManager','portfolioManager','executive'],16);
             // Milestone log
         this.addSubMenuItem('topbar', 'setup', 'Milestones', 'log-milestone-setup','log-milestone-setup',false,
-            ['superAdmin','admin','PMO','projectManager','portfolioManager','executive'],18);
+            ['superAdmin','admin','PMO','projectManager','portfolioManager','executive'],17);
 
 
         // DEFINITION

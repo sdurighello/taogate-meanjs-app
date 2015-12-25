@@ -17,6 +17,337 @@
 	<div class="row">
 		<div class="col-md-12">
 			<tabset>
+                <tab heading="Log priorities">
+                    <br>
+                    <div class="row">
+                        <div class="col-md-5">
+                            <div class="panel panel-default">
+                                <div class="panel-heading" data-ng-hide="priorityValue || !userHasAuthorization">
+                                    <div class="text-center">
+                                        <em>Drag and drop to order by priority. Top is highest priority.</em>
+                                    </div>
+                                </div>
+                                <div class="panel-body" data-as-sortable="dragControlListeners" data-ng-model="logPriorities"
+                                     style="overflow-y: auto; max-height: 500px; min-height: 500px;">
+                                    <div class="alert alert-warning text-center" data-ng-hide="logPriorities.length">
+                                        No delivery log priorities yet
+                                    </div>
+                                    <button data-ng-repeat="value in logPriorities" data-as-sortable-item data-ng-click="selectValue(value)"
+                                            class="btn btn-default btn-lg btn-block center-block" style="overflow: hidden;">
+                                        <div data-as-sortable-item-handle>
+                                            <div class="row">
+                                                <div class="col-md-2">
+                                                    <span class="badge" data-ng-bind="value.position"></span>
+                                                </div>
+                                                <div class="col-md-10 text-center" data-ng-bind="value.name"></div>
+                                            </div>
+                                        </div>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4" data-ng-switch="switchValueForm">
+                            <div class="row" ng-show="userHasAuthorization" ng-switch-default="view">
+                                <div class="col-md-12">
+                                    <button class="btn btn-primary" data-ng-click="createValue()">
+                                        New priority
+                                    </button>
+                                    <button class="btn btn-success" data-ng-click="selectValueForm('edit')" data-ng-show="priorityValue">
+                                        Edit priority
+                                    </button>
+                                    <div data-ng-show="error" class="text-danger">
+                                        <strong data-ng-bind="error"></strong>
+                                    </div>
+                                </div>
+                            </div>
+                            <br>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="panel panel-default">
+                                        <div class="panel-heading">
+                                            <h6 class="panel-title" data-ng-bind="priorityValue.name"></h6>
+                                            <div class="text-center" data-ng-hide="priorityValue">
+                                                <em>Please select a priority value to see the details</em>
+                                            </div>
+                                        </div>
+                                        <div class="panel-body" data-ng-show="priorityValue">
+                                            <div ng-switch-default="view">
+                                                <form class="form">
+                                                    <fieldset>
+                                                        <div class="row">
+                                                            <div class="col-md-12">
+                                                                <div class="form-group">
+                                                                    <label class="control-label">Name</label>
+                                                                    <div class="controls">
+                                                                        <input disabled type="text" class="form-control" ng-model="priorityValue.name">
+                                                                    </div>
+                                                                </div>
+                                                                <div class="form-group">
+                                                                    <label class="control-label">Numerical value</label>
+                                                                    <div class="controls">
+                                                                        <input disabled type="number" class="form-control" ng-model="priorityValue.numericalValue">
+                                                                    </div>
+                                                                </div>
+                                                                <div class="form-group">
+                                                                    <label class="control-label">Description</label>
+                                                                    <div class="controls">
+                                                                        <textarea disabled class="form-control" ng-model="priorityValue.description"></textarea>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="form-group">
+                                                                    <div data-ng-show="error" class="text-danger">
+                                                                        <strong data-ng-bind="error"></strong>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </fieldset>
+                                                </form>
+                                                <div class="row">
+                                                    <div class="col-md-12">
+                                                        <small>
+                                                            <em class="text-muted">
+                                                                Last updated on
+                                                                <span data-ng-bind="priorityValue.created | date:'mediumDate'"></span>
+                                                                by
+                                                                <span data-ng-bind="priorityValue.user.displayName"></span>
+                                                            </em>
+                                                        </small>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div data-ng-switch-when="edit">
+                                                <form class="form" data-ng-submit="updateValue(priorityValue)" novalidate name="editPriorityValueForm">
+                                                    <fieldset>
+                                                        <div class="row">
+                                                            <div class="col-md-12">
+                                                                <div class="form-group">
+                                                                    <label class="control-label" for="editValueName">Name</label>
+                                                                    <div class="controls">
+                                                                        <input type="text" id="editValueName" class="form-control" name="editValueName"
+                                                                               data-ng-model="priorityValue.name" placeholder="Name" required>
+                                                                    </div>
+                                                                    <span data-ng-show="editPriorityValueForm.editValueName.$error.required">
+                                                                        <em style="color: red">Name is required</em>
+                                                                    </span>
+                                                                </div>
+                                                                <div class="form-group">
+                                                                    <label class="control-label" for="numerical">Numerical value</label>
+                                                                    <div class="controls">
+                                                                        <input type="number" id="numerical" class="form-control" min="0" step="1" onkeyup="this.value=this.value.replace(/[^0-9]/g,'');"
+                                                                               data-ng-model="priorityValue.numericalValue" placeholder="Enter positive integer" required>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="form-group">
+                                                                    <label class="control-label" for="description">Description</label>
+                                                                    <div class="controls">
+                                                        <textarea id="description" class="form-control"
+                                                                  data-ng-model="priorityValue.description" placeholder="Description">
+                                                        </textarea>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="form-group pull-right">
+                                                                    <input type="submit" value="Save" class="btn btn-success" data-ng-disabled="editPriorityValueForm.$invalid">
+                                                                    <a class="btn btn-danger" data-ng-click="removeValue(priorityValue)">
+                                                                        <i class="glyphicon glyphicon-trash"></i>
+                                                                    </a>
+                                                                    <button type="button" class="btn btn-info" data-ng-click="cancelEditValue(priorityValue)">
+                                                                        Cancel
+                                                                    </button>
+                                                                </div>
+                                                                <div class="form-group">
+                                                                    <div data-ng-show="error" class="text-danger">
+                                                                        <strong data-ng-bind="error"></strong>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </fieldset>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </tab>
+                <tab heading="Reasons for change">
+                    <br>
+                    <div class="row" ng-show="userHasAuthorization">
+                        <div class="col-md-3">
+                            <br>
+                            <button class="btn btn-primary"
+                                    ng-click="createReason()">
+                                New reason for change
+                            </button>
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="row">
+                        <div class="alert alert-warning text-center" data-ng-hide="logReasons.length">
+                            No delivery log reasons yet
+                        </div>
+                        <div class="col-md-4" data-ng-repeat="reason in logReasons" data-ng-switch="switchReasonForm[reason._id]" >
+                            <div class="panel panel-default" title="Last updated on {{reason.created | date:'medium'}} by {{reason.user.displayName}}">
+                                <div class="panel-heading">
+                                    <h6 class="panel-title text-center" data-ng-bind="reason.name"></h6>
+                                </div>
+                                <div class="panel-body">
+                                    <div ng-switch-default="view">
+                                        <form class="form">
+                                            <fieldset>
+                                                <div class="row">
+                                                    <div class="col-md-12">
+                                                        <div class="form-group">
+                                                            <label for="name" class="control-label">Name</label>
+                                                            <input id="name" disabled type="text" class="form-control" data-ng-model="reason.name">
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label for="description" class="control-label">Description</label>
+                                                            <textarea id="description" disabled class="form-control" data-ng-model="reason.description"></textarea>
+                                                        </div>
+                                                        <button type="button" class="btn btn-success pull-right" data-ng-show="userHasAuthorization"
+                                                                data-ng-click="selectReason(reason)">
+                                                            Edit
+                                                        </button>
+                                                        <div data-ng-show="error" class="text-danger">
+                                                            <strong data-ng-bind="error"></strong>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </fieldset>
+                                        </form>
+                                    </div>
+                                    <div data-ng-switch-when="edit">
+                                        <form class="form" name="editReasonForm" data-ng-submit="updateReason(reason)" novalidate>
+                                            <fieldset>
+                                                <div class="row">
+                                                    <div class="col-md-12">
+                                                        <div class="form-group">
+                                                            <label for="reasonNameEdit" class="control-label">Name</label>
+                                                            <input type="text" id="reasonNameEdit" class="form-control" name="reasonNameEdit"
+                                                                   data-ng-model="reason.name" placeholder="Name" required>
+                                                            <span data-ng-show="editReasonForm.reasonNameEdit.$error.required">
+                                                                <em style="color: red">Name is required</em>
+                                                            </span>
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label for="descriptionEdit" class="control-label">Description</label>
+                                                            <textarea id="descriptionEdit" class="form-control"
+                                                                      data-ng-model="reason.description" placeholder="Description">
+                                                            </textarea>
+                                                        </div>
+                                                        <div class="pull-right">
+                                                            <input type="submit" value="Save" class="btn btn-success" data-ng-disabled="editReasonForm.$invalid">
+                                                            <a class="btn btn-danger" data-ng-click="removeReason(reason)" data-ng-show="userHasAuthorization">
+                                                                <i class="glyphicon glyphicon-trash"></i>
+                                                            </a>
+                                                            <button type="button" class="btn btn-info" data-ng-click="cancelEditReason(reason)">
+                                                                Cancel
+                                                            </button>
+                                                        </div>
+                                                        <div data-ng-show="error" class="text-danger">
+                                                            <strong data-ng-bind="error"></strong>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </fieldset>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </tab>
+                <tab heading="Status indicators">
+                    <br>
+                    <div class="row" ng-show="userHasAuthorization">
+                        <div class="col-md-3">
+                            <br>
+                            <button class="btn btn-primary"
+                                    ng-click="createStatus()">
+                                New status indicator
+                            </button>
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="row">
+                        <div class="alert alert-warning text-center" data-ng-hide="logStatuses.length">
+                            No delivery log statuses yet
+                        </div>
+                        <div class="col-md-4" data-ng-repeat="status in logStatuses" data-ng-switch="switchStatusForm[status._id]" >
+                            <div class="panel panel-default" title="Last updated on {{status.created | date:'medium'}} by {{status.user.displayName}}">
+                                <div class="panel-heading">
+                                    <h6 class="panel-title text-center" data-ng-bind="status.name"></h6>
+                                </div>
+                                <div class="panel-body">
+                                    <div ng-switch-default="view">
+                                        <form class="form">
+                                            <fieldset>
+                                                <div class="row">
+                                                    <div class="col-md-12">
+                                                        <div class="form-group">
+                                                            <label for="name" class="control-label">Name</label>
+                                                            <input id="name" disabled type="text" class="form-control" data-ng-model="status.name">
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label for="description" class="control-label">Description</label>
+                                                            <textarea id="description" disabled class="form-control" data-ng-model="status.description"></textarea>
+                                                        </div>
+                                                        <button type="button" class="btn btn-success pull-right" data-ng-show="userHasAuthorization"
+                                                                data-ng-click="selectStatus(status)">
+                                                            Edit
+                                                        </button>
+                                                        <div data-ng-show="error" class="text-danger">
+                                                            <strong data-ng-bind="error"></strong>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </fieldset>
+                                        </form>
+                                    </div>
+                                    <div data-ng-switch-when="edit">
+                                        <form class="form" name="editStatusForm" data-ng-submit="updateStatus(status)" novalidate>
+                                            <fieldset>
+                                                <div class="row">
+                                                    <div class="col-md-12">
+                                                        <div class="form-group">
+                                                            <label for="statusNameEdit" class="control-label">Name</label>
+                                                            <input type="text" id="statusNameEdit" class="form-control" name="statusNameEdit"
+                                                                   data-ng-model="status.name" placeholder="Name" required>
+                                                            <span data-ng-show="editStatusForm.statusNameEdit.$error.required">
+                                                                <em style="color: red">Name is required</em>
+                                                            </span>
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label for="descriptionEdit" class="control-label">Description</label>
+                                                            <textarea id="descriptionEdit" class="form-control"
+                                                                      data-ng-model="status.description" placeholder="Description">
+                                                            </textarea>
+                                                        </div>
+                                                        <div class="pull-right">
+                                                            <input type="submit" value="Save" class="btn btn-success" data-ng-disabled="editStatusForm.$invalid">
+                                                            <a class="btn btn-danger" data-ng-click="removeStatus(status)" data-ng-show="userHasAuthorization">
+                                                                <i class="glyphicon glyphicon-trash"></i>
+                                                            </a>
+                                                            <button type="button" class="btn btn-info" data-ng-click="cancelEditStatus(status)">
+                                                                Cancel
+                                                            </button>
+                                                        </div>
+                                                        <div data-ng-show="error" class="text-danger">
+                                                            <strong data-ng-bind="error"></strong>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </fieldset>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </tab>
 				<tab heading="Change request states">
 					<br>
 					<div class="row" ng-show="userHasAuthorization">

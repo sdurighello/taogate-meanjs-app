@@ -1,8 +1,8 @@
 'use strict';
 
 angular.module('log-delivery-setup').controller('LogDeliverySetupController', ['$scope','$stateParams', '$location', 'Authentication',
-	'IssueStates', 'IssueActionStates', 'ChangeRequestStates', '_','$q',
-	function($scope, $stateParams, $location, Authentication, IssueStates, IssueActionStates, ChangeRequestStates, _ , $q) {
+	'IssueStates', 'IssueActionStates', 'ChangeRequestStates', 'LogPriorities', 'LogReasons', 'LogStatuses', '_','$q',
+	function($scope, $stateParams, $location, Authentication, IssueStates, IssueActionStates, ChangeRequestStates, LogPriorities, LogReasons, LogStatuses, _ , $q) {
 
 		// ----------- INIT ---------------
 
@@ -21,6 +21,24 @@ angular.module('log-delivery-setup').controller('LogDeliverySetupController', ['
             });
             ChangeRequestStates.query(function(changeRequestStates){
                 $scope.changeRequestStates = changeRequestStates;
+            }, function(err){
+                $scope.initError.push(err.data.message);
+            });
+
+            LogPriorities.query(function(priorities){
+                $scope.logPriorities = priorities;
+            }, function(err){
+                $scope.initError.push(err.data.message);
+            });
+
+            LogReasons.query(function(reasons){
+                $scope.logReasons = reasons;
+            }, function(err){
+                $scope.initError.push(err.data.message);
+            });
+
+            LogStatuses.query(function(statuses){
+                $scope.logStatuses = statuses;
             }, function(err){
                 $scope.initError.push(err.data.message);
             });
@@ -277,8 +295,278 @@ angular.module('log-delivery-setup').controller('LogDeliverySetupController', ['
         };
 
 
+        // ---------------------------------------------------- LOG PRIORITIES --------------------------------------
+
+        // ------------------- DRAG AND DROP LISTENERS -------
+
+        $scope.dragControlListeners = {
+            //accept: function (sourceItemHandleScope, destSortableScope) {
+            //    //override to determine drag is allowed or not. default is true.
+            //    return true;
+            //},
+            //itemMoved: function (event) {
+            //
+            //},
+            orderChanged: function(event) {
+                for(var i = 0; i < $scope.logPriorities.length; i++){
+                    $scope.updateValue($scope.logPriorities[i]);
+                }
+            }
+            //containment: '#board',//optional param.
+            //clone: true //optional param for clone feature.
+        };
+
+        /*
+         event object - structure
+         source:
+         index: original index before move.
+         itemScope: original item scope before move.
+         sortableScope: original sortable list scope.
+         dest:
+         index: index after move.
+         sortableScope: destination sortable scope.
+         -------------
+         sourceItemScope - the scope of the item being dragged.
+         destScope - the sortable destination scope, the list.
+         destItemScope - the destination item scope, this is an optional Param.(Must check for undefined).
+         */
 
 
+        // ------------------- NG-SWITCH ---------------------
+
+        $scope.selectValueForm = function(string){
+            if(string === 'view'){ $scope.switchValueForm = 'view';}
+            if(string === 'edit'){$scope.switchValueForm = 'edit';}
+        };
+
+        // ------------------- LIST OF VALUES -----------------
+
+        $scope.findValues = function() {
+            $scope.initError = [];
+            LogPriorities.query(function(values){
+                $scope.logPriorities = values;
+            }, function(err){
+                $scope.initError.push(err.data.message);
+            });
+        };
+
+        // ------------------- EDIT -----------------
+
+        var originalValue;
+        $scope.selectValue = function(value){
+            $scope.error = null;
+            $scope.selectValueForm('view');
+            $scope.priorityValue = value;
+            originalValue = _.clone(value);
+        };
+
+        $scope.updateValue = function(value) {
+            $scope.error = null;
+            value.position = _.indexOf($scope.logPriorities, value) + 1;
+            value.$update(function(response) {
+                $scope.selectValueForm('view');
+            }, function(errorResponse) {
+                $scope.error = errorResponse.data.message;
+            });
+        };
+
+        $scope.cancelEditValue = function(value){
+            value.name = originalValue.name;
+            value.numericalValue = originalValue.numericalValue;
+            value.description = originalValue.description;
+            $scope.selectValueForm('view');
+        };
+
+        // ------------------- DELETE -----------------
+
+        $scope.removeValue = function(value) {
+            $scope.error = null;
+            value.$remove(function(response) {
+                $scope.logPriorities = _.without($scope.logPriorities, value);
+                for(var i = 0; i < $scope.logPriorities.length; i++){
+                    if($scope.logPriorities[i].position > value.position){
+                        $scope.updateValue($scope.logPriorities[i]);
+                    }
+                }
+                $scope.priorityValue = null;
+                $scope.selectValueForm('view');
+            }, function(errorResponse) {
+                $scope.error = errorResponse.data.message;
+            });
+        };
+
+        // ------------------- NEW -----------------
+
+        $scope.createValue = function() {
+            $scope.error = null;
+            var priorityValue = new LogPriorities ({
+                name: 'New log priority',
+                numericalValue: 0,
+                position: $scope.logPriorities.length + 1
+            });
+            priorityValue.$save(function(response) {
+                $scope.findValues();
+                $scope.selectValueForm(response._id, 'view');
+
+            }, function(errorResponse) {
+                $scope.error = errorResponse.data.message;
+            });
+        };
+
+// ----------------------------------------------- REASONS ---------------------------------------
+
+
+
+        // ------------------- NG-SWITCH ---------------------
+
+        $scope.switchReasonForm = {};
+
+        $scope.selectReasonForm = function(reason, string){
+            if(string === 'view'){ $scope.switchReasonForm[reason._id] = 'view';}
+            if(string === 'new'){$scope.switchReasonForm[reason._id] = 'new';}
+            if(string === 'edit'){$scope.switchReasonForm[reason._id] = 'edit';}
+        };
+
+        // ------------------- LIST OF REASONS -----------------
+
+        $scope.findReasons = function() {
+            $scope.initError = [];
+            LogReasons.query(function(reasons){
+                $scope.logReasons = reasons;
+            }, function(err){
+                $scope.initError.push(err.data.message);
+            });
+        };
+
+        // ------------------- EDIT -----------------
+
+        var originalReason = {};
+        $scope.selectReason = function(reason){
+            $scope.error = null;
+            originalReason[reason._id] = _.clone(reason);
+            $scope.selectReasonForm(reason, 'edit');
+        };
+
+        $scope.updateReason = function(reason) {
+            $scope.error = null;
+            reason.$update(function(response) {
+                $scope.findReasons();
+                $scope.selectReasonForm(reason, 'view');
+            }, function(errorResponse) {
+                $scope.error = errorResponse.data.message;
+            });
+        };
+
+        $scope.cancelEditReason = function(reason){
+            reason.name = originalReason[reason._id].name;
+            reason.description = originalReason[reason._id].description;
+            $scope.selectReasonForm(reason, 'view');
+        };
+
+        // ------------------- DELETE -----------------
+
+        $scope.removeReason = function(reason) {
+            $scope.error = null;
+            reason.$remove(function(response) {
+                $scope.findReasons();
+            }, function(errorResponse) {
+                $scope.error = errorResponse.data.message;
+            });
+        };
+
+        // ------------------- NEW -----------------
+
+        $scope.createReason = function() {
+            $scope.error = null;
+            var reason = new LogReasons ({
+                name: 'New reason for change'
+            });
+            reason.$save(function(response) {
+                $scope.findReasons();
+                $scope.selectReasonForm(response._id, 'view');
+
+            }, function(errorResponse) {
+                $scope.error = errorResponse.data.message;
+            });
+        };
+
+
+        // ----------------------------------------------- STATUSES ---------------------------------------
+
+
+
+        // ------------------- NG-SWITCH ---------------------
+
+        $scope.switchStatusForm = {};
+
+        $scope.selectStatusForm = function(status, string){
+            if(string === 'view'){ $scope.switchStatusForm[status._id] = 'view';}
+            if(string === 'new'){$scope.switchStatusForm[status._id] = 'new';}
+            if(string === 'edit'){$scope.switchStatusForm[status._id] = 'edit';}
+        };
+
+        // ------------------- LIST OF STATUSES -----------------
+
+        $scope.findStatuses = function() {
+            $scope.initError = [];
+            LogStatuses.query(function(statuses){
+                $scope.logStatuses = statuses;
+            }, function(err){
+                $scope.initError.push(err.data.message);
+            });
+        };
+
+        // ------------------- EDIT -----------------
+
+        var originalStatus = {};
+        $scope.selectStatus = function(status){
+            $scope.error = null;
+            originalStatus[status._id] = _.clone(status);
+            $scope.selectStatusForm(status, 'edit');
+        };
+
+        $scope.updateStatus = function(status) {
+            $scope.error = null;
+            status.$update(function(response) {
+                $scope.findStatuses();
+                $scope.selectStatusForm(status, 'view');
+            }, function(errorResponse) {
+                $scope.error = errorResponse.data.message;
+            });
+        };
+
+        $scope.cancelEditStatus = function(status){
+            status.name = originalStatus[status._id].name;
+            status.description = originalStatus[status._id].description;
+            $scope.selectStatusForm(status, 'view');
+        };
+
+        // ------------------- DELETE -----------------
+
+        $scope.removeStatus = function(status) {
+            $scope.error = null;
+            status.$remove(function(response) {
+                $scope.findStatuses();
+            }, function(errorResponse) {
+                $scope.error = errorResponse.data.message;
+            });
+        };
+
+        // ------------------- NEW -----------------
+
+        $scope.createStatus = function() {
+            $scope.error = null;
+            var status = new LogStatuses ({
+                name: 'New status indicator'
+            });
+            status.$save(function(response) {
+                $scope.findStatuses();
+                $scope.selectStatusForm(response._id, 'view');
+
+            }, function(errorResponse) {
+                $scope.error = errorResponse.data.message;
+            });
+        };
 
     }
 ]);
