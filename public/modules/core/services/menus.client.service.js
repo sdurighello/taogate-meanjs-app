@@ -224,6 +224,9 @@ angular.module('core').service('Menus', [
             // Milestone log
         this.addSubMenuItem('topbar', 'setup', 'Milestones', 'log-milestone-setup','log-milestone-setup',false,
             ['superAdmin','admin','PMO','projectManager','portfolioManager','executive'],17);
+			// Status Report
+		this.addSubMenuItem('topbar', 'setup', 'Status report', 'status-report-setup','status-report-setup',false,
+			['superAdmin','admin','PMO','projectManager','portfolioManager','executive'],18);
 
 
         // DEFINITION

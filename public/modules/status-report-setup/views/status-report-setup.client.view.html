@@ -23,20 +23,20 @@
 						<div class="col-md-3">
 							<br>
 							<button class="btn btn-primary"
-									ng-click="createStatus()">
+									ng-click="createStatusIndicator()">
 								New status indicator
 							</button>
 						</div>
 					</div>
 					<hr>
 					<div class="row">
-						<div class="alert alert-warning text-center" data-ng-hide="logStatuses.length">
-							No delivery log statuses yet
+						<div class="alert alert-warning text-center" data-ng-hide="logStatusIndicators.length">
+							<span>No status indicators yet</span>
 						</div>
-						<div class="col-md-4" data-ng-repeat="status in logStatuses" data-ng-switch="switchStatusForm[status._id]" >
-							<div class="panel panel-default" title="Last updated on {{status.created | date:'medium'}} by {{status.user.displayName}}">
+						<div class="col-md-4" data-ng-repeat="indicator in logStatusIndicators" data-ng-switch="switchStatusIndicatorForm[indicator._id]" >
+							<div class="panel panel-default" title="Last updated on {{indicator.created | date:'medium'}} by {{indicator.user.displayName}}">
 								<div class="panel-heading">
-									<h6 class="panel-title text-center" data-ng-bind="status.name"></h6>
+									<h6 class="panel-title text-center" data-ng-bind="indicator.name"></h6>
 								</div>
 								<div class="panel-body">
 									<div ng-switch-default="view">
@@ -46,14 +46,14 @@
 													<div class="col-md-12">
 														<div class="form-group">
 															<label for="name" class="control-label">Name</label>
-															<input id="name" disabled type="text" class="form-control" data-ng-model="status.name">
+															<input id="name" disabled type="text" class="form-control" data-ng-model="indicator.name">
 														</div>
 														<div class="form-group">
 															<label for="description" class="control-label">Description</label>
-															<textarea id="description" disabled class="form-control" data-ng-model="status.description"></textarea>
+															<textarea id="description" disabled class="form-control" data-ng-model="indicator.description"></textarea>
 														</div>
 														<button type="button" class="btn btn-success pull-right" data-ng-show="userHasAuthorization"
-																data-ng-click="selectStatus(status)">
+																data-ng-click="selectStatusIndicator(indicator)">
 															Edit
 														</button>
 														<div data-ng-show="error" class="text-danger">
@@ -65,30 +65,118 @@
 										</form>
 									</div>
 									<div data-ng-switch-when="edit">
-										<form class="form" name="editStatusForm" data-ng-submit="updateStatus(status)" novalidate>
+										<form class="form" name="editIndicatorForm" data-ng-submit="updateStatusIndicator(indicator)" novalidate>
 											<fieldset>
 												<div class="row">
 													<div class="col-md-12">
 														<div class="form-group">
-															<label for="statusNameEdit" class="control-label">Name</label>
-															<input type="text" id="statusNameEdit" class="form-control" name="statusNameEdit"
-																   data-ng-model="status.name" placeholder="Name" required>
-                                                            <span data-ng-show="editStatusForm.statusNameEdit.$error.required">
+															<label for="indicatorNameEdit" class="control-label">Name</label>
+															<input type="text" id="indicatorNameEdit" class="form-control" name="indicatorNameEdit"
+																   data-ng-model="indicator.name" placeholder="Name" required>
+                                                            <span data-ng-show="editIndicatorForm.indicatorNameEdit.$error.required">
                                                                 <em style="color: red">Name is required</em>
                                                             </span>
 														</div>
 														<div class="form-group">
 															<label for="descriptionEdit" class="control-label">Description</label>
                                                             <textarea id="descriptionEdit" class="form-control"
-																	  data-ng-model="status.description" placeholder="Description">
+																	  data-ng-model="indicator.description" placeholder="Description">
                                                             </textarea>
 														</div>
 														<div class="pull-right">
-															<input type="submit" value="Save" class="btn btn-success" data-ng-disabled="editStatusForm.$invalid">
-															<a class="btn btn-danger" data-ng-click="removeStatus(status)" data-ng-show="userHasAuthorization">
+															<input type="submit" value="Save" class="btn btn-success" data-ng-disabled="editIndicatorForm.$invalid">
+															<a class="btn btn-danger" data-ng-click="removeStatusIndicator(indicator)" data-ng-show="userHasAuthorization">
 																<i class="glyphicon glyphicon-trash"></i>
 															</a>
-															<button type="button" class="btn btn-info" data-ng-click="cancelEditStatus(status)">
+															<button type="button" class="btn btn-info" data-ng-click="cancelEditStatusIndicator(indicator)">
+																Cancel
+															</button>
+														</div>
+														<div data-ng-show="error" class="text-danger">
+															<strong data-ng-bind="error"></strong>
+														</div>
+													</div>
+												</div>
+											</fieldset>
+										</form>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</tab>
+				<tab heading="Status areas">
+					<br>
+					<div class="row" ng-show="userHasAuthorization">
+						<div class="col-md-3">
+							<br>
+							<button class="btn btn-primary"
+									ng-click="createStatusArea()">
+								New status area
+							</button>
+						</div>
+					</div>
+					<hr>
+					<div class="row">
+						<div class="alert alert-warning text-center" data-ng-hide="logStatusAreas.length">
+							<span>No status areas yet</span>
+						</div>
+						<div class="col-md-4" data-ng-repeat="area in logStatusAreas" data-ng-switch="switchStatusAreaForm[area._id]" >
+							<div class="panel panel-default" title="Last updated on {{area.created | date:'medium'}} by {{area.user.displayName}}">
+								<div class="panel-heading">
+									<h6 class="panel-title text-center" data-ng-bind="area.name"></h6>
+								</div>
+								<div class="panel-body">
+									<div ng-switch-default="view">
+										<form class="form">
+											<fieldset>
+												<div class="row">
+													<div class="col-md-12">
+														<div class="form-group">
+															<label for="name" class="control-label">Name</label>
+															<input id="name" disabled type="text" class="form-control" data-ng-model="area.name">
+														</div>
+														<div class="form-group">
+															<label for="description" class="control-label">Description</label>
+															<textarea id="description" disabled class="form-control" data-ng-model="area.description"></textarea>
+														</div>
+														<button type="button" class="btn btn-success pull-right" data-ng-show="userHasAuthorization"
+																data-ng-click="selectStatusArea(area)">
+															Edit
+														</button>
+														<div data-ng-show="error" class="text-danger">
+															<strong data-ng-bind="error"></strong>
+														</div>
+													</div>
+												</div>
+											</fieldset>
+										</form>
+									</div>
+									<div data-ng-switch-when="edit">
+										<form class="form" name="editAreaForm" data-ng-submit="updateStatusArea(area)" novalidate>
+											<fieldset>
+												<div class="row">
+													<div class="col-md-12">
+														<div class="form-group">
+															<label for="areaNameEdit" class="control-label">Name</label>
+															<input type="text" id="areaNameEdit" class="form-control" name="areaNameEdit"
+																   data-ng-model="area.name" placeholder="Name" required>
+                                                            <span data-ng-show="editAreaForm.areaNameEdit.$error.required">
+                                                                <em style="color: red">Name is required</em>
+                                                            </span>
+														</div>
+														<div class="form-group">
+															<label for="descriptionEdit" class="control-label">Description</label>
+                                                            <textarea id="descriptionEdit" class="form-control"
+																	  data-ng-model="area.description" placeholder="Description">
+                                                            </textarea>
+														</div>
+														<div class="pull-right">
+															<input type="submit" value="Save" class="btn btn-success" data-ng-disabled="editAreaForm.$invalid">
+															<a class="btn btn-danger" data-ng-click="removeStatusArea(area)" data-ng-show="userHasAuthorization">
+																<i class="glyphicon glyphicon-trash"></i>
+															</a>
+															<button type="button" class="btn btn-info" data-ng-click="cancelEditStatusArea(area)">
 																Cancel
 															</button>
 														</div>

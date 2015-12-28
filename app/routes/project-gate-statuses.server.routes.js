@@ -6,11 +6,11 @@ module.exports = function(app) {
 
 	// Project gate statuses Routes
 	app.route('/project-gate-statuses')
-		.get(projectGateStatuses.list)
-		.post(users.requiresLogin, projectGateStatuses.create);
+		.get(users.requiresLogin, projectGateStatuses.list)
+		.post(users.requiresLogin, projectGateStatuses.hasAuthorization, projectGateStatuses.create);
 
 	app.route('/project-gate-statuses/:projectGateStatusId')
-		.get(projectGateStatuses.read)
+		.get(users.requiresLogin, projectGateStatuses.read)
 		.put(users.requiresLogin, projectGateStatuses.hasAuthorization, projectGateStatuses.update)
 		.delete(users.requiresLogin, projectGateStatuses.hasAuthorization, projectGateStatuses.delete);
 

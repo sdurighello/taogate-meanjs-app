@@ -75,8 +75,8 @@ exports.delete = function(req, res) {
  * List of Log status indicators
  */
 exports.list = function(req, res) {
-    var logStatusIndicator = mongoose.mtModel(req.user.tenantId + '.' + 'logStatusIndicator');
-	logStatusIndicator.find().populate('user', 'displayName').exec(function(err, logStatusIndicators) {
+    var LogStatusIndicator = mongoose.mtModel(req.user.tenantId + '.' + 'LogStatusIndicator');
+	LogStatusIndicator.find().populate('user', 'displayName').exec(function(err, logStatusIndicators) {
 		if (err) {
 			return res.status(400).send({
 				message: errorHandler.getErrorMessage(err)
@@ -91,10 +91,10 @@ exports.list = function(req, res) {
  * Log status indicator middleware
  */
 exports.logStatusIndicatorByID = function(req, res, next, id) {
-    var logStatusIndicator = mongoose.mtModel(req.user.tenantId + '.' + 'LogStatusIndicator');
+    var LogStatusIndicator = mongoose.mtModel(req.user.tenantId + '.' + 'LogStatusIndicator');
 	LogStatusIndicator.findById(id).populate('user', 'displayName').exec(function(err, logStatusIndicator) {
 		if (err) return next(err);
-		if (! logStatusIndicator) return next(new Error('Failed to load Log status ' + id));
+		if (! logStatusIndicator) return next(new Error('Failed to load Log status indicator ' + id));
 		req.logStatusIndicator = logStatusIndicator ;
 		next();
 	});

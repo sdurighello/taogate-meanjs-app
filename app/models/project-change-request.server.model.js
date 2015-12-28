@@ -47,7 +47,7 @@ var statusReviewRecord = {
     estimateDeliveryDate : {type: Date, default: null},
     actualDeliveryDate : {type: Date, default: null},
     completed : {type: Boolean, default: false, required:'Change request completed flag is required'},
-    status: {type: Schema.Types.ObjectId, default: null, ref: 'LogStatus', $tenant:true},
+    status: {type: Schema.Types.ObjectId, default: null, ref: 'LogStatusIndicator', $tenant:true},
     statusComment : {type: String, default:'', trim: true},
     created: { type: Date, default: Date.now },
     user: { type: Schema.ObjectId, ref: 'User' }

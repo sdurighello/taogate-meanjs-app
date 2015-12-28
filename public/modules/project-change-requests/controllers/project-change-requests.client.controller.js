@@ -2,9 +2,9 @@
 
 angular.module('project-change-requests').controller('ProjectChangeRequestController', ['$scope','$stateParams', '$location',
 	'Authentication', 'Projects', 'Portfolios','$q', '_',
-	'GateProcesses', 'ProjectChangeRequests', 'LogReasons', 'ChangeRequestStates', 'LogPriorities','LogStatuses',
+	'GateProcesses', 'ProjectChangeRequests', 'LogReasons', 'ChangeRequestStates', 'LogPriorities','LogStatusIndicators',
 	function($scope, $stateParams, $location, Authentication, Projects, Portfolios, $q, _,
-			 GateProcesses, ProjectChangeRequests, LogReasons, ChangeRequestStates, LogPriorities, LogStatuses) {
+			 GateProcesses, ProjectChangeRequests, LogReasons, ChangeRequestStates, LogPriorities, LogStatusIndicators) {
 
 		// ------------- INIT -------------
 
@@ -48,8 +48,8 @@ angular.module('project-change-requests').controller('ProjectChangeRequestContro
 				$scope.initError.push(err.data.message);
 			});
 
-            LogStatuses.query(function(logStatuses){
-                $scope.logStatuses = logStatuses;
+            LogStatusIndicators.query(function(logStatusIndicators){
+                $scope.logStatuses = logStatusIndicators;
             }, function(err){
                 $scope.initError.push(err.data.message);
             });

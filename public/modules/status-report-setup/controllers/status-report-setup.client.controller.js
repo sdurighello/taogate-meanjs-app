@@ -38,26 +38,26 @@ angular.module('status-report-setup').controller('StatusReportSetupController', 
 
 
 
-		// ----------------------------------------------- STATUSES ---------------------------------------
+// ----------------------------------------------- STATUS-INDICATORS ---------------------------------------
 
 
 
 		// ------------------- NG-SWITCH ---------------------
 
-		$scope.switchStatusForm = {};
+		$scope.switchStatusIndicatorForm = {};
 
-		$scope.selectStatusForm = function(status, string){
-			if(string === 'view'){ $scope.switchStatusForm[status._id] = 'view';}
-			if(string === 'new'){$scope.switchStatusForm[status._id] = 'new';}
-			if(string === 'edit'){$scope.switchStatusForm[status._id] = 'edit';}
+		$scope.selectStatusIndicatorForm = function(status, string){
+			if(string === 'view'){ $scope.switchStatusIndicatorForm[status._id] = 'view';}
+			if(string === 'new'){$scope.switchStatusIndicatorForm[status._id] = 'new';}
+			if(string === 'edit'){$scope.switchStatusIndicatorForm[status._id] = 'edit';}
 		};
 
 		// ------------------- LIST OF STATUSES -----------------
 
-		$scope.findStatuses = function() {
+		$scope.findStatusIndicators = function() {
 			$scope.initError = [];
-			LogStatuses.query(function(statuses){
-				$scope.logStatuses = statuses;
+			LogStatusIndicators.query(function(statuses){
+				$scope.logStatusIndicators = statuses;
 			}, function(err){
 				$scope.initError.push(err.data.message);
 			});
@@ -65,55 +65,135 @@ angular.module('status-report-setup').controller('StatusReportSetupController', 
 
 		// ------------------- EDIT -----------------
 
-		var originalStatus = {};
-		$scope.selectStatus = function(status){
+		var originalStatusIndicator = {};
+		$scope.selectStatusIndicator = function(statusIndicator){
 			$scope.error = null;
-			originalStatus[status._id] = _.clone(status);
-			$scope.selectStatusForm(status, 'edit');
+			originalStatusIndicator[statusIndicator._id] = _.clone(statusIndicator);
+			$scope.selectStatusIndicatorForm(statusIndicator, 'edit');
 		};
 
-		$scope.updateStatus = function(status) {
+		$scope.updateStatusIndicator = function(statusIndicator) {
 			$scope.error = null;
-			status.$update(function(response) {
-				$scope.findStatuses();
-				$scope.selectStatusForm(status, 'view');
-			}, function(errorResponse) {
-				$scope.error = errorResponse.data.message;
+			statusIndicator.$update(function(res) {
+				$scope.findStatusIndicators();
+				$scope.selectStatusIndicatorForm(statusIndicator, 'view');
+			}, function(err) {
+				$scope.error = err.data.message;
 			});
 		};
 
-		$scope.cancelEditStatus = function(status){
-			status.name = originalStatus[status._id].name;
-			status.description = originalStatus[status._id].description;
-			$scope.selectStatusForm(status, 'view');
+		$scope.cancelEditStatusIndicator = function(statusIndicator){
+            statusIndicator.name = originalStatusIndicator[statusIndicator._id].name;
+            statusIndicator.description = originalStatusIndicator[statusIndicator._id].description;
+			$scope.selectStatusIndicatorForm(statusIndicator, 'view');
 		};
 
 		// ------------------- DELETE -----------------
 
-		$scope.removeStatus = function(status) {
+		$scope.removeStatusIndicator = function(statusIndicator) {
 			$scope.error = null;
-			status.$remove(function(response) {
-				$scope.findStatuses();
-			}, function(errorResponse) {
-				$scope.error = errorResponse.data.message;
+            statusIndicator.$remove(function(res) {
+				$scope.findStatusIndicators();
+			}, function(err) {
+				$scope.error = err.data.message;
 			});
 		};
 
 		// ------------------- NEW -----------------
 
-		$scope.createStatus = function() {
+		$scope.createStatusIndicator = function() {
 			$scope.error = null;
-			var status = new LogStatuses ({
+			var statusIndicator = new LogStatusIndicators ({
 				name: 'New status indicator'
 			});
-			status.$save(function(response) {
-				$scope.findStatuses();
-				$scope.selectStatusForm(response._id, 'view');
+			statusIndicator.$save(function(res) {
+				$scope.findStatusIndicators();
+				$scope.selectStatusIndicatorForm(res, 'view');
 
-			}, function(errorResponse) {
-				$scope.error = errorResponse.data.message;
+			}, function(err) {
+				$scope.error = err.data.message;
 			});
 		};
+
+
+// ----------------------------------------------- STATUS-AREAS ---------------------------------------
+
+
+
+        // ------------------- NG-SWITCH ---------------------
+
+        $scope.switchStatusAreaForm = {};
+
+        $scope.selectStatusAreaForm = function(status, string){
+            if(string === 'view'){ $scope.switchStatusAreaForm[status._id] = 'view';}
+            if(string === 'new'){$scope.switchStatusAreaForm[status._id] = 'new';}
+            if(string === 'edit'){$scope.switchStatusAreaForm[status._id] = 'edit';}
+        };
+
+        // ------------------- LIST OF STATUSES -----------------
+
+        $scope.findStatusAreas = function() {
+            $scope.initError = [];
+            LogStatusAreas.query(function(statuses){
+                $scope.logStatusAreas = statuses;
+            }, function(err){
+                $scope.initError.push(err.data.message);
+            });
+        };
+
+        // ------------------- EDIT -----------------
+
+        var originalStatusArea = {};
+        $scope.selectStatusArea = function(statusArea){
+            $scope.error = null;
+            originalStatusArea[statusArea._id] = _.clone(statusArea);
+            $scope.selectStatusAreaForm(statusArea, 'edit');
+        };
+
+        $scope.updateStatusArea = function(statusArea) {
+            $scope.error = null;
+            statusArea.$update(function(res) {
+                $scope.findStatusAreas();
+                $scope.selectStatusAreaForm(statusArea, 'view');
+            }, function(err) {
+                $scope.error = err.data.message;
+            });
+        };
+
+        $scope.cancelEditStatusArea = function(statusArea){
+            statusArea.name = originalStatusArea[statusArea._id].name;
+            statusArea.description = originalStatusArea[statusArea._id].description;
+            $scope.selectStatusAreaForm(statusArea, 'view');
+        };
+
+        // ------------------- DELETE -----------------
+
+        $scope.removeStatusArea = function(statusArea) {
+            $scope.error = null;
+            statusArea.$remove(function(res) {
+                $scope.findStatusAreas();
+            }, function(err) {
+                $scope.error = err.data.message;
+            });
+        };
+
+        // ------------------- NEW -----------------
+
+        $scope.createStatusArea = function() {
+            $scope.error = null;
+            var statusArea = new LogStatusAreas ({
+                name: 'New status area'
+            });
+            statusArea.$save(function(res) {
+                $scope.findStatusAreas();
+                $scope.selectStatusAreaForm(res, 'view');
+
+            }, function(err) {
+                $scope.error = err.data.message;
+            });
+        };
+
+
 
 	}
 ]);

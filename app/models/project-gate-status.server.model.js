@@ -13,8 +13,32 @@ require('mongoose-multitenant');
  */
 
 var OverallStatusRecord = {
-    status: {type: Schema.Types.ObjectId, ref: 'LogStatus', default:null, $tenant:true},
-    sourceProjectStatusReport: {type: Schema.Types.ObjectId, ref: 'ProjectStatusReport', default:null, $tenant:true},
+    status: {type: Schema.Types.ObjectId, ref: 'LogStatusIndicator', default:null, $tenant:true},
+    sourceStatusReport: {type: Schema.Types.ObjectId, ref: 'ProjectStatusReport', default:null, $tenant:true},
+    comment :{type: String, trim:true},
+    created: {type: Date, default: Date.now},
+    user: {type: Schema.ObjectId, ref: 'User'}
+};
+
+var DurationStatusRecord = {
+    status: {type: Schema.Types.ObjectId, ref: 'LogStatusIndicator', default:null, $tenant:true},
+    sourceStatusReport: {type: Schema.Types.ObjectId, ref: 'ProjectStatusReport', default:null, $tenant:true},
+    comment :{type: String, trim:true},
+    created: {type: Date, default: Date.now},
+    user: {type: Schema.ObjectId, ref: 'User'}
+};
+
+var CostStatusRecord = {
+    status: {type: Schema.Types.ObjectId, ref: 'LogStatusIndicator', default:null, $tenant:true},
+    sourceStatusReport: {type: Schema.Types.ObjectId, ref: 'ProjectStatusReport', default:null, $tenant:true},
+    comment :{type: String, trim:true},
+    created: {type: Date, default: Date.now},
+    user: {type: Schema.ObjectId, ref: 'User'}
+};
+
+var CompletionStatusRecord = {
+    status: {type: Schema.Types.ObjectId, ref: 'LogStatusIndicator', default:null, $tenant:true},
+    sourceStatusReport: {type: Schema.Types.ObjectId, ref: 'ProjectStatusReport', default:null, $tenant:true},
     comment :{type: String, trim:true},
     created: {type: Date, default: Date.now},
     user: {type: Schema.ObjectId, ref: 'User'}
@@ -27,6 +51,21 @@ var ProjectGateStatusSchema = new Schema({
     overallStatus : {
         currentRecord: OverallStatusRecord,
         history:[OverallStatusRecord]
+    },
+
+    durationStatus : {
+        currentRecord: DurationStatusRecord,
+        history:[DurationStatusRecord]
+    },
+
+    costStatus : {
+        currentRecord: CostStatusRecord,
+        history:[CostStatusRecord]
+    },
+
+    completionStatus : {
+        currentRecord: CompletionStatusRecord,
+        history:[CompletionStatusRecord]
     }
 
 

@@ -5,13 +5,14 @@
  */
 var mongoose = require('mongoose'),
 	errorHandler = require('./errors.server.controller'),
-	ProjectGateStatus = mongoose.model('ProjectGateStatus'),
+	async = require('async'),
 	_ = require('lodash');
 
 /**
  * Create a Project gate status
  */
 exports.create = function(req, res) {
+	var ProjectGateStatus = mongoose.mtModel(req.user.tenantId + '.' + 'ProjectGateStatus');
 	var projectGateStatus = new ProjectGateStatus(req.body);
 	projectGateStatus.user = req.user;
 
@@ -72,8 +73,9 @@ exports.delete = function(req, res) {
 /**
  * List of Project gate statuses
  */
-exports.list = function(req, res) { 
-	ProjectGateStatus.find().sort('-created').populate('user', 'displayName').exec(function(err, projectGateStatuses) {
+exports.list = function(req, res) {
+	var ProjectGateStatus = mongoose.mtModel(req.user.tenantId + '.' + 'ProjectGateStatus');
+	ProjectGateStatus.find().populate('user', 'displayName').exec(function(err, projectGateStatuses) {
 		if (err) {
 			return res.status(400).send({
 				message: errorHandler.getErrorMessage(err)
@@ -87,7 +89,8 @@ exports.list = function(req, res) {
 /**
  * Project gate status middleware
  */
-exports.projectGateStatusByID = function(req, res, next, id) { 
+exports.projectGateStatusByID = function(req, res, next, id) {
+	var ProjectGateStatus = mongoose.mtModel(req.user.tenantId + '.' + 'ProjectGateStatus');
 	ProjectGateStatus.findById(id).populate('user', 'displayName').exec(function(err, projectGateStatus) {
 		if (err) return next(err);
 		if (! projectGateStatus) return next(new Error('Failed to load Project gate status ' + id));
@@ -100,8 +103,14 @@ exports.projectGateStatusByID = function(req, res, next, id) {
  * Project gate status authorization middleware
  */
 exports.hasAuthorization = function(req, res, next) {
-	if (req.projectGateStatus.user.id !== req.user.id) {
-		return res.status(403).send('User is not authorized');
-	}
-	next();
+    var roleIsAuthorized = _.some(req.user.roles, function(role){
+        return (role === 'superAdmin' || role === 'admin' || role === 'pmo');
+    });
+    if(!roleIsAuthorized){
+        return res.status(403).send({
+            message: 'Role is not authorized'
+        });
+    }
+
+    next();
 };

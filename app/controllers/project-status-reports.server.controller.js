@@ -5,13 +5,14 @@
  */
 var mongoose = require('mongoose'),
 	errorHandler = require('./errors.server.controller'),
-	ProjectStatusReport = mongoose.model('ProjectStatusReport'),
+	async = require('async'),
 	_ = require('lodash');
 
 /**
  * Create a Project status report
  */
 exports.create = function(req, res) {
+	var ProjectStatusReport = mongoose.mtModel(req.user.tenantId + '.' + 'ProjectStatusReport');
 	var projectStatusReport = new ProjectStatusReport(req.body);
 	projectStatusReport.user = req.user;
 
@@ -72,8 +73,9 @@ exports.delete = function(req, res) {
 /**
  * List of Project status reports
  */
-exports.list = function(req, res) { 
-	ProjectStatusReport.find().sort('-created').populate('user', 'displayName').exec(function(err, projectStatusReports) {
+exports.list = function(req, res) {
+    var ProjectStatusReport = mongoose.mtModel(req.user.tenantId + '.' + 'ProjectStatusReport');
+    ProjectStatusReport.find().populate('user', 'displayName').exec(function(err, projectStatusReports) {
 		if (err) {
 			return res.status(400).send({
 				message: errorHandler.getErrorMessage(err)
@@ -87,8 +89,9 @@ exports.list = function(req, res) {
 /**
  * Project status report middleware
  */
-exports.projectStatusReportByID = function(req, res, next, id) { 
-	ProjectStatusReport.findById(id).populate('user', 'displayName').exec(function(err, projectStatusReport) {
+exports.projectStatusReportByID = function(req, res, next, id) {
+    var ProjectStatusReport = mongoose.mtModel(req.user.tenantId + '.' + 'ProjectStatusReport');
+    ProjectStatusReport.findById(id).populate('user', 'displayName').exec(function(err, projectStatusReport) {
 		if (err) return next(err);
 		if (! projectStatusReport) return next(new Error('Failed to load Project status report ' + id));
 		req.projectStatusReport = projectStatusReport ;
@@ -100,8 +103,14 @@ exports.projectStatusReportByID = function(req, res, next, id) {
  * Project status report authorization middleware
  */
 exports.hasAuthorization = function(req, res, next) {
-	if (req.projectStatusReport.user.id !== req.user.id) {
-		return res.status(403).send('User is not authorized');
-	}
-	next();
+    var roleIsAuthorized = _.some(req.user.roles, function(role){
+        return (role === 'superAdmin' || role === 'admin' || role === 'pmo');
+    });
+    if(!roleIsAuthorized){
+        return res.status(403).send({
+            message: 'Role is not authorized'
+        });
+    }
+
+    next();
 };

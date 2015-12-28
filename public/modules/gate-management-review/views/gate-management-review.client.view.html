@@ -283,7 +283,6 @@
                                                                         <label for="newScore">New overall score</label>
                                                                         <select id="newScore" class="form-control" data-ng-model = "selectedGateReview.overallScore"
                                                                                 ng-options="score._id as score.name for score in outcomeScores" disabled>
-                                                                            <option value="">--choose score</option>
                                                                         </select>
                                                                     </div>
                                                                 </div>
@@ -299,7 +298,6 @@
                                                                         <label for="newStatus">New gate status</label>
                                                                         <select id="newStatus" class="form-control" data-ng-model = "selectedGateReview.status"
                                                                                 ng-options="gateStatus._id as gateStatus.name for gateStatus in gateStatuses" disabled>
-                                                                            <option value="">--choose status</option>
                                                                         </select>
                                                                     </div>
                                                                 </div>

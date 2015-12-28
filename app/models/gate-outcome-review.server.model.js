@@ -21,7 +21,7 @@ var OutcomeReviewRecord = {
 };
 
 var StatusUpdateRecord = {
-    status: {type: Schema.Types.ObjectId, ref: 'LogStatus', default:null, $tenant:true},
+    status: {type: Schema.Types.ObjectId, ref: 'LogStatusIndicator', default:null, $tenant:true},
     sourceStatusReport: {type: Schema.Types.ObjectId, ref: 'ProjectStatusReport', default:null, $tenant:true},
     comment :{type: String, trim:true},
     created: {type: Date, default: Date.now},
