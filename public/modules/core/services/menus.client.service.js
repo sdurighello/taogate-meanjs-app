@@ -320,45 +320,50 @@ angular.module('core').service('Menus', [
                 // Gate reviews
         this.addSubMenuItem('topbar', 'delivery', 'Gate reviews', 'gate-management-review','gate-management-review',false,
             ['superAdmin','admin','PMO','projectManager','portfolioManager','executive'],2);
-            // Project delivery logs
+            // Change requests
         this.addSubMenuItem('topbar', 'delivery', '', 'divider','divider',false,
             ['superAdmin','admin','PMO','projectManager','portfolioManager','executive'],3);
-        this.addSubMenuItem('topbar', 'delivery', 'Project delivery logs', 'menuTitle','menuTitle',false,
+        this.addSubMenuItem('topbar', 'delivery', 'Change requests', 'menuTitle','menuTitle',false,
             ['superAdmin','admin','PMO','projectManager','portfolioManager','executive'],4);
                 // Project change requests
-        this.addSubMenuItem('topbar', 'delivery', 'Change requests', 'project-log-change','financial-analysis',false,
+        this.addSubMenuItem('topbar', 'delivery', 'Project changes', 'project-change-requests','project-change-requests',false,
             ['superAdmin','admin','PMO','projectManager','portfolioManager','executive'],5);
-                // Project issues
-        this.addSubMenuItem('topbar', 'delivery', 'Issues', 'project-log-issue','financial-analysis',false,
-            ['superAdmin','admin','PMO','projectManager','portfolioManager','executive'],6);
-                // Project milestones
-        this.addSubMenuItem('topbar', 'delivery', 'Milestones', 'project-log-milestone','financial-analysis',false,
+				// Portfolio change requests
+		this.addSubMenuItem('topbar', 'delivery', 'Portfolio changes', 'portfolio-change-requests','portfolio-change-requests',false,
+			['superAdmin','admin','PMO','projectManager','portfolioManager','executive'],6);
+            // Issues
+        this.addSubMenuItem('topbar', 'delivery', '', 'divider','divider',false,
             ['superAdmin','admin','PMO','projectManager','portfolioManager','executive'],7);
-            // Portfolio delivery logs
-        this.addSubMenuItem('topbar', 'delivery', '', 'divider','divider',false,
+        this.addSubMenuItem('topbar', 'delivery', 'Issues', 'menuTitle','menuTitle',false,
             ['superAdmin','admin','PMO','projectManager','portfolioManager','executive'],8);
-        this.addSubMenuItem('topbar', 'delivery', 'Portfolio delivery logs', 'menuTitle','menuTitle',false,
-            ['superAdmin','admin','PMO','projectManager','portfolioManager','executive'],9);
-                // Portfolio change requests
-        this.addSubMenuItem('topbar', 'delivery', 'Change requests', 'portfolio-log-change','financial-analysis',false,
-            ['superAdmin','admin','PMO','projectManager','portfolioManager','executive'],10);
+				// Project issues
+		this.addSubMenuItem('topbar', 'delivery', 'Project issues', 'project-issues','project-issues',false,
+			['superAdmin','admin','PMO','projectManager','portfolioManager','executive'],9);
                 // Portfolio issues
-        this.addSubMenuItem('topbar', 'delivery', 'Issues', 'portfolio-log-issue','financial-analysis',false,
-            ['superAdmin','admin','PMO','projectManager','portfolioManager','executive'],11);
+        this.addSubMenuItem('topbar', 'delivery', 'Portfolio issues', 'portfolio-issues','portfolio-issues',false,
+            ['superAdmin','admin','PMO','projectManager','portfolioManager','executive'],10);
+			// Milestones
+		this.addSubMenuItem('topbar', 'delivery', '', 'divider','divider',false,
+			['superAdmin','admin','PMO','projectManager','portfolioManager','executive'],11);
+		this.addSubMenuItem('topbar', 'delivery', 'Milestones', 'menuTitle','menuTitle',false,
+			['superAdmin','admin','PMO','projectManager','portfolioManager','executive'],12);
+				// Project milestones
+		this.addSubMenuItem('topbar', 'delivery', 'Project milestones', 'project-log-milestone','financial-analysis',false,
+			['superAdmin','admin','PMO','projectManager','portfolioManager','executive'],13);
                 // Portfolio milestones
-        this.addSubMenuItem('topbar', 'delivery', 'Milestones', 'portfolio-log-milestone','financial-analysis',false,
-            ['superAdmin','admin','PMO','projectManager','portfolioManager','executive'],12);
-            // Status
-        this.addSubMenuItem('topbar', 'delivery', '', 'divider','divider',false,
-            ['superAdmin','admin','PMO','projectManager','portfolioManager','executive'],13);
-        this.addSubMenuItem('topbar', 'delivery', 'Status', 'menuTitle','menuTitle',false,
+        this.addSubMenuItem('topbar', 'delivery', 'Portfolio milestones', 'portfolio-log-milestone','financial-analysis',false,
             ['superAdmin','admin','PMO','projectManager','portfolioManager','executive'],14);
+            // Status reports
+        this.addSubMenuItem('topbar', 'delivery', '', 'divider','divider',false,
+            ['superAdmin','admin','PMO','projectManager','portfolioManager','executive'],15);
+        this.addSubMenuItem('topbar', 'delivery', 'Status', 'menuTitle','menuTitle',false,
+            ['superAdmin','admin','PMO','projectManager','portfolioManager','executive'],16);
                 // Project status
         this.addSubMenuItem('topbar', 'delivery', 'Project status', 'project-status','financial-analysis',false,
-            ['superAdmin','admin','PMO','projectManager','portfolioManager','executive'],15);
+            ['superAdmin','admin','PMO','projectManager','portfolioManager','executive'],17);
                 // Portfolio status
         this.addSubMenuItem('topbar', 'delivery', 'Portfolio status', 'portfolio-status','financial-analysis',false,
-            ['superAdmin','admin','PMO','projectManager','portfolioManager','executive'],16);
+            ['superAdmin','admin','PMO','projectManager','portfolioManager','executive'],18);
 
 
 

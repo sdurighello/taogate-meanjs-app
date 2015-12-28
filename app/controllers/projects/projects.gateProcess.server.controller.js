@@ -35,6 +35,8 @@ exports.updateProcessAssignment = function(req, res) {
     var GateProcess = mongoose.mtModel(req.user.tenantId + '.' + 'GateProcess');
     var Gate = mongoose.mtModel(req.user.tenantId + '.' + 'Gate');
     var GateReview = mongoose.mtModel(req.user.tenantId + '.' + 'GateReview');
+    var ProjectChangeRequest = mongoose.mtModel(req.user.tenantId + '.' + 'ProjectChangeRequest');
+
 
 
     async.series([
@@ -213,6 +215,21 @@ exports.updateProcessAssignment = function(req, res) {
                         if(err) { callback(err); } else {
                             async.each(gateReviews, function(gateReview, callback){
                                 gateReview.remove(function(err){
+                                    callback(err);
+                                });
+                            }, function(err){
+                                if(err){ callback(err); }
+                            });
+                        }
+                        callback(null);
+                    });
+                },
+                // Change Requests
+                function(callback){
+                    ProjectChangeRequest.find({project: project._id}, function(err, projectChangeRequests){
+                        if(err) { callback(err); } else {
+                            async.each(projectChangeRequests, function(cr, callback){
+                                cr.remove(function(err){
                                     callback(err);
                                 });
                             }, function(err){

@@ -14,7 +14,15 @@ require('mongoose-multitenant');
 
 var OutcomeReviewRecord = {
     score: {type: Schema.Types.ObjectId, ref: 'GateOutcomeScore', default:null, $tenant:true},
-    sourceReview: {type: Schema.Types.ObjectId, ref: 'GateReview', default:null, $tenant:true},
+    sourceGateReview: {type: Schema.Types.ObjectId, ref: 'GateReview', default:null, $tenant:true},
+    comment :{type: String, trim:true},
+    created: {type: Date, default: Date.now},
+    user: {type: Schema.ObjectId, ref: 'User'}
+};
+
+var StatusUpdateRecord = {
+    status: {type: Schema.Types.ObjectId, ref: 'LogStatus', default:null, $tenant:true},
+    sourceStatusReport: {type: Schema.Types.ObjectId, ref: 'ProjectStatusReport', default:null, $tenant:true},
     comment :{type: String, trim:true},
     created: {type: Date, default: Date.now},
     user: {type: Schema.ObjectId, ref: 'User'}
@@ -26,7 +34,10 @@ var GateOutcomeReviewSchema = new Schema({
     outcome:{type: Schema.Types.ObjectId, ref: 'GateOutcome', $tenant:true},
 
     currentRecord: OutcomeReviewRecord,
-    history:[OutcomeReviewRecord]
+    history:[OutcomeReviewRecord],
+
+    currentStatus: StatusUpdateRecord,
+    historyStatus:[StatusUpdateRecord]
 });
 
 GateOutcomeReviewSchema.plugin(deepPopulate);

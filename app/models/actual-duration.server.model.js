@@ -14,8 +14,8 @@ require('mongoose-multitenant');
 
 var PerformanceReviewRecord = {
 	gateDate: {type: Date, default: null},
-	sourceDoc: {type: Schema.Types.ObjectId, ref: 'ProjectChangeRequest', default:null, $tenant:true},
-	sourceReview: {type: Schema.Types.ObjectId, ref: 'GateReview', default:null, $tenant:true},
+	sourceChangeRequest: {type: Schema.Types.ObjectId, ref: 'ProjectChangeRequest', default:null, $tenant:true},
+	sourceGateReview: {type: Schema.Types.ObjectId, ref: 'GateReview', default:null, $tenant:true},
 	created: {type: Date, default: Date.now},
 	user: {type: Schema.ObjectId, ref: 'User'}
 };

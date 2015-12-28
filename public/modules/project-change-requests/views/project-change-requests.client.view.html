@@ -1,0 +1,757 @@
+<section data-ng-controller="ProjectChangeRequestController"  data-ng-init="init()">
+	<br>
+	<div class="row">
+		<div class="col-sm-12">
+			<div class="panel-heading">
+				<ol class="breadcrumb">
+					<li>Portfolio delivery</li>
+					<li>Change Requests</li>
+					<li class="active">Project change requests</li>
+				</ol>
+			</div>
+		</div>
+	</div>
+	<div data-ng-show="initError" class="text-danger">
+		<strong data-ng-bind="initError"></strong>
+	</div>
+	<div class="row">
+		<div class="col-sm-3"><!-- PROJECTS LIST -->
+			<div class="panel panel-default">
+				<div class="panel-heading">
+					<h6 class="panel-title text-center">Projects</h6>
+				</div>
+				<div class="panel-body">
+					<div class="row">
+						<div class=" form-group col-md-12">
+							<select id="" class="form-control input-sm" data-ng-model="filterProfileProcess"
+									ng-options="process.name for process in gateProcesses">
+								<option value="">--filter by gate process</option>
+							</select>
+						</div>
+						<div class=" form-group col-md-12">
+							<select id="" class="form-control input-sm" data-ng-model="filterProfilePortfolio"
+									ng-options="portfolio.name for portfolio in portfolios">
+								<option value="">--filter by portfolio</option>
+							</select>
+						</div>
+						<div class="col-md-12 form-group-sm">
+							<input id="" type="text" class="form-control input-sm"
+								   data-ng-model="filterProfileProject.name" placeholder="Filter by project name">
+						</div>
+					</div>
+					<hr>
+					<div class="row" style="min-height: 350px; max-height: 350px; overflow-y: auto">
+						<div class="col-md-12">
+							<div data-ng-show="projects.length === 0" class="alert alert-warning text-center">
+								There are no projects in delivery
+							</div>
+							<button type="button"
+									data-ng-repeat="project in projects | filter:{identification: filterProfileProject, portfolio: filterProfilePortfolio._id, process: filterProfileProcess._id} "
+									data-ng-click="selectProject(project)"
+									class="btn btn-default btn-sm center-block btn-block" style="overflow: hidden;">
+								{{project.identification.idNumber}} - {{project.identification.name}}
+							</button>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="col-md-9">
+			<div class="row">
+				<div class="col-md-12">
+					<div data-ng-hide="selectedProject || projects.length === 0" class="alert alert-warning text-center">
+						Select a project to see its details
+					</div>
+				</div>
+			</div>
+			<div class="row" data-ng-show="selectedProject">
+				<div class="col-md-12">
+					<div class="row">
+						<div class="col-sm-6">
+							<div class="panel panel-default">
+								<div><h5>&nbsp;Project: <i>{{selectedProject.identification.name}}</i></h5></div>
+							</div>
+						</div>
+						<div class="col-sm-6">
+							<div class="panel panel-default">
+								<div><h5>&nbsp;Process: <i>{{selectedProject.process.name}}</i></h5></div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-md-12">
+					<tabset type="pills">
+						<tab data-ng-repeat="reviewObject in projectChangeRequestList track by $index"
+							 heading="{{reviewObject.gate.name}}" select="changeGate()">
+							<hr>
+							<div class="row" data-ng-show="showNewProjectChangeRequestForm">
+								<div class="col-md-12">
+									<div class="panel panel-default">
+										<div class="panel-heading">
+											<h6 class="panel-title">
+												New change request
+											</h6>
+										</div>
+										<div class="panel-body">
+											<form class="form" name="newProjectChangeRequestForm">
+												<div class="row">
+													<div class="form-group-sm col-md-3">
+														<label for="">Raised on date</label>
+														<div class="input-group">
+															<input type="text" id="" class="form-control" datepicker-popup="dd-MMMM-yyyy" data-ng-model="newProjectChangeRequest.raisedOnDate"
+																   is-open="newProjectCRRaisedOnDateOpened[reviewObject.gate._id]" >
+                                                                <span class="input-group-btn">
+                                                                    <button type="button" class="btn btn-default btn-sm" ng-click="openNewProjectCRRaisedOnDate(reviewObject.gate, $event)"><i class="glyphicon glyphicon-calendar"></i></button>
+                                                                </span>
+														</div>
+													</div>
+													<div class="form-group-sm col-md-6">
+														<label for="reviewTitleNew">Request title</label>
+														<input id="reviewTitleNew" name="reviewTitleNew" class="form-control" type="text" placeholder="Enter request title"
+															   data-ng-model="newProjectChangeRequest.title" >
+													</div>
+												</div>
+												<hr>
+												<div class="form-group-sm pull-right">
+													<button class="btn btn-success btn-xs" data-ng-click="createNewProjectChangeRequest(selectedProject, reviewObject.gate); showNewProjectChangeRequestForm = false;">
+														Save
+													</button>
+													<button class="btn btn-info btn-xs" data-ng-click="cancelNewProjectChangeRequest(); showNewProjectChangeRequestForm = false;">
+														Cancel
+													</button>
+												</div>
+											</form>
+										</div>
+									</div>
+								</div>
+							</div>
+							<div class="row" data-ng-show="!showNewProjectChangeRequestForm">
+								<div class="col-md-3">
+									<div class="row" data-ng-show="!showNewProjectChangeRequestForm">
+										<div class="col-md-12 form-group-sm center-block">
+											<button class="btn btn-warning btn-sm" ng-click="showNewProjectChangeRequestForm = true">
+												New change request
+											</button>
+										</div>
+									</div>
+									<br>
+									<div class="row">
+										<div class="col-md-12">
+											<div class="panel panel-default">
+												<div class="panel-heading">
+													<h6 class="panel-title text-center">Change requests</h6>
+												</div>
+												<div class="panel-body" style="min-height: 350px; max-height: 350px; overflow-y: auto">
+													<div data-ng-show="reviewObject.projectChangeRequests.length === 0" class="alert alert-warning text-center">
+														There are no change requests for this gate
+													</div>
+													<button type="button"
+															data-ng-repeat="projectChangeRequest in reviewObject.projectChangeRequests | orderBy: sortProjectChangeRequests : true"
+															data-ng-click="selectProjectChangeRequest(projectChangeRequest)"
+															class="btn btn-sm center-block btn-block" style="overflow: hidden;"
+															data-ng-class="{'btn-default' : projectChangeRequest.statusReview.currentRecord.completed, 'btn-info' : !projectChangeRequest.statusReview.currentRecord.completed}">
+														<span class="small">{{projectChangeRequest.raisedOnDate | date:'EEE d, MMM yyyy'}}</span>
+														<br>
+														<span class="small">{{projectChangeRequest.title}}</span>
+													</button>
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+								<div class="col-md-9">
+									<div data-ng-hide="selectedProjectChangeRequest || reviewObject.projectChangeRequests.length === 0" class="alert alert-warning text-center">
+										Select a change request to see its details
+									</div>
+									<div class="row" data-ng-show="selectedProjectChangeRequest">
+										<div class="col-md-12">
+											<div class="panel panel-default">
+												<div class="panel-heading">
+													<div class="row">
+														<div class="col-md-9 text-center">
+															<b><em>{{selectedProjectChangeRequest.raisedOnDate | date:'EEE d, MMM yyyy'}} - {{selectedProjectChangeRequest.title}}</em></b>
+														</div>
+													</div>
+												</div>
+												<div class="row">
+													<div class="col-md-6 btn-group btn-group-xs btn-group-justified">
+														<label class="btn btn-info btn-xs" data-ng-model="projectChangeRequestDetails" btn-radio="'header'">
+															Header
+														</label>
+														<label class="btn btn-info btn-xs" data-ng-model="projectChangeRequestDetails" btn-radio="'status'">
+															Status
+														</label>
+														<label class="btn btn-info btn-xs" data-ng-model="projectChangeRequestDetails" btn-radio="'duration'">
+															Duration
+														</label>
+														<label class="btn btn-info btn-xs" data-ng-model="projectChangeRequestDetails" btn-radio="'cost'">
+															Cost
+														</label>
+														<label class="btn btn-info btn-xs" data-ng-model="projectChangeRequestDetails" btn-radio="'completion'">
+															Completion
+														</label>
+														<label class="btn btn-info btn-xs" data-ng-model="projectChangeRequestDetails" btn-radio="'applyChange'">
+															Apply change
+														</label>
+													</div>
+												</div>
+												<div class="panel-body" style="min-height: 375px; max-height: 375px; overflow-y: auto">
+													<div data-ng-show="projectChangeRequestDetails === 'header'">
+														<div data-ng-switch="switchHeaderForm[selectedProjectChangeRequest._id]">
+															<form data-ng-switch-default="view">
+																<div class="row">
+																	<div class="form-group-sm col-md-5">
+																		<label for="">Raised on date</label>
+																		<input type="text" id="" class="form-control" datepicker-popup="dd-MMMM-yyyy" data-ng-model="selectedProjectChangeRequest.raisedOnDate" disabled />
+																	</div>
+																	<div class="form-group-sm col-md-7">
+																		<label for="reviewTitleEdit">Review title</label>
+																		<input id="reviewTitleEdit" name="reviewTitleNew" class="form-control" type="text" placeholder="Enter review title"
+																			   data-ng-model="selectedProjectChangeRequest.title" disabled>
+																	</div>
+																</div>
+																<br>
+																<div class="row">
+																	<div class="form-group-sm col-md-4">
+																		<label for="">Reason for change</label>
+																		<select id="" class="form-control" data-ng-model = "selectedProjectChangeRequest.reason"
+																				ng-options="reason._id as reason.name for reason in logReasons" disabled>
+																		</select>
+																	</div>
+																	<div class="form-group-sm col-md-4">
+																		<label for="">Priority</label>
+																		<select id="" class="form-control" data-ng-model = "selectedProjectChangeRequest.priority"
+																				ng-options="priority._id as priority.name for priority in logPriorities" disabled>
+																		</select>
+																	</div>
+																	<div class="form-group-sm col-md-4">
+																		<label for="">State</label>
+																		<select id="" class="form-control" data-ng-model = "selectedProjectChangeRequest.state"
+																				ng-options="state._id as state.name for state in changeRequestStates" disabled>
+																		</select>
+																	</div>
+																</div>
+																<br>
+																<div class="row">
+																	<div class="form-group-sm col-md-12">
+																		<label for="">Description</label>
+																		<textarea id="" class="form-control" data-ng-model="selectedProjectChangeRequest.description" disabled></textarea>
+																	</div>
+																</div>
+																<hr>
+																<div class="form-group-sm pull-right" data-ng-show="userHasAuthorization && !selectedProjectChangeRequest.final">
+																	<button class="btn btn-success btn-xs" data-ng-click="editHeader(selectedProjectChangeRequest)">
+																		Edit
+																	</button>
+																</div>
+															</form>
+															<form data-ng-switch-when="edit">
+																<div class="row">
+																	<div class="form-group-sm col-md-5">
+																		<label for="">Raised on date</label>
+																		<div class="input-group">
+																			<input type="text" id="" class="form-control" datepicker-popup="dd-MMMM-yyyy" data-ng-model="selectedProjectChangeRequest.raisedOnDate"
+																				   is-open="$parent.headerDateOpened[selectedProjectChangeRequest._id]" >
+                                                                            <span class="input-group-btn">
+                                                                                <button type="button" class="btn btn-default btn-sm" ng-click="openHeaderDate(selectedProjectChangeRequest, $event)"><i class="glyphicon glyphicon-calendar"></i></button>
+                                                                            </span>
+																		</div>
+																	</div>
+																	<div class="form-group-sm col-md-7">
+																		<label for="reviewTitleEdit">Review title</label>
+																		<input id="reviewTitleEdit" name="reviewTitleNew" class="form-control" type="text" placeholder="Enter title"
+																			   data-ng-model="selectedProjectChangeRequest.title" >
+																	</div>
+																</div>
+                                                                <br>
+                                                                <div class="row">
+                                                                    <div class="form-group-sm col-md-4">
+                                                                        <label for="">Reason for change</label>
+                                                                        <select id="" class="form-control" data-ng-model = "selectedProjectChangeRequest.reason"
+                                                                                ng-options="reason._id as reason.name for reason in logReasons" >
+                                                                            <option value="">--choose reason</option>
+                                                                        </select>
+                                                                    </div>
+                                                                    <div class="form-group-sm col-md-4">
+                                                                        <label for="">Priority</label>
+                                                                        <select id="" class="form-control" data-ng-model = "selectedProjectChangeRequest.priority"
+                                                                                ng-options="priority._id as priority.name for priority in logPriorities" >
+                                                                            <option value="">--choose priority</option>
+                                                                        </select>
+                                                                    </div>
+                                                                    <div class="form-group-sm col-md-4">
+                                                                        <label for="">State</label>
+                                                                        <select id="" class="form-control" data-ng-model = "selectedProjectChangeRequest.state"
+                                                                                ng-options="state._id as state.name for state in changeRequestStates" >
+                                                                            <option value="">--choose state</option>
+                                                                        </select>
+                                                                    </div>
+                                                                </div>
+																<br>
+																<div class="row">
+																	<div class="form-group-sm col-md-12">
+																		<label for="">Description</label>
+																		<textarea id="" class="form-control" placeholder="Enter description" data-ng-model="selectedProjectChangeRequest.description"></textarea>
+																	</div>
+																</div>
+																<hr>
+																<div class="form-group-sm pull-right">
+																	<button class="btn btn-success btn-xs" data-ng-click="saveEditHeader(selectedProjectChangeRequest)">
+																		Save
+																	</button>
+																	<button class="btn btn-danger btn-xs" data-ng-click="deleteProjectChangeRequest(reviewObject, selectedProjectChangeRequest)">
+																		Delete change request
+																	</button>
+																	<button class="btn btn-info btn-xs" data-ng-click="cancelEditHeader(selectedProjectChangeRequest)">
+																		Cancel
+																	</button>
+																</div>
+															</form>
+														</div>
+													</div>
+													<div data-ng-show="projectChangeRequestDetails === 'status'">
+														<div data-ng-switch="switchStatusForm[selectedProjectChangeRequest._id]">
+															<form data-ng-switch-default="view">
+																<div class="row">
+                                                                    <div class="form-group-sm col-md-4">
+                                                                        <label for="">Baseline delivery date</label>
+                                                                        <input type="text" id="" class="form-control" datepicker-popup="dd-MMMM-yyyy" data-ng-model="selectedProjectChangeRequest.statusReview.currentRecord.baselineDeliveryDate" disabled />
+                                                                    </div>
+                                                                    <div class="form-group-sm col-md-4">
+                                                                        <label for="">Estimate delivery date</label>
+                                                                        <input type="text" id="" class="form-control" datepicker-popup="dd-MMMM-yyyy" data-ng-model="selectedProjectChangeRequest.statusReview.currentRecord.estimateDeliveryDate" disabled />
+                                                                    </div>
+                                                                    <div class="form-group-sm col-md-4">
+                                                                        <label for="">Actual delivery date</label>
+                                                                        <input type="text" id="" class="form-control" datepicker-popup="dd-MMMM-yyyy" data-ng-model="selectedProjectChangeRequest.statusReview.currentRecord.actualDeliveryDate" disabled />
+                                                                    </div>
+                                                                </div>
+																<br>
+																<div class="row">
+                                                                    <div class="form-group-sm col-md-5">
+																		<label for="">Status</label>
+																		<select id="" class="form-control" data-ng-model = "selectedProjectChangeRequest.statusReview.currentRecord.status"
+																				ng-options="status._id as status.name for status in logStatuses" disabled>
+																		</select>
+																	</div>
+                                                                    <br>
+                                                                    <div class="form-group-sm col-md-5">
+                                                                        <label for="prjCrEditCompleted">Completed</label>
+                                                                        <input id="prjCrEditCompleted" class="" type="checkbox"
+                                                                               data-ng-model="selectedProjectChangeRequest.statusReview.currentRecord.completed" disabled>
+                                                                    </div>
+																</div>
+                                                                <br>
+                                                                <div class="row">
+                                                                    <div class="form-group-sm col-md-12">
+                                                                        <label for="">Status comment</label>
+                                                                        <textarea id="" class="form-control" data-ng-model="selectedProjectChangeRequest.statusReview.currentRecord.statusComment" disabled></textarea>
+                                                                    </div>
+                                                                </div>
+																<hr>
+																<div class="pull-right" data-ng-show="userHasAuthorization">
+																	<button class="btn btn-success btn-xs" data-ng-click="editStatus(selectedProjectChangeRequest)">
+																		Edit
+																	</button>
+																</div>
+															</form>
+															<form data-ng-switch-when="edit">
+                                                                <div class="row">
+                                                                    <div class="form-group-sm col-md-4">
+                                                                        <label for="">Baseline delivery date</label>
+                                                                        <div class="input-group">
+                                                                            <input type="text" id="" class="form-control" datepicker-popup="dd-MMMM-yyyy" data-ng-model="selectedProjectChangeRequest.statusReview.currentRecord.baselineDeliveryDate"
+                                                                                   is-open="$parent.baselineDeliveryDateOpened[selectedProjectChangeRequest._id]" >
+                                                                            <span class="input-group-btn">
+                                                                                <button type="button" class="btn btn-default btn-sm" ng-click="openBaselineDeliveryDate(selectedProjectChangeRequest, $event)"><i class="glyphicon glyphicon-calendar"></i></button>
+                                                                            </span>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="form-group-sm col-md-4">
+                                                                        <label for="">Estimate delivery date</label>
+                                                                        <div class="input-group">
+                                                                            <input type="text" id="" class="form-control" datepicker-popup="dd-MMMM-yyyy" data-ng-model="selectedProjectChangeRequest.statusReview.currentRecord.estimateDeliveryDate"
+                                                                                   is-open="$parent.estimateDeliveryDateOpened[selectedProjectChangeRequest._id]" >
+                                                                            <span class="input-group-btn">
+                                                                                <button type="button" class="btn btn-default btn-sm" ng-click="openEstimateDeliveryDate(selectedProjectChangeRequest, $event)"><i class="glyphicon glyphicon-calendar"></i></button>
+                                                                            </span>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="form-group-sm col-md-4">
+                                                                        <label for="">Actual delivery date</label>
+                                                                        <div class="input-group">
+                                                                            <input type="text" id="" class="form-control" datepicker-popup="dd-MMMM-yyyy" data-ng-model="selectedProjectChangeRequest.statusReview.currentRecord.actualDeliveryDate"
+                                                                                   is-open="$parent.actualDeliveryDateOpened[selectedProjectChangeRequest._id]" >
+                                                                            <span class="input-group-btn">
+                                                                                <button type="button" class="btn btn-default btn-sm" ng-click="openActualDeliveryDate(selectedProjectChangeRequest, $event)"><i class="glyphicon glyphicon-calendar"></i></button>
+                                                                            </span>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                                <br>
+                                                                <div class="row">
+                                                                    <div class="form-group-sm col-md-5">
+                                                                        <label for="">Status</label>
+                                                                        <select id="" class="form-control" data-ng-model = "selectedProjectChangeRequest.statusReview.currentRecord.status"
+                                                                                data-ng-options="status._id as status.name for status in logStatuses" >
+                                                                            <option value="">--choose status</option>
+                                                                        </select>
+                                                                    </div>
+                                                                    <br>
+                                                                    <div class="form-group-sm col-md-5">
+                                                                        <label for="prjCrEditCompleted">Completed</label>
+                                                                        <input id="prjCrEditCompleted" class="" type="checkbox"
+                                                                               data-ng-model="selectedProjectChangeRequest.statusReview.currentRecord.completed" >
+                                                                    </div>
+                                                                </div>
+                                                                <br>
+                                                                <div class="row">
+                                                                    <div class="form-group-sm col-md-12">
+                                                                        <label for="">Status comment</label>
+                                                                        <textarea id="" class="form-control" placeholder="Enter status comment" data-ng-model="selectedProjectChangeRequest.statusReview.currentRecord.statusComment" ></textarea>
+                                                                    </div>
+                                                                </div>
+																<hr>
+																<div class="pull-right">
+																	<button class="btn btn-success btn-xs" data-ng-click="saveEditStatus(selectedProjectChangeRequest)">
+																		Save
+																	</button>
+																	<button class="btn btn-info btn-xs" data-ng-click="cancelEditStatus(selectedProjectChangeRequest)">
+																		Cancel
+																	</button>
+																</div>
+															</form>
+														</div>
+													</div>
+													<div data-ng-show="projectChangeRequestDetails === 'duration'">
+														<table class="table small">
+															<caption>
+																Baseline duration
+															</caption>
+															<tr>
+																<th>Target gate</th>
+																<th>Current date</th>
+																<th>New date</th>
+																<th> </th>
+															</tr>
+															<tr data-ng-repeat="baselineDurationReview in selectedProjectChangeRequest.baselineDurationReviews | orderBy: 'baselineDuration.targetGate.position'">
+																<td>
+																	<span data-ng-bind="baselineDurationReview.baselineDuration.targetGate.name"></span>
+																</td>
+																<td>
+																	<span data-ng-show="!baselineDurationReview.baselineDuration.currentRecord.gateDate">No baseline yet</span>
+																	<span data-ng-bind="baselineDurationReview.baselineDuration.currentRecord.gateDate | date:'EEE d, MMM yyyy'"></span>
+																</td>
+																<td colspan="2">
+																	<div data-ng-switch="switchBaselineDurationForm[baselineDurationReview._id]">
+																		<div data-ng-switch-default="view">
+																			<span data-ng-show="!baselineDurationReview.newDate">No new baseline yet</span>
+																			<span data-ng-bind="baselineDurationReview.newDate | date:'EEE d, MMM yyyy'"></span>
+																			<button class="btn btn-primary btn-xs" data-ng-show="userHasAuthorization" data-ng-click="editBaselineDuration(baselineDurationReview)">
+																				<span class="glyphicon glyphicon-pencil"></span>
+																			</button>
+																		</div>
+																		<div data-ng-switch-when="edit">
+																			<div class="input-group input-group-sm">
+																				<input type="text" id="" class="form-control" datepicker-popup="dd-MMMM-yyyy" data-ng-model="baselineDurationReview.newDate"
+																					   is-open="$parent.baselineDurationDateOpened[baselineDurationReview._id]"/>
+                                                                    <span class="input-group-btn">
+                                                                        <button type="button" class="btn btn-default" data-ng-click="openBaselineDurationDate(baselineDurationReview, $event)"><i class="glyphicon glyphicon-calendar"></i></button>
+                                                                    </span>
+																			</div>
+																			<br>
+																			<button class="btn btn-success btn-xs" data-ng-click="saveEditBaselineDuration(selectedProjectChangeRequest, baselineDurationReview)">
+																				<span class="glyphicon glyphicon-ok"></span>
+																			</button>
+																			<button class="btn btn-info btn-xs" data-ng-click="cancelEditBaselineDuration(baselineDurationReview)">
+																				<span class="glyphicon glyphicon-remove"></span>
+																			</button>
+																		</div>
+																	</div>
+																</td>
+															</tr>
+														</table>
+														<table class="table small">
+															<caption>
+																Actual duration
+															</caption>
+															<tr>
+																<th>Target gate</th>
+																<th>Current date</th>
+																<th>New date</th>
+																<th> </th>
+															</tr>
+															<tr data-ng-repeat="actualDurationReview in selectedProjectChangeRequest.actualDurationReviews | orderBy: 'actualDuration.targetGate.position'">
+																<td>
+																	<span data-ng-bind="actualDurationReview.actualDuration.targetGate.name"></span>
+																</td>
+																<td>
+																	<span data-ng-show="!actualDurationReview.actualDuration.currentRecord.gateDate">No actual yet</span>
+																	<span data-ng-bind="actualDurationReview.actualDuration.currentRecord.gateDate | date:'EEE d, MMM yyyy'"></span>
+																</td>
+																<td colspan="2">
+																	<div data-ng-switch="switchActualDurationForm[actualDurationReview._id]">
+																		<div data-ng-switch-default="view">
+																			<span data-ng-show="!actualDurationReview.newDate">No new actual yet</span>
+																			<span data-ng-bind="actualDurationReview.newDate | date:'EEE d, MMM yyyy'"></span>
+																			<button class="btn btn-primary btn-xs" data-ng-show="userHasAuthorization" data-ng-click="editActualDuration(actualDurationReview)">
+																				<span class="glyphicon glyphicon-pencil"></span>
+																			</button>
+																		</div>
+																		<div data-ng-switch-when="edit">
+																			<div class="input-group input-group-sm">
+																				<input type="text" id="" class="form-control" datepicker-popup="dd-MMMM-yyyy" data-ng-model="actualDurationReview.newDate"
+																					   is-open="$parent.actualDurationDateOpened[actualDurationReview._id]"/>
+                                                                    <span class="input-group-btn">
+                                                                        <button type="button" class="btn btn-default" data-ng-click="openActualDurationDate(actualDurationReview, $event)"><i class="glyphicon glyphicon-calendar"></i></button>
+                                                                    </span>
+																			</div>
+																			<br>
+																			<button class="btn btn-success btn-xs" data-ng-click="saveEditActualDuration(selectedProjectChangeRequest, actualDurationReview)">
+																				<span class="glyphicon glyphicon-ok"></span>
+																			</button>
+																			<button class="btn btn-info btn-xs" data-ng-click="cancelEditActualDuration(actualDurationReview)">
+																				<span class="glyphicon glyphicon-remove"></span>
+																			</button>
+																		</div>
+																	</div>
+																</td>
+															</tr>
+														</table>
+													</div>
+													<div data-ng-show="projectChangeRequestDetails === 'cost'">
+														<table class="table small">
+															<caption>
+																Baseline cost
+															</caption>
+															<tr>
+																<th>Target gate</th>
+																<th>Current cost</th>
+																<th>New cost</th>
+																<th> </th>
+															</tr>
+															<tr data-ng-repeat="baselineCostReview in selectedProjectChangeRequest.baselineCostReviews | orderBy: 'baselineCost.targetGate.position'">
+																<td>
+																	<span data-ng-bind="baselineCostReview.baselineCost.targetGate.name"></span>
+																</td>
+																<td>
+																	<span data-ng-show="!baselineCostReview.baselineCost.currentRecord.cost">No baseline yet</span>
+																	<span data-ng-bind="baselineCostReview.baselineCost.currentRecord.cost"></span>
+																</td>
+																<td colspan="2">
+																	<div data-ng-switch="switchBaselineCostForm[baselineCostReview._id]">
+																		<div data-ng-switch-default="view">
+																			<span data-ng-show="!baselineCostReview.newCost">No new baseline yet</span>
+																			<span data-ng-bind="baselineCostReview.newCost"></span>
+																			<button class="btn btn-primary btn-xs" data-ng-show="userHasAuthorization" data-ng-click="editBaselineCost(baselineCostReview)">
+																				<span class="glyphicon glyphicon-pencil"></span>
+																			</button>
+																		</div>
+																		<div data-ng-switch-when="edit">
+																			<div class="input-group input-group-sm">
+																				<input type="number" min="0" id="" class="form-control" data-ng-model="baselineCostReview.newCost">
+																			</div>
+																			<br>
+																			<button class="btn btn-success btn-xs" data-ng-click="saveEditBaselineCost(selectedProjectChangeRequest, baselineCostReview)">
+																				<span class="glyphicon glyphicon-ok"></span>
+																			</button>
+																			<button class="btn btn-info btn-xs" data-ng-click="cancelEditBaselineCost(baselineCostReview)">
+																				<span class="glyphicon glyphicon-remove"></span>
+																			</button>
+																		</div>
+																	</div>
+																</td>
+															</tr>
+														</table>
+														<table class="table small">
+															<caption>
+																Actual cost
+															</caption>
+															<tr>
+																<th>Target gate</th>
+																<th>Current cost</th>
+																<th>New cost</th>
+																<th> </th>
+															</tr>
+															<tr data-ng-repeat="actualCostReview in selectedProjectChangeRequest.actualCostReviews | orderBy: 'actualCost.targetGate.position'">
+																<td>
+																	<span data-ng-bind="actualCostReview.actualCost.targetGate.name"></span>
+																</td>
+																<td>
+																	<span data-ng-show="!actualCostReview.actualCost.currentRecord.cost">No actual yet</span>
+																	<span data-ng-bind="actualCostReview.actualCost.currentRecord.cost"></span>
+																</td>
+																<td colspan="2">
+																	<div data-ng-switch="switchActualCostForm[actualCostReview._id]">
+																		<div data-ng-switch-default="view">
+																			<span data-ng-show="!actualCostReview.newCost">No new actual yet</span>
+																			<span data-ng-bind="actualCostReview.newCost"></span>
+																			<button class="btn btn-primary btn-xs" data-ng-show="userHasAuthorization" data-ng-click="editActualCost(actualCostReview)">
+																				<span class="glyphicon glyphicon-pencil"></span>
+																			</button>
+																		</div>
+																		<div data-ng-switch-when="edit">
+																			<div class="input-group input-group-sm">
+																				<input type="number" min="0" id="" class="form-control" data-ng-model="actualCostReview.newCost">
+																			</div>
+																			<br>
+																			<button class="btn btn-success btn-xs" data-ng-click="saveEditActualCost(selectedProjectChangeRequest, actualCostReview)">
+																				<span class="glyphicon glyphicon-ok"></span>
+																			</button>
+																			<button class="btn btn-info btn-xs" data-ng-click="cancelEditActualCost(actualCostReview)">
+																				<span class="glyphicon glyphicon-remove"></span>
+																			</button>
+																		</div>
+																	</div>
+																</td>
+															</tr>
+														</table>
+													</div>
+													<div data-ng-show="projectChangeRequestDetails === 'completion'">
+														<table class="table small">
+															<caption>
+																Baseline completion
+															</caption>
+															<tr>
+																<th>Target gate</th>
+																<th>Current completion</th>
+																<th>New completion</th>
+																<th> </th>
+															</tr>
+															<tr data-ng-repeat="baselineCompletionReview in selectedProjectChangeRequest.baselineCompletionReviews | orderBy: 'baselineCompletion.targetGate.position'">
+																<td>
+																	<span data-ng-bind="baselineCompletionReview.baselineCompletion.targetGate.name"></span>
+																</td>
+																<td>
+																	<span data-ng-show="!baselineCompletionReview.baselineCompletion.currentRecord.completion">No baseline yet</span>
+																	<span data-ng-bind="baselineCompletionReview.baselineCompletion.currentRecord.completion"></span>
+																</td>
+																<td colspan="2">
+																	<div data-ng-switch="switchBaselineCompletionForm[baselineCompletionReview._id]">
+																		<div data-ng-switch-default="view">
+																			<span data-ng-show="!baselineCompletionReview.newCompletion">No new baseline yet</span>
+																			<span data-ng-bind="baselineCompletionReview.newCompletion"></span>
+																			<button class="btn btn-primary btn-xs" data-ng-show="userHasAuthorization" data-ng-click="editBaselineCompletion(baselineCompletionReview)">
+																				<span class="glyphicon glyphicon-pencil"></span>
+																			</button>
+																		</div>
+																		<div data-ng-switch-when="edit">
+																			<div class="input-group input-group-sm">
+																				<input type="number" min="0" id="" class="form-control" data-ng-model="baselineCompletionReview.newCompletion">
+																			</div>
+																			<br>
+																			<button class="btn btn-success btn-xs" data-ng-click="saveEditBaselineCompletion(selectedProjectChangeRequest, baselineCompletionReview)">
+																				<span class="glyphicon glyphicon-ok"></span>
+																			</button>
+																			<button class="btn btn-info btn-xs" data-ng-click="cancelEditBaselineCompletion(baselineCompletionReview)">
+																				<span class="glyphicon glyphicon-remove"></span>
+																			</button>
+																		</div>
+																	</div>
+																</td>
+															</tr>
+														</table>
+														<table class="table small">
+															<caption>
+																Actual completion
+															</caption>
+															<tr>
+																<th>Target gate</th>
+																<th>Current completion</th>
+																<th>New completion</th>
+																<th> </th>
+															</tr>
+															<tr data-ng-repeat="actualCompletionReview in selectedProjectChangeRequest.actualCompletionReviews | orderBy: 'actualCompletion.targetGate.position'">
+																<td>
+																	<span data-ng-bind="actualCompletionReview.actualCompletion.targetGate.name"></span>
+																</td>
+																<td>
+																	<span data-ng-show="!actualCompletionReview.actualCompletion.currentRecord.completion">No actual yet</span>
+																	<span data-ng-bind="actualCompletionReview.actualCompletion.currentRecord.completion"></span>
+																</td>
+																<td colspan="2">
+																	<div data-ng-switch="switchActualCompletionForm[actualCompletionReview._id]">
+																		<div data-ng-switch-default="view">
+																			<span data-ng-show="!actualCompletionReview.newCompletion">No new actual yet</span>
+																			<span data-ng-bind="actualCompletionReview.newCompletion"></span>
+																			<button class="btn btn-primary btn-xs" data-ng-show="userHasAuthorization" data-ng-click="editActualCompletion(actualCompletionReview)">
+																				<span class="glyphicon glyphicon-pencil"></span>
+																			</button>
+																		</div>
+																		<div data-ng-switch-when="edit">
+																			<div class="input-group input-group-sm">
+																				<input type="number" min="0" id="" class="form-control" data-ng-model="actualCompletionReview.newCompletion">
+																			</div>
+																			<br>
+																			<button class="btn btn-success btn-xs" data-ng-click="saveEditActualCompletion(selectedProjectChangeRequest, actualCompletionReview)">
+																				<span class="glyphicon glyphicon-ok"></span>
+																			</button>
+																			<button class="btn btn-info btn-xs" data-ng-click="cancelEditActualCompletion(actualCompletionReview)">
+																				<span class="glyphicon glyphicon-remove"></span>
+																			</button>
+																		</div>
+																	</div>
+																</td>
+															</tr>
+														</table>
+													</div>
+													<div data-ng-show="projectChangeRequestDetails === 'applyChange'">
+                                                        <div class="row" data-ng-show="!showConfirmApplyChange">
+                                                            <div class="col-md-4">
+                                                                <div class="form-group" data-ng-show="userHasAuthorization && !selectedProjectChangeRequest.statusReview.currentRecord.completed">
+                                                                    <button class="btn btn-success btn-sm" data-ng-click="showConfirmApplyChange = true">
+                                                                        Apply gate performance changes
+                                                                    </button>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="row" data-ng-show="showConfirmApplyChange">
+                                                            <div class="col-md-12">
+                                                                <div class="alert alert-warning text-center">
+                                                                    All baseline and actual data from the change request will be applied to the gate
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-md-12">
+                                                                <div class="form-group" data-ng-show="userHasAuthorization && !selectedProjectChangeRequest.statusReview.currentRecord.completed">
+                                                                    <button class="btn btn-warning btn-sm" data-ng-click="applyChange(selectedProject, selectedProjectChangeRequest); showConfirmApplyChange = false;">
+                                                                        Confirm changes to gate performances
+                                                                    </button>
+                                                                    <button class="btn btn-info btn-sm" data-ng-click="showConfirmApplyChange = !showConfirmApplyChange">
+                                                                        Cancel
+                                                                    </button>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <hr>
+                                                        <div class="row">
+                                                            <div class="col-md-12" data-ng-show="selectedProjectChangeRequest.appliedChanges.length === 0">
+                                                                <div class="alert alert-warning text-center">
+                                                                    Changes have not been applied yet
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-md-12" data-ng-show="selectedProjectChangeRequest.appliedChanges.length !== 0">
+                                                                <label>Change request applied to gate performances:</label>
+                                                                <div data-ng-repeat="appliedChange in selectedProjectChangeRequest.appliedChanges | orderBy: sortAppliedChanges : true">
+                                                                    <span>Change applied on </span>
+                                                                    <span><em data-ng-bind="appliedChange.created | date:'EEE d, MMM yyyy'"></em></span>
+                                                                    <span> by </span>
+                                                                    <span><em data-ng-bind="appliedChange.user.displayName"></em></span>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+													</div>
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</tab>
+					</tabset>
+				</div>
+			</div>
+		</div>
+	</div>
+</section>

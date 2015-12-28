@@ -42,6 +42,22 @@ var ActualCompletionReviewSchema = new Schema({
     newCompletion : {type: Number}
 });
 
+var statusReviewRecord = {
+    baselineDeliveryDate : {type: Date, default: null},
+    estimateDeliveryDate : {type: Date, default: null},
+    actualDeliveryDate : {type: Date, default: null},
+    completed : {type: Boolean, default: false, required:'Change request completed flag is required'},
+    status: {type: Schema.Types.ObjectId, default: null, ref: 'LogStatus', $tenant:true},
+    statusComment : {type: String, default:'', trim: true},
+    created: { type: Date, default: Date.now },
+    user: { type: Schema.ObjectId, ref: 'User' }
+};
+
+var appliedChangeRecord = new Schema({
+    created: { type: Date, default: Date.now },
+    user: { type: Schema.ObjectId, ref: 'User' }
+});
+
 
 var ProjectChangeRequestSchema = new Schema({
 
@@ -57,12 +73,12 @@ var ProjectChangeRequestSchema = new Schema({
     state : {type: Schema.Types.ObjectId, default: null, ref: 'ChangeRequestState', $tenant:true},
     priority : {type: Schema.Types.ObjectId, default: null, ref: 'LogPriority', $tenant:true},
 
-    plannedDeliveryDate : {type: Date, default: null},
-    expectedDeliveryDate : {type: Date, default: null},
-    actualDeliveryDate : {type: Date, default: null},
-    completed : {type: Boolean, default: false, required:'Change request completed flag is required'},
-    status: {type: Schema.Types.ObjectId, default: null, ref: 'LogStatus', $tenant:true},
-    statusComment : {type: String, default:'', trim: true},
+    statusReview : {
+        currentRecord : statusReviewRecord,
+        history : [statusReviewRecord]
+    },
+
+    appliedChanges : [appliedChangeRecord],
 
     baselineDurationReviews : [BaselineDurationReviewSchema],
     actualDurationReviews : [ActualDurationReviewSchema],
