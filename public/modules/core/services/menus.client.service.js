@@ -351,10 +351,10 @@ angular.module('core').service('Menus', [
 		this.addSubMenuItem('topbar', 'delivery', 'Milestones', 'menuTitle','menuTitle',false,
 			['superAdmin','admin','PMO','projectManager','portfolioManager','executive'],12);
 				// Project milestones
-		this.addSubMenuItem('topbar', 'delivery', 'Project milestones', 'project-log-milestone','financial-analysis',false,
+		this.addSubMenuItem('topbar', 'delivery', 'Project milestones', 'project-log-milestone','project-log-milestone',false,
 			['superAdmin','admin','PMO','projectManager','portfolioManager','executive'],13);
                 // Portfolio milestones
-        this.addSubMenuItem('topbar', 'delivery', 'Portfolio milestones', 'portfolio-log-milestone','financial-analysis',false,
+        this.addSubMenuItem('topbar', 'delivery', 'Portfolio milestones', 'portfolio-log-milestone','portfolio-log-milestone',false,
             ['superAdmin','admin','PMO','projectManager','portfolioManager','executive'],14);
             // Status reports
         this.addSubMenuItem('topbar', 'delivery', '', 'divider','divider',false,
@@ -362,10 +362,10 @@ angular.module('core').service('Menus', [
         this.addSubMenuItem('topbar', 'delivery', 'Status', 'menuTitle','menuTitle',false,
             ['superAdmin','admin','PMO','projectManager','portfolioManager','executive'],16);
                 // Project status
-        this.addSubMenuItem('topbar', 'delivery', 'Project status', 'project-status','financial-analysis',false,
+        this.addSubMenuItem('topbar', 'delivery', 'Project status', 'project-status-management','project-status-management',false,
             ['superAdmin','admin','PMO','projectManager','portfolioManager','executive'],17);
                 // Portfolio status
-        this.addSubMenuItem('topbar', 'delivery', 'Portfolio status', 'portfolio-status','financial-analysis',false,
+        this.addSubMenuItem('topbar', 'delivery', 'Portfolio status', 'portfolio-status-management','portfolio-status-management',false,
             ['superAdmin','admin','PMO','projectManager','portfolioManager','executive'],18);
 
 

@@ -85,8 +85,8 @@ exports.create = function(req, res) {
                                     async.each(outcomeReviews, function(outcomeReview, callback){
                                         retObjArrays.outcomeReviews.push({
                                             outcomeReview: outcomeReview._id,
-                                            newScore: outcomeReview.score,
-                                            reviewComment: outcomeReview.comment
+                                            newScore: outcomeReview.currentRecord.score,
+                                            reviewComment: outcomeReview.currentRecord.comment
                                         });
                                         callback();
                                     });

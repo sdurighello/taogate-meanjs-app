@@ -6,17 +6,17 @@
 var should = require('should'),
 	mongoose = require('mongoose'),
 	User = mongoose.model('User'),
-	ProjectStatusReport = mongoose.model('ProjectStatusReport');
+	ProjectStatusUpdate = mongoose.model('ProjectStatusUpdate');
 
 /**
  * Globals
  */
-var user, projectStatusReport;
+var user, projectStatusUpdate;
 
 /**
  * Unit tests
  */
-describe('Project status report Model Unit Tests:', function() {
+describe('Project status update Model Unit Tests:', function() {
 	beforeEach(function(done) {
 		user = new User({
 			firstName: 'Full',
@@ -28,8 +28,8 @@ describe('Project status report Model Unit Tests:', function() {
 		});
 
 		user.save(function() { 
-			projectStatusReport = new ProjectStatusReport({
-				name: 'Project status report Name',
+			projectStatusUpdate = new ProjectStatusUpdate({
+				name: 'Project status update Name',
 				user: user
 			});
 
@@ -39,16 +39,16 @@ describe('Project status report Model Unit Tests:', function() {
 
 	describe('Method Save', function() {
 		it('should be able to save without problems', function(done) {
-			return projectStatusReport.save(function(err) {
+			return projectStatusUpdate.save(function(err) {
 				should.not.exist(err);
 				done();
 			});
 		});
 
 		it('should be able to show an error when try to save without name', function(done) { 
-			projectStatusReport.name = '';
+			projectStatusUpdate.name = '';
 
-			return projectStatusReport.save(function(err) {
+			return projectStatusUpdate.save(function(err) {
 				should.exist(err);
 				done();
 			});
@@ -56,7 +56,7 @@ describe('Project status report Model Unit Tests:', function() {
 	});
 
 	afterEach(function(done) { 
-		ProjectStatusReport.remove().exec();
+		ProjectStatusUpdate.remove().exec();
 		User.remove().exec();
 
 		done();

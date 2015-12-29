@@ -21,12 +21,64 @@ var GateStatusAssignmentRecord = {
     user: {type: Schema.ObjectId, ref: 'User'}
 };
 
+var OverallStatusRecord = {
+    status: {type: Schema.Types.ObjectId, ref: 'LogStatusIndicator', default:null, $tenant:true},
+    sourceStatusUpdate: {type: Schema.Types.ObjectId, ref: 'ProjectStatusUpdate', default:null, $tenant:true},
+    comment :{type: String, trim:true, default:''},
+    created: {type: Date, default: Date.now},
+    user: {type: Schema.ObjectId, ref: 'User'}
+};
+
+var DurationStatusRecord = {
+    status: {type: Schema.Types.ObjectId, ref: 'LogStatusIndicator', default:null, $tenant:true},
+    sourceStatusUpdate: {type: Schema.Types.ObjectId, ref: 'ProjectStatusUpdate', default:null, $tenant:true},
+    comment :{type: String, trim:true, default:''},
+    created: {type: Date, default: Date.now},
+    user: {type: Schema.ObjectId, ref: 'User'}
+};
+
+var CostStatusRecord = {
+    status: {type: Schema.Types.ObjectId, ref: 'LogStatusIndicator', default:null, $tenant:true},
+    sourceStatusUpdate: {type: Schema.Types.ObjectId, ref: 'ProjectStatusUpdate', default:null, $tenant:true},
+    comment :{type: String, trim:true, default:''},
+    created: {type: Date, default: Date.now},
+    user: {type: Schema.ObjectId, ref: 'User'}
+};
+
+var CompletionStatusRecord = {
+    status: {type: Schema.Types.ObjectId, ref: 'LogStatusIndicator', default:null, $tenant:true},
+    sourceStatusUpdate: {type: Schema.Types.ObjectId, ref: 'ProjectStatusUpdate', default:null, $tenant:true},
+    comment :{type: String, trim:true, default:''},
+    created: {type: Date, default: Date.now},
+    user: {type: Schema.ObjectId, ref: 'User'}
+};
+
 var GateStatusAssignmentSchema = new Schema({
     project:{type: Schema.Types.ObjectId, ref: 'Project', $tenant:true},
     gate:{type: Schema.Types.ObjectId, ref: 'Gate', $tenant:true},
 
     currentRecord: GateStatusAssignmentRecord,
-    history:[GateStatusAssignmentRecord]
+    history:[GateStatusAssignmentRecord],
+
+    overallStatus : {
+        currentRecord: OverallStatusRecord,
+        history:[OverallStatusRecord]
+    },
+
+    durationStatus : {
+        currentRecord: DurationStatusRecord,
+        history:[DurationStatusRecord]
+    },
+
+    costStatus : {
+        currentRecord: CostStatusRecord,
+        history:[CostStatusRecord]
+    },
+
+    completionStatus : {
+        currentRecord: CompletionStatusRecord,
+        history:[CompletionStatusRecord]
+    }
 });
 
 GateStatusAssignmentSchema.plugin(deepPopulate);

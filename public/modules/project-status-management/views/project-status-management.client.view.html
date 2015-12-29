@@ -1,3 +1,708 @@
-<section data-ng-controller="ProjectStatusManagementController">
-	This is the Project status management view
+<section data-ng-controller="ProjectStatusManagementController"  data-ng-init="init()">
+	<br>
+	<div class="row">
+		<div class="col-sm-12">
+			<div class="panel-heading">
+				<ol class="breadcrumb">
+					<li>Portfolio delivery</li>
+					<li>Status update</li>
+					<li class="active">Project status</li>
+				</ol>
+			</div>
+		</div>
+	</div>
+	<div data-ng-show="initError" class="text-danger">
+		<strong data-ng-bind="initError"></strong>
+	</div>
+	<div class="row">
+		<div class="col-sm-3"><!-- PROJECTS LIST -->
+			<div class="panel panel-default">
+				<div class="panel-heading">
+					<h6 class="panel-title text-center">Projects</h6>
+				</div>
+				<div class="panel-body">
+					<div class="row">
+						<div class=" form-group col-md-12">
+							<select id="" class="form-control input-sm" data-ng-model="filterProfileProcess"
+									ng-options="process.name for process in gateProcesses">
+								<option value="">--filter by gate process</option>
+							</select>
+						</div>
+						<div class=" form-group col-md-12">
+							<select id="" class="form-control input-sm" data-ng-model="filterProfilePortfolio"
+									ng-options="portfolio.name for portfolio in portfolios">
+								<option value="">--filter by portfolio</option>
+							</select>
+						</div>
+						<div class="col-md-12 form-group-sm">
+							<input id="" type="text" class="form-control input-sm"
+								   data-ng-model="filterProfileProject.name" placeholder="Filter by project name">
+						</div>
+					</div>
+					<hr>
+					<div class="row" style="min-height: 350px; max-height: 350px; overflow-y: auto">
+						<div class="col-md-12">
+							<div data-ng-show="projects.length === 0" class="alert alert-warning text-center">
+								There are no projects in delivery
+							</div>
+							<button type="button"
+									data-ng-repeat="project in projects | filter:{identification: filterProfileProject, portfolio: filterProfilePortfolio._id, process: filterProfileProcess._id} "
+									data-ng-click="selectProject(project)"
+									class="btn btn-default btn-sm center-block btn-block" style="overflow: hidden;">
+								{{project.identification.idNumber}} - {{project.identification.name}}
+							</button>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="col-md-9">
+			<div class="row">
+				<div class="col-md-12">
+					<div data-ng-hide="selectedProject || projects.length === 0" class="alert alert-warning text-center">
+						Select a project to see its details
+					</div>
+				</div>
+			</div>
+			<div class="row" data-ng-show="selectedProject">
+				<div class="col-md-12">
+					<div class="row">
+						<div class="col-sm-6">
+							<div class="panel panel-default">
+								<div><h5>&nbsp;Project: <i>{{selectedProject.identification.name}}</i></h5></div>
+							</div>
+						</div>
+						<div class="col-sm-6">
+							<div class="panel panel-default">
+								<div><h5>&nbsp;Process: <i>{{selectedProject.process.name}}</i></h5></div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-md-12">
+					<tabset type="pills">
+						<tab data-ng-repeat="reviewObject in projectStatusUpdateList track by $index"
+							 heading="{{reviewObject.gate.name}}" select="changeGate()">
+							<hr>
+							<div class="row" data-ng-show="showNewProjectStatusUpdateForm">
+								<div class="col-md-12">
+									<div class="panel panel-default">
+										<div class="panel-heading">
+											<h6 class="panel-title">
+												New status update
+											</h6>
+										</div>
+										<div class="panel-body">
+											<form class="form" name="newProjectStatusUpdateForm">
+												<div class="row">
+													<div class="form-group-sm col-md-6">
+														<label for="reviewTitleNew">Status update title</label>
+														<input id="reviewTitleNew" name="reviewTitleNew" class="form-control" type="text" placeholder="Enter status update title"
+															   data-ng-model="newProjectStatusUpdate.title" >
+													</div>
+												</div>
+												<hr>
+												<div class="form-group-sm pull-right">
+													<button class="btn btn-success btn-xs" data-ng-click="createNewProjectStatusUpdate(selectedProject, reviewObject.gate); showNewProjectStatusUpdateForm = false;">
+														Save
+													</button>
+													<button class="btn btn-info btn-xs" data-ng-click="cancelNewProjectStatusUpdate(); showNewProjectStatusUpdateForm = false;">
+														Cancel
+													</button>
+												</div>
+											</form>
+										</div>
+									</div>
+								</div>
+							</div>
+							<div class="row" data-ng-show="!showNewProjectStatusUpdateForm">
+								<div class="col-md-3">
+									<div class="row" data-ng-show="!showNewProjectStatusUpdateForm">
+										<div class="col-md-12 form-group-sm center-block">
+											<button class="btn btn-warning btn-sm" ng-click="showNewProjectStatusUpdateForm = true">
+												New status update
+											</button>
+										</div>
+									</div>
+									<br>
+									<div class="row">
+										<div class="col-md-12">
+											<div class="panel panel-default">
+												<div class="panel-heading">
+													<h6 class="panel-title text-center">Status updates</h6>
+												</div>
+												<div class="panel-body" style="min-height: 350px; max-height: 350px; overflow-y: auto">
+													<div data-ng-show="reviewObject.projectStatusUpdates.length === 0" class="alert alert-warning text-center">
+														There are no status updates for this gate
+													</div>
+													<button type="button"
+															data-ng-repeat="projectStatusUpdate in reviewObject.projectStatusUpdates | orderBy: sortProjectStatusUpdates : true"
+															data-ng-click="selectProjectStatusUpdates(projectStatusUpdate)"
+															class="btn btn-sm center-block btn-block" style="overflow: hidden;"
+															data-ng-class="{'btn-default' : projectStatusUpdate.final, 'btn-info' : !projectStatusUpdate.final}">
+														<span class="small">{{projectStatusUpdate.title}}</span>
+													</button>
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+								<div class="col-md-9">
+									<div data-ng-hide="selectedProjectStatusUpdate || reviewObject.projectStatusUpdates.length === 0" class="alert alert-warning text-center">
+										Select a status update to see its details
+									</div>
+									<div class="row" data-ng-show="selectedProjectStatusUpdate">
+										<div class="col-md-12">
+											<div class="panel panel-default">
+												<div class="panel-heading">
+													<div class="row">
+														<div class="col-md-9 text-center">
+															<b><em>{{selectedProjectStatusUpdate.title}}</em></b>
+														</div>
+													</div>
+												</div>
+												<div class="row">
+													<div class="col-md-6 btn-group btn-group-xs btn-group-justified">
+														<label class="btn btn-info btn-xs" data-ng-model="projectStatusUpdateDetails" btn-radio="'header'">
+															Header
+														</label>
+														<label class="btn btn-info btn-xs" data-ng-model="projectStatusUpdateDetails" btn-radio="'status'">
+															Overall status
+														</label>
+														<label class="btn btn-info btn-xs" data-ng-model="projectStatusUpdateDetails" btn-radio="'areas'">
+															Status areas
+														</label>
+														<label class="btn btn-info btn-xs" data-ng-model="projectStatusUpdateDetails" btn-radio="'outcomes'">
+															Outcomes
+														</label>
+														<label class="btn btn-info btn-xs" data-ng-model="projectStatusUpdateDetails" btn-radio="'estimates'">
+															Estimates
+														</label>
+														<label class="btn btn-info btn-xs" data-ng-model="projectStatusUpdateDetails" btn-radio="'applyUpdate'">
+															Apply update
+														</label>
+													</div>
+												</div>
+												<div class="panel-body" style="min-height: 375px; max-height: 375px; overflow-y: auto">
+													<div data-ng-show="projectStatusUpdateDetails === 'header'">
+														<div data-ng-switch="switchHeaderForm[selectedProjectStatusUpdate._id]">
+															<form data-ng-switch-default="view">
+																<div class="row">
+																	<div class="form-group-sm col-md-6">
+																		<label for="reviewTitleEdit">Status update title</label>
+																		<input id="reviewTitleEdit" name="reviewTitleNew" class="form-control" type="text" placeholder="Enter review title"
+																			   data-ng-model="selectedProjectStatusUpdate.title" disabled>
+																	</div>
+																</div>
+																<br>
+																<div class="row">
+																	<div class="form-group-sm col-md-12">
+																		<label for="">Description</label>
+																		<textarea id="" class="form-control" placeholder="Enter description" data-ng-model="selectedProjectStatusUpdate.description" disabled></textarea>
+																	</div>
+																</div>
+																<hr>
+																<div class="form-group-sm pull-right" data-ng-show="userHasAuthorization && !selectedProjectStatusUpdate.final">
+																	<button class="btn btn-success btn-xs" data-ng-click="editHeader(selectedProjectStatusUpdate)">
+																		Edit
+																	</button>
+																</div>
+															</form>
+															<form data-ng-switch-when="edit">
+																<div class="row">
+																	<div class="form-group-sm col-md-6">
+																		<label for="reviewTitleEdit">Review title</label>
+																		<input id="reviewTitleEdit" name="reviewTitleNew" class="form-control" type="text" placeholder="Enter review title"
+																			   data-ng-model="selectedProjectStatusUpdate.title" >
+																	</div>
+																</div>
+																<br>
+																<div class="row">
+																	<div class="form-group-sm col-md-12">
+																		<label for="">Description</label>
+																		<textarea id="" class="form-control" placeholder="Enter description" data-ng-model="selectedProjectStatusUpdate.description"></textarea>
+																	</div>
+																</div>
+																<hr>
+																<div class="form-group-sm pull-right">
+																	<button class="btn btn-success btn-xs" data-ng-click="saveEditHeader(selectedProjectStatusUpdate)">
+																		Save
+																	</button>
+																	<button class="btn btn-danger btn-xs" data-ng-click="deleteProjectStatusUpdate(reviewObject, selectedProjectStatusUpdate)">
+																		Delete status update
+																	</button>
+																	<button class="btn btn-info btn-xs" data-ng-click="cancelEditHeader(selectedProjectStatusUpdate)">
+																		Cancel
+																	</button>
+																</div>
+															</form>
+														</div>
+													</div>
+													<div data-ng-show="projectStatusUpdateDetails === 'status'">
+														<div data-ng-switch="switchGateStatusForm[selectedProjectStatusUpdate._id]">
+															<form data-ng-switch-default="view">
+																<div class="row">
+																	<div class="form-group-sm col-md-5">
+																		<label for="currentScore">Current overall score</label>
+																		<select id="currentScore" class="form-control" data-ng-model = "selectedGateReview.gateStatusAssignment.currentRecord.overallScore"
+																				ng-options="score._id as score.name for score in outcomeScores" disabled>
+																		</select>
+																	</div>
+																	<div class="form-group-sm col-md-5">
+																		<label for="newScore">New overall score</label>
+																		<select id="newScore" class="form-control" data-ng-model = "selectedGateReview.overallScore"
+																				ng-options="score._id as score.name for score in outcomeScores" disabled>
+																		</select>
+																	</div>
+																</div>
+																<br>
+																<div class="row">
+																	<div class="form-group-sm col-md-5">
+																		<label for="currentStatus">Current gate status</label>
+																		<select id="currentStatus" class="form-control" data-ng-model = "selectedGateReview.gateStatusAssignment.currentRecord.status"
+																				ng-options="gateStatus._id as gateStatus.name for gateStatus in gateStatuses" disabled>
+																		</select>
+																	</div>
+																	<div class="form-group-sm col-md-5">
+																		<label for="newStatus">New gate status</label>
+																		<select id="newStatus" class="form-control" data-ng-model = "selectedGateReview.status"
+																				ng-options="gateStatus._id as gateStatus.name for gateStatus in gateStatuses" disabled>
+																		</select>
+																	</div>
+																</div>
+																<br>
+																<div class="row">
+																	<div class="form-group-sm col-md-6">
+																		<label for="prjCrEditCompleted">Completed</label>
+																		<input id="prjCrEditCompleted" class="" type="checkbox"
+																			   data-ng-model="selectedGateReview.completed" disabled>
+																	</div>
+																</div>
+																<hr>
+																<div class="pull-right" data-ng-show="userHasAuthorization && !selectedGateReview.final">
+																	<button class="btn btn-success btn-xs" data-ng-click="editStatus(selectedGateReview)">
+																		Edit
+																	</button>
+																</div>
+															</form>
+															<form data-ng-switch-when="edit">
+																<div class="row">
+																	<div class="form-group-sm col-md-5">
+																		<label for="currentScore">Current overall score</label>
+																		<select id="currentScore" class="form-control" data-ng-model = "selectedGateReview.gateStatusAssignment.currentRecord.overallScore"
+																				ng-options="score._id as score.name for score in outcomeScores" disabled>
+																		</select>
+																	</div>
+																	<div class="form-group-sm col-md-5">
+																		<label for="newScore">New overall score</label>
+																		<select id="newScore" class="form-control" data-ng-model = "selectedGateReview.overallScore"
+																				ng-options="score._id as score.name for score in outcomeScores">
+																			<option value="">--choose score</option>
+																		</select>
+																	</div>
+																</div>
+																<br>
+																<div class="row">
+																	<div class="form-group-sm col-md-5">
+																		<label for="currentStatus">Current gate status</label>
+																		<select id="currentStatus" class="form-control" data-ng-model = "selectedGateReview.gateStatusAssignment.currentRecord.status"
+																				ng-options="gateStatus._id as gateStatus.name for gateStatus in gateStatuses" disabled>
+																		</select>
+																	</div>
+																	<div class="form-group-sm col-md-5">
+																		<label for="newStatus">New gate status</label>
+																		<select id="newStatus" class="form-control" data-ng-model = "selectedGateReview.status"
+																				ng-options="gateStatus._id as gateStatus.name for gateStatus in gateStatuses">
+																			<option value="">--choose status</option>
+																		</select>
+																	</div>
+																</div>
+																<br>
+																<div class="row">
+																	<div class="form-group-sm col-md-6">
+																		<label for="prjCrEditCompleted">Completed</label>
+																		<input id="prjCrEditCompleted" class="" type="checkbox"
+																			   data-ng-model="selectedGateReview.completed" >
+																	</div>
+																</div>
+																<hr>
+																<div class="pull-right">
+																	<button class="btn btn-success btn-xs" data-ng-click="saveEditStatus(selectedGateReview)">
+																		Save
+																	</button>
+																	<button class="btn btn-info btn-xs" data-ng-click="cancelEditStatus(selectedGateReview)">
+																		Cancel
+																	</button>
+																</div>
+															</form>
+														</div>
+													</div>
+													<div data-ng-show="projectStatusUpdateDetails === 'areas'">
+														<div class="row">
+															<div class="col-md-12" data-ng-repeat="selectedOutcomeReview in selectedGateReview.outcomeReviews track by $index">
+																<div class="panel panel-default">
+																	<div class="panel-heading">
+																		<i data-ng-bind="selectedOutcomeReview.outcomeReview.outcome.name"></i>
+																	</div>
+																	<div class="panel-body" data-ng-switch="switchOutcomeReviewForm[selectedOutcomeReview._id]">
+																		<div data-ng-switch-default="view">
+																			<form>
+																				<div class="row">
+																					<div class="form-group-sm col-md-6">
+																						<label>Current score</label>
+																						<select id="" class="form-control" data-ng-model = "selectedOutcomeReview.outcomeReview.currentRecord.score"
+																								ng-options="score._id as score.name for score in outcomeScores" disabled>
+																						</select>
+																					</div>
+																					<div class="form-group-sm col-md-6">
+																						<label>New score</label>
+																						<select id="" class="form-control" data-ng-model = "selectedOutcomeReview.newScore"
+																								ng-options="score._id as score.name for score in outcomeScores" disabled>
+																						</select>
+																					</div>
+																				</div>
+																				<div class="row">
+																					<div class="form-group-sm col-md-6">
+																						<label>Current comment</label>
+																						<textarea class="form-control" disabled data-ng-model="selectedOutcomeReview.outcomeReview.currentRecord.comment"></textarea>
+																					</div>
+																					<div class="form-group-sm col-md-6">
+																						<label>New comment</label>
+																						<textarea class="form-control" disabled data-ng-model="selectedOutcomeReview.reviewComment"></textarea>
+																					</div>
+																				</div>
+																				<br>
+																				<div class="pull-right">
+																					<button class="btn btn-success btn-xs" data-ng-click="editOutcomeReview(selectedOutcomeReview)"
+																							data-ng-show="userHasAuthorization && !selectedGateReview.final">
+																						Edit
+																					</button>
+																				</div>
+																			</form>
+																		</div>
+																		<div data-ng-switch-when="edit">
+																			<form>
+																				<div class="row">
+																					<div class="form-group-sm col-md-6">
+																						<label>Current score</label>
+																						<select id="" class="form-control" data-ng-model = "selectedOutcomeReview.outcomeReview.currentRecord.score"
+																								ng-options="score._id as score.name for score in outcomeScores" disabled>
+																						</select>
+																					</div>
+																					<div class="form-group-sm col-md-6">
+																						<label>New score</label>
+																						<select id="" class="form-control" data-ng-model = "selectedOutcomeReview.newScore"
+																								ng-options="score._id as score.name for score in outcomeScores" >
+																							<option value="">--choose score</option>
+																						</select>
+																					</div>
+																				</div>
+																				<div class="row">
+																					<div class="form-group-sm col-md-6">
+																						<label>Current comment</label>
+																						<textarea class="form-control" disabled data-ng-model="selectedOutcomeReview.outcomeReview.currentRecord.comment"></textarea>
+																					</div>
+																					<div class="form-group-sm col-md-6">
+																						<label>New comment</label>
+																						<textarea class="form-control" data-ng-model="selectedOutcomeReview.reviewComment"></textarea>
+																					</div>
+																				</div>
+																				<br>
+																				<div class="pull-right">
+																					<button class="btn btn-success btn-xs" data-ng-click="saveEditOutcomeReview(selectedGateReview, selectedOutcomeReview)">
+																						Save
+																					</button>
+																					<button class="btn btn-info btn-xs" data-ng-click="cancelEditOutcomeReview(selectedOutcomeReview)">
+																						Cancel
+																					</button>
+																				</div>
+																			</form>
+																		</div>
+																	</div>
+																</div>
+															</div>
+														</div>
+													</div>
+													<div data-ng-show="projectStatusUpdateDetails === 'outcomes'">
+														<div class="row">
+															<div class="col-md-12" data-ng-repeat="selectedOutcomeReview in selectedGateReview.outcomeReviews track by $index">
+																<div class="panel panel-default">
+																	<div class="panel-heading">
+																		<i data-ng-bind="selectedOutcomeReview.outcomeReview.outcome.name"></i>
+																	</div>
+																	<div class="panel-body" data-ng-switch="switchOutcomeReviewForm[selectedOutcomeReview._id]">
+																		<div data-ng-switch-default="view">
+																			<form>
+																				<div class="row">
+																					<div class="form-group-sm col-md-6">
+																						<label>Current score</label>
+																						<select id="" class="form-control" data-ng-model = "selectedOutcomeReview.outcomeReview.currentRecord.score"
+																								ng-options="score._id as score.name for score in outcomeScores" disabled>
+																						</select>
+																					</div>
+																					<div class="form-group-sm col-md-6">
+																						<label>New score</label>
+																						<select id="" class="form-control" data-ng-model = "selectedOutcomeReview.newScore"
+																								ng-options="score._id as score.name for score in outcomeScores" disabled>
+																						</select>
+																					</div>
+																				</div>
+																				<div class="row">
+																					<div class="form-group-sm col-md-6">
+																						<label>Current comment</label>
+																						<textarea class="form-control" disabled data-ng-model="selectedOutcomeReview.outcomeReview.currentRecord.comment"></textarea>
+																					</div>
+																					<div class="form-group-sm col-md-6">
+																						<label>New comment</label>
+																						<textarea class="form-control" disabled data-ng-model="selectedOutcomeReview.reviewComment"></textarea>
+																					</div>
+																				</div>
+																				<br>
+																				<div class="pull-right">
+																					<button class="btn btn-success btn-xs" data-ng-click="editOutcomeReview(selectedOutcomeReview)"
+																							data-ng-show="userHasAuthorization && !selectedGateReview.final">
+																						Edit
+																					</button>
+																				</div>
+																			</form>
+																		</div>
+																		<div data-ng-switch-when="edit">
+																			<form>
+																				<div class="row">
+																					<div class="form-group-sm col-md-6">
+																						<label>Current score</label>
+																						<select id="" class="form-control" data-ng-model = "selectedOutcomeReview.outcomeReview.currentRecord.score"
+																								ng-options="score._id as score.name for score in outcomeScores" disabled>
+																						</select>
+																					</div>
+																					<div class="form-group-sm col-md-6">
+																						<label>New score</label>
+																						<select id="" class="form-control" data-ng-model = "selectedOutcomeReview.newScore"
+																								ng-options="score._id as score.name for score in outcomeScores" >
+																							<option value="">--choose score</option>
+																						</select>
+																					</div>
+																				</div>
+																				<div class="row">
+																					<div class="form-group-sm col-md-6">
+																						<label>Current comment</label>
+																						<textarea class="form-control" disabled data-ng-model="selectedOutcomeReview.outcomeReview.currentRecord.comment"></textarea>
+																					</div>
+																					<div class="form-group-sm col-md-6">
+																						<label>New comment</label>
+																						<textarea class="form-control" data-ng-model="selectedOutcomeReview.reviewComment"></textarea>
+																					</div>
+																				</div>
+																				<br>
+																				<div class="pull-right">
+																					<button class="btn btn-success btn-xs" data-ng-click="saveEditOutcomeReview(selectedGateReview, selectedOutcomeReview)">
+																						Save
+																					</button>
+																					<button class="btn btn-info btn-xs" data-ng-click="cancelEditOutcomeReview(selectedOutcomeReview)">
+																						Cancel
+																					</button>
+																				</div>
+																			</form>
+																		</div>
+																	</div>
+																</div>
+															</div>
+														</div>
+													</div>
+													<div data-ng-show="projectStatusUpdateDetails === 'estimates'">
+														<table class="table small">
+															<caption>
+																Estimate duration
+															</caption>
+															<tr>
+																<th>Target gate</th>
+																<th>Current date</th>
+																<th>New date</th>
+																<th> </th>
+															</tr>
+															<tr data-ng-repeat="estimateDurationReview in selectedGateReview.estimateDurationReviews | orderBy: 'estimateDuration.targetGate.position'">
+																<td>
+																	<span data-ng-bind="estimateDurationReview.estimateDuration.targetGate.name"></span>
+																</td>
+																<td>
+																	<span data-ng-show="!estimateDurationReview.estimateDuration.currentRecord.gateDate">No estimate yet</span>
+																	<span data-ng-bind="estimateDurationReview.estimateDuration.currentRecord.gateDate | date:'EEE d, MMM yyyy'"></span>
+																</td>
+																<td colspan="2">
+																	<div data-ng-switch="switchEstimateDurationForm[estimateDurationReview._id]">
+																		<div data-ng-switch-default="view">
+																			<span data-ng-show="!estimateDurationReview.newDate">No new estimate yet</span>
+																			<span data-ng-bind="estimateDurationReview.newDate | date:'EEE d, MMM yyyy'"></span>
+																			<button class="btn btn-primary btn-xs" data-ng-show="userHasAuthorization && !selectedGateReview.final" data-ng-click="editEstimateDuration(estimateDurationReview)">
+																				<span class="glyphicon glyphicon-pencil"></span>
+																			</button>
+																		</div>
+																		<div data-ng-switch-when="edit">
+																			<div class="input-group input-group-sm">
+																				<input type="text" id="" class="form-control" datepicker-popup="dd-MMMM-yyyy" data-ng-model="estimateDurationReview.newDate"
+																					   is-open="$parent.estimateDurationDateOpened[estimateDurationReview._id]"/>
+                                                                    <span class="input-group-btn">
+                                                                        <button type="button" class="btn btn-default" data-ng-click="openEstimateDurationDate(estimateDurationReview, $event)"><i class="glyphicon glyphicon-calendar"></i></button>
+                                                                    </span>
+																			</div>
+																			<br>
+																			<button class="btn btn-success btn-xs" data-ng-click="saveEditEstimateDuration(selectedGateReview, estimateDurationReview)">
+																				<span class="glyphicon glyphicon-ok"></span>
+																			</button>
+																			<button class="btn btn-info btn-xs" data-ng-click="cancelEditEstimateDuration(estimateDurationReview)">
+																				<span class="glyphicon glyphicon-remove"></span>
+																			</button>
+																		</div>
+																	</div>
+																</td>
+															</tr>
+														</table>
+														<table class="table small">
+															<caption>
+																Estimate cost
+															</caption>
+															<tr>
+																<th>Target gate</th>
+																<th>Current cost</th>
+																<th>New cost</th>
+																<th> </th>
+															</tr>
+															<tr data-ng-repeat="estimateCostReview in selectedGateReview.estimateCostReviews | orderBy: 'estimateCost.targetGate.position'">
+																<td>
+																	<span data-ng-bind="estimateCostReview.estimateCost.targetGate.name"></span>
+																</td>
+																<td>
+																	<span data-ng-show="!estimateCostReview.estimateCost.currentRecord.cost">No estimate yet</span>
+																	<span data-ng-bind="estimateCostReview.estimateCost.currentRecord.cost"></span>
+																</td>
+																<td colspan="2">
+																	<div data-ng-switch="switchEstimateCostForm[estimateCostReview._id]">
+																		<div data-ng-switch-default="view">
+																			<span data-ng-show="!estimateCostReview.newCost">No new estimate yet</span>
+																			<span data-ng-bind="estimateCostReview.newCost"></span>
+																			<button class="btn btn-primary btn-xs" data-ng-show="userHasAuthorization && !selectedGateReview.final" data-ng-click="editEstimateCost(estimateCostReview)">
+																				<span class="glyphicon glyphicon-pencil"></span>
+																			</button>
+																		</div>
+																		<div data-ng-switch-when="edit">
+																			<div class="input-group input-group-sm">
+																				<input type="number" min="0" id="" class="form-control" data-ng-model="estimateCostReview.newCost">
+																			</div>
+																			<br>
+																			<button class="btn btn-success btn-xs" data-ng-click="saveEditEstimateCost(selectedGateReview, estimateCostReview)">
+																				<span class="glyphicon glyphicon-ok"></span>
+																			</button>
+																			<button class="btn btn-info btn-xs" data-ng-click="cancelEditEstimateCost(estimateCostReview)">
+																				<span class="glyphicon glyphicon-remove"></span>
+																			</button>
+																		</div>
+																	</div>
+																</td>
+															</tr>
+														</table>
+														<table class="table small">
+															<caption>
+																Estimate completion
+															</caption>
+															<tr>
+																<th>Target gate</th>
+																<th>Current completion</th>
+																<th>New completion</th>
+																<th> </th>
+															</tr>
+															<tr data-ng-repeat="estimateCompletionReview in selectedGateReview.estimateCompletionReviews | orderBy: 'estimateCompletion.targetGate.position'">
+																<td>
+																	<span data-ng-bind="estimateCompletionReview.estimateCompletion.targetGate.name"></span>
+																</td>
+																<td>
+																	<span data-ng-show="!estimateCompletionReview.estimateCompletion.currentRecord.completion">No estimate yet</span>
+																	<span data-ng-bind="estimateCompletionReview.estimateCompletion.currentRecord.completion"></span>
+																</td>
+																<td colspan="2">
+																	<div data-ng-switch="switchEstimateCompletionForm[estimateCompletionReview._id]">
+																		<div data-ng-switch-default="view">
+																			<span data-ng-show="!estimateCompletionReview.newCompletion">No new estimate yet</span>
+																			<span data-ng-bind="estimateCompletionReview.newCompletion"></span>
+																			<button class="btn btn-primary btn-xs" data-ng-show="userHasAuthorization && !selectedGateReview.final" data-ng-click="editEstimateCompletion(estimateCompletionReview)">
+																				<span class="glyphicon glyphicon-pencil"></span>
+																			</button>
+																		</div>
+																		<div data-ng-switch-when="edit">
+																			<div class="input-group input-group-sm">
+																				<input type="number" min="0" id="" class="form-control" data-ng-model="estimateCompletionReview.newCompletion">
+																			</div>
+																			<br>
+																			<button class="btn btn-success btn-xs" data-ng-click="saveEditEstimateCompletion(selectedGateReview, estimateCompletionReview)">
+																				<span class="glyphicon glyphicon-ok"></span>
+																			</button>
+																			<button class="btn btn-info btn-xs" data-ng-click="cancelEditEstimateCompletion(estimateCompletionReview)">
+																				<span class="glyphicon glyphicon-remove"></span>
+																			</button>
+																		</div>
+																	</div>
+																</td>
+															</tr>
+														</table>
+													</div>
+													<div data-ng-show="projectStatusUpdateDetails === 'applyUpdate'">
+														<div data-ng-switch="switchSetFinalForm[selectedGateReview._id]">
+															<form data-ng-switch-default="view">
+																<div class="row">
+																	<div class="form-group-sm col-md-6">
+																		<label for="">Set gate review as final</label><br>
+																		<input id="" class="" type="checkbox" data-ng-model="selectedGateReview.final" disabled>
+																	</div>
+																</div>
+																<div class="row">
+																	<div class="col-md-6">
+																		<span data-ng-show="selectedGateReview.final === true">Final</span>
+																		<span data-ng-show="selectedGateReview.final === false">Not final</span>
+																	</div>
+																</div>
+																<hr>
+																<div class="form-group-sm pull-right" data-ng-show="userHasAuthorization && !selectedGateReview.final">
+																	<button class="btn btn-success btn-xs" data-ng-click="editSetFinal(selectedGateReview)">
+																		Edit
+																	</button>
+																</div>
+															</form>
+															<form data-ng-switch-when="edit">
+																<div class="row">
+																	<div class="form-group-sm col-md-6">
+																		<label for="">Set gate review as final</label><br>
+																		<input id="" class="" type="checkbox" data-ng-model="selectedGateReview.final">
+																	</div>
+																</div>
+																<div class="row">
+																	<div class="col-md-6">
+																		<span data-ng-show="selectedGateReview.final === true">Final</span>
+																		<span data-ng-show="selectedGateReview.final === false">Not final</span>
+																	</div>
+																</div>
+																<hr>
+																<div class="form-group-sm pull-right">
+																	<button class="btn btn-success btn-xs" data-ng-click="saveEditSetFinal(selectedProject, selectedGateReview)">
+																		Save
+																	</button>
+																	<button class="btn btn-info btn-xs" data-ng-click="cancelEditSetFinal(selectedGateReview)">
+																		Cancel
+																	</button>
+																</div>
+															</form>
+														</div>
+													</div>
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</tab>
+					</tabset>
+				</div>
+			</div>
+		</div>
+	</div>
 </section>

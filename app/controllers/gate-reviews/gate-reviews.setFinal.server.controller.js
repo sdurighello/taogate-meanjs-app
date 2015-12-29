@@ -136,13 +136,13 @@ exports.setFinal = function(req, res) {
                                     performance.history.push({
                                         user : performance.currentRecord.user,
                                         created : performance.currentRecord.created,
-                                        sourceProjectStatus : performance.currentRecord.sourceProjectStatus,
+                                        sourceStatusUpdate : performance.currentRecord.sourceStatusUpdate,
                                         sourceGateReview : performance.currentRecord.sourceGateReview,
                                         gateDate : performance.currentRecord.gateDate
                                     });
                                     performance.currentRecord.gateDate = estimateDurationReview.newDate;
                                     performance.currentRecord.sourceGateReview = req.body._id;
-                                    performance.currentRecord.sourceProjectStatus = null;
+                                    performance.currentRecord.sourceStatusUpdate = null;
                                     performance.currentRecord.created = Date.now();
                                     performance.currentRecord.user = req.user;
                                     performance.save(function(err){
@@ -226,13 +226,13 @@ exports.setFinal = function(req, res) {
                                     performance.history.push({
                                         user : performance.currentRecord.user,
                                         created : performance.currentRecord.created,
-                                        sourceProjectStatus : performance.currentRecord.sourceProjectStatus,
+                                        sourceStatusUpdate : performance.currentRecord.sourceStatusUpdate,
                                         sourceGateReview : performance.currentRecord.sourceGateReview,
                                         cost : performance.currentRecord.cost
                                     });
                                     performance.currentRecord.cost = estimateCostReview.newCost;
                                     performance.currentRecord.sourceGateReview = req.body._id;
-                                    performance.currentRecord.sourceProjectStatus = null;
+                                    performance.currentRecord.sourceStatusUpdate = null;
                                     performance.currentRecord.created = Date.now();
                                     performance.currentRecord.user = req.user;
                                     performance.save(function(err){
@@ -316,13 +316,13 @@ exports.setFinal = function(req, res) {
                                     performance.history.push({
                                         user : performance.currentRecord.user,
                                         created : performance.currentRecord.created,
-                                        sourceProjectStatus : performance.currentRecord.sourceProjectStatus,
+                                        sourceStatusUpdate : performance.currentRecord.sourceStatusUpdate,
                                         sourceGateReview : performance.currentRecord.sourceGateReview,
                                         completion : performance.currentRecord.completion
                                     });
                                     performance.currentRecord.completion = estimateCompletionReview.newCompletion;
                                     performance.currentRecord.sourceGateReview = req.body._id;
-                                    performance.currentRecord.sourceProjectStatus = null;
+                                    performance.currentRecord.sourceStatusUpdate = null;
                                     performance.currentRecord.created = Date.now();
                                     performance.currentRecord.user = req.user;
                                     performance.save(function(err){
