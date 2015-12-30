@@ -139,7 +139,7 @@
 													</div>
 													<button type="button"
 															data-ng-repeat="projectStatusUpdate in reviewObject.projectStatusUpdates | orderBy: sortProjectStatusUpdates : true"
-															data-ng-click="selectProjectStatusUpdates(projectStatusUpdate)"
+															data-ng-click="selectProjectStatusUpdate(projectStatusUpdate)"
 															class="btn btn-sm center-block btn-block" style="overflow: hidden;"
 															data-ng-class="{'btn-default' : projectStatusUpdate.final, 'btn-info' : !projectStatusUpdate.final}">
 														<span class="small">{{projectStatusUpdate.title}}</span>
@@ -157,11 +157,7 @@
 										<div class="col-md-12">
 											<div class="panel panel-default">
 												<div class="panel-heading">
-													<div class="row">
-														<div class="col-md-9 text-center">
-															<b><em>{{selectedProjectStatusUpdate.title}}</em></b>
-														</div>
-													</div>
+													<h6 class="panel-title text-center" data-ng-bind="selectedProjectStatusUpdate.title"></h6>
 												</div>
 												<div class="row">
 													<div class="col-md-6 btn-group btn-group-xs btn-group-justified">
@@ -169,7 +165,7 @@
 															Header
 														</label>
 														<label class="btn btn-info btn-xs" data-ng-model="projectStatusUpdateDetails" btn-radio="'status'">
-															Overall status
+															General status
 														</label>
 														<label class="btn btn-info btn-xs" data-ng-model="projectStatusUpdateDetails" btn-radio="'areas'">
 															Status areas
@@ -244,98 +240,237 @@
 														<div data-ng-switch="switchGateStatusForm[selectedProjectStatusUpdate._id]">
 															<form data-ng-switch-default="view">
 																<div class="row">
-																	<div class="form-group-sm col-md-5">
-																		<label for="currentScore">Current overall score</label>
-																		<select id="currentScore" class="form-control" data-ng-model = "selectedGateReview.gateStatusAssignment.currentRecord.overallScore"
-																				ng-options="score._id as score.name for score in outcomeScores" disabled>
-																		</select>
+																	<div class="col-md-12">
+																		<div class="panel panel-default">
+																			<div class="panel-heading text-center">
+																				<b class="">Overall</b>
+																			</div>
+																			<div class="panel-body">
+																				<div class="row">
+																					<div class="col-md-6">
+																						<div class="panel panel-default panel-body">
+																							<div class="row">
+																								<div class="col-md-12 text-center">
+																									Current
+																								</div>
+																							</div>
+																							<br>
+																							<div class="row">
+																								<div class="form-group-sm col-md-8">
+																									<select id="" class="form-control" data-ng-model = "selectedProjectStatusUpdate.gateStatusUpdate.gateStatusAssignment.overallStatus.currentRecord.status"
+																											ng-options="status._id as status.name for status in logStatusIndicators" disabled>
+																									</select>
+																								</div>
+																							</div>
+																							<br>
+																							<div class="row">
+																								<div class="form-group-sm col-md-12">
+																									<textarea id="" class="form-control" data-ng-model="selectedProjectStatusUpdate.gateStatusUpdate.gateStatusAssignment.overallStatus.currentRecord.comment" disabled></textarea>
+																								</div>
+																							</div>
+																						</div>
+																					</div>
+																					<div class="col-md-6">
+																						<div class="panel panel-default panel-body">
+																							<div class="row">
+																								<div class="col-md-12 text-center">
+																									New
+																								</div>
+																							</div>
+																							<br>
+																							<div class="row">
+																								<div class="form-group-sm col-md-8">
+																									<select id="" class="form-control" data-ng-model = "selectedProjectStatusUpdate.gateStatusUpdate.overallUpdate.status"
+																											ng-options="status._id as status.name for status in logStatusIndicators" disabled>
+																									</select>
+																								</div>
+																							</div>
+																							<br>
+																							<div class="row">
+																								<div class="form-group-sm col-md-12">
+																									<textarea id="" class="form-control" data-ng-model="selectedProjectStatusUpdate.gateStatusUpdate.overallUpdate.comment" disabled></textarea>
+																								</div>
+																							</div>
+																						</div>
+																					</div>
+																				</div>
+																				<div class="pull-right" data-ng-show="userHasAuthorization && !selectedProjectStatusUpdate.final">
+																					<button class="btn btn-success btn-xs" data-ng-click="editOutcomeReview(selectedOutcomeReview)">
+																						Edit
+																					</button>
+																				</div>
+																			</div>
+																		</div>
+																		<div class="panel panel-default">
+																			<div class="panel-heading text-center">
+																				<b class="">Duration</b>
+																			</div>
+																			<div class="panel-body">
+																				<div class="row">
+																					<div class="col-md-6">
+																						<div class="panel panel-default panel-body">
+																							<div class="row">
+																								<div class="col-md-12 text-center">
+																									Current
+																								</div>
+																							</div>
+																							<br>
+																							<div class="row">
+																								<div class="form-group-sm col-md-8">
+																									<select id="" class="form-control" data-ng-model = "selectedProjectStatusUpdate.gateStatusUpdate.gateStatusAssignment.durationStatus.currentRecord.status"
+																											ng-options="status._id as status.name for status in logStatusIndicators" disabled>
+																									</select>
+																								</div>
+																							</div>
+																							<br>
+																							<div class="row">
+																								<div class="form-group-sm col-md-12">
+																									<textarea id="" class="form-control" data-ng-model="selectedProjectStatusUpdate.gateStatusUpdate.gateStatusAssignment.durationStatus.currentRecord.comment" disabled></textarea>
+																								</div>
+																							</div>
+																						</div>
+																					</div>
+																					<div class="col-md-6">
+																						<div class="panel panel-default panel-body">
+																							<div class="row">
+																								<div class="col-md-12 text-center">
+																									New
+																								</div>
+																							</div>
+																							<br>
+																							<div class="row">
+																								<div class="form-group-sm col-md-8">
+																									<select id="" class="form-control" data-ng-model = "selectedProjectStatusUpdate.gateStatusUpdate.durationUpdate.status"
+																											ng-options="status._id as status.name for status in logStatusIndicators" disabled>
+																									</select>
+																								</div>
+																							</div>
+																							<br>
+																							<div class="row">
+																								<div class="form-group-sm col-md-12">
+																									<textarea id="" class="form-control" data-ng-model="selectedProjectStatusUpdate.gateStatusUpdate.durationUpdate.comment" disabled></textarea>
+																								</div>
+																							</div>
+																						</div>
+																					</div>
+																				</div>
+																			</div>
+																		</div>
+																		<div class="panel panel-default">
+																			<div class="panel-heading text-center">
+																				<b class="">Cost</b>
+																			</div>
+																			<div class="panel-body">
+																				<div class="row">
+																					<div class="col-md-6">
+																						<div class="panel panel-default panel-body">
+																							<div class="row">
+																								<div class="col-md-12 text-center">
+																									Current
+																								</div>
+																							</div>
+																							<br>
+																							<div class="row">
+																								<div class="form-group-sm col-md-8">
+																									<select id="" class="form-control" data-ng-model = "selectedProjectStatusUpdate.gateStatusUpdate.gateStatusAssignment.costStatus.currentRecord.status"
+																											ng-options="status._id as status.name for status in logStatusIndicators" disabled>
+																									</select>
+																								</div>
+																							</div>
+																							<br>
+																							<div class="row">
+																								<div class="form-group-sm col-md-12">
+																									<textarea id="" class="form-control" data-ng-model="selectedProjectStatusUpdate.gateStatusUpdate.gateStatusAssignment.costStatus.currentRecord.comment" disabled></textarea>
+																								</div>
+																							</div>
+																						</div>
+																					</div>
+																					<div class="col-md-6">
+																						<div class="panel panel-default panel-body">
+																							<div class="row">
+																								<div class="col-md-12 text-center">
+																									New
+																								</div>
+																							</div>
+																							<br>
+																							<div class="row">
+																								<div class="form-group-sm col-md-8">
+																									<select id="" class="form-control" data-ng-model = "selectedProjectStatusUpdate.gateStatusUpdate.costUpdate.status"
+																											ng-options="status._id as status.name for status in logStatusIndicators" disabled>
+																									</select>
+																								</div>
+																							</div>
+																							<br>
+																							<div class="row">
+																								<div class="form-group-sm col-md-12">
+																									<textarea id="" class="form-control" data-ng-model="selectedProjectStatusUpdate.gateStatusUpdate.costUpdate.comment" disabled></textarea>
+																								</div>
+																							</div>
+																						</div>
+																					</div>
+																				</div>
+																			</div>
+																		</div>
+																		<div class="panel panel-default">
+																			<div class="panel-heading text-center">
+																				<b class="">Completion</b>
+																			</div>
+																			<div class="panel-body">
+																				<div class="row">
+																					<div class="col-md-6">
+																						<div class="panel panel-default panel-body">
+																							<div class="row">
+																								<div class="col-md-12 text-center">
+																									Current
+																								</div>
+																							</div>
+																							<br>
+																							<div class="row">
+																								<div class="form-group-sm col-md-8">
+																									<select id="" class="form-control" data-ng-model = "selectedProjectStatusUpdate.gateStatusUpdate.gateStatusAssignment.completionStatus.currentRecord.status"
+																											ng-options="status._id as status.name for status in logStatusIndicators" disabled>
+																									</select>
+																								</div>
+																							</div>
+																							<br>
+																							<div class="row">
+																								<div class="form-group-sm col-md-12">
+																									<textarea id="" class="form-control" data-ng-model="selectedProjectStatusUpdate.gateStatusUpdate.gateStatusAssignment.completionStatus.currentRecord.comment" disabled></textarea>
+																								</div>
+																							</div>
+																						</div>
+																					</div>
+																					<div class="col-md-6">
+																						<div class="panel panel-default panel-body">
+																							<div class="row">
+																								<div class="col-md-12 text-center">
+																									New
+																								</div>
+																							</div>
+																							<br>
+																							<div class="row">
+																								<div class="form-group-sm col-md-8">
+																									<select id="" class="form-control" data-ng-model = "selectedProjectStatusUpdate.gateStatusUpdate.completionUpdate.status"
+																											ng-options="status._id as status.name for status in logStatusIndicators" disabled>
+																									</select>
+																								</div>
+																							</div>
+																							<br>
+																							<div class="row">
+																								<div class="form-group-sm col-md-12">
+																									<textarea id="" class="form-control" data-ng-model="selectedProjectStatusUpdate.gateStatusUpdate.completionUpdate.comment" disabled></textarea>
+																								</div>
+																							</div>
+																						</div>
+																					</div>
+																				</div>
+																			</div>
+																		</div>
 																	</div>
-																	<div class="form-group-sm col-md-5">
-																		<label for="newScore">New overall score</label>
-																		<select id="newScore" class="form-control" data-ng-model = "selectedGateReview.overallScore"
-																				ng-options="score._id as score.name for score in outcomeScores" disabled>
-																		</select>
-																	</div>
-																</div>
-																<br>
-																<div class="row">
-																	<div class="form-group-sm col-md-5">
-																		<label for="currentStatus">Current gate status</label>
-																		<select id="currentStatus" class="form-control" data-ng-model = "selectedGateReview.gateStatusAssignment.currentRecord.status"
-																				ng-options="gateStatus._id as gateStatus.name for gateStatus in gateStatuses" disabled>
-																		</select>
-																	</div>
-																	<div class="form-group-sm col-md-5">
-																		<label for="newStatus">New gate status</label>
-																		<select id="newStatus" class="form-control" data-ng-model = "selectedGateReview.status"
-																				ng-options="gateStatus._id as gateStatus.name for gateStatus in gateStatuses" disabled>
-																		</select>
-																	</div>
-																</div>
-																<br>
-																<div class="row">
-																	<div class="form-group-sm col-md-6">
-																		<label for="prjCrEditCompleted">Completed</label>
-																		<input id="prjCrEditCompleted" class="" type="checkbox"
-																			   data-ng-model="selectedGateReview.completed" disabled>
-																	</div>
-																</div>
-																<hr>
-																<div class="pull-right" data-ng-show="userHasAuthorization && !selectedGateReview.final">
-																	<button class="btn btn-success btn-xs" data-ng-click="editStatus(selectedGateReview)">
-																		Edit
-																	</button>
 																</div>
 															</form>
 															<form data-ng-switch-when="edit">
-																<div class="row">
-																	<div class="form-group-sm col-md-5">
-																		<label for="currentScore">Current overall score</label>
-																		<select id="currentScore" class="form-control" data-ng-model = "selectedGateReview.gateStatusAssignment.currentRecord.overallScore"
-																				ng-options="score._id as score.name for score in outcomeScores" disabled>
-																		</select>
-																	</div>
-																	<div class="form-group-sm col-md-5">
-																		<label for="newScore">New overall score</label>
-																		<select id="newScore" class="form-control" data-ng-model = "selectedGateReview.overallScore"
-																				ng-options="score._id as score.name for score in outcomeScores">
-																			<option value="">--choose score</option>
-																		</select>
-																	</div>
-																</div>
-																<br>
-																<div class="row">
-																	<div class="form-group-sm col-md-5">
-																		<label for="currentStatus">Current gate status</label>
-																		<select id="currentStatus" class="form-control" data-ng-model = "selectedGateReview.gateStatusAssignment.currentRecord.status"
-																				ng-options="gateStatus._id as gateStatus.name for gateStatus in gateStatuses" disabled>
-																		</select>
-																	</div>
-																	<div class="form-group-sm col-md-5">
-																		<label for="newStatus">New gate status</label>
-																		<select id="newStatus" class="form-control" data-ng-model = "selectedGateReview.status"
-																				ng-options="gateStatus._id as gateStatus.name for gateStatus in gateStatuses">
-																			<option value="">--choose status</option>
-																		</select>
-																	</div>
-																</div>
-																<br>
-																<div class="row">
-																	<div class="form-group-sm col-md-6">
-																		<label for="prjCrEditCompleted">Completed</label>
-																		<input id="prjCrEditCompleted" class="" type="checkbox"
-																			   data-ng-model="selectedGateReview.completed" >
-																	</div>
-																</div>
-																<hr>
-																<div class="pull-right">
-																	<button class="btn btn-success btn-xs" data-ng-click="saveEditStatus(selectedGateReview)">
-																		Save
-																	</button>
-																	<button class="btn btn-info btn-xs" data-ng-click="cancelEditStatus(selectedGateReview)">
-																		Cancel
-																	</button>
-																</div>
+
 															</form>
 														</div>
 													</div>

@@ -30,12 +30,6 @@ angular.module('project-status-management').controller('ProjectStatusManagementC
 				$scope.initError.push(err.data.message);
 			});
 
-			ProjectStatusUpdates.query(function(projectStatusUpdates){
-				$scope.projectStatusUpdates = projectStatusUpdates;
-			}, function(err){
-				$scope.initError.push(err.data.message);
-			});
-
 			LogStatusIndicators.query(function(logStatusIndicators){
 				$scope.logStatusIndicators = logStatusIndicators;
 			}, function(err){
@@ -278,7 +272,7 @@ angular.module('project-status-management').controller('ProjectStatusManagementC
 
 		$scope.deleteProjectStatusUpdate = function(reviewObject, projectStatusUpdate){
 			ProjectStatusUpdates.remove({projectStatusUpdateId: projectStatusUpdate._id}, projectStatusUpdate, function(res){
-				reviewObject.projectStatusUpdates = _.without(reviewObject.projectStatusUpdates, _.find(reviewObject.projectStatusUpdates, _.matchesProperty('_id',projectStatusUpdate._id)));
+				reviewObject.projectStatusUpdates = _.without(reviewObject.projectStatusUpdates, _.find(reviewObject.projectStatusUpdates, _.matchesProperty('_id', projectStatusUpdate._id)));
 				$scope.cancelNewProjectStatusUpdate();
 				$scope.selectedProjectStatusUpdate = null;
 				originalProjectStatusUpdate = {};

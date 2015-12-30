@@ -12,7 +12,7 @@ var mongoose = require('mongoose'),
  * Create a Project status update
  */
 
-exports.create = require('./gate-reviews/gate-reviews.create.server.controller').create;
+exports.create = require('./project-status-updates/project-status-updates.create.server.controller').create;
 
 /**
  * Show the current Project status update

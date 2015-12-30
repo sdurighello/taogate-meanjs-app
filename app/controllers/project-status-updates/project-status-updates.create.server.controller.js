@@ -35,7 +35,25 @@ exports.create = function(req, res) {
         function(callback){
             var retObjArrays = {
 
-                gateStatusUpdate : {},
+                gateStatusUpdate : {
+                    gateStatusAssignment: {},
+                    overallUpdate : {
+                        status : {},
+                        comment : {}
+                    },
+                    durationUpdate : {
+                        status : {},
+                        comment : {}
+                    },
+                    costUpdate : {
+                        status : {},
+                        comment : {}
+                    },
+                    completionUpdate : {
+                        status : {},
+                        comment : {}
+                    }
+                },
 
                 statusAreaUpdates : [],
                 outcomeStatusUpdates : [],
