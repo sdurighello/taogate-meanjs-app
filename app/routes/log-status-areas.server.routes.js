@@ -6,11 +6,11 @@ module.exports = function(app) {
 
 	// Log status areas Routes
 	app.route('/log-status-areas')
-		.get(logStatusAreas.list)
-		.post(users.requiresLogin, logStatusAreas.create);
+		.get(users.requiresLogin, logStatusAreas.list)
+		.post(users.requiresLogin, logStatusAreas.hasAuthorization, logStatusAreas.create);
 
 	app.route('/log-status-areas/:logStatusAreaId')
-		.get(logStatusAreas.read)
+		.get(users.requiresLogin, logStatusAreas.read)
 		.put(users.requiresLogin, logStatusAreas.hasAuthorization, logStatusAreas.update)
 		.delete(users.requiresLogin, logStatusAreas.hasAuthorization, logStatusAreas.delete);
 

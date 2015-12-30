@@ -5,17 +5,23 @@
  */
 var mongoose = require('mongoose'),
 	Schema = mongoose.Schema;
+require('mongoose-multitenant');
 
 /**
  * Log status area Schema
  */
 var LogStatusAreaSchema = new Schema({
-	name: {
-		type: String,
-		default: '',
-		required: 'Please fill Log status area name',
-		trim: true
-	},
+    name: {
+        type: String,
+        default: '',
+        required: 'Please fill status area name',
+        trim: true
+    },
+    description: {
+        type: String,
+        default: '',
+        trim: true
+    },
 	created: {
 		type: Date,
 		default: Date.now
@@ -26,4 +32,4 @@ var LogStatusAreaSchema = new Schema({
 	}
 });
 
-mongoose.model('LogStatusArea', LogStatusAreaSchema);
+mongoose.mtModel('LogStatusArea', LogStatusAreaSchema);

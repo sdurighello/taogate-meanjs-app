@@ -72,11 +72,29 @@ angular.module('project-status-management').controller('ProjectStatusManagementC
 			if(string === 'edit'){$scope.switchApplyUpdateForm[projectUpdateStatus._id] = 'edit';}
 		};
 
-		$scope.switchGateStatusForm = {};
-		$scope.selectGateStatusForm = function(string, projectUpdateStatus){
-			if(string === 'view'){ $scope.switchGateStatusForm[projectUpdateStatus._id] = 'view';}
-			if(string === 'edit'){$scope.switchGateStatusForm[projectUpdateStatus._id] = 'edit';}
+		$scope.switchOverallStatusForm = {};
+		$scope.selectOverallStatusForm = function(string, projectUpdateStatus){
+			if(string === 'view'){ $scope.switchOverallStatusForm[projectUpdateStatus._id] = 'view';}
+			if(string === 'edit'){$scope.switchOverallStatusForm[projectUpdateStatus._id] = 'edit';}
 		};
+
+        $scope.switchDurationStatusForm = {};
+        $scope.selectDurationStatusForm = function(string, projectUpdateStatus){
+            if(string === 'view'){ $scope.switchDurationStatusForm[projectUpdateStatus._id] = 'view';}
+            if(string === 'edit'){$scope.switchDurationStatusForm[projectUpdateStatus._id] = 'edit';}
+        };
+
+        $scope.switchCostStatusForm = {};
+        $scope.selectCostStatusForm = function(string, projectUpdateStatus){
+            if(string === 'view'){ $scope.switchCostStatusForm[projectUpdateStatus._id] = 'view';}
+            if(string === 'edit'){$scope.switchCostStatusForm[projectUpdateStatus._id] = 'edit';}
+        };
+
+        $scope.switchCompletionStatusForm = {};
+        $scope.selectCompletionStatusForm = function(string, projectUpdateStatus){
+            if(string === 'view'){ $scope.switchCompletionStatusForm[projectUpdateStatus._id] = 'view';}
+            if(string === 'edit'){$scope.switchCompletionStatusForm[projectUpdateStatus._id] = 'edit';}
+        };
 
 		$scope.switchOutcomeUpdateForm = {};
 		$scope.selectOutcomeUpdateForm = function(string, outcomeStatusUpdate){
@@ -314,74 +332,191 @@ angular.module('project-status-management').controller('ProjectStatusManagementC
 		//	gateReview.final = originalGateReview[gateReview._id].final;
 		//	$scope.selectSetFinalForm('view', gateReview);
 		//};
-        //
-        //
-		//// -------------------------------------------------------- STATUS -------------------------------------------------
-        //
-		//$scope.editStatus = function(gateReview){
-		//	$scope.selectStatusForm('edit', gateReview);
-		//};
-        //
-		//$scope.saveEditStatus = function(gateReview){
-		//	// Clean-up deepPopulate
-		//	var copyGateReview = _.cloneDeep(gateReview);
-		//	copyGateReview.project = _.get(copyGateReview.project, '_id');
-		//	copyGateReview.gate = _.get(copyGateReview.gate, '_id');
-		//	copyGateReview.gateStatusAssignment = _.get(copyGateReview.gateStatusAssignment, '_id');
-		//	// Update server header
-		//	GateReviews.updateStatus( { gateReviewId : copyGateReview._id }, copyGateReview,
-		//		function(res){
-		//			originalGateReview[gateReview._id].overallScore = gateReview.overallScore;
-		//			originalGateReview[gateReview._id].status = gateReview.status;
-		//			originalGateReview[gateReview._id].completed = gateReview.completed;
-		//			$scope.selectStatusForm('view', gateReview);
-		//		},
-		//		function(err){
-		//			$scope.error = err.data.message;
-		//		}
-		//	);
-		//};
-        //
-		//$scope.cancelEditStatus = function(gateReview){
-		//	gateReview.overallScore = originalGateReview[gateReview._id].overallScore;
-		//	gateReview.status = originalGateReview[gateReview._id].status;
-		//	gateReview.completed = originalGateReview[gateReview._id].completed;
-		//	$scope.selectStatusForm('view', gateReview);
-		//};
-        //
-        //
-		//// -------------------------------------------------------- OUTCOMES -------------------------------------------------
-        //
-		//var originalOutcomeReview = {};
-        //
-		//$scope.editOutcomeReview = function(outcomeReview){
-		//	originalOutcomeReview[outcomeReview._id] = _.cloneDeep(outcomeReview);
-		//	$scope.selectOutcomeReviewForm('edit', outcomeReview);
-		//};
-        //
-		//$scope.saveEditOutcomeReview = function(gateReview, outcomeReview){
-		//	GateReviews.updateOutcomeReview(
-		//		{
-		//			gateReviewId: gateReview._id,
-		//			outcomeReviewId : outcomeReview._id
-		//		}, outcomeReview,
-		//		function(res){ },
-		//		function(err){
-		//			$scope.error = err.data.message;
-		//		}
-		//	);
-		//	$scope.selectOutcomeReviewForm('view', outcomeReview);
-		//};
-        //
-		//$scope.cancelEditOutcomeReview = function(outcomeReview){
-		//	outcomeReview.newScore = originalOutcomeReview[outcomeReview._id].newScore;
-		//	outcomeReview.reviewComment = originalOutcomeReview[outcomeReview._id].reviewComment;
-		//	$scope.selectOutcomeReviewForm('view', outcomeReview);
-		//};
-        //
-        //
-        //
-        //
+
+
+		// -------------------------------------------------------- OVERALL STATUS -------------------------------------------------
+
+		$scope.editOverallStatus = function(projectStatusUpdate){
+			$scope.selectOverallStatusForm('edit', projectStatusUpdate);
+		};
+
+		$scope.saveEditOverallStatus = function(projectStatusUpdate){
+			// Clean-up deepPopulate
+			var copyProjectStatusUpdate = _.cloneDeep(projectStatusUpdate);
+			copyProjectStatusUpdate.project = _.get(copyProjectStatusUpdate.project, '_id');
+			copyProjectStatusUpdate.gate = _.get(copyProjectStatusUpdate.gate, '_id');
+			copyProjectStatusUpdate.gateStatusUpdate.gateStatusAssignment = _.get(copyProjectStatusUpdate.gateStatusUpdate.gateStatusAssignment, '_id');
+			// Update server header
+            ProjectStatusUpdates.updateOverallStatus( { projectStatusUpdateId : projectStatusUpdate._id }, copyProjectStatusUpdate,
+				function(res){
+					originalProjectStatusUpdate[projectStatusUpdate._id].gateStatusUpdate.overallUpdate.status = projectStatusUpdate.gateStatusUpdate.overallUpdate.status;
+                    originalProjectStatusUpdate[projectStatusUpdate._id].gateStatusUpdate.overallUpdate.comment = projectStatusUpdate.gateStatusUpdate.overallUpdate.comment;
+					$scope.selectOverallStatusForm('view', projectStatusUpdate);
+				},
+				function(err){
+					$scope.error = err.data.message;
+				}
+			);
+		};
+
+		$scope.cancelEditOverallStatus = function(projectStatusUpdate){
+            projectStatusUpdate.gateStatusUpdate.overallUpdate.status = originalProjectStatusUpdate[projectStatusUpdate._id].gateStatusUpdate.overallUpdate.status;
+            projectStatusUpdate.gateStatusUpdate.overallUpdate.comment = originalProjectStatusUpdate[projectStatusUpdate._id].gateStatusUpdate.overallUpdate.comment;
+			$scope.selectOverallStatusForm('view', projectStatusUpdate);
+		};
+
+        // -------------------------------------------------------- DURATION STATUS -------------------------------------------------
+
+        $scope.editDurationStatus = function(projectStatusUpdate){
+            $scope.selectDurationStatusForm('edit', projectStatusUpdate);
+        };
+
+        $scope.saveEditDurationStatus = function(projectStatusUpdate){
+            // Clean-up deepPopulate
+            var copyProjectStatusUpdate = _.cloneDeep(projectStatusUpdate);
+            copyProjectStatusUpdate.project = _.get(copyProjectStatusUpdate.project, '_id');
+            copyProjectStatusUpdate.gate = _.get(copyProjectStatusUpdate.gate, '_id');
+            copyProjectStatusUpdate.gateStatusUpdate.gateStatusAssignment = _.get(copyProjectStatusUpdate.gateStatusUpdate.gateStatusAssignment, '_id');
+            // Update server header
+            ProjectStatusUpdates.updateDurationStatus( { projectStatusUpdateId : projectStatusUpdate._id }, copyProjectStatusUpdate,
+                function(res){
+                    originalProjectStatusUpdate[projectStatusUpdate._id].gateStatusUpdate.durationUpdate.status = projectStatusUpdate.gateStatusUpdate.durationUpdate.status;
+                    originalProjectStatusUpdate[projectStatusUpdate._id].gateStatusUpdate.durationUpdate.comment = projectStatusUpdate.gateStatusUpdate.durationUpdate.comment;
+                    $scope.selectDurationStatusForm('view', projectStatusUpdate);
+                },
+                function(err){
+                    $scope.error = err.data.message;
+                }
+            );
+        };
+
+        $scope.cancelEditDurationStatus = function(projectStatusUpdate){
+            projectStatusUpdate.gateStatusUpdate.durationUpdate.status = originalProjectStatusUpdate[projectStatusUpdate._id].gateStatusUpdate.durationUpdate.status;
+            projectStatusUpdate.gateStatusUpdate.durationUpdate.comment = originalProjectStatusUpdate[projectStatusUpdate._id].gateStatusUpdate.durationUpdate.comment;
+            $scope.selectDurationStatusForm('view', projectStatusUpdate);
+        };
+
+        // -------------------------------------------------------- COST STATUS -------------------------------------------------
+
+        $scope.editCostStatus = function(projectStatusUpdate){
+            $scope.selectCostStatusForm('edit', projectStatusUpdate);
+        };
+
+        $scope.saveEditCostStatus = function(projectStatusUpdate){
+            // Clean-up deepPopulate
+            var copyProjectStatusUpdate = _.cloneDeep(projectStatusUpdate);
+            copyProjectStatusUpdate.project = _.get(copyProjectStatusUpdate.project, '_id');
+            copyProjectStatusUpdate.gate = _.get(copyProjectStatusUpdate.gate, '_id');
+            copyProjectStatusUpdate.gateStatusUpdate.gateStatusAssignment = _.get(copyProjectStatusUpdate.gateStatusUpdate.gateStatusAssignment, '_id');
+            // Update server header
+            ProjectStatusUpdates.updateCostStatus( { projectStatusUpdateId : projectStatusUpdate._id }, copyProjectStatusUpdate,
+                function(res){
+                    originalProjectStatusUpdate[projectStatusUpdate._id].gateStatusUpdate.costUpdate.status = projectStatusUpdate.gateStatusUpdate.costUpdate.status;
+                    originalProjectStatusUpdate[projectStatusUpdate._id].gateStatusUpdate.costUpdate.comment = projectStatusUpdate.gateStatusUpdate.costUpdate.comment;
+                    $scope.selectCostStatusForm('view', projectStatusUpdate);
+                },
+                function(err){
+                    $scope.error = err.data.message;
+                }
+            );
+        };
+
+        $scope.cancelEditCostStatus = function(projectStatusUpdate){
+            projectStatusUpdate.gateStatusUpdate.costUpdate.status = originalProjectStatusUpdate[projectStatusUpdate._id].gateStatusUpdate.costUpdate.status;
+            projectStatusUpdate.gateStatusUpdate.costUpdate.comment = originalProjectStatusUpdate[projectStatusUpdate._id].gateStatusUpdate.costUpdate.comment;
+            $scope.selectCostStatusForm('view', projectStatusUpdate);
+        };
+
+        // -------------------------------------------------------- COMPLETION STATUS -------------------------------------------------
+
+        $scope.editCompletionStatus = function(projectStatusUpdate){
+            $scope.selectCompletionStatusForm('edit', projectStatusUpdate);
+        };
+
+        $scope.saveEditCompletionStatus = function(projectStatusUpdate){
+            // Clean-up deepPopulate
+            var copyProjectStatusUpdate = _.cloneDeep(projectStatusUpdate);
+            copyProjectStatusUpdate.project = _.get(copyProjectStatusUpdate.project, '_id');
+            copyProjectStatusUpdate.gate = _.get(copyProjectStatusUpdate.gate, '_id');
+            copyProjectStatusUpdate.gateStatusUpdate.gateStatusAssignment = _.get(copyProjectStatusUpdate.gateStatusUpdate.gateStatusAssignment, '_id');
+            // Update server header
+            ProjectStatusUpdates.updateCompletionStatus( { projectStatusUpdateId : projectStatusUpdate._id }, copyProjectStatusUpdate,
+                function(res){
+                    originalProjectStatusUpdate[projectStatusUpdate._id].gateStatusUpdate.completionUpdate.status = projectStatusUpdate.gateStatusUpdate.completionUpdate.status;
+                    originalProjectStatusUpdate[projectStatusUpdate._id].gateStatusUpdate.completionUpdate.comment = projectStatusUpdate.gateStatusUpdate.completionUpdate.comment;
+                    $scope.selectCompletionStatusForm('view', projectStatusUpdate);
+                },
+                function(err){
+                    $scope.error = err.data.message;
+                }
+            );
+        };
+
+        $scope.cancelEditCompletionStatus = function(projectStatusUpdate){
+            projectStatusUpdate.gateStatusUpdate.completionUpdate.status = originalProjectStatusUpdate[projectStatusUpdate._id].gateStatusUpdate.completionUpdate.status;
+            projectStatusUpdate.gateStatusUpdate.completionUpdate.comment = originalProjectStatusUpdate[projectStatusUpdate._id].gateStatusUpdate.completionUpdate.comment;
+            $scope.selectCompletionStatusForm('view', projectStatusUpdate);
+        };
+
+
+		// -------------------------------------------------------- OUTCOMES -------------------------------------------------
+
+		var originalOutcomeReview = {};
+
+		$scope.editOutcomeReview = function(outcomeReview){
+			originalOutcomeReview[outcomeReview._id] = _.cloneDeep(outcomeReview);
+			$scope.selectOutcomeReviewForm('edit', outcomeReview);
+		};
+
+		$scope.saveEditOutcomeReview = function(projectStatusUpdate, outcomeReview){
+            ProjectStatusUpdates.updateOutcomeStatus(
+				{
+                    projectStatusUpdateId: projectStatusUpdate._id,
+					outcomeReviewId : outcomeReview._id
+				}, outcomeReview,
+				function(res){ },
+				function(err){
+					$scope.error = err.data.message;
+				}
+			);
+			$scope.selectOutcomeReviewForm('view', outcomeReview);
+		};
+
+		$scope.cancelEditOutcomeReview = function(outcomeReview){
+			outcomeReview.newScore = originalOutcomeReview[outcomeReview._id].newScore;
+			outcomeReview.reviewComment = originalOutcomeReview[outcomeReview._id].reviewComment;
+			$scope.selectOutcomeReviewForm('view', outcomeReview);
+		};
+
+// -------------------------------------------------------- STATUS AREAS -------------------------------------------------
+
+        var originalStatusAreaUpdate = {};
+
+        $scope.editStatusArea = function(statusAreaUpdate){
+            originalStatusAreaUpdate[statusAreaUpdate._id] = _.cloneDeep(statusAreaUpdate);
+            $scope.selectStatusAreaForm('edit', statusAreaUpdate);
+        };
+
+        $scope.saveEditStatusArea = function(projectStatusUpdate, statusAreaUpdate){
+            ProjectStatusUpdates.updateOutcomeStatus(
+                {
+                    projectStatusUpdateId: projectStatusUpdate._id,
+                    statusAreaUpdateId : statusAreaUpdate._id
+                }, statusAreaUpdate,
+                function(res){ },
+                function(err){
+                    $scope.error = err.data.message;
+                }
+            );
+            $scope.selectStatusAreaForm('view', statusAreaUpdate);
+        };
+
+        $scope.cancelEditStatusArea = function(statusAreaUpdate){
+            statusAreaUpdate.newStatus = originalStatusAreaUpdate[statusAreaUpdate._id].newStatus;
+            statusAreaUpdate.comment = originalStatusAreaUpdate[statusAreaUpdate._id].comment;
+            $scope.selectStatusAreaForm('view', statusAreaUpdate);
+        };
+
 		//// -------------------------------------------------------- ESTIMATE DURATION -------------------------------------------------
         //
 		//$scope.estimateDurationDateOpened = {};

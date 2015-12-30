@@ -41,12 +41,22 @@ exports.update = function(req, res) {
 	});
 };
 
+// --- Header update ---
 exports.updateHeader = require('./project-status-updates/project-status-updates.updateHeader.server.controller').updateHeader;
 
-exports.updateGateStatus = require('./project-status-updates/project-status-updates.updateGateStatus.server.controller').updateGateStatus;
+// --- Gate Status update ---
+exports.updateOverallStatus = require('./project-status-updates/project-status-updates.updateGateStatus.server.controller').updateOverallStatus;
 
+exports.updateDurationStatus = require('./project-status-updates/project-status-updates.updateGateStatus.server.controller').updateDurationStatus;
+
+exports.updateCostStatus = require('./project-status-updates/project-status-updates.updateGateStatus.server.controller').updateCostStatus;
+
+exports.updateCompletionStatus = require('./project-status-updates/project-status-updates.updateGateStatus.server.controller').updateCompletionStatus;
+
+// --- Outcomes update ---
 exports.updateOutcome = require('./project-status-updates/project-status-updates.updateOutcome.server.controller').updateOutcome;
 
+// --- Status areas update ---
 exports.updateStatusArea = require('./project-status-updates/project-status-updates.updateStatusArea.server.controller').updateStatusArea;
 
 

@@ -348,7 +348,7 @@ exports.updateProcessAssignment = function(req, res) {
                                         } else {
                                             if(areas){
                                                 async.eachSeries(areas, function(area, callback){
-                                                    var projectAreaReview = new ProjectAreaReview({project: project._id, gate: sourceGate, statusArea: area, currentRecord: {user: req.user}, history: []});
+                                                    var projectAreaReview = new ProjectAreaReview({project: project._id, gate: sourceGate, statusArea: area._id, currentRecord: {user: req.user}, history: []});
                                                     projectAreaReview.save(function(err){
                                                         if(err){ return callback(err); }
                                                     });

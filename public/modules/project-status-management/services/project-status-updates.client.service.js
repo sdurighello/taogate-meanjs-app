@@ -17,12 +17,33 @@ angular.module('project-status-management').factory('ProjectStatusUpdates', ['$r
 				// req.body: {whole gate review object}
 			},
 
-            // --- Gate status ---
-			updateStatus: {
+            // --- Overall status ---
+			updateOverallStatus: {
 				method: 'PUT',
-				url: 'project-status-updates/:projectStatusUpdateId/gateStatus'
+				url: 'project-status-updates/:projectStatusUpdateId/overallStatus'
 				// req.body: {whole gate review object}
 			},
+
+			// --- Duration status ---
+			updateDurationStatus: {
+				method: 'PUT',
+				url: 'project-status-updates/:projectStatusUpdateId/durationStatus'
+				// req.body: {whole gate review object}
+			},
+
+            // --- Cost status ---
+            updateCostStatus: {
+                method: 'PUT',
+                url: 'project-status-updates/:projectStatusUpdateId/costStatus'
+                // req.body: {whole gate review object}
+            },
+
+            // --- Completion status ---
+            updateCompletionStatus: {
+                method: 'PUT',
+                url: 'project-status-updates/:projectStatusUpdateId/completionStatus'
+                // req.body: {whole gate review object}
+            },
 
 			// --- Apply update --
 

@@ -127,7 +127,7 @@ exports.create = function(req, res) {
                         }
                         if(statusAreas){
                             async.each(statusAreas, function(statusArea, callback){
-                                ProjectAreaReview.find({project: req.body.project, gate: req.body.gate, statusArea: statusArea}, function(err, areaReviews){
+                                ProjectAreaReview.find({project: req.body.project, gate: req.body.gate, statusArea: statusArea._id}, function(err, areaReviews){
                                     if(err){
                                         return callback(err);
                                     }

@@ -15,31 +15,39 @@ module.exports = function(app) {
 		.delete(users.requiresLogin, projectStatusUpdates.hasAuthorization, projectStatusUpdates.delete);
 
 	// Apply update
-
 	app.route('/project-status-updates/:projectStatusUpdateId/applyUpdate')
 		.put(users.requiresLogin, projectStatusUpdates.hasAuthorization, projectStatusUpdates.applyUpdate);
 
-	// Header & Status
-
+	// Header
 	app.route('/project-status-updates/:projectStatusUpdateId/header')
 		.put(users.requiresLogin, projectStatusUpdates.hasAuthorization, projectStatusUpdates.updateHeader);
 
-	app.route('/project-status-updates/:projectStatusUpdateId/gateStatus')
-		.put(users.requiresLogin, projectStatusUpdates.hasAuthorization, projectStatusUpdates.updateGateStatus);
+	// Overall status
+	app.route('/project-status-updates/:projectStatusUpdateId/overallStatus')
+		.put(users.requiresLogin, projectStatusUpdates.hasAuthorization, projectStatusUpdates.updateOverallStatus);
+
+	// Duration status
+	app.route('/project-status-updates/:projectStatusUpdateId/durationStatus')
+		.put(users.requiresLogin, projectStatusUpdates.hasAuthorization, projectStatusUpdates.updateDurationStatus);
+
+	// Cost status
+	app.route('/project-status-updates/:projectStatusUpdateId/costStatus')
+		.put(users.requiresLogin, projectStatusUpdates.hasAuthorization, projectStatusUpdates.updateCostStatus);
+
+	// Completion status
+	app.route('/project-status-updates/:projectStatusUpdateId/completionStatus')
+		.put(users.requiresLogin, projectStatusUpdates.hasAuthorization, projectStatusUpdates.updateCompletionStatus);
 
 	// Outcomes
-
 	app.route('/project-status-updates/:projectStatusUpdateId/outcome-status-updates/:outcomeStatusUpdateId')
 		.put(users.requiresLogin, projectStatusUpdates.hasAuthorization, projectStatusUpdates.updateOutcome);
 
     // Areas
-
     app.route('/project-status-updates/:projectStatusUpdateId/status-area-updates/:statusAreaUpdateId')
         .put(users.requiresLogin, projectStatusUpdates.hasAuthorization, projectStatusUpdates.updateStatusArea);
 
 
 	// Estimate
-
 	app.route('/project-status-updates/:projectStatusUpdateId/estimate-duration-reviews/:estimateDurationReviewId')
 		.put(users.requiresLogin, projectStatusUpdates.hasAuthorization, projectStatusUpdates.updateEstimateDuration);
 
