@@ -118,7 +118,7 @@ exports.projectStatusUpdateByID = function(req, res, next, id) {
         'estimateDurationReviews.estimateDuration.targetGate',
         'estimateCostReviews.estimateCost.targetGate',
         'estimateCompletionReviews.estimateCompletion.targetGate'
-    ]).populate('user', 'displayName').exec(function(err, projectStatusUpdate) {
+    ]).populate('user', 'displayName').populate('appliedUpdates.user', 'displayName').exec(function(err, projectStatusUpdate) {
 		if (err) return next(err);
 		if (! projectStatusUpdate) return next(new Error('Failed to load Project status update ' + id));
 		req.projectStatusUpdate = projectStatusUpdate ;

@@ -28,7 +28,7 @@ exports.applyUpdate = function(req, res) {
 
     async.series([
         function(callback){
-            // Async.series inside an async.series so it doesn't save the projectChangeRequest if the rest is not done
+            // Async.series inside an async.series so it doesn't save the projectChangeUpdate if the rest is not done
             async.series([
                 // ESTIMATE-DURATION
                 function(callback){
@@ -152,7 +152,7 @@ exports.applyUpdate = function(req, res) {
                 },
                 // GATE-STATUS-ASSIGNMENT
                 function(callback){
-                    GateStatusAssignment.findById(req.body.gateStatusAssignment).exec(function(err, statusAssignment){
+                    GateStatusAssignment.findById(req.body.gateStatusUpdate.gateStatusAssignment).exec(function(err, statusAssignment){
                         if(err){
                             return callback(err);
                         } else if(!statusAssignment){
@@ -255,7 +255,7 @@ exports.applyUpdate = function(req, res) {
                 }
             });
         },
-        // If all the above series function are successful, create an 'applyUpdate" record
+        // If all the above series function are successful, create an 'applyUpdate" record and set update to "final"
         function(callback){
             projectStatusUpdate.user = req.user;
             projectStatusUpdate.created = Date.now();
@@ -263,6 +263,7 @@ exports.applyUpdate = function(req, res) {
                 user : req.user,
                 created : Date.now()
             });
+            projectStatusUpdate.final = true;
             projectStatusUpdate.save(function(err){
                 callback(err);
             });
