@@ -340,7 +340,7 @@ angular.module('core').service('Menus', [
         this.addSubMenuItem('topbar', 'delivery', 'Issues', 'menuTitle','menuTitle',false,
             ['superAdmin','admin','PMO','projectManager','portfolioManager','executive'],8);
 				// Project issues
-		this.addSubMenuItem('topbar', 'delivery', 'Project issues', 'project-issues','project-issues',false,
+		this.addSubMenuItem('topbar', 'delivery', 'Project issues', 'project-issues/list', 'listProjectIssues',false,
 			['superAdmin','admin','PMO','projectManager','portfolioManager','executive'],9);
                 // Portfolio issues
         this.addSubMenuItem('topbar', 'delivery', 'Portfolio issues', 'portfolio-issues','portfolio-issues',false,

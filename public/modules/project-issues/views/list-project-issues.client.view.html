@@ -1,19 +1,257 @@
-<section data-ng-controller="ProjectIssuesController" data-ng-init="find()">
-    <div class="page-header">
-        <h1>Project issues</h1>
+<section data-ng-controller="ProjectIssuesController"  data-ng-init="init()">
+    <br>
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="panel-heading">
+                <ol class="breadcrumb">
+                    <li>Portfolio delivery</li>
+                    <li>Issues</li>
+                    <li class="active">Project issues</li>
+                </ol>
+            </div>
+        </div>
     </div>
-    <div class="list-group">
-        <a data-ng-repeat="projectIssue in projectIssues" data-ng-href="#!/project-issues/{{projectIssue._id}}" class="list-group-item">
-			<small class="list-group-item-text">
-				Posted on
-				<span data-ng-bind="projectIssue.created | date:'medium'"></span>
-				by
-				<span data-ng-bind="projectIssue.user.displayName"></span>
-			</small>
-			<h4 class="list-group-item-heading" data-ng-bind="projectIssue.name"></h4>
-        </a>
+    <div data-ng-show="initError" class="text-danger">
+        <strong data-ng-bind="initError"></strong>
     </div>
-    <div class="alert alert-warning text-center" data-ng-hide="!projectIssues.$resolved || projectIssues.length">
-    	No Project issues yet, why don't you <a href="/#!/project-issues/create">create one</a>?
+    <div class="row">
+        <div class="col-sm-3"><!-- PROJECTS LIST -->
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h6 class="panel-title text-center">Projects</h6>
+                </div>
+                <div class="panel-body">
+                    <div class="row">
+                        <div class=" form-group col-md-12">
+                            <select id="" class="form-control input-sm" data-ng-model="filterProfileProcess"
+                                    ng-options="process.name for process in gateProcesses">
+                                <option value="">--filter by gate process</option>
+                            </select>
+                        </div>
+                        <div class=" form-group col-md-12">
+                            <select id="" class="form-control input-sm" data-ng-model="filterProfilePortfolio"
+                                    ng-options="portfolio.name for portfolio in portfolios">
+                                <option value="">--filter by portfolio</option>
+                            </select>
+                        </div>
+                        <div class="col-md-12 form-group-sm">
+                            <input id="" type="text" class="form-control input-sm"
+                                   data-ng-model="filterProfileProject.name" placeholder="Filter by project name">
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="row" style="min-height: 350px; max-height: 350px; overflow-y: auto">
+                        <div class="col-md-12">
+                            <div data-ng-show="projects.length === 0" class="alert alert-warning text-center">
+                                There are no projects in delivery
+                            </div>
+                            <button type="button"
+                                    data-ng-repeat="project in projects | filter:{identification: filterProfileProject, portfolio: filterProfilePortfolio._id, process: filterProfileProcess._id} "
+                                    data-ng-click="selectProject(project)"
+                                    class="btn btn-default btn-sm center-block btn-block" style="overflow: hidden;">
+                                {{project.identification.idNumber}} - {{project.identification.name}}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-9">
+            <div class="row" data-ng-hide="selectedProject || projects.length === 0">
+                <div class="col-md-12">
+                    <div class="alert alert-warning text-center">
+                        Select a project to see its details
+                    </div>
+                </div>
+            </div>
+            <div class="row" data-ng-show="selectedProject">
+                <div class="col-md-12">
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <div class="panel panel-default">
+                                <div><h5>&nbsp;Project: <i>{{selectedProject.identification.name}}</i></h5></div>
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="panel panel-default">
+                                <div><h5>&nbsp;Process: <i>{{selectedProject.process.name}}</i></h5></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row" data-ng-show="selectedProject">
+                <div class="col-md-12">
+                    <div class="row" data-ng-show="showNewProjectIssueForm">
+                        <div class="col-md-12">
+                            <div class="panel panel-default">
+                                <div class="panel-heading">
+                                    <h6 class="panel-title">
+                                        New project issue
+                                    </h6>
+                                </div>
+                                <div class="panel-body">
+                                    <form class="form" name="newProjectIssueForm">
+                                        <div class="row">
+                                            <div class="form-group-sm col-md-3">
+                                                <label for="">Raised on date</label>
+                                                <div class="input-group">
+                                                    <input type="text" id="" class="form-control" datepicker-popup="dd-MMMM-yyyy" data-ng-model="newProjectIssue.raisedOnDate"
+                                                           is-open="newProjectIssueRaisedOnDateOpened[selectedProject._id]" required>
+                                                                <span class="input-group-btn">
+                                                                    <button type="button" class="btn btn-default btn-sm" ng-click="openNewProjectIssueRaisedOnDate(selectedProject, $event)"><i class="glyphicon glyphicon-calendar"></i></button>
+                                                                </span>
+                                                </div>
+                                            </div>
+                                            <div class="form-group-sm col-md-3">
+                                                <label for="">Gate</label>
+                                                <select id="" class="form-control" data-ng-model = "newProjectIssue.gate"
+                                                        ng-options="gate._id as gate.name for gate in selectedProject.process.gates" required>
+                                                    <option value="">--choose gate</option>
+                                                </select>
+                                            </div>
+                                            <div class="form-group-sm col-md-6">
+                                                <label for="reviewTitleNew">Title</label>
+                                                <input id="reviewTitleNew" name="reviewTitleNew" class="form-control" type="text" placeholder="Enter issue title"
+                                                       data-ng-model="newProjectIssue.title" required>
+                                            </div>
+                                        </div>
+                                        <hr>
+                                        <div class="form-group-sm pull-right">
+                                            <button class="btn btn-success btn-xs" data-ng-click="createNewProjectIssue(selectedProject); showNewProjectIssueForm = false;">
+                                                Save
+                                            </button>
+                                            <button class="btn btn-info btn-xs" data-ng-click="cancelNewProjectIssue(); showNewProjectIssueForm = false;">
+                                                Cancel
+                                            </button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div data-ng-show="!showNewProjectIssueForm">
+                        <div class="row" data-ng-show="!showNewProjectIssueForm">
+                            <div class="col-md-5 form-group-sm center-block">
+                                <button class="btn btn-warning btn-sm" ng-click="showNewProjectIssueForm = true">
+                                    New project issue
+                                </button>
+                            </div>
+                        </div>
+                        <br>
+                        <table class="table table-condensed table-hover" data-ng-show="projectIssues.length !== 0">
+                            <thead>
+                            <tr>
+                                <th class="col-md-1 text-center">
+                                    <span>#</span>
+                                    <input class="form-control" type="number" placeholder="filter" data-ng-model="projectIssueFilter.idNumber">
+                                </th>
+                                <th class="col-md-1 text-center">
+                                    <span>Gate</span>
+                                    <select id="" class="form-control" data-ng-model = "projectIssueFilter.gate"
+                                            data-ng-options="gate as gate.name for gate in selectedProject.process.gates">
+                                        <option value="">--filter</option>
+                                    </select>
+                                </th>
+                                <th class="text-center">
+                                    <span>Title</span><br>
+                                    <input class="form-control" type="text" placeholder="filter" data-ng-model="projectIssueFilter.title">
+                                </th>
+                                <th class="col-md-1 text-center">
+                                    <label for="listReason">Reason</label>
+                                    <select id="listReason" class="form-control" data-ng-model = "projectIssueFilter.reason"
+                                            data-ng-options="reason._id as reason.name for reason in logReasons">
+                                        <option value="">--filter</option>
+                                    </select>
+                                </th>
+                                <th class="col-md-1 text-center">
+                                    <span>Priority</span>
+                                    <select class="form-control" data-ng-model = "projectIssueFilter.priority"
+                                            data-ng-options="priority._id as priority.name for priority in logPriorities">
+                                        <option value="">--filter</option>
+                                    </select>
+                                </th>
+                                <th class="col-md-1 text-center">
+                                    <span>State</span>
+                                    <select class="form-control" data-ng-model = "projectIssueFilter.state"
+                                            data-ng-options="state._id as state.name for state in issueStates">
+                                        <option value="">--filter</option>
+                                    </select>
+                                </th>
+                                <th class="col-md-1 text-center">
+                                    <span>Status</span>
+                                    <select class="form-control" data-ng-model = "projectIssueFilter.statusReview.currentRecord.status"
+                                            data-ng-options="status._id as status.name for status in logStatuses">
+                                        <option value="">--filter</option>
+                                    </select>
+                                </th>
+                                <th class="col-md-1 text-center">
+                                    <span>Completion</span>
+                                    <select class="form-control" data-ng-model = "projectIssueFilter.statusReview.currentRecord.status">
+                                        <option value="">--filter</option>
+                                        <option value="completed">Completed</option>
+                                        <option value="notCompleted">Not completed</option>
+                                    </select>
+                                </th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr data-ng-repeat="projectIssue in projectIssues | orderBy: 'idNumber'">
+                                <td>{{projectIssue.idNumber}}</td>
+                                <td>{{projectIssue.gate.name}}</td>
+                                <td>
+                                    <button class="btn-link" data-ng-click="selectProjectIssue(projectIssue)">{{projectIssue.title}}</button>
+                                </td>
+                                <td>
+                                    <span data-ng-show="projectIssue.reason">{{projectIssue.reason.name}}</span>
+                                    <span data-ng-show="!projectIssue.reason">No reason</span>
+                                </td>
+                                <td>
+                                    <span data-ng-show="projectIssue.priority">{{projectIssue.priority.name}}</span>
+                                    <span data-ng-show="!projectIssue.priority">No priority</span>
+                                </td>
+                                <td>
+                                    <span data-ng-show="projectIssue.state">{{projectIssue.state.name}}</span>
+                                    <span data-ng-show="!projectIssue.state">No state</span>
+                                </td>
+                                <td>
+                                    <span data-ng-show="projectIssue.statusReview.currentRecord.status">{{projectIssue.statusReview.currentRecord.status.name}}</span>
+                                    <span data-ng-show="!projectIssue.statusReview.currentRecord.status">No status</span>
+                                </td>
+                                <td>
+                                    <span data-ng-show="projectIssue.completed">Completed</span>
+                                    <span data-ng-show="!projectIssue.completed">Not completed</span>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </section>
+
+
+
+
+
+<!--<section data-ng-controller="ProjectIssuesController" data-ng-init="init()">-->
+    <!--<div class="page-header">-->
+        <!--<h1>Project issues</h1>-->
+    <!--</div>-->
+    <!--<div class="list-group">-->
+        <!--<a data-ng-repeat="projectIssue in projectIssues" data-ng-href="#!/project-issues/{{projectIssue._id}}" class="list-group-item">-->
+			<!--<small class="list-group-item-text">-->
+				<!--Posted on-->
+				<!--<span data-ng-bind="projectIssue.created | date:'medium'"></span>-->
+				<!--by-->
+				<!--<span data-ng-bind="projectIssue.user.displayName"></span>-->
+			<!--</small>-->
+			<!--<h4 class="list-group-item-heading" data-ng-bind="projectIssue.name"></h4>-->
+        <!--</a>-->
+    <!--</div>-->
+    <!--<div class="alert alert-warning text-center" data-ng-hide="!projectIssues.$resolved || projectIssues.length">-->
+    	<!--No Project issues yet, why don't you <a href="/#!/project-issues/create">create one</a>?-->
+    <!--</div>-->
+<!--</section>-->

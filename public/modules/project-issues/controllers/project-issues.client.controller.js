@@ -1,9 +1,9 @@
 'use strict';
 
 // Project issues controller
-angular.module('project-issues').controller('ProjectIssuesController', ['$scope', '$stateParams', '$location', '$q', '_', 'Authentication',
+angular.module('project-issues').controller('ProjectIssuesController', ['$scope', '$stateParams', '$location', '$q', '$modal', '$log', '_', 'Authentication',
     'Portfolios', 'Projects', 'ProjectIssues', 'GateProcesses', 'LogReasons', 'IssueStates', 'LogPriorities', 'LogStatusIndicators',
-    function($scope, $stateParams, $location, $q, _, Authentication,
+    function($scope, $stateParams, $location, $q, $modal, $log, _, Authentication,
              Portfolios, Projects, ProjectIssues, GateProcesses, LogReasons, IssueStates, LogPriorities, LogStatusIndicators) {
 
         // ------------- INIT -------------
@@ -180,6 +180,36 @@ angular.module('project-issues').controller('ProjectIssuesController', ['$scope'
         };
 
 
+        // -- MODAL VIEW/EDIT ISSUE--
+
+        var modalUpdate = function (size, projectIssue, originalProjectIssue) {
+
+            var modalInstance = $modal.open({
+                templateUrl: 'modules/project-issues/views/edit-project-issue.client.view.html',
+                controller: function ($scope, $modalInstance, projectIssue, originalProjectIssue) {
+                    $scope.selectedProjectIssue = projectIssue;
+
+                },
+                size: size,
+                resolve: {
+                    projectIssue: function () {
+                        return projectIssue;
+                    },
+                    originalProjectIssue: function(){
+                        return originalProjectIssue;
+                    }
+                },
+                backdrop: 'static',
+                keyboard: false
+            });
+
+            modalInstance.result.then(function (selectedItem) {
+                $scope.selected = selectedItem;
+            }, function () {
+                $log.info('Modal dismissed at: ' + new Date());
+            });
+        };
+
         // ------------- SELECT ISSUE ------------
 
         var projectIssueFromList = {};
@@ -191,8 +221,10 @@ angular.module('project-issues').controller('ProjectIssuesController', ['$scope'
             ProjectIssues.get({
                 projectIssueId: projectIssue._id
             }, function (res) {
-                $scope.selectedProjectIssue = res;
+                //$scope.selectedProjectIssue = res;
                 originalProjectIssue[projectIssue._id] = _.cloneDeep(res);
+                console.log(originalProjectIssue[projectIssue._id]);
+                modalUpdate('lg', res, originalProjectIssue);
                 //$scope.selectProjectIssueForm('view');
             }, function (errorResponse) {
                 $scope.error = errorResponse.data.message;
@@ -385,7 +417,7 @@ angular.module('project-issues').controller('ProjectIssuesController', ['$scope'
 	//	$scope.find = function() {
 	//		$scope.projectIssues = ProjectIssues.query();
 	//	};
-    //
+    ////
 	//	// Find existing Project issue
 	//	$scope.findOne = function() {
 	//		$scope.projectIssue = ProjectIssues.get({
