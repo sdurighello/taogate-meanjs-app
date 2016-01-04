@@ -9,8 +9,14 @@ angular.module('project-issues').controller('ProjectIssuesController', ['$scope'
         // ------------- INIT -------------
 
         $scope.initError = [];
+        var logReasons = [];
+        var issueStates = [];
+        var logPriorities = [];
+        var logStatuses = [];
 
         $scope.init = function () {
+
+            // main controller
 
             Projects.query({'selection.selectedForDelivery': true}, function (projects) {
                 $scope.projects = _.filter(projects, function (project) {
@@ -32,26 +38,32 @@ angular.module('project-issues').controller('ProjectIssuesController', ['$scope'
                 $scope.initError.push(err.data.message);
             });
 
-            LogReasons.query(function (logReasons) {
-                $scope.logReasons = logReasons;
+            // Modal controller
+
+            LogReasons.query(function (res) {
+                logReasons = res;
+                $scope.logReasons = res;
             }, function (err) {
                 $scope.initError.push(err.data.message);
             });
 
-            IssueStates.query(function (issueStates) {
-                $scope.issueStates = issueStates;
+            IssueStates.query(function (res) {
+                issueStates = res;
+                $scope.issueStates = res;
             }, function (err) {
                 $scope.initError.push(err.data.message);
             });
 
-            LogPriorities.query(function (logPriorities) {
-                $scope.logPriorities = logPriorities;
+            LogPriorities.query(function (res) {
+                logPriorities = res;
+                $scope.logPriorities = res;
             }, function (err) {
                 $scope.initError.push(err.data.message);
             });
 
-            LogStatusIndicators.query(function (logStatusIndicators) {
-                $scope.logStatuses = logStatusIndicators;
+            LogStatusIndicators.query(function (res) {
+                logStatuses = res;
+                $scope.logStatuses = res;
             }, function (err) {
                 $scope.initError.push(err.data.message);
             });
@@ -70,28 +82,6 @@ angular.module('project-issues').controller('ProjectIssuesController', ['$scope'
             });
         });
 
-        // ------------------- NG-SWITCH ---------------------
-
-
-        $scope.switchHeaderForm = {};
-        $scope.selectHeaderForm = function (string, projectIssue) {
-            if (string === 'view') {
-                $scope.switchHeaderForm[projectIssue._id] = 'view';
-            }
-            if (string === 'edit') {
-                $scope.switchHeaderForm[projectIssue._id] = 'edit';
-            }
-        };
-
-        $scope.switchStatusForm = {};
-        $scope.selectStatusForm = function (string, projectIssue) {
-            if (string === 'view') {
-                $scope.switchStatusForm[projectIssue._id] = 'view';
-            }
-            if (string === 'edit') {
-                $scope.switchStatusForm[projectIssue._id] = 'edit';
-            }
-        };
 
         // ------------------- UTILITIES ---------------------
 
@@ -107,22 +97,19 @@ angular.module('project-issues').controller('ProjectIssuesController', ['$scope'
             return new Date(projectIssue.raisedOnDate);
         };
 
+        $scope.completionFilterArray = [
+            {name : 'Completed', flag : true},
+            {name : 'Not completed', flag : false}
+        ];
 
-        // ------------------- OTHER VARIABLES ---------------------
-
-        $scope.projectIssueDetails = 'header';
 
         // ------------- SELECT VIEW PROJECT ------------
-
-        var originalProjectIssue = {};
 
         $scope.selectProject = function (project) {
             $scope.error = {};
             $scope.selectedProject = null;
             $scope.projectIssues = null;
-
             $scope.selectedprojectIssue = null;
-            originalProjectIssue = {};
 
             $scope.selectedProject = project;
 
@@ -156,19 +143,22 @@ angular.module('project-issues').controller('ProjectIssuesController', ['$scope'
         $scope.newProjectIssue = {};
 
         $scope.createNewProjectIssue = function (project) {
+            console.log($scope.newProjectIssue.gate);
             var newProjectIssue = new ProjectIssues({
                 project: project._id,
-                gate: $scope.newProjectIssue.gate,
+                gate: allowNull($scope.newProjectIssue.gate),
                 raisedOnDate: $scope.newProjectIssue.raisedOnDate,
                 title: $scope.newProjectIssue.title
             });
             newProjectIssue.$save(function (res) {
+                // Refresh the list of gate reviews after populating project and gate
+                res.project = _.cloneDeep(project);
+                res.gate = _.cloneDeep($scope.newProjectIssue.gate);
+                $scope.projectIssues.push(res);
                 // Clear new form
                 $scope.newProjectIssue = {};
-                // Refresh the list of gate reviews
-                $scope.projectIssues.push(res);
                 // Select in view mode the new review
-                $scope.selectProjectIssue(res);
+                $scope.selectProjectIssue(_.find($scope.projectIssues, _.matchesProperty('_id', res._id)), project);
                 // Close new review form done directly in the view's html
             }, function (err) {
                 $scope.error = err.data.message;
@@ -180,77 +170,103 @@ angular.module('project-issues').controller('ProjectIssuesController', ['$scope'
         };
 
 
-        // -- MODAL VIEW/EDIT ISSUE--
 
-        var modalUpdate = function (size, projectIssue, originalProjectIssue) {
+        // ------------- EDIT ISSUE ------------
+
+
+        var modalUpdateIssue = function (size, issue, project, logReasons, issueStates, logPriorities, logStatuses) {
 
             var modalInstance = $modal.open({
                 templateUrl: 'modules/project-issues/views/edit-project-issue.client.view.html',
-                controller: function ($scope, $modalInstance, projectIssue, originalProjectIssue) {
-                    $scope.selectedProjectIssue = projectIssue;
+                controller: function ($scope, $modalInstance, issue, project, logReasons, issueStates, logPriorities, logStatuses) {
 
+                    $scope.originalProjectIssue = _.cloneDeep(issue);
+                    $scope.selectedProjectIssue = issue;
+                    $scope.selectedProject = project;
+
+                    $scope.logReasons = logReasons;
+                    $scope.issueStates = issueStates;
+                    $scope.logPriorities = logPriorities;
+                    $scope.logStatuses = logStatuses;
+
+                    $scope.cancelModal = function () {
+                        $modalInstance.dismiss();
+                    };
                 },
                 size: size,
                 resolve: {
-                    projectIssue: function () {
-                        return projectIssue;
+                    issue: function () {
+                        return issue;
                     },
-                    originalProjectIssue: function(){
-                        return originalProjectIssue;
+                    project : function(){
+                        return project;
+                    },
+                    logReasons : function(){
+                        return logReasons;
+                    },
+                    issueStates : function(){
+                        return issueStates;
+                    },
+                    logPriorities : function(){
+                        return logPriorities;
+                    },
+                    logStatuses : function(){
+                        return logStatuses;
                     }
                 },
                 backdrop: 'static',
                 keyboard: false
             });
 
-            modalInstance.result.then(function (selectedItem) {
-                $scope.selected = selectedItem;
-            }, function () {
-                $log.info('Modal dismissed at: ' + new Date());
-            });
         };
 
-        // ------------- SELECT ISSUE ------------
-
-        var projectIssueFromList = {};
-        // Required to update the list when changes details
-        // in the details pane that are also reported in the list of gate reviews
-
-        $scope.selectProjectIssue = function (projectIssue) {
-            projectIssueFromList[projectIssue._id] = projectIssue;
-            ProjectIssues.get({
-                projectIssueId: projectIssue._id
-            }, function (res) {
-                //$scope.selectedProjectIssue = res;
-                originalProjectIssue[projectIssue._id] = _.cloneDeep(res);
-                console.log(originalProjectIssue[projectIssue._id]);
-                modalUpdate('lg', res, originalProjectIssue);
-                //$scope.selectProjectIssueForm('view');
-            }, function (errorResponse) {
-                $scope.error = errorResponse.data.message;
-                $scope.selectedProjectIssue = null;
-                originalProjectIssue = {};
-            });
+        $scope.selectProjectIssue = function(issue, project){
+            modalUpdateIssue('lg', issue, project, logReasons, issueStates, logPriorities, logStatuses);
         };
 
+        // ------------------- NG-SWITCH ---------------------
 
-        // -------------------------------------------------------- HEADER -------------------------------------------------
+        $scope.projectIssueDetails = 'header';
 
-        $scope.headerDateOpened = {};
-        $scope.openHeaderDate = function (projectIssue, $event) {
+        $scope.selectHeaderForm = function (string) {
+            if (string === 'view') {
+                $scope.switchHeaderForm = 'view';
+            }
+            if (string === 'edit') {
+                $scope.switchHeaderForm = 'edit';
+            }
+        };
+
+        $scope.selectStatusForm = function (string) {
+            if (string === 'view') {
+                $scope.switchStatusForm = 'view';
+            }
+            if (string === 'edit') {
+                $scope.switchStatusForm = 'edit';
+            }
+        };
+
+        // ------------------- HEADER --------------------------
+
+        $scope.openHeaderDate = function ($event) {
             $event.preventDefault();
             $event.stopPropagation();
-            $scope.headerDateOpened[projectIssue._id] = true;
+            $scope.headerDateOpened = true;
         };
 
-        $scope.editHeader = function (projectIssue) {
-            $scope.selectHeaderForm('edit', projectIssue);
+        $scope.editHeader = function () {
+            $scope.selectHeaderForm('edit');
         };
 
-        $scope.saveEditHeader = function (projectIssue) {
+        $scope.saveEditHeader = function (projectIssue, originalProjectIssue) {
             // Clean-up deepPopulate
             var copyProjectIssue = _.cloneDeep(projectIssue);
             copyProjectIssue.project = _.get(copyProjectIssue.project, '_id');
+            copyProjectIssue.gate = allowNull(copyProjectIssue.gate);
+            copyProjectIssue.reason = allowNull(copyProjectIssue.reason);
+            copyProjectIssue.priority = allowNull(copyProjectIssue.priority);
+            copyProjectIssue.state = allowNull(copyProjectIssue.state);
+            copyProjectIssue.statusReview.currentRecord.status = allowNull(copyProjectIssue.statusReview.currentRecord.status);
             // Update server header
             ProjectIssues.updateHeader(
                 {
@@ -258,17 +274,15 @@ angular.module('project-issues').controller('ProjectIssuesController', ['$scope'
                 }, copyProjectIssue,
                 function (res) {
                     // Update details pane view with new saved details
-                    originalProjectIssue[projectIssue._id].raisedOnDate = projectIssue.raisedOnDate;
-                    originalProjectIssue[projectIssue._id].title = projectIssue.title;
-                    originalProjectIssue[projectIssue._id].description = projectIssue.description;
-                    originalProjectIssue[projectIssue._id].state = projectIssue.state;
-                    originalProjectIssue[projectIssue._id].reason = projectIssue.reason;
-                    originalProjectIssue[projectIssue._id].priority = projectIssue.priority;
-                    // Update list of reviews with new date / title
-                    projectIssueFromList[projectIssue._id].raisedOnDate = projectIssue.raisedOnDate;
-                    projectIssueFromList[projectIssue._id].title = projectIssue.title;
+                    originalProjectIssue.gate = projectIssue.gate;
+                    originalProjectIssue.raisedOnDate = projectIssue.raisedOnDate;
+                    originalProjectIssue.title = projectIssue.title;
+                    originalProjectIssue.description = projectIssue.description;
+                    originalProjectIssue.state = projectIssue.state;
+                    originalProjectIssue.reason = projectIssue.reason;
+                    originalProjectIssue.priority = projectIssue.priority;
                     // Close edit header form and back to view
-                    $scope.selectHeaderForm('view', projectIssue);
+                    $scope.selectHeaderForm('view');
                 },
                 function (err) {
                     $scope.error = err.data.message;
@@ -276,73 +290,72 @@ angular.module('project-issues').controller('ProjectIssuesController', ['$scope'
             );
         };
 
-        $scope.cancelEditHeader = function (projectIssue) {
-            projectIssue.raisedOnDate = originalProjectIssue[projectIssue._id].raisedOnDate;
-            projectIssue.title = originalProjectIssue[projectIssue._id].title;
-            projectIssue.description = originalProjectIssue[projectIssue._id].description;
-            projectIssue.state = originalProjectIssue[projectIssue._id].state;
-            projectIssue.reason = originalProjectIssue[projectIssue._id].reason;
-            projectIssue.priority = originalProjectIssue[projectIssue._id].priority;
-            $scope.selectHeaderForm('view', projectIssue);
+        $scope.cancelEditHeader = function (projectIssue, originalProjectIssue) {
+            projectIssue.gate = originalProjectIssue.gate;
+            projectIssue.raisedOnDate = originalProjectIssue.raisedOnDate;
+            projectIssue.title = originalProjectIssue.title;
+            projectIssue.description = originalProjectIssue.description;
+            projectIssue.state = originalProjectIssue.state;
+            projectIssue.reason = originalProjectIssue.reason;
+            projectIssue.priority = originalProjectIssue.priority;
+            $scope.selectHeaderForm('view');
         };
 
 
         $scope.deleteProjectIssue = function (projectIssue) {
             ProjectIssues.remove({projectIssueId: projectIssue._id}, projectIssue, function (res) {
-                $scope.projectIssues = _.without($scope.projectIssues, _.find($scope.projectIssues, _.matchesProperty('_id', projectIssue._id)));
-                $scope.cancelNewProjectIssue();
-                $scope.selectedProjectIssue = null;
-                originalProjectIssue = {};
+                $scope.projectIssues = _.without($scope.projectIssues, projectIssue);
+                console.log($scope.projectIssues);
             }, function (err) {
                 $scope.error = err.data.message;
             });
         };
 
 
-        // -------------------------------------------------------- STATUS -------------------------------------------------
+        // --------------------- STATUS -----------------------
 
-        $scope.baselineDeliveryDateOpened = {};
-        $scope.openBaselineDeliveryDate = function (projectIssue, $event) {
+        $scope.openBaselineDeliveryDate = function ($event) {
             $event.preventDefault();
             $event.stopPropagation();
-            $scope.baselineDeliveryDateOpened[projectIssue._id] = true;
+            $scope.baselineDeliveryDateOpened = true;
         };
 
-        $scope.estimateDeliveryDateOpened = {};
-        $scope.openEstimateDeliveryDate = function (projectIssue, $event) {
+        $scope.openEstimateDeliveryDate = function ($event) {
             $event.preventDefault();
             $event.stopPropagation();
-            $scope.estimateDeliveryDateOpened[projectIssue._id] = true;
+            $scope.estimateDeliveryDateOpened = true;
         };
 
-        $scope.actualDeliveryDateOpened = {};
-        $scope.openActualDeliveryDate = function (projectIssue, $event) {
+        $scope.openActualDeliveryDate = function ($event) {
             $event.preventDefault();
             $event.stopPropagation();
-            $scope.actualDeliveryDateOpened[projectIssue._id] = true;
+            $scope.actualDeliveryDateOpened = true;
         };
 
-        $scope.editStatus = function (projectIssue) {
-            $scope.selectStatusForm('edit', projectIssue);
+        $scope.editStatus = function () {
+            $scope.selectStatusForm('edit');
         };
 
-        $scope.saveEditStatus = function (projectIssue) {
+        $scope.saveEditStatus = function (projectIssue, originalProjectIssue) {
             // Clean-up deepPopulate
             var copyProjectIssue = _.cloneDeep(projectIssue);
             copyProjectIssue.project = _.get(copyProjectIssue.project, '_id');
+            copyProjectIssue.gate = allowNull(copyProjectIssue.gate);
+            copyProjectIssue.reason = allowNull(copyProjectIssue.reason);
+            copyProjectIssue.priority = allowNull(copyProjectIssue.priority);
+            copyProjectIssue.state = allowNull(copyProjectIssue.state);
+            copyProjectIssue.statusReview.currentRecord.status = allowNull(copyProjectIssue.statusReview.currentRecord.status);
             // Update server header
             ProjectIssues.updateStatus({projectIssueId: copyProjectIssue._id}, copyProjectIssue,
                 function (res) {
-                    // Set the "final" in the gate from the list
-                    projectIssueFromList[projectIssue._id].statusReview.currentRecord.completed = projectIssue.statusReview.currentRecord.completed;
                     // Change the selected CR
-                    originalProjectIssue[projectIssue._id].statusReview.currentRecord.baselineDeliveryDate = projectIssue.statusReview.currentRecord.baselineDeliveryDate;
-                    originalProjectIssue[projectIssue._id].statusReview.currentRecord.estimateDeliveryDate = projectIssue.statusReview.currentRecord.estimateDeliveryDate;
-                    originalProjectIssue[projectIssue._id].statusReview.currentRecord.actualDeliveryDate = projectIssue.statusReview.currentRecord.actualDeliveryDate;
-                    originalProjectIssue[projectIssue._id].statusReview.currentRecord.status = projectIssue.statusReview.currentRecord.status;
-                    originalProjectIssue[projectIssue._id].statusReview.currentRecord.completed = projectIssue.statusReview.currentRecord.completed;
-                    originalProjectIssue[projectIssue._id].statusReview.currentRecord.statusComment = projectIssue.statusReview.currentRecord.statusComment;
-                    $scope.selectStatusForm('view', projectIssue);
+                    originalProjectIssue.statusReview.currentRecord.baselineDeliveryDate = projectIssue.statusReview.currentRecord.baselineDeliveryDate;
+                    originalProjectIssue.statusReview.currentRecord.estimateDeliveryDate = projectIssue.statusReview.currentRecord.estimateDeliveryDate;
+                    originalProjectIssue.statusReview.currentRecord.actualDeliveryDate = projectIssue.statusReview.currentRecord.actualDeliveryDate;
+                    originalProjectIssue.statusReview.currentRecord.status = projectIssue.statusReview.currentRecord.status;
+                    originalProjectIssue.statusReview.currentRecord.completed = projectIssue.statusReview.currentRecord.completed;
+                    originalProjectIssue.statusReview.currentRecord.statusComment = projectIssue.statusReview.currentRecord.statusComment;
+                    $scope.selectStatusForm('view');
                 },
                 function (err) {
                     $scope.error = err.data.message;
@@ -350,79 +363,17 @@ angular.module('project-issues').controller('ProjectIssuesController', ['$scope'
             );
         };
 
-        $scope.cancelEditStatus = function (projectIssue) {
-            projectIssue.statusReview.currentRecord.baselineDeliveryDate = originalProjectIssue[projectIssue._id].statusReview.currentRecord.baselineDeliveryDate;
-            projectIssue.statusReview.currentRecord.estimateDeliveryDate = originalProjectIssue[projectIssue._id].statusReview.currentRecord.estimateDeliveryDate;
-            projectIssue.statusReview.currentRecord.actualDeliveryDate = originalProjectIssue[projectIssue._id].statusReview.currentRecord.actualDeliveryDate;
-            projectIssue.statusReview.currentRecord.status = originalProjectIssue[projectIssue._id].statusReview.currentRecord.status;
-            projectIssue.statusReview.currentRecord.completed = originalProjectIssue[projectIssue._id].statusReview.currentRecord.completed;
-            projectIssue.statusReview.currentRecord.statusComment = originalProjectIssue[projectIssue._id].statusReview.currentRecord.statusComment;
-            $scope.selectStatusForm('view', projectIssue);
+        $scope.cancelEditStatus = function (projectIssue, originalProjectIssue) {
+            projectIssue.statusReview.currentRecord.baselineDeliveryDate = originalProjectIssue.statusReview.currentRecord.baselineDeliveryDate;
+            projectIssue.statusReview.currentRecord.estimateDeliveryDate = originalProjectIssue.statusReview.currentRecord.estimateDeliveryDate;
+            projectIssue.statusReview.currentRecord.actualDeliveryDate = originalProjectIssue.statusReview.currentRecord.actualDeliveryDate;
+            projectIssue.statusReview.currentRecord.status = originalProjectIssue.statusReview.currentRecord.status;
+            projectIssue.statusReview.currentRecord.completed = originalProjectIssue.statusReview.currentRecord.completed;
+            projectIssue.statusReview.currentRecord.statusComment = originalProjectIssue.statusReview.currentRecord.statusComment;
+            $scope.selectStatusForm('view');
         };
-
 
 
     }
 
-        //function($scope, $stateParams, $location, Authentication, ProjectIssues) {
-	//	$scope.authentication = Authentication;
-    //
-	//	// Create new Project issue
-	//	$scope.create = function() {
-	//		// Create new Project issue object
-	//		var projectIssue = new ProjectIssues ({
-	//			name: this.name
-	//		});
-    //
-	//		// Redirect after save
-	//		projectIssue.$save(function(response) {
-	//			$location.path('project-issues/' + response._id);
-    //
-	//			// Clear form fields
-	//			$scope.name = '';
-	//		}, function(errorResponse) {
-	//			$scope.error = errorResponse.data.message;
-	//		});
-	//	};
-    //
-	//	// Remove existing Project issue
-	//	$scope.remove = function(projectIssue) {
-	//		if ( projectIssue ) {
-	//			projectIssue.$remove();
-    //
-	//			for (var i in $scope.projectIssues) {
-	//				if ($scope.projectIssues [i] === projectIssue) {
-	//					$scope.projectIssues.splice(i, 1);
-	//				}
-	//			}
-	//		} else {
-	//			$scope.projectIssue.$remove(function() {
-	//				$location.path('project-issues');
-	//			});
-	//		}
-	//	};
-    //
-	//	// Update existing Project issue
-	//	$scope.update = function() {
-	//		var projectIssue = $scope.projectIssue;
-    //
-	//		projectIssue.$update(function() {
-	//			$location.path('project-issues/' + projectIssue._id);
-	//		}, function(errorResponse) {
-	//			$scope.error = errorResponse.data.message;
-	//		});
-	//	};
-    //
-	//	// Find a list of Project issues
-	//	$scope.find = function() {
-	//		$scope.projectIssues = ProjectIssues.query();
-	//	};
-    ////
-	//	// Find existing Project issue
-	//	$scope.findOne = function() {
-	//		$scope.projectIssue = ProjectIssues.get({
-	//			projectIssueId: $stateParams.projectIssueId
-	//		});
-	//	};
-	//}
 ]);

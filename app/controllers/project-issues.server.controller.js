@@ -92,6 +92,66 @@ exports.update = function(req, res) {
 	});
 };
 
+exports.updateHeader = function(req, res) {
+
+	var projectIssue = req.projectIssue ;
+
+    projectIssue.user = req.user;
+    projectIssue.created = Date.now();
+
+    projectIssue.gate = req.body.gate;
+    projectIssue.raisedOnDate = req.body.raisedOnDate;
+    projectIssue.title = req.body.title;
+    projectIssue.description = req.body.description;
+    projectIssue.reason = req.body.reason;
+    projectIssue.state = req.body.state;
+    projectIssue.priority = req.body.priority;
+
+    projectIssue.save(function(err) {
+        if (err) {
+            return res.status(400).send({
+                message: errorHandler.getErrorMessage(err)
+            });
+        } else {
+            res.jsonp(projectIssue);
+        }
+    });
+
+};
+
+exports.updateStatus = function(req, res) {
+
+    var projectIssue = req.projectIssue ;
+
+    projectIssue.statusReview.history.push({
+        baselineDeliveryDate : projectIssue.statusReview.currentRecord.baselineDeliveryDate,
+        estimateDeliveryDate : projectIssue.statusReview.currentRecord.estimateDeliveryDate,
+        actualDeliveryDate : projectIssue.statusReview.currentRecord.actualDeliveryDate,
+        status : projectIssue.statusReview.currentRecord.status,
+        completed : projectIssue.statusReview.currentRecord.completed,
+        statusComment : projectIssue.statusReview.currentRecord.statusComment
+    });
+    projectIssue.statusReview.currentRecord.user = req.user;
+    projectIssue.statusReview.currentRecord.created = Date.now();
+    projectIssue.statusReview.currentRecord.baselineDeliveryDate = req.body.statusReview.currentRecord.baselineDeliveryDate;
+    projectIssue.statusReview.currentRecord.estimateDeliveryDate = req.body.statusReview.currentRecord.estimateDeliveryDate;
+    projectIssue.statusReview.currentRecord.actualDeliveryDate = req.body.statusReview.currentRecord.actualDeliveryDate;
+    projectIssue.statusReview.currentRecord.status = req.body.statusReview.currentRecord.status;
+    projectIssue.statusReview.currentRecord.completed = req.body.statusReview.currentRecord.completed;
+    projectIssue.statusReview.currentRecord.statusComment = req.body.statusReview.currentRecord.statusComment;
+
+    projectIssue.save(function(err) {
+        if (err) {
+            return res.status(400).send({
+                message: errorHandler.getErrorMessage(err)
+            });
+        } else {
+            res.jsonp(projectIssue);
+        }
+    });
+};
+
+
 /**
  * Delete an Project issue
  */
@@ -114,7 +174,9 @@ exports.delete = function(req, res) {
  */
 exports.list = function(req, res) {
 	var ProjectIssue = mongoose.mtModel(req.user.tenantId + '.' + 'ProjectIssue');
-	ProjectIssue.find().populate('user', 'displayName').exec(function(err, projectIssues) {
+	ProjectIssue.find().deepPopulate([
+        'gate', 'reason', 'state', 'priority', 'statusReview.currentRecord.status'
+    ]).populate('user', 'displayName').exec(function(err, projectIssues) {
 		if (err) {
 			return res.status(400).send({
 				message: errorHandler.getErrorMessage(err)
@@ -130,9 +192,7 @@ exports.list = function(req, res) {
  */
 exports.projectIssueByID = function(req, res, next, id) {
 	var ProjectIssue = mongoose.mtModel(req.user.tenantId + '.' + 'ProjectIssue');
-	ProjectIssue.findById(id).deepPopulate([
-        'gate', 'reason', 'state', 'priority', 'statusReview.currentRecord.status'
-    ]).populate('user', 'displayName').exec(function(err, projectIssue) {
+	ProjectIssue.findById(id).populate('user', 'displayName').exec(function(err, projectIssue) {
 		if (err) return next(err);
 		if (! projectIssue) return next(new Error('Failed to load Project issue ' + id));
 		req.projectIssue = projectIssue ;

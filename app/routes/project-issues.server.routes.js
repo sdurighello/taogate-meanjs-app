@@ -14,6 +14,15 @@ module.exports = function(app) {
 		.put(users.requiresLogin, projectIssues.hasAuthorization, projectIssues.update)
 		.delete(users.requiresLogin, projectIssues.hasAuthorization, projectIssues.delete);
 
+	// Header
+	app.route('/project-issues/:projectIssueId/header')
+		.put(users.requiresLogin, projectIssues.hasAuthorization, projectIssues.updateHeader);
+
+	// Status
+	app.route('/project-issues/:projectIssueId/status')
+		.put(users.requiresLogin, projectIssues.hasAuthorization, projectIssues.updateStatus);
+
+
 	// Finish by binding the Project issue middleware
 	app.param('projectIssueId', projectIssues.projectIssueByID);
 };

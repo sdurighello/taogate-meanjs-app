@@ -19,10 +19,16 @@
             </div>
             <div class="panel-body">
                 <div data-ng-show="projectIssueDetails === 'header'">
-                    <div data-ng-switch="switchHeaderForm[selectedProjectIssue._id]">
+                    <div data-ng-switch="switchHeaderForm">
                         <form data-ng-switch-default="view">
                             <div class="row">
-                                <div class="form-group-sm col-md-4">
+                                <div class="form-group-sm col-md-3">
+                                    <label for="">Gate</label>
+                                    <select id="" class="form-control" data-ng-model = "selectedProjectIssue.gate"
+                                            ng-options="gate as gate.name for gate in selectedProject.process.gates track by gate._id" disabled>
+                                    </select>
+                                </div>
+                                <div class="form-group-sm col-md-3">
                                     <label for="">Raised on date</label>
                                     <input type="text" id="" class="form-control" datepicker-popup="dd-MMMM-yyyy" data-ng-model="selectedProjectIssue.raisedOnDate" disabled />
                                 </div>
@@ -35,21 +41,21 @@
                             <br>
                             <div class="row">
                                 <div class="form-group-sm col-md-4">
-                                    <label for="">Reason for change</label>
+                                    <label for="">Reason</label>
                                     <select id="" class="form-control" data-ng-model = "selectedProjectIssue.reason"
-                                            ng-options="reason._id as reason.name for reason in logReasons" disabled>
+                                            ng-options="reason as reason.name for reason in logReasons track by reason._id" disabled>
                                     </select>
                                 </div>
                                 <div class="form-group-sm col-md-4">
                                     <label for="">Priority</label>
                                     <select id="" class="form-control" data-ng-model = "selectedProjectIssue.priority"
-                                            ng-options="priority._id as priority.name for priority in logPriorities" disabled>
+                                            ng-options="priority as priority.name for priority in logPriorities track by priority._id" disabled>
                                     </select>
                                 </div>
                                 <div class="form-group-sm col-md-4">
                                     <label for="">State</label>
                                     <select id="" class="form-control" data-ng-model = "selectedProjectIssue.state"
-                                            ng-options="state._id as state.name for state in issueStates" disabled>
+                                            ng-options="state as state.name for state in issueStates track by state._id" disabled>
                                     </select>
                                 </div>
                             </div>
@@ -62,20 +68,27 @@
                             </div>
                             <hr>
                             <div class="form-group-sm pull-right" data-ng-show="userHasAuthorization && !selectedProjectIssue.final">
-                                <button class="btn btn-success btn-xs" data-ng-click="editHeader(selectedProjectIssue)">
+                                <button class="btn btn-success btn-xs" data-ng-click="editHeader()">
                                     Edit
                                 </button>
                             </div>
                         </form>
                         <form data-ng-switch-when="edit">
                             <div class="row">
-                                <div class="form-group-sm col-md-4">
+                                <div class="form-group-sm col-md-3">
+                                    <label for="">Gate</label>
+                                    <select id="" class="form-control" data-ng-model = "selectedProjectIssue.gate"
+                                            ng-options="gate as gate.name for gate in selectedProject.process.gates track by gate._id">
+                                        <option value="">--choose gate</option>
+                                    </select>
+                                </div>
+                                <div class="form-group-sm col-md-3">
                                     <label for="">Raised on date</label>
                                     <div class="input-group">
                                         <input type="text" id="" class="form-control" datepicker-popup="dd-MMMM-yyyy" data-ng-model="selectedProjectIssue.raisedOnDate"
-                                               is-open="$parent.headerDateOpened[selectedProjectIssue._id]" >
+                                               is-open="$parent.headerDateOpened" >
                                         <span class="input-group-btn">
-                                            <button type="button" class="btn btn-default btn-sm" ng-click="openHeaderDate(selectedProjectIssue, $event)"><i class="glyphicon glyphicon-calendar"></i></button>
+                                            <button type="button" class="btn btn-default btn-sm" ng-click="openHeaderDate($event)"><i class="glyphicon glyphicon-calendar"></i></button>
                                         </span>
                                     </div>
                                 </div>
@@ -88,23 +101,23 @@
                             <br>
                             <div class="row">
                                 <div class="form-group-sm col-md-4">
-                                    <label for="">Reason for change</label>
+                                    <label for="">Reason</label>
                                     <select id="" class="form-control" data-ng-model = "selectedProjectIssue.reason"
-                                            ng-options="reason._id as reason.name for reason in logReasons" >
+                                            ng-options="reason as reason.name for reason in logReasons track by reason._id" >
                                         <option value="">--choose reason</option>
                                     </select>
                                 </div>
                                 <div class="form-group-sm col-md-4">
                                     <label for="">Priority</label>
                                     <select id="" class="form-control" data-ng-model = "selectedProjectIssue.priority"
-                                            ng-options="priority._id as priority.name for priority in logPriorities" >
+                                            ng-options="priority as priority.name for priority in logPriorities track by priority._id" >
                                         <option value="">--choose priority</option>
                                     </select>
                                 </div>
                                 <div class="form-group-sm col-md-4">
                                     <label for="">State</label>
                                     <select id="" class="form-control" data-ng-model = "selectedProjectIssue.state"
-                                            ng-options="state._id as state.name for state in issueStates" >
+                                            ng-options="state as state.name for state in issueStates track by state._id" >
                                         <option value="">--choose state</option>
                                     </select>
                                 </div>
@@ -118,13 +131,10 @@
                             </div>
                             <hr>
                             <div class="form-group-sm pull-right">
-                                <button class="btn btn-success btn-xs" data-ng-click="saveEditHeader(selectedProjectIssue)">
+                                <button class="btn btn-success btn-xs" data-ng-click="saveEditHeader(selectedProjectIssue, originalProjectIssue)">
                                     Save
                                 </button>
-                                <button class="btn btn-danger btn-xs" data-ng-click="deleteProjectIssue(selectedProjectIssue)">
-                                    Delete change request
-                                </button>
-                                <button class="btn btn-info btn-xs" data-ng-click="cancelEditHeader(selectedProjectIssue)">
+                                <button class="btn btn-info btn-xs" data-ng-click="cancelEditHeader(selectedProjectIssue, originalProjectIssue)">
                                     Cancel
                                 </button>
                             </div>
@@ -132,7 +142,7 @@
                     </div>
                 </div>
                 <div data-ng-show="projectIssueDetails === 'status'">
-                    <div data-ng-switch="switchStatusForm[selectedProjectIssue._id]">
+                    <div data-ng-switch="switchStatusForm">
                         <form data-ng-switch-default="view">
                             <div class="row">
                                 <div class="form-group-sm col-md-4">
@@ -153,11 +163,11 @@
                                 <div class="form-group-sm col-md-4">
                                     <label for="">Status</label>
                                     <select id="" class="form-control" data-ng-model = "selectedProjectIssue.statusReview.currentRecord.status"
-                                            ng-options="status._id as status.name for status in logStatuses" disabled>
+                                            ng-options="status as status.name for status in logStatuses track by status._id" disabled>
                                     </select>
                                 </div>
                                 <div class="form-group-sm col-md-4">
-                                    <label for="prjCrEditCompleted">Change completed</label>
+                                    <label for="prjCrEditCompleted">Completed</label>
                                     <input id="prjCrEditCompleted" class="" type="checkbox"
                                            data-ng-model="selectedProjectIssue.statusReview.currentRecord.completed" disabled>
                                 </div>
@@ -171,7 +181,7 @@
                             </div>
                             <hr>
                             <div class="pull-right" data-ng-show="userHasAuthorization">
-                                <button class="btn btn-success btn-xs" data-ng-click="editStatus(selectedProjectIssue)">
+                                <button class="btn btn-success btn-xs" data-ng-click="editStatus()">
                                     Edit
                                 </button>
                             </div>
@@ -182,9 +192,9 @@
                                     <label for="">Baseline delivery date</label>
                                     <div class="input-group">
                                         <input type="text" id="" class="form-control" datepicker-popup="dd-MMMM-yyyy" data-ng-model="selectedProjectIssue.statusReview.currentRecord.baselineDeliveryDate"
-                                               is-open="$parent.baselineDeliveryDateOpened[selectedProjectIssue._id]" >
+                                               is-open="$parent.baselineDeliveryDateOpened" >
                                                                             <span class="input-group-btn">
-                                                                                <button type="button" class="btn btn-default btn-sm" ng-click="openBaselineDeliveryDate(selectedProjectIssue, $event)"><i class="glyphicon glyphicon-calendar"></i></button>
+                                                                                <button type="button" class="btn btn-default btn-sm" ng-click="openBaselineDeliveryDate($event)"><i class="glyphicon glyphicon-calendar"></i></button>
                                                                             </span>
                                     </div>
                                 </div>
@@ -192,9 +202,9 @@
                                     <label for="">Estimate delivery date</label>
                                     <div class="input-group">
                                         <input type="text" id="" class="form-control" datepicker-popup="dd-MMMM-yyyy" data-ng-model="selectedProjectIssue.statusReview.currentRecord.estimateDeliveryDate"
-                                               is-open="$parent.estimateDeliveryDateOpened[selectedProjectIssue._id]" >
+                                               is-open="$parent.estimateDeliveryDateOpened" >
                                                                             <span class="input-group-btn">
-                                                                                <button type="button" class="btn btn-default btn-sm" ng-click="openEstimateDeliveryDate(selectedProjectIssue, $event)"><i class="glyphicon glyphicon-calendar"></i></button>
+                                                                                <button type="button" class="btn btn-default btn-sm" ng-click="openEstimateDeliveryDate($event)"><i class="glyphicon glyphicon-calendar"></i></button>
                                                                             </span>
                                     </div>
                                 </div>
@@ -202,9 +212,9 @@
                                     <label for="">Actual delivery date</label>
                                     <div class="input-group">
                                         <input type="text" id="" class="form-control" datepicker-popup="dd-MMMM-yyyy" data-ng-model="selectedProjectIssue.statusReview.currentRecord.actualDeliveryDate"
-                                               is-open="$parent.actualDeliveryDateOpened[selectedProjectIssue._id]" >
+                                               is-open="$parent.actualDeliveryDateOpened" >
                                                                             <span class="input-group-btn">
-                                                                                <button type="button" class="btn btn-default btn-sm" ng-click="openActualDeliveryDate(selectedProjectIssue, $event)"><i class="glyphicon glyphicon-calendar"></i></button>
+                                                                                <button type="button" class="btn btn-default btn-sm" ng-click="openActualDeliveryDate($event)"><i class="glyphicon glyphicon-calendar"></i></button>
                                                                             </span>
                                     </div>
                                 </div>
@@ -214,7 +224,7 @@
                                 <div class="form-group-sm col-md-4">
                                     <label for="">Status</label>
                                     <select id="" class="form-control" data-ng-model = "selectedProjectIssue.statusReview.currentRecord.status"
-                                            data-ng-options="status._id as status.name for status in logStatuses" >
+                                            data-ng-options="status as status.name for status in logStatuses track by status._id" >
                                         <option value="">--choose status</option>
                                     </select>
                                 </div>
@@ -234,10 +244,10 @@
                             </div>
                             <hr>
                             <div class="pull-right">
-                                <button class="btn btn-success btn-xs" data-ng-click="saveEditStatus(selectedProjectIssue)">
+                                <button class="btn btn-success btn-xs" data-ng-click="saveEditStatus(selectedProjectIssue, originalProjectIssue)">
                                     Save
                                 </button>
-                                <button class="btn btn-info btn-xs" data-ng-click="cancelEditStatus(selectedProjectIssue)">
+                                <button class="btn btn-info btn-xs" data-ng-click="cancelEditStatus(selectedProjectIssue, originalProjectIssue)">
                                     Cancel
                                 </button>
                             </div>
@@ -248,6 +258,10 @@
         </div>
     </div>
     <div class="modal-footer">
-
+        <div class="pull-right">
+            <button class="btn btn-primary btn-sm" data-ng-click="cancelEditStatus(selectedProjectIssue, originalProjectIssue); cancelEditHeader(selectedProjectIssue, originalProjectIssue); cancelModal()">
+                Close
+            </button>
+        </div>
     </div>
 </section>

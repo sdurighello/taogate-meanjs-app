@@ -106,7 +106,7 @@
                                             <div class="form-group-sm col-md-3">
                                                 <label for="">Gate</label>
                                                 <select id="" class="form-control" data-ng-model = "newProjectIssue.gate"
-                                                        ng-options="gate._id as gate.name for gate in selectedProject.process.gates" required>
+                                                        ng-options="gate as gate.name for gate in selectedProject.process.gates | orderBy: 'position'" required>
                                                     <option value="">--choose gate</option>
                                                 </select>
                                             </div>
@@ -131,7 +131,7 @@
                         </div>
                     </div>
                     <div data-ng-show="!showNewProjectIssueForm">
-                        <div class="row" data-ng-show="!showNewProjectIssueForm">
+                        <div class="row">
                             <div class="col-md-5 form-group-sm center-block">
                                 <button class="btn btn-warning btn-sm" ng-click="showNewProjectIssueForm = true">
                                     New project issue
@@ -139,58 +139,60 @@
                             </div>
                         </div>
                         <br>
-                        <table class="table table-condensed table-hover" data-ng-show="projectIssues.length !== 0">
+                        <div data-ng-hide="projectIssues.length !== 0" class="alert alert-warning text-center">
+                            There are no issues for this project
+                        </div>
+                        <table class="table table-condensed table-hover small" data-ng-show="projectIssues.length !== 0">
                             <thead>
                             <tr>
-                                <th class="col-md-1 text-center">
-                                    <span>#</span>
-                                    <input class="form-control" type="number" placeholder="filter" data-ng-model="projectIssueFilter.idNumber">
+                                <th class="">
+                                    <label>#: {{projectIssueFilter.idNumber}}</label>
+                                    <input class="" type="number" placeholder="filter" data-ng-model="projectIssueFilter.idNumber">
                                 </th>
-                                <th class="col-md-1 text-center">
-                                    <span>Gate</span>
-                                    <select id="" class="form-control" data-ng-model = "projectIssueFilter.gate"
-                                            data-ng-options="gate as gate.name for gate in selectedProject.process.gates">
+                                <th class="">
+                                    <label>Gate: {{projectIssueFilter.gate.name}}</label>
+                                    <select id="" class="" data-ng-model = "projectIssueFilter.gate"
+                                            data-ng-options="gate as gate.name for gate in selectedProject.process.gates | orderBy: 'position'">
                                         <option value="">--filter</option>
                                     </select>
                                 </th>
-                                <th class="text-center">
-                                    <span>Title</span><br>
-                                    <input class="form-control" type="text" placeholder="filter" data-ng-model="projectIssueFilter.title">
+                                <th class="">
+                                    <label>Title: {{projectIssueFilter.title}}</label><br>
+                                    <input class="" type="text" placeholder="filter" data-ng-model="projectIssueFilter.title">
                                 </th>
-                                <th class="col-md-1 text-center">
-                                    <label for="listReason">Reason</label>
-                                    <select id="listReason" class="form-control" data-ng-model = "projectIssueFilter.reason"
-                                            data-ng-options="reason._id as reason.name for reason in logReasons">
+                                <th class="">
+                                    <label for="listReason">Reason: {{projectIssueFilter.reason.name}}</label>
+                                    <select id="listReason" class="" data-ng-model = "projectIssueFilter.reason"
+                                            data-ng-options="reason as reason.name for reason in logReasons">
                                         <option value="">--filter</option>
                                     </select>
                                 </th>
-                                <th class="col-md-1 text-center">
-                                    <span>Priority</span>
-                                    <select class="form-control" data-ng-model = "projectIssueFilter.priority"
-                                            data-ng-options="priority._id as priority.name for priority in logPriorities">
+                                <th class="">
+                                    <label>Priority: {{projectIssueFilter.priority.name}}</label>
+                                    <select class="" data-ng-model = "projectIssueFilter.priority"
+                                            data-ng-options="priority as priority.name for priority in logPriorities">
                                         <option value="">--filter</option>
                                     </select>
                                 </th>
-                                <th class="col-md-1 text-center">
-                                    <span>State</span>
-                                    <select class="form-control" data-ng-model = "projectIssueFilter.state"
-                                            data-ng-options="state._id as state.name for state in issueStates">
+                                <th class="">
+                                    <label>State: {{projectIssueFilter.state.name}}</label>
+                                    <select class=" " data-ng-model = "projectIssueFilter.state"
+                                            data-ng-options="state as state.name for state in issueStates">
                                         <option value="">--filter</option>
                                     </select>
                                 </th>
-                                <th class="col-md-1 text-center">
-                                    <span>Status</span>
-                                    <select class="form-control" data-ng-model = "projectIssueFilter.statusReview.currentRecord.status"
-                                            data-ng-options="status._id as status.name for status in logStatuses">
+                                <th class="">
+                                    <label>Status: {{projectIssueFilter.statusReview.currentRecord.status.name}}</label>
+                                    <select class="" data-ng-model = "projectIssueFilter.statusReview.currentRecord.status"
+                                            data-ng-options="status as status.name for status in logStatuses">
                                         <option value="">--filter</option>
                                     </select>
                                 </th>
-                                <th class="col-md-1 text-center">
-                                    <span>Completion</span>
-                                    <select class="form-control" data-ng-model = "projectIssueFilter.statusReview.currentRecord.status">
+                                <th class="">
+                                    <label>Completion</label>
+                                    <select class="" data-ng-model = "projectIssueFilter.statusReview.currentRecord.completed"
+                                            data-ng-options="completion.flag as completion.name for completion in completionFilterArray">
                                         <option value="">--filter</option>
-                                        <option value="completed">Completed</option>
-                                        <option value="notCompleted">Not completed</option>
                                     </select>
                                 </th>
                             </tr>
@@ -200,7 +202,7 @@
                                 <td>{{projectIssue.idNumber}}</td>
                                 <td>{{projectIssue.gate.name}}</td>
                                 <td>
-                                    <button class="btn-link" data-ng-click="selectProjectIssue(projectIssue)">{{projectIssue.title}}</button>
+                                    <button class="btn-link" data-ng-click="selectProjectIssue(projectIssue, selectedProject)">{{projectIssue.title}}</button>
                                 </td>
                                 <td>
                                     <span data-ng-show="projectIssue.reason">{{projectIssue.reason.name}}</span>
@@ -219,8 +221,13 @@
                                     <span data-ng-show="!projectIssue.statusReview.currentRecord.status">No status</span>
                                 </td>
                                 <td>
-                                    <span data-ng-show="projectIssue.completed">Completed</span>
-                                    <span data-ng-show="!projectIssue.completed">Not completed</span>
+                                    <span data-ng-show="projectIssue.statusReview.currentRecord.completed">Completed</span>
+                                    <span data-ng-show="!projectIssue.statusReview.currentRecord.completed">Not completed</span>
+                                </td>
+                                <td data-ng-show="userHasAuthorization">
+                                    <button class="btn btn-xs btn-danger" data-ng-click="deleteProjectIssue(projectIssue)">
+                                        <span class="glyphicon glyphicon-trash"></span>
+                                    </button>
                                 </td>
                             </tr>
                             </tbody>

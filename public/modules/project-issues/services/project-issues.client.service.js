@@ -7,6 +7,21 @@ angular.module('project-issues').factory('ProjectIssues', ['$resource',
 		}, {
 			update: {
 				method: 'PUT'
+			},
+			// --- Header --
+
+			updateHeader: {
+				method: 'PUT',
+				url: 'project-issues/:projectIssueId/header'
+				// req.body: {whole issue object}
+			},
+
+			// --- Status --
+
+			updateStatus: {
+				method: 'PUT',
+				url: 'project-issues/:projectIssueId/status'
+				// req.body: {whole issue object}
 			}
 		});
 	}
