@@ -14,6 +14,10 @@ module.exports = function(app) {
 		.put(users.requiresLogin, gateReviews.hasAuthorization, gateReviews.update)
 		.delete(users.requiresLogin, gateReviews.hasAuthorization, gateReviews.delete);
 
+    // Reviews for a project
+    app.route('/gate-reviews-reviewsForProject')
+        .get(users.requiresLogin, gateReviews.reviewsForProject);
+
     // Final
 
     app.route('/gate-reviews/:gateReviewId/final')

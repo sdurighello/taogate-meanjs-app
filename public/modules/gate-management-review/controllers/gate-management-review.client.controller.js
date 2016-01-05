@@ -181,20 +181,29 @@ angular.module('gate-management-review').controller('GateManagementReviewControl
 
             $scope.selectedProject = project;
 
-            GateReviews.query({
+            GateReviews.getReviewsForProject({
                 project: project._id
-            }, function (reviews) {
-                $scope.gateReviewList = _.chain(_.get(project, 'process.gates'))
-                    .map(function (gate) {
-                        return {
-                            gate: gate,
-                            gateReviews: _.filter(reviews, _.matchesProperty('gate', gate._id))};
-                    })
-                    .sortBy('gate.position')
-                    .value();
+            }, function (res) {
+                $scope.gateReviewList = res;
             }, function (err) {
                 $scope.error.gateReviews = err.data.message;
             });
+
+            // Old client-side transformation now move server-side, is it faster to load the reviews?
+            //GateReviews.query({
+            //    project: project._id
+            //}, function (reviews) {
+            //    $scope.gateReviewList = _.chain(_.get(project, 'process.gates'))
+            //        .map(function (gate) {
+            //            return {
+            //                gate: gate,
+            //                gateReviews: _.filter(reviews, _.matchesProperty('gate', gate._id))};
+            //        })
+            //        .sortBy('gate.position')
+            //        .value();
+            //}, function (err) {
+            //    $scope.error.gateReviews = err.data.message;
+            //});
         };
 
         $scope.cancelViewProject = function(){

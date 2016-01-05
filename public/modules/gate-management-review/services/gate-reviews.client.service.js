@@ -9,6 +9,15 @@ angular.module('gate-management-review').factory('GateReviews', ['$resource',
 				method: 'PUT'
 			},
 
+            // --- Reviews By Project --
+            getReviewsForProject: {
+                method: 'GET',
+                isArray: true,
+                url: 'gate-reviews-reviewsForProject'
+                // req.query: { project: project._id }
+                // Returns: [{gate: ... , gateReviews: ... }]
+            },
+
             // --- Header & Status --
 
 			updateHeader: {

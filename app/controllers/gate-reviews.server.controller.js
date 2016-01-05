@@ -115,6 +115,75 @@ exports.list = function(req, res) {
 };
 
 /**
+ * List of reviews for a project
+ */
+exports.reviewsForProject = function(req, res) {
+    var GateReview = mongoose.mtModel(req.user.tenantId + '.' + 'GateReview');
+    var Project = mongoose.mtModel(req.user.tenantId + '.' + 'Project');
+    async.waterfall([
+        // Get the project and populate its process's gates
+        function(callback) {
+            Project.findById(req.query.project).deepPopulate(['process.gates']).exec(function(err, project){
+                if(err){
+                    return callback(err);
+                }
+                if(!project){
+                    return callback(new Error('Failed to load project ' + req.query.project));
+                }
+                callback(null, project);
+            });
+        },
+        // Get all the reviews for that project
+        function(project, callback) {
+            GateReview.find(req.query).deepPopulate(['overallScore', 'status']).populate('user', 'displayName').exec(function(err, gateReviews) {
+                if (err) {
+                    return callback(err);
+                }
+                if(!gateReviews){
+                    return callback(new Error('Failed to load gate reviews for project ' + project._id));
+                }
+                callback(null, project, gateReviews);
+            });
+        },
+        // Create the gateReviewLIst array
+        function(project, gateReviews, callback) {
+            var gateReviewList = _.chain(project.process.gates)
+                .map(function (gate) {
+                    return {
+                        gate: gate,
+                        gateReviews: _.filter(gateReviews, function(review){
+                            return review.gate.equals(gate._id);
+                        })
+                    };
+                })
+                .value();
+
+            callback(null, gateReviewList);
+        },
+        // Sort by gate position (since lodash sortBy in the chain doesn't seem to work ...
+        function(gateReviewList, callback) {
+            async.sortBy(gateReviewList, function(reviewObj, callback){
+                callback(null, reviewObj.gate.position);
+            }, function(err, gateReviewList){
+                if(err){
+                    return callback(err);
+                }
+                callback(null, gateReviewList);
+            });
+        }
+    ], function (err, gateReviewList) {
+        if (err) {
+            return res.status(400).send({
+                message: errorHandler.getErrorMessage(err)
+            });
+        } else {
+            res.jsonp(gateReviewList);
+        }
+    });
+};
+
+
+/**
  * Gate review middleware
  */
 exports.gateReviewByID = function(req, res, next, id) {

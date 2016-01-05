@@ -115,8 +115,8 @@ angular.module('project-issues').controller('ProjectIssuesController', ['$scope'
 
             ProjectIssues.query({
                 project: project._id
-            }, function (projectIssues) {
-                $scope.projectIssues = projectIssues;
+            }, function (res) {
+                $scope.projectIssues = res;
             }, function (err) {
                 $scope.error = err.data.message;
             });
@@ -143,7 +143,6 @@ angular.module('project-issues').controller('ProjectIssuesController', ['$scope'
         $scope.newProjectIssue = {};
 
         $scope.createNewProjectIssue = function (project) {
-            console.log($scope.newProjectIssue.gate);
             var newProjectIssue = new ProjectIssues({
                 project: project._id,
                 gate: allowNull($scope.newProjectIssue.gate),
@@ -305,7 +304,6 @@ angular.module('project-issues').controller('ProjectIssuesController', ['$scope'
         $scope.deleteProjectIssue = function (projectIssue) {
             ProjectIssues.remove({projectIssueId: projectIssue._id}, projectIssue, function (res) {
                 $scope.projectIssues = _.without($scope.projectIssues, projectIssue);
-                console.log($scope.projectIssues);
             }, function (err) {
                 $scope.error = err.data.message;
             });

@@ -67,18 +67,18 @@
                                 </div>
                             </div>
                             <hr>
-                            <div class="form-group-sm pull-right" data-ng-show="userHasAuthorization && !selectedProjectIssue.final">
+                            <div class="form-group-sm pull-right" data-ng-show="userHasAuthorization">
                                 <button class="btn btn-success btn-xs" data-ng-click="editHeader()">
                                     Edit
                                 </button>
                             </div>
                         </form>
-                        <form data-ng-switch-when="edit">
+                        <form data-ng-switch-when="edit" name="editProjectIssueForm">
                             <div class="row">
                                 <div class="form-group-sm col-md-3">
                                     <label for="">Gate</label>
                                     <select id="" class="form-control" data-ng-model = "selectedProjectIssue.gate"
-                                            ng-options="gate as gate.name for gate in selectedProject.process.gates track by gate._id">
+                                            data-ng-options="gate as gate.name for gate in selectedProject.process.gates track by gate._id | orderBy: 'position'" required>
                                         <option value="">--choose gate</option>
                                     </select>
                                 </div>
@@ -86,16 +86,16 @@
                                     <label for="">Raised on date</label>
                                     <div class="input-group">
                                         <input type="text" id="" class="form-control" datepicker-popup="dd-MMMM-yyyy" data-ng-model="selectedProjectIssue.raisedOnDate"
-                                               is-open="$parent.headerDateOpened" >
+                                               is-open="$parent.headerDateOpened" required>
                                         <span class="input-group-btn">
                                             <button type="button" class="btn btn-default btn-sm" ng-click="openHeaderDate($event)"><i class="glyphicon glyphicon-calendar"></i></button>
                                         </span>
                                     </div>
                                 </div>
                                 <div class="form-group-sm col-md-6">
-                                    <label for="reviewTitleEdit">Review title</label>
-                                    <input id="reviewTitleEdit" name="" class="form-control" type="text" placeholder="Enter title"
-                                           data-ng-model="selectedProjectIssue.title" >
+                                    <label for="">Title</label>
+                                    <input id="" class="form-control" type="text" placeholder="Enter title"
+                                           data-ng-model="selectedProjectIssue.title" required>
                                 </div>
                             </div>
                             <br>
@@ -131,7 +131,8 @@
                             </div>
                             <hr>
                             <div class="form-group-sm pull-right">
-                                <button class="btn btn-success btn-xs" data-ng-click="saveEditHeader(selectedProjectIssue, originalProjectIssue)">
+                                <button class="btn btn-success btn-xs" data-ng-click="saveEditHeader(selectedProjectIssue, originalProjectIssue)"
+                                        data-ng-disabled="editProjectIssueForm.$invalid">
                                     Save
                                 </button>
                                 <button class="btn btn-info btn-xs" data-ng-click="cancelEditHeader(selectedProjectIssue, originalProjectIssue)">
@@ -230,7 +231,7 @@
                                 </div>
                                 <br>
                                 <div class="form-group-sm col-md-4">
-                                    <label for="prjCrEditCompleted">Change completed</label>
+                                    <label for="prjCrEditCompleted">Completed</label>
                                     <input id="prjCrEditCompleted" class="" type="checkbox"
                                            data-ng-model="selectedProjectIssue.statusReview.currentRecord.completed" >
                                 </div>
