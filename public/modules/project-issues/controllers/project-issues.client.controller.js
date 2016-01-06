@@ -109,7 +109,7 @@ angular.module('project-issues').controller('ProjectIssuesController', ['$scope'
             $scope.error = {};
             $scope.selectedProject = null;
             $scope.projectIssues = null;
-            $scope.selectedprojectIssue = null;
+            $scope.selectedProjectIssue = null;
 
             $scope.selectedProject = project;
 

@@ -14,6 +14,10 @@ module.exports = function(app) {
 		.put(users.requiresLogin, projectChangeRequests.hasAuthorization, projectChangeRequests.update)
 		.delete(users.requiresLogin, projectChangeRequests.hasAuthorization, projectChangeRequests.delete);
 
+	// Changes for a project
+	app.route('/project-change-requests-changeRequestsForProject')
+		.get(users.requiresLogin, projectChangeRequests.changeRequestsForProject);
+
 	// Apply changes
 
 	app.route('/project-change-requests/:projectChangeRequestId/applyChange')

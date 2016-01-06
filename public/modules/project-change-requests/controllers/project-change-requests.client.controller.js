@@ -171,20 +171,29 @@ angular.module('project-change-requests').controller('ProjectChangeRequestContro
 
 			$scope.selectedProject = project;
 
-            ProjectChangeRequests.query({
+			ProjectChangeRequests.getChangeRequestsForProject({
 				project: project._id
-			}, function (projectCRs) {
-				$scope.projectChangeRequestList = _.chain(_.get(project, 'process.gates'))
-					.map(function (gate) {
-						return {
-							gate: gate,
-                            projectChangeRequests: _.filter(projectCRs, _.matchesProperty('gate', gate._id))};
-					})
-					.sortBy('gate.position')
-					.value();
+			}, function (res) {
+				$scope.projectChangeRequestList = res;
 			}, function (err) {
 				$scope.error = err.data.message;
 			});
+
+            // Old client-side code now moved server-side
+            //ProjectChangeRequests.query({
+			//	project: project._id
+			//}, function (projectCRs) {
+			//	$scope.projectChangeRequestList = _.chain(_.get(project, 'process.gates'))
+			//		.map(function (gate) {
+			//			return {
+			//				gate: gate,
+             //               projectChangeRequests: _.filter(projectCRs, _.matchesProperty('gate', gate._id))};
+			//		})
+			//		.sortBy('gate.position')
+			//		.value();
+			//}, function (err) {
+			//	$scope.error = err.data.message;
+			//});
 		};
 
 		$scope.cancelViewProject = function(){

@@ -9,6 +9,15 @@ angular.module('project-change-requests').factory('ProjectChangeRequests', ['$re
 				method: 'PUT'
 			},
 
+			// --- Changes By Project --
+			getChangeRequestsForProject: {
+				method: 'GET',
+				isArray: true,
+				url: 'project-change-requests-changeRequestsForProject'
+				// req.query: { project: project._id }
+				// Returns: [{gate: ... , projectChangeRequests: ... }]
+			},
+
 			// --- Header --
 
 			updateHeader: {
