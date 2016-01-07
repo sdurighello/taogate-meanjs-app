@@ -26,6 +26,26 @@ module.exports = function(app) {
 	app.route('/portfolio-issues/:portfolioIssueId/createAction')
 		.post(users.requiresLogin, portfolioIssues.hasAuthorization, portfolioIssues.createAction);
 
+	// Action Header
+	app.route('/portfolio-issues/:portfolioIssueId/escalationActions/:escalationActionId/actionHeader')
+		.put(users.requiresLogin, portfolioIssues.hasAuthorization, portfolioIssues.updateActionHeader);
+
+	// Action Status
+	app.route('/portfolio-issues/:portfolioIssueId/escalationActions/:escalationActionId/actionStatus')
+		.put(users.requiresLogin, portfolioIssues.hasAuthorization, portfolioIssues.updateActionStatus);
+
+    // Available project issues
+    app.route('/portfolio-issues/:portfolioIssueId/portfolios/:portfolioId')
+        .get(users.requiresLogin, portfolioIssues.availableProjectIssues);
+
+    // Add associated project issue
+    app.route('/portfolio-issues/:portfolioIssueId/project-issues/:projectIssueId/addProjectIssue')
+        .put(users.requiresLogin, portfolioIssues.hasAuthorization, portfolioIssues.addProjectIssue);
+
+    // Remove associated project issue
+    app.route('/portfolio-issues/:portfolioIssueId/project-issues/:projectIssueId/removeProjectIssue')
+        .put(users.requiresLogin, portfolioIssues.hasAuthorization, portfolioIssues.removeProjectIssue);
+
 	// Finish by binding the Portfolio issue middleware
 	app.param('portfolioIssueId', portfolioIssues.portfolioIssueByID);
 };

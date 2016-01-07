@@ -36,6 +36,7 @@ exports.update = function(req, res) {
 
 	project.save(function(err) {
 		if (err) {
+            console.log(err);
 			return res.status(400).send({
 				message: errorHandler.getErrorMessage(err)
 			});
@@ -74,6 +75,8 @@ exports.list = function(req, res) {
 
 
 // ------------------------------ DEFINITION ------------------------------
+
+exports.updatePortfolioAssignment = require('./projects/projects.portfolioAssignment.server.controller').updatePortfolioAssignment;
 
 exports.updateCategoryAssignment = require('./projects/projects.categorization.server.controller').updateCategoryAssignment;
 

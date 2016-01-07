@@ -61,6 +61,8 @@ var PortfolioIssueSchema = new Schema({
 
 	escalationActions : [escalationActionSchema],
 
+    associatedProjectIssues : [{type: Schema.Types.ObjectId, ref: 'ProjectIssue', $tenant:true}],
+
 	created: {type: Date, default: Date.now},
 	user: {type: Schema.ObjectId, ref: 'User', default:null}
 });

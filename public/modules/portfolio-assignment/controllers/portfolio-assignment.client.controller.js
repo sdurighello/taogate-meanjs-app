@@ -109,7 +109,7 @@ angular.module('portfolio-assignment').controller('PortfolioAssignmentController
 					var aProject = assignedProjects[i];
 					if (aProject.portfolio !== node._id){
 						aProject.portfolio = node._id;
-						Projects.update(aProject);
+						Projects.updatePortfolioAssignment(aProject);
 					}
 
 				}
@@ -118,7 +118,7 @@ angular.module('portfolio-assignment').controller('PortfolioAssignmentController
 					var uProject = unassignedProjects[j];
 					if (uProject.portfolio !== null){
 						uProject.portfolio = null;
-						Projects.update(uProject);
+						Projects.updatePortfolioAssignment(uProject);
 					}
 
 				}

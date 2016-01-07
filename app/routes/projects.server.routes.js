@@ -17,6 +17,10 @@ module.exports = function(app) {
 		.put(users.requiresLogin, projects.hasAuthorization, projects.update)
 		.delete(users.requiresLogin, projects.hasAuthorization, projects.delete);
 
+	// Portfolio assignment
+	app.route('/projects/:projectId/portfolioAssignment')
+		.put(users.requiresLogin, projects.hasAuthorization, projects.updatePortfolioAssignment);
+
 	// Category Assignment
 	app.route('/projects/:projectId/categoryAssignment/:assignedGroupId/:assignedCategoryId')
 		.put(users.requiresLogin, projects.hasAuthorization, projects.updateCategoryAssignment);

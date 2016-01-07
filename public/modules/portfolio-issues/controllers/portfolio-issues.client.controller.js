@@ -3,8 +3,9 @@
 // PORTFOLIO ISSUES controller
 angular.module('portfolio-issues').controller('PortfolioIssuesController', ['$scope', '$stateParams', '$location', '$q', '$modal', '$log', '_', 'Authentication',
 	'Portfolios', 'Projects', 'ProjectIssues', 'PortfolioIssues', 'GateProcesses', 'LogReasons', 'IssueStates', 'IssueActionStates', 'LogPriorities', 'LogStatusIndicators',
+    'People',
 	function($scope, $stateParams, $location, $q, $modal, $log, _, Authentication,
-			 Portfolios, Projects, ProjectIssues, PortfolioIssues, GateProcesses, LogReasons, IssueStates, IssueActionStates, LogPriorities, LogStatusIndicators) {
+			 Portfolios, Projects, ProjectIssues, PortfolioIssues, GateProcesses, LogReasons, IssueStates, IssueActionStates, LogPriorities, LogStatusIndicators, People) {
 
         var vm = this;
 
@@ -13,8 +14,6 @@ angular.module('portfolio-issues').controller('PortfolioIssuesController', ['$sc
 		vm.initError = [];
 
 		vm.init = function () {
-
-			// main controller
 
 			Projects.query({'selection.selectedForDelivery': true}, function (projects) {
 				vm.projects = _.filter(projects, function (project) {
@@ -36,8 +35,6 @@ angular.module('portfolio-issues').controller('PortfolioIssuesController', ['$sc
 			}, function (err) {
 				vm.initError.push(err.data.message);
 			});
-
-			// Modal controller
 
 			LogReasons.query(function (res) {
 				vm.logReasons = res;
@@ -68,6 +65,12 @@ angular.module('portfolio-issues').controller('PortfolioIssuesController', ['$sc
 			}, function (err) {
 				vm.initError.push(err.data.message);
 			});
+
+            People.query(function (res) {
+                vm.people = res;
+            }, function (err) {
+                vm.initError.push(err.data.message);
+            });
 
 		};
 
@@ -160,6 +163,10 @@ angular.module('portfolio-issues').controller('PortfolioIssuesController', ['$sc
 		};
 
 
+// ******************************************************* ISSUE *******************************************************
+
+
+
 		// ------------- NEW ISSUE ------------
 
 		vm.newPortfolioIssueRaisedOnDateOpened = {};
@@ -185,7 +192,7 @@ angular.module('portfolio-issues').controller('PortfolioIssuesController', ['$sc
 				// Clear new form
 				vm.newPortfolioIssue = {};
 				// Select in view mode the new review
-				vm.selectPortfolioIssue(_.find(vm.portfolioIssues, _.matchesProperty('_id', res._id)));
+				vm.selectPortfolioIssue(_.find(vm.portfolioIssues, _.matchesProperty('_id', res._id)), portfolio);
 				// Close new review form done directly in the view's html
 			}, function (err) {
 				vm.error = err.data.message;
@@ -201,14 +208,40 @@ angular.module('portfolio-issues').controller('PortfolioIssuesController', ['$sc
 		// ------------- EDIT ISSUE ------------
 
 
-		var modalUpdateIssue = function (size, issue) {
+		var modalUpdateIssue = function (size, issue, portfolio) {
 
 			var modalInstance = $modal.open({
 				templateUrl: 'modules/portfolio-issues/views/edit-portfolio-issue.client.view.html',
-				controller: function ($scope, $modalInstance, issue) {
+				controller: function ($scope, $modalInstance, issue, availableProjectIssues, availableProjects) {
 
 					$scope.originalPortfolioIssue = _.cloneDeep(issue);
 					$scope.selectedPortfolioIssue = issue;
+                    $scope.availableProjectIssues = availableProjectIssues;
+                    $scope.availableProjects = availableProjects;
+
+                    $scope.associateProjectIssue = function(portfolioIssue, projectIssue){
+                        PortfolioIssues.addProjectIssue({
+                            portfolioIssueId : portfolioIssue._id,
+                            projectIssueId : projectIssue._id
+                        }, portfolioIssue, function(res){
+                            portfolioIssue.associatedProjectIssues.push(projectIssue);
+                            $scope.availableProjectIssues = _.without($scope.availableProjectIssues, projectIssue);
+                        }, function(err){
+                            $scope.error = err.data.message;
+                        });
+                    };
+
+                    $scope.disassociateProjectIssue = function(portfolioIssue, projectIssue){
+                        PortfolioIssues.removeProjectIssue({
+                            portfolioIssueId : portfolioIssue._id,
+                            projectIssueId : projectIssue._id
+                        }, portfolioIssue, function(res){
+                            portfolioIssue.associatedProjectIssues = _.without(portfolioIssue.associatedProjectIssues, projectIssue);
+                            $scope.availableProjectIssues.push(projectIssue);
+                        }, function(err){
+                            $scope.error = err.data.message;
+                        });
+                    };
 
 					$scope.cancelModal = function () {
 						$modalInstance.dismiss();
@@ -218,7 +251,21 @@ angular.module('portfolio-issues').controller('PortfolioIssuesController', ['$sc
 				resolve: {
 					issue: function () {
 						return issue;
-					}
+					},
+                    availableProjectIssues: function(PortfolioIssues){
+                        return PortfolioIssues.getAvailableProjectIssues(
+                            { portfolioId : portfolio._id, portfolioIssueId: issue._id},
+                            function (res) { return res; },
+                            function (err) { vm.error = err.data.message; }
+                        );
+                    },
+                    availableProjects: function(Projects){
+                        return Projects.query(
+                            { portfolio : portfolio._id},
+                            function (res) { return res; },
+                            function (err) { vm.error = err.data.message; }
+                        );
+                    }
 				},
 				backdrop: 'static',
 				keyboard: false
@@ -226,8 +273,8 @@ angular.module('portfolio-issues').controller('PortfolioIssuesController', ['$sc
 
 		};
 
-		vm.selectPortfolioIssue = function(issue){
-			modalUpdateIssue('lg', issue);
+		vm.selectPortfolioIssue = function(issue, portfolio){
+            modalUpdateIssue('lg', issue, portfolio);
 		};
 
 		// ------------------- NG-SWITCH ---------------------
@@ -376,6 +423,11 @@ angular.module('portfolio-issues').controller('PortfolioIssuesController', ['$sc
 		};
 
 
+
+// ******************************************************* ACTION *****************************************************
+
+
+
         // --------------------- NEW ACTION -----------------------
 
 
@@ -398,7 +450,6 @@ angular.module('portfolio-issues').controller('PortfolioIssuesController', ['$sc
 
         // --------------------- EDIT ACTION -----------------------
 
-        vm.actionDetails = 'header';
 
         vm.selectAction = function(action){
             vm.originalAction = _.cloneDeep(action);
@@ -406,9 +457,165 @@ angular.module('portfolio-issues').controller('PortfolioIssuesController', ['$sc
         };
 
 
+        // ------------------- NG-SWITCH ---------------------
+
+        vm.actionDetails = 'header';
+
+        vm.switchActionHeaderForm = {};
+        vm.selectActionHeaderForm = function (string, action) {
+            if (string === 'view') {
+                vm.switchActionHeaderForm[action._id] = 'view';
+            }
+            if (string === 'edit') {
+                vm.switchActionHeaderForm[action._id] = 'edit';
+            }
+        };
+
+        vm.switchActionStatusForm = {};
+        vm.selectActionStatusForm = function (string, action) {
+            if (string === 'view') {
+                vm.switchActionStatusForm[action._id] = 'view';
+            }
+            if (string === 'edit') {
+                vm.switchActionStatusForm[action._id] = 'edit';
+            }
+        };
+
+        // ------------------- HEADER --------------------------
+
+        vm.actionHeaderDateOpened = {};
+        vm.openActionHeaderDate = function ($event, action) {
+            $event.preventDefault();
+            $event.stopPropagation();
+            vm.actionHeaderDateOpened[action._id] = true;
+        };
+
+        vm.editActionHeader = function (action) {
+            vm.selectActionHeaderForm('edit', action);
+        };
+
+        vm.saveEditActionHeader = function (issue, action, originalAction) {
+            // Clean-up deepPopulate
+            var copyAction = _.cloneDeep(action);
+            copyAction.portfolio = _.get(copyAction.portfolio, '_id');
+            copyAction.reason = allowNull(copyAction.reason);
+            copyAction.priority = allowNull(copyAction.priority);
+            copyAction.state = allowNull(copyAction.state);
+            copyAction.statusReview.currentRecord.status = allowNull(copyAction.statusReview.currentRecord.status);
+            // Update server header
+            PortfolioIssues.updateActionHeader(
+                {
+                    portfolioIssueId: issue._id,
+                    escalationActionId: action._id
+                }, copyAction,
+                function (res) {
+                    // Update details pane view with new saved details
+                    originalAction.raisedOnDate = action.raisedOnDate;
+                    originalAction.title = action.title;
+                    originalAction.description = action.description;
+                    originalAction.state = action.state;
+                    originalAction.reason = action.reason;
+                    originalAction.priority = action.priority;
+                    // Close edit header form and back to view
+                    vm.selectActionHeaderForm('view', action);
+                },
+                function (err) {
+                    vm.error = err.data.message;
+                }
+            );
+        };
+
+        vm.cancelEditActionHeader = function (action, originalAction) {
+            action.raisedOnDate = originalAction.raisedOnDate;
+            action.title = originalAction.title;
+            action.description = originalAction.description;
+            action.state = originalAction.state;
+            action.reason = originalAction.reason;
+            action.priority = originalAction.priority;
+            vm.selectActionHeaderForm('view', action);
+        };
 
 
+        vm.deleteAction = function (issue, action) {
+            PortfolioIssues.removeAction({
+                portfolioIssueId: issue._id,
+                escalationActionId: action._id
+            }, action, function (res) {
+                vm.issue.escalationActions = _.without(vm.issue.escalationActions, action);
+            }, function (err) {
+                vm.error = err.data.message;
+            });
+        };
 
+
+        // --------------------- STATUS -----------------------
+
+        vm.actionBaselineDeliveryDateOpened = {};
+        vm.openActionBaselineDeliveryDate = function ($event, action) {
+            $event.preventDefault();
+            $event.stopPropagation();
+            vm.actionBaselineDeliveryDateOpened[action._id] = true;
+        };
+
+        vm.actionEstimateDeliveryDateOpened = {};
+        vm.openActionEstimateDeliveryDate = function ($event, action) {
+            $event.preventDefault();
+            $event.stopPropagation();
+            vm.actionEstimateDeliveryDateOpened[action._id] = true;
+        };
+
+        vm.actionActualDeliveryDateOpened = {};
+        vm.openActionActualDeliveryDate = function ($event, action) {
+            $event.preventDefault();
+            $event.stopPropagation();
+            vm.actionActualDeliveryDateOpened[action._id] = true;
+        };
+
+        vm.editActionStatus = function (action) {
+            vm.selectActionStatusForm('edit', action);
+        };
+
+        vm.saveEditActionStatus = function (issue, action, originalAction) {
+            // Clean-up deepPopulate
+            var copyAction = _.cloneDeep(action);
+            copyAction.portfolio = _.get(copyAction.portfolio, '_id');
+            copyAction.reason = allowNull(copyAction.reason);
+            copyAction.priority = allowNull(copyAction.priority);
+            copyAction.state = allowNull(copyAction.state);
+            copyAction.statusReview.currentRecord.status = allowNull(copyAction.statusReview.currentRecord.status);
+            // Update server header
+            PortfolioIssues.updateActionStatus({
+                    portfolioIssueId: issue._id,
+                    escalationActionId: action._id
+                }, copyAction,
+                function (res) {
+                    // Change the selected action
+                    originalAction.statusReview.currentRecord.baselineDeliveryDate = issue.statusReview.currentRecord.baselineDeliveryDate;
+                    originalAction.statusReview.currentRecord.estimateDeliveryDate = issue.statusReview.currentRecord.estimateDeliveryDate;
+                    originalAction.statusReview.currentRecord.actualDeliveryDate = issue.statusReview.currentRecord.actualDeliveryDate;
+                    originalAction.statusReview.currentRecord.status = issue.statusReview.currentRecord.status;
+                    originalAction.statusReview.currentRecord.completed = issue.statusReview.currentRecord.completed;
+                    originalAction.statusReview.currentRecord.statusComment = issue.statusReview.currentRecord.statusComment;
+                    vm.selectActionStatusForm('view', action);
+                },
+                function (err) {
+                    vm.error = err.data.message;
+                }
+            );
+        };
+
+        vm.cancelEditActionStatus = function (action, originalAction) {
+            action.statusReview.currentRecord.baselineDeliveryDate = originalAction.statusReview.currentRecord.baselineDeliveryDate;
+            action.statusReview.currentRecord.estimateDeliveryDate = originalAction.statusReview.currentRecord.estimateDeliveryDate;
+            action.statusReview.currentRecord.actualDeliveryDate = originalAction.statusReview.currentRecord.actualDeliveryDate;
+            action.statusReview.currentRecord.status = originalAction.statusReview.currentRecord.status;
+            action.statusReview.currentRecord.completed = originalAction.statusReview.currentRecord.completed;
+            action.statusReview.currentRecord.statusComment = originalAction.statusReview.currentRecord.statusComment;
+            vm.selectActionStatusForm('view', action);
+        };
+
+
+// ******************************************************* ASSOCIATE PROJECT ISSUES *****************************************************
 
 
 

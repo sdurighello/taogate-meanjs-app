@@ -26,14 +26,14 @@ exports.create = function(req, res) {
     async.series([
         // Add the sequential number
         function(callback){
-            Counter.findByIdAndUpdate({_id: 'projectIssueSequence'}, {$inc: { seq: 1} }, function(error, counter)   {
+            Counter.findByIdAndUpdate({_id: 'projectIssueSequence_' + projectIssue.project}, {$inc: { seq: 1} }, function(error, counter)   {
                 if(error){
                     return callback(error);
                 }
                 // Must create the the document in 'counter' collection for our entity the first time we create an entity document
                 if(!counter){
                     var newCounter = new Counter({
-                        _id : 'projectIssueSequence'
+                        _id : 'projectIssueSequence_' + projectIssue.project
                     });
                     newCounter.save(function(err){
                         if(err){
@@ -174,7 +174,7 @@ exports.delete = function(req, res) {
  */
 exports.list = function(req, res) {
 	var ProjectIssue = mongoose.mtModel(req.user.tenantId + '.' + 'ProjectIssue');
-	ProjectIssue.find().deepPopulate([
+	ProjectIssue.find(req.query).deepPopulate([
         'gate', 'reason', 'state', 'priority', 'statusReview.currentRecord.status'
     ]).populate('user', 'displayName').exec(function(err, projectIssues) {
 		if (err) {
