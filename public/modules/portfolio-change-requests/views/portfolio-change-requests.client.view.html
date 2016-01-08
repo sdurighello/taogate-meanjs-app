@@ -1,0 +1,399 @@
+<section data-ng-controller="PortfolioChangeRequestController"  data-ng-init="init()">
+    <br>
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="panel-heading">
+                <ol class="breadcrumb">
+                    <li>Portfolio delivery</li>
+                    <li>Change Requests</li>
+                    <li class="active">Portfolio change requests</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+    <div data-ng-show="initError" class="text-danger">
+        <strong data-ng-bind="initError"></strong>
+    </div>
+    <div class="row">
+        <div class="col-sm-4"><!-- PORTFOLIO LIST -->
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h6 class="panel-title text-center">Portfolio tree</h6>
+                </div>
+                <div class="panel-body" style="min-height: 500px;  max-height: 500px; overflow-y: auto;">
+                    <div class="alert alert-warning text-center" data-ng-hide="!portfolios.$resolved || portfolios.length">
+                        No portfolios yet
+                    </div>
+                    <script type="text/ng-template" id="portfolioTree">
+                        <hr>
+                        <button class="btn btn-default" data-ng-click="selectPortfolio(tree.node);">
+                            <span data-ng-bind="tree.node.name"></span>
+                        </button>
+                        <ul data-ng-if="tree.nodeTrees" class="">
+                            <li data-ng-repeat="tree in tree.nodeTrees track by $index" data-ng-include="'portfolioTree'"></li>
+                        </ul>
+                    </script>
+                    <ul class="">
+                        <li data-ng-repeat="tree in portfolioTrees track by $index" data-ng-include="'portfolioTree'"></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-8">
+            <div class="row">
+                <div class="col-md-12">
+                    <div data-ng-hide="selectedPortfolio || portfolios.length === 0" class="alert alert-warning text-center">
+                        Select a portfolio to see its details
+                    </div>
+                </div>
+            </div>
+            <div class="row" data-ng-show="selectedPortfolio">
+                <div class="col-sm-12">
+                    <div class="panel panel-default">
+                        <div><h5>&nbsp;Portfolio: <i>{{selectedPortfolio.name}}</i></h5></div>
+                    </div>
+                </div>
+            </div>
+            <div class="row" data-ng-show="showNewPortfolioChangeRequestForm">
+                <div class="col-md-12">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <h6 class="panel-title">
+                                New portfolio request
+                            </h6>
+                        </div>
+                        <div class="panel-body">
+                            <form class="form" name="newPortfolioChangeRequestForm">
+                                <div class="row">
+                                    <div class="form-group-sm col-md-3">
+                                        <label for="">Raised on date</label>
+                                        <div class="input-group">
+                                            <input type="text" id="" class="form-control" datepicker-popup="dd-MMMM-yyyy" data-ng-model="newPortfolioChangeRequest.raisedOnDate"
+                                                   is-open="newPortfolioCRRaisedOnDateOpened" >
+                                                                <span class="input-group-btn">
+                                                                    <button type="button" class="btn btn-default btn-sm" ng-click="openNewPortfolioCRRaisedOnDate($event)"><i class="glyphicon glyphicon-calendar"></i></button>
+                                                                </span>
+                                        </div>
+                                    </div>
+                                    <div class="form-group-sm col-md-6">
+                                        <label for="reviewTitleNew">Request title</label>
+                                        <input id="reviewTitleNew" name="reviewTitleNew" class="form-control" type="text" placeholder="Enter request title"
+                                               data-ng-model="newPortfolioChangeRequest.title" >
+                                    </div>
+                                </div>
+                                <hr>
+                                <div class="form-group-sm pull-right">
+                                    <button class="btn btn-success btn-xs" data-ng-click="createNewPortfolioChangeRequest(selectedPortfolio); showNewPortfolioChangeRequestForm = false;">
+                                        Save
+                                    </button>
+                                    <button class="btn btn-info btn-xs" data-ng-click="cancelNewPortfolioChangeRequest(); showNewPortfolioChangeRequestForm = false;">
+                                        Cancel
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row" data-ng-show="!showNewPortfolioChangeRequestForm && selectedPortfolio">
+                <div class="col-md-3">
+                    <div class="row" data-ng-show="!showNewPortfolioChangeRequestForm">
+                        <div class="col-md-12 form-group-sm center-block">
+                            <button class="btn btn-primary btn-sm" ng-click="showNewPortfolioChangeRequestForm = true">
+                                New portfolio change
+                            </button>
+                        </div>
+                    </div>
+                    <br>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="panel panel-default">
+                                <div class="panel-heading">
+                                    <h6 class="panel-title text-center">Portfolio changes</h6>
+                                </div>
+                                <div class="panel-body" style="min-height: 390px; max-height: 390px; overflow-y: auto">
+                                    <div data-ng-show="portfolioChangeRequests.length === 0" class="alert alert-warning text-center">
+                                        There are no requests for this portfolio
+                                    </div>
+                                    <button type="button"
+                                            data-ng-repeat="portfolioChangeRequest in portfolioChangeRequests | orderBy: sortPortfolioChangeRequests : true"
+                                            data-ng-click="selectPortfolioChangeRequest(portfolioChangeRequest)"
+                                            class="btn btn-sm center-block btn-block" style="overflow: hidden;">
+                                        <span class="small">{{portfolioChangeRequest.raisedOnDate | date:'EEE d, MMM yyyy'}}</span>
+                                        <br>
+                                        <span class="small">{{portfolioChangeRequest.title}}</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-9">
+                    <div data-ng-hide="selectedPortfolioChangeRequest || portfolioChangeRequests.length === 0" class="alert alert-warning text-center">
+                        Select a change request to see its details
+                    </div>
+                    <div class="row" data-ng-show="selectedPortfolioChangeRequest">
+                        <div class="col-md-12">
+                            <div class="panel panel-default">
+                                <div class="panel-heading">
+                                    <div class="row">
+                                        <div class="col-md-9 text-center">
+                                            <b><em>{{selectedPortfolioChangeRequest.raisedOnDate | date:'EEE d, MMM yyyy'}} - {{selectedPortfolioChangeRequest.title}}</em></b>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6 btn-group btn-group-xs btn-group-justified">
+                                        <label class="btn btn-info btn-xs" data-ng-model="portfolioChangeRequestDetails" btn-radio="'header'">
+                                            Header
+                                        </label>
+                                        <label class="btn btn-info btn-xs" data-ng-model="portfolioChangeRequestDetails" btn-radio="'associatedProjectChanges'">
+                                            Associated project changes
+                                        </label>
+                                        <label class="btn btn-info btn-xs" data-ng-model="portfolioChangeRequestDetails" btn-radio="'fundsRequests'">
+                                            Portfolio funds requests
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="panel-body" style="min-height: 415px; max-height: 415px; overflow-y: auto">
+                                    <div data-ng-show="portfolioChangeRequestDetails === 'header'">
+                                        <div data-ng-switch="switchHeaderForm[selectedPortfolioChangeRequest._id]">
+                                            <form data-ng-switch-default="view">
+                                                <div class="row">
+                                                    <div class="form-group-sm col-md-5">
+                                                        <label for="">Raised on date</label>
+                                                        <input type="text" id="" class="form-control" datepicker-popup="dd-MMMM-yyyy" data-ng-model="selectedPortfolioChangeRequest.raisedOnDate" disabled />
+                                                    </div>
+                                                    <div class="form-group-sm col-md-7">
+                                                        <label for="reviewTitleEdit">Review title</label>
+                                                        <input id="reviewTitleEdit" name="reviewTitleNew" class="form-control" type="text" placeholder="Enter review title"
+                                                               data-ng-model="selectedPortfolioChangeRequest.title" disabled>
+                                                    </div>
+                                                </div>
+                                                <br>
+                                                <div class="row">
+                                                    <div class="form-group-sm col-md-4">
+                                                        <label for="">Reason for change</label>
+                                                        <select id="" class="form-control" data-ng-model = "selectedPortfolioChangeRequest.reason"
+                                                                ng-options="reason._id as reason.name for reason in logReasons" disabled>
+                                                        </select>
+                                                    </div>
+                                                    <div class="form-group-sm col-md-4">
+                                                        <label for="">Priority</label>
+                                                        <select id="" class="form-control" data-ng-model = "selectedPortfolioChangeRequest.priority"
+                                                                ng-options="priority._id as priority.name for priority in logPriorities" disabled>
+                                                        </select>
+                                                    </div>
+                                                    <div class="form-group-sm col-md-4">
+                                                        <label for="">State</label>
+                                                        <select id="" class="form-control" data-ng-model = "selectedPortfolioChangeRequest.state"
+                                                                ng-options="state._id as state.name for state in changeRequestStates" disabled>
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                                <br>
+                                                <div class="row">
+                                                    <div class="form-group-sm col-md-12">
+                                                        <label for="">Description</label>
+                                                        <textarea id="" class="form-control" data-ng-model="selectedPortfolioChangeRequest.description" disabled></textarea>
+                                                    </div>
+                                                </div>
+                                                <hr>
+                                                <div class="form-group-sm pull-right" data-ng-show="userHasAuthorization && !selectedPortfolioChangeRequest.final">
+                                                    <button class="btn btn-success btn-xs" data-ng-click="editHeader(selectedPortfolioChangeRequest)">
+                                                        Edit
+                                                    </button>
+                                                </div>
+                                            </form>
+                                            <form data-ng-switch-when="edit">
+                                                <div class="row">
+                                                    <div class="form-group-sm col-md-5">
+                                                        <label for="">Raised on date</label>
+                                                        <div class="input-group">
+                                                            <input type="text" id="" class="form-control" datepicker-popup="dd-MMMM-yyyy" data-ng-model="selectedPortfolioChangeRequest.raisedOnDate"
+                                                                   is-open="$parent.headerDateOpened[selectedPortfolioChangeRequest._id]" >
+                                                                            <span class="input-group-btn">
+                                                                                <button type="button" class="btn btn-default btn-sm" ng-click="openHeaderDate(selectedPortfolioChangeRequest, $event)"><i class="glyphicon glyphicon-calendar"></i></button>
+                                                                            </span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="form-group-sm col-md-7">
+                                                        <label for="reviewTitleEdit">Review title</label>
+                                                        <input id="reviewTitleEdit" name="reviewTitleNew" class="form-control" type="text" placeholder="Enter title"
+                                                               data-ng-model="selectedPortfolioChangeRequest.title" >
+                                                    </div>
+                                                </div>
+                                                <br>
+                                                <div class="row">
+                                                    <div class="form-group-sm col-md-4">
+                                                        <label for="">Reason for change</label>
+                                                        <select id="" class="form-control" data-ng-model = "selectedPortfolioChangeRequest.reason"
+                                                                ng-options="reason._id as reason.name for reason in logReasons" >
+                                                            <option value="">--choose reason</option>
+                                                        </select>
+                                                    </div>
+                                                    <div class="form-group-sm col-md-4">
+                                                        <label for="">Priority</label>
+                                                        <select id="" class="form-control" data-ng-model = "selectedPortfolioChangeRequest.priority"
+                                                                ng-options="priority._id as priority.name for priority in logPriorities" >
+                                                            <option value="">--choose priority</option>
+                                                        </select>
+                                                    </div>
+                                                    <div class="form-group-sm col-md-4">
+                                                        <label for="">State</label>
+                                                        <select id="" class="form-control" data-ng-model = "selectedPortfolioChangeRequest.state"
+                                                                ng-options="state._id as state.name for state in changeRequestStates" >
+                                                            <option value="">--choose state</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                                <br>
+                                                <div class="row">
+                                                    <div class="form-group-sm col-md-12">
+                                                        <label for="">Description</label>
+                                                        <textarea id="" class="form-control" placeholder="Enter description" data-ng-model="selectedPortfolioChangeRequest.description"></textarea>
+                                                    </div>
+                                                </div>
+                                                <hr>
+                                                <div class="form-group-sm pull-right">
+                                                    <button class="btn btn-success btn-xs" data-ng-click="saveEditHeader(selectedPortfolioChangeRequest)">
+                                                        Save
+                                                    </button>
+                                                    <button class="btn btn-danger btn-xs" data-ng-click="deletePortfolioChangeRequest(selectedPortfolioChangeRequest)">
+                                                        Delete change request
+                                                    </button>
+                                                    <button class="btn btn-info btn-xs" data-ng-click="cancelEditHeader(selectedPortfolioChangeRequest)">
+                                                        Cancel
+                                                    </button>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                    <div data-ng-show="portfolioChangeRequestDetails === 'associatedProjectChanges'">
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                <button class="btn btn-primary btn-xs" data-ng-click="addProjectChangeRequest(selectedPortfolioChangeRequest)">
+                                                    Add a project change request
+                                                </button>
+                                            </div>
+                                        </div>
+                                        <hr>
+                                        <div class="row" data-ng-show="selectedPortfolioChangeRequest.associatedProjectChangeRequests !== 0">
+                                            <div class="col-xs-12">
+                                                <div class="table-responsive">
+                                                    <table class="table table-bordered table-hover table-condensed small">
+                                                        <thead>
+                                                        <tr>
+                                                            <th>Raised on</th>
+                                                            <th>Title</th>
+                                                            <th>Priority</th>
+                                                            <th>State</th>
+                                                            <th></th>
+                                                        </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                        <tr data-ng-repeat="associatedCR in selectedPortfolioChangeRequest.associatedProjectChangeRequests">
+                                                            <td data-ng-bind="associatedCR.raisedOnDate | date:'EEE d, MMM yyyy'"></td>
+                                                            <td data-ng-bind="associatedCR.title"></td>
+                                                            <td>
+                                                                <span data-ng-bind="associatedCR.priority.name" data-ng-show="associatedCR.priority"></span>
+                                                                <span data-ng-show="!associatedCR.priority">No priority</span>
+                                                            </td>
+                                                            <td>
+                                                                <span data-ng-bind="associatedCR.state.name" data-ng-show="associatedCR.state"></span>
+                                                                <span data-ng-show="!associatedCR.state">No state</span>
+                                                            </td>
+                                                            <td>
+                                                                <button class="btn btn-danger btn-xs" data-ng-click="removeProjectChangeRequest(selectedPortfolioChangeRequest, associatedCR)">
+                                                                    <span class="glyphicon glyphicon-trash"></span>
+                                                                </button>
+                                                            </td>
+                                                        </tr>
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row" data-ng-hide="selectedPortfolioChangeRequest.associatedProjectChangeRequests !== 0">
+                                            <div class="col-md-12">
+                                                <div class="alert alert-warning text-center">
+                                                    There are no associated project change requests
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div data-ng-show="portfolioChangeRequestDetails === 'fundsRequests'">
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                <button class="btn btn-primary btn-xs" data-ng-click="addPortfolioFundsRequest(selectedPortfolioChangeRequest)">
+                                                    Add a fund request
+                                                </button>
+                                            </div>
+                                        </div>
+                                        <hr>
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                <div class="panel panel-default panel-body">
+                                                    <div class="row">
+                                                        <div class="col-md-6">
+                                                            <input id="" name="" class="form-control input-sm" type="text" placeholder="Associated project change requests" disabled>
+                                                        </div>
+                                                        <div class="col-md-4">
+                                                            <input id="" name="" class="form-control input-sm" type="number" placeholder="0"
+                                                                   data-ng-model="selectedPortfolioChangeRequest.calculatedFundsRequested.projectRequests" disabled>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row" data-ng-repeat="fundsRequest in selectedPortfolioChangeRequest.additionalFundsRequests">
+                                            <div class="col-md-12">
+                                                <div class="panel panel-default panel-body">
+                                                    <div class="row">
+                                                        <div class="col-md-6 input-group-sm">
+                                                            <label for="">Request title</label>
+                                                            <input id="" name="" class="form-control" type="text" placeholder="Enter review title"
+                                                                   data-ng-model="fundsRequest.title" disabled>
+                                                        </div>
+                                                        <div class="col-md-4 input-group-sm">
+                                                            <label for="">Requested funds</label>
+                                                            <input id="" name="" class="form-control" type="number" placeholder="Enter amount"
+                                                                   data-ng-model="fundsRequest.funds" disabled>
+                                                        </div>
+                                                        <div class="col-md-2">
+                                                            <button class="btn btn-success btn-xs" data-ng-click="editFundsRequest(selectedPortfolioChangeRequest, fundsRequest)">
+                                                                <span class="glyphicon glyphicon-pencil"></span>
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <hr>
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                <span>Total portfolio requests: </span><span data-ng-bind="selectedPortfolioChangeRequest.calculatedFundsRequested.portfolioRequests"></span>
+                                                <span class="glyphicon glyphicon-plus"></span>
+                                                <span>Total associated project requests: </span> <span data-ng-bind="selectedPortfolioChangeRequest.calculatedFundsRequested.projectRequests"></span>
+                                                <span class="glyphicon glyphicon-arrow-right"></span>
+                                                <span>Total funds requested: </span> <span data-ng-bind="selectedPortfolioChangeRequest.calculatedFundsRequested.total"></span>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
