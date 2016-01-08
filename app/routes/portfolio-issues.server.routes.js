@@ -4,7 +4,8 @@ module.exports = function(app) {
 	var users = require('../../app/controllers/users.server.controller');
 	var portfolioIssues = require('../../app/controllers/portfolio-issues.server.controller');
 
-	// Portfolio issues Routes
+// **************** ISSUE ******************
+
 	app.route('/portfolio-issues')
 		.get(users.requiresLogin, portfolioIssues.list)
 		.post(users.requiresLogin, portfolioIssues.hasAuthorization, portfolioIssues.create);
@@ -22,6 +23,8 @@ module.exports = function(app) {
 	app.route('/portfolio-issues/:portfolioIssueId/status')
 		.put(users.requiresLogin, portfolioIssues.hasAuthorization, portfolioIssues.updateStatus);
 
+// **************** ACTION ******************
+
 	// Create new action
 	app.route('/portfolio-issues/:portfolioIssueId/createAction')
 		.post(users.requiresLogin, portfolioIssues.hasAuthorization, portfolioIssues.createAction);
@@ -34,6 +37,12 @@ module.exports = function(app) {
 	app.route('/portfolio-issues/:portfolioIssueId/escalationActions/:escalationActionId/actionStatus')
 		.put(users.requiresLogin, portfolioIssues.hasAuthorization, portfolioIssues.updateActionStatus);
 
+    // Delete action
+    app.route('/portfolio-issues/:portfolioIssueId/escalationActions/:escalationActionId/deleteAction')
+        .put(users.requiresLogin, portfolioIssues.hasAuthorization, portfolioIssues.deleteAction);
+
+// **************** ASSOCIATED PROJECT ISSUES ******************
+
     // Available project issues
     app.route('/portfolio-issues/:portfolioIssueId/portfolios/:portfolioId')
         .get(users.requiresLogin, portfolioIssues.availableProjectIssues);
@@ -45,6 +54,8 @@ module.exports = function(app) {
     // Remove associated project issue
     app.route('/portfolio-issues/:portfolioIssueId/project-issues/:projectIssueId/removeProjectIssue')
         .put(users.requiresLogin, portfolioIssues.hasAuthorization, portfolioIssues.removeProjectIssue);
+
+// **************** MIDDLEWARE ******************
 
 	// Finish by binding the Portfolio issue middleware
 	app.param('portfolioIssueId', portfolioIssues.portfolioIssueByID);

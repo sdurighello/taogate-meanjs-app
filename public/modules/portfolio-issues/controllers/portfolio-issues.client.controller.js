@@ -440,6 +440,7 @@ angular.module('portfolio-issues').controller('PortfolioIssuesController', ['$sc
                 { portfolioIssueId : portfolioIssue._id}, newAction,
                 function(res){
                     portfolioIssue.escalationActions.push(res);
+                    vm.selectAction(_.find(portfolioIssue.escalationActions, _.matchesProperty('_id', res._id)));
                 },
                 function(err){
                     vm.error = err.data.message;
@@ -498,7 +499,7 @@ angular.module('portfolio-issues').controller('PortfolioIssuesController', ['$sc
             // Clean-up deepPopulate
             var copyAction = _.cloneDeep(action);
             copyAction.portfolio = _.get(copyAction.portfolio, '_id');
-            copyAction.reason = allowNull(copyAction.reason);
+            copyAction.escalatedTo = allowNull(copyAction.escalatedTo);
             copyAction.priority = allowNull(copyAction.priority);
             copyAction.state = allowNull(copyAction.state);
             copyAction.statusReview.currentRecord.status = allowNull(copyAction.statusReview.currentRecord.status);
@@ -514,7 +515,7 @@ angular.module('portfolio-issues').controller('PortfolioIssuesController', ['$sc
                     originalAction.title = action.title;
                     originalAction.description = action.description;
                     originalAction.state = action.state;
-                    originalAction.reason = action.reason;
+                    originalAction.escalatedTo = action.escalatedTo;
                     originalAction.priority = action.priority;
                     // Close edit header form and back to view
                     vm.selectActionHeaderForm('view', action);
@@ -530,18 +531,20 @@ angular.module('portfolio-issues').controller('PortfolioIssuesController', ['$sc
             action.title = originalAction.title;
             action.description = originalAction.description;
             action.state = originalAction.state;
-            action.reason = originalAction.reason;
+            action.escalatedTo = originalAction.escalatedTo;
             action.priority = originalAction.priority;
             vm.selectActionHeaderForm('view', action);
         };
 
 
         vm.deleteAction = function (issue, action) {
-            PortfolioIssues.removeAction({
+            PortfolioIssues.deleteAction({
                 portfolioIssueId: issue._id,
                 escalationActionId: action._id
             }, action, function (res) {
-                vm.issue.escalationActions = _.without(vm.issue.escalationActions, action);
+                issue.escalationActions = _.without(issue.escalationActions, action);
+                vm.originalAction = null;
+                vm.selectedAction = null;
             }, function (err) {
                 vm.error = err.data.message;
             });
@@ -579,7 +582,7 @@ angular.module('portfolio-issues').controller('PortfolioIssuesController', ['$sc
             // Clean-up deepPopulate
             var copyAction = _.cloneDeep(action);
             copyAction.portfolio = _.get(copyAction.portfolio, '_id');
-            copyAction.reason = allowNull(copyAction.reason);
+            copyAction.escalatedTo = allowNull(copyAction.escalatedTo);
             copyAction.priority = allowNull(copyAction.priority);
             copyAction.state = allowNull(copyAction.state);
             copyAction.statusReview.currentRecord.status = allowNull(copyAction.statusReview.currentRecord.status);

@@ -301,24 +301,18 @@
                                                     <label for="">Raised on date</label>
                                                     <input type="text" id="" class="form-control" datepicker-popup="dd-MMMM-yyyy" data-ng-model="parentCtrl.selectedAction.raisedOnDate" disabled />
                                                 </div>
-                                                <div class="form-group-sm col-md-4">
+                                                <div class="form-group-sm col-md-8">
                                                     <label for="">Title</label>
                                                     <input id="" name="" class="form-control" type="text" placeholder="Enter action title"
                                                            data-ng-model="parentCtrl.selectedAction.title" disabled>
-                                                </div>
-                                                <div class="form-group-sm col-md-4">
-                                                    <label for="">Escalated to</label>
-                                                    <select id="" class="form-control" data-ng-model = "parentCtrl.selectedAction.escalatedTo"
-                                                            ng-options="person as person.name for person in parentCtrl.people track by person._id" disabled>
-                                                    </select>
                                                 </div>
                                             </div>
                                             <br>
                                             <div class="row">
                                                 <div class="form-group-sm col-md-4">
-                                                    <label for="">Reason</label>
-                                                    <select id="" class="form-control" data-ng-model = "parentCtrl.selectedAction.reason"
-                                                            ng-options="reason as reason.name for reason in parentCtrl.logReasons track by reason._id" disabled>
+                                                    <label for="">Escalated to</label>
+                                                    <select id="" class="form-control" data-ng-model = "parentCtrl.selectedAction.escalatedTo"
+                                                            ng-options="person as person.name for person in parentCtrl.people track by person._id" disabled>
                                                     </select>
                                                 </div>
                                                 <div class="form-group-sm col-md-4">
@@ -330,7 +324,7 @@
                                                 <div class="form-group-sm col-md-4">
                                                     <label for="">State</label>
                                                     <select id="" class="form-control" data-ng-model = "parentCtrl.selectedAction.state"
-                                                            ng-options="state as state.name for state in parentCtrl.issueStates track by state._id" disabled>
+                                                            ng-options="state as state.name for state in parentCtrl.issueActionStates track by state._id" disabled>
                                                     </select>
                                                 </div>
                                             </div>
@@ -354,32 +348,25 @@
                                                     <label for="">Raised on date</label>
                                                     <div class="input-group">
                                                         <input type="text" id="" class="form-control" datepicker-popup="dd-MMMM-yyyy" data-ng-model="parentCtrl.selectedAction.raisedOnDate"
-                                                               is-open="parentCtrl.headerDateOpened[parentCtrl.selectedAction._id]" required>
+                                                               is-open="parentCtrl.actionHeaderDateOpened[parentCtrl.selectedAction._id]" required>
                                                         <span class="input-group-btn">
-                                                            <button type="button" class="btn btn-default btn-sm" ng-click="parentCtrl.openHeaderDate($event, parentCtrl.selectedAction)"><i class="glyphicon glyphicon-calendar"></i></button>
+                                                            <button type="button" class="btn btn-default btn-sm" ng-click="parentCtrl.openActionHeaderDate($event, parentCtrl.selectedAction)"><i class="glyphicon glyphicon-calendar"></i></button>
                                                         </span>
                                                     </div>
                                                 </div>
-                                                <div class="form-group-sm col-md-4">
+                                                <div class="form-group-sm col-md-8">
                                                     <label for="">Title</label>
                                                     <input id="" class="form-control" type="text" placeholder="Enter title"
-                                                           data-ng-model="selectedPortfolioIssue.title" required>
-                                                </div>
-                                                <div class="form-group-sm col-md-4">
-                                                    <label for="">Escalated to</label>
-                                                    <select id="" class="form-control" data-ng-model = "parentCtrl.selectedAction.escalatedTo"
-                                                            data-ng-options="person as person.name for person in parentCtrl.people track by person._id">
-                                                        <option value="">--choose person</option>
-                                                    </select>
+                                                           data-ng-model="parentCtrl.selectedAction.title" required>
                                                 </div>
                                             </div>
                                             <br>
                                             <div class="row">
                                                 <div class="form-group-sm col-md-4">
-                                                    <label for="">Reason</label>
-                                                    <select id="" class="form-control" data-ng-model = "parentCtrl.selectedAction.reason"
-                                                            ng-options="reason as reason.name for reason in parentCtrl.logReasons track by reason._id" >
-                                                        <option value="">--choose reason</option>
+                                                    <label for="">Escalated to</label>
+                                                    <select id="" class="form-control" data-ng-model = "parentCtrl.selectedAction.escalatedTo"
+                                                            data-ng-options="person as person.name for person in parentCtrl.people track by person._id">
+                                                        <option value="">--choose person</option>
                                                     </select>
                                                 </div>
                                                 <div class="form-group-sm col-md-4">
@@ -392,7 +379,7 @@
                                                 <div class="form-group-sm col-md-4">
                                                     <label for="">State</label>
                                                     <select id="" class="form-control" data-ng-model = "parentCtrl.selectedAction.state"
-                                                            ng-options="state as state.name for state in parentCtrl.issueStates track by state._id" >
+                                                            ng-options="state as state.name for state in parentCtrl.issueActionStates track by state._id" >
                                                         <option value="">--choose state</option>
                                                     </select>
                                                 </div>
@@ -471,9 +458,9 @@
                                                     <label for="">Baseline delivery date</label>
                                                     <div class="input-group">
                                                         <input type="text" id="" class="form-control" datepicker-popup="dd-MMMM-yyyy" data-ng-model="parentCtrl.selectedAction.statusReview.currentRecord.baselineDeliveryDate"
-                                                               is-open="parentCtrl.baselineDeliveryDateOpened[parentCtrl.selectedAction._id]" >
+                                                               is-open="parentCtrl.actionBaselineDeliveryDateOpened[parentCtrl.selectedAction._id]" >
                                                                             <span class="input-group-btn">
-                                                                                <button type="button" class="btn btn-default btn-sm" ng-click="parentCtrl.openBaselineDeliveryDate($event, parentCtrl.selectedAction)"><i class="glyphicon glyphicon-calendar"></i></button>
+                                                                                <button type="button" class="btn btn-default btn-sm" ng-click="parentCtrl.openActionBaselineDeliveryDate($event, parentCtrl.selectedAction)"><i class="glyphicon glyphicon-calendar"></i></button>
                                                                             </span>
                                                     </div>
                                                 </div>
@@ -481,9 +468,9 @@
                                                     <label for="">Estimate delivery date</label>
                                                     <div class="input-group">
                                                         <input type="text" id="" class="form-control" datepicker-popup="dd-MMMM-yyyy" data-ng-model="parentCtrl.selectedAction.statusReview.currentRecord.estimateDeliveryDate"
-                                                               is-open="parentCtrl.estimateDeliveryDateOpened[parentCtrl.selectedAction._id]" >
+                                                               is-open="parentCtrl.actionEstimateDeliveryDateOpened[parentCtrl.selectedAction._id]" >
                                                                             <span class="input-group-btn">
-                                                                                <button type="button" class="btn btn-default btn-sm" ng-click="parentCtrl.openEstimateDeliveryDate($event, parentCtrl.selectedAction)"><i class="glyphicon glyphicon-calendar"></i></button>
+                                                                                <button type="button" class="btn btn-default btn-sm" ng-click="parentCtrl.openActionEstimateDeliveryDate($event, parentCtrl.selectedAction)"><i class="glyphicon glyphicon-calendar"></i></button>
                                                                             </span>
                                                     </div>
                                                 </div>
@@ -491,9 +478,9 @@
                                                     <label for="">Actual delivery date</label>
                                                     <div class="input-group">
                                                         <input type="text" id="" class="form-control" datepicker-popup="dd-MMMM-yyyy" data-ng-model="parentCtrl.selectedAction.statusReview.currentRecord.actualDeliveryDate"
-                                                               is-open="parentCtrl.actualDeliveryDateOpened[parentCtrl.selectedAction._id]" >
+                                                               is-open="parentCtrl.actionActualDeliveryDateOpened[parentCtrl.selectedAction._id]" >
                                                                             <span class="input-group-btn">
-                                                                                <button type="button" class="btn btn-default btn-sm" ng-click="parentCtrl.openActualDeliveryDate($event, parentCtrl.selectedAction)"><i class="glyphicon glyphicon-calendar"></i></button>
+                                                                                <button type="button" class="btn btn-default btn-sm" ng-click="parentCtrl.openActionActualDeliveryDate($event, parentCtrl.selectedAction)"><i class="glyphicon glyphicon-calendar"></i></button>
                                                                             </span>
                                                     </div>
                                                 </div>

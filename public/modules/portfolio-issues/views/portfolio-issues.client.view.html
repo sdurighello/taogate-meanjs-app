@@ -27,7 +27,7 @@
 					<script type="text/ng-template" id="portfolioTree">
 						<hr>
 						<button class="btn btn-default" data-ng-click="parentCtrl.selectPortfolio(tree.node);">
-							<span data-ng-bind="tree.node.name"></span> &nbsp;
+							<span data-ng-bind="tree.node.name"></span>
 						</button>
 						<ul data-ng-if="tree.nodeTrees" class="">
 							<li data-ng-repeat="tree in tree.nodeTrees track by $index" data-ng-include="'portfolioTree'"></li>

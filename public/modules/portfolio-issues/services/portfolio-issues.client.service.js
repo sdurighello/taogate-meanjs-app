@@ -8,6 +8,7 @@ angular.module('portfolio-issues').factory('PortfolioIssues', ['$resource',
 			update: {
 				method: 'PUT'
 			},
+// **************** ISSUE ******************
 
 			// --- Issue Header --
 			updateHeader: {
@@ -23,6 +24,8 @@ angular.module('portfolio-issues').factory('PortfolioIssues', ['$resource',
 				// req.body: {whole issue object}
 			},
 
+// **************** ACTION ******************
+
             // --- Create action --
             createAction: {
                 method: 'POST',
@@ -37,12 +40,21 @@ angular.module('portfolio-issues').factory('PortfolioIssues', ['$resource',
                 // req.body: {action object}
             },
 
-            // --- Issue Status --
+            // --- Action Status --
             updateActionStatus: {
                 method: 'PUT',
                 url: 'portfolio-issues/:portfolioIssueId/escalationActions/:escalationActionId/actionStatus'
                 // req.body: {action object}
             },
+
+            // --- Delete action --
+            deleteAction: {
+                method: 'PUT',
+                url: 'portfolio-issues/:portfolioIssueId/escalationActions/:escalationActionId/deleteAction'
+                // req.body: {action object}
+            },
+
+// **************** ASSOCIATED PROJECT ISSUES ******************
 
             // --- Get available project issues for associatedProjectIssues --
             getAvailableProjectIssues: {
@@ -60,7 +72,7 @@ angular.module('portfolio-issues').factory('PortfolioIssues', ['$resource',
                 // req.body: {portfolio issue object}
             },
 
-            // --- Add associated project issue --
+            // --- Remove associated project issue --
             removeProjectIssue: {
                 method: 'PUT',
                 url: 'portfolio-issues/:portfolioIssueId/project-issues/:projectIssueId/removeProjectIssue'

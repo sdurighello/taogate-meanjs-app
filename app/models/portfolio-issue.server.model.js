@@ -33,6 +33,7 @@ var escalationActionSchema = new Schema({
     title: {type: String, default: '', trim: true, required: 'Please fill Portfolio issue name'},
     description: {type: String, default: '', trim: true},
     state : {type: Schema.Types.ObjectId, default: null, ref: 'IssueActionState', $tenant:true},
+    priority : {type: Schema.Types.ObjectId, default: null, ref: 'LogPriority', $tenant:true},
 
     statusReview : {
         currentRecord : statusReviewRecord,
