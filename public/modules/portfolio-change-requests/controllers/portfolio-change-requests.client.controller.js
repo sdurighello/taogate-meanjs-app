@@ -195,7 +195,7 @@ angular.module('portfolio-change-requests').controller('PortfolioChangeRequestsC
 				// Refresh the list of change requests
                 vm.portfolioChangeRequests.push(res);
 				// Select in view mode the new review
-				vm.selectPortfolioChangeRequest(res);
+				vm.selectPortfolioChangeRequest(portfolio, res);
 				// Close new review form done directly in the view's html
 			}, function(err) {
 				vm.error = err.data.message;
@@ -213,19 +213,24 @@ angular.module('portfolio-change-requests').controller('PortfolioChangeRequestsC
 		// Required to update the list when changes details
 		// in the details pane that are also reported in the list of change requests
 
-		vm.selectPortfolioChangeRequest = function(portfolioChangeRequest){
-			portfolioChangeRequestFromList[portfolioChangeRequest._id] = portfolioChangeRequest;
-			PortfolioChangeRequests.get({
-				portfolioChangeRequestId:portfolioChangeRequest._id
-			}, function(res){
-				vm.selectedPortfolioChangeRequest = res;
-				originalPortfolioChangeRequest[portfolioChangeRequest._id] = _.cloneDeep(res);
-				//vm.selectPortfolioChangeRequestForm('view');
-			},function(errorResponse){
-				vm.error = errorResponse.data.message;
-				vm.selectedPortfolioChangeRequest = null;
-				originalPortfolioChangeRequest = {};
-			});
+		vm.selectPortfolioChangeRequest = function(portfolio, portfolioChangeRequest){
+			$q.all([
+                PortfolioChangeRequests.get({
+                        portfolioChangeRequestId:portfolioChangeRequest._id }).$promise,
+                PortfolioChangeRequests.getAvailableProjectChangeRequests(
+                    { portfolioId : portfolio._id, portfolioChangeRequestId: portfolioChangeRequest._id }).$promise,
+                Projects.query(
+                    { portfolio : portfolio._id }).$promise
+            ]).then(function(data) {
+                portfolioChangeRequestFromList[portfolioChangeRequest._id] = portfolioChangeRequest;
+                originalPortfolioChangeRequest[portfolioChangeRequest._id] = _.cloneDeep(data[0]);
+                vm.selectedPortfolioChangeRequest = data[0];
+                vm.availableProjectChangeRequests = data[1];
+                vm.availableProjects = data[2];
+            }, function(err){
+                vm.error = err.data.message;
+            });
+
 		};
 
 
@@ -296,42 +301,59 @@ angular.module('portfolio-change-requests').controller('PortfolioChangeRequestsC
         // ----------------------------------------------- ASSOCIATED PROJECT CHANGE REQUESTS -------------------------------------------------
 
 
-        var modalAssociatedProjectChanges = function (size, portfolio, change) {
+        // Used only to show the details of the change (adding/removing all done on main ctrl/view)
+        var modalProjectChangeRequest = function (size, change) {
 
             var modalInstance = $modal.open({
                 templateUrl: 'modules/portfolio-change-requests/views/associated-project-change.client.view.html',
-                controller: function ($scope, $modalInstance, portfolio, change) {
-
-                    $scope.originalPortfolioChangeRequest = _.cloneDeep(change);
-                    $scope.selectedPortfolioChangeRequest = change;
-                    $scope.selectedPortfolio = portfolio;
-
-
+                controller: function ($scope, $modalInstance, change) {
+                    $scope.selectedProjectChangeRequest = change;
                     $scope.cancelModal = function () {
                         $modalInstance.dismiss();
                     };
                 },
                 size: size,
                 resolve: {
-                    portfolio : function(){
-                        return portfolio;
-                    },
-                    change: function () {
-                        return change;
+                    change: function (ProjectChangeRequests) {
+                        return ProjectChangeRequests.get(
+                            { projectChangeRequestId:change._id },
+                            function(res){ return res; },
+                            function(err){ return err; }
+                        );
                     }
                 },
                 backdrop: 'static',
                 keyboard: false
             });
-
         };
 
-
-        vm.addProjectChangeRequest = function(portfolio, change){
-            modalAssociatedProjectChanges('lg', portfolio, change);
+        vm.viewProjectChangeRequest = function(change){
+            modalProjectChangeRequest('lg', change);
         };
 
+        vm.addProjectChangeRequest = function(portfolioChange, projectChange){
+            PortfolioChangeRequests.addProjectChangeRequest({
+                portfolioChangeRequestId : portfolioChange._id,
+                projectChangeRequestId : projectChange._id
+            }, portfolioChange, function(res){
+                portfolioChange.associatedProjectChangeRequests.push(projectChange);
+                vm.availableProjectChangeRequests = _.without(vm.availableProjectChangeRequests, projectChange);
+            }, function(err){
+                vm.error = err.data.message;
+            });
+        };
 
+        vm.removeProjectChangeRequest = function(portfolioChange, projectChange){
+            PortfolioChangeRequests.removeProjectChangeRequest({
+                portfolioChangeRequestId : portfolioChange._id,
+                projectChangeRequestId : projectChange._id
+            }, portfolioChange, function(res){
+                portfolioChange.associatedProjectChangeRequests = _.without(portfolioChange.associatedProjectChangeRequests, projectChange);
+                vm.availableProjectChangeRequests.push(projectChange);
+            }, function(err){
+                vm.error = err.data.message;
+            });
+        };
 
 
 	}

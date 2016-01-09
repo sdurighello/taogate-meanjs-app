@@ -117,7 +117,7 @@
                                     </div>
                                     <button type="button"
                                             data-ng-repeat="portfolioChangeRequest in parentCtrl.portfolioChangeRequests | orderBy: parentCtrl.sortPortfolioChangeRequests : true"
-                                            data-ng-click="parentCtrl.selectPortfolioChangeRequest(portfolioChangeRequest)"
+                                            data-ng-click="parentCtrl.selectPortfolioChangeRequest(parentCtrl.selectedPortfolio, portfolioChangeRequest)"
                                             class="btn btn-sm center-block btn-block" style="overflow: hidden;">
                                         <span class="small">{{portfolioChangeRequest.raisedOnDate | date:'EEE d, MMM yyyy'}}</span>
                                         <br>
@@ -151,7 +151,7 @@
                                             Associated project changes
                                         </label>
                                         <label class="btn btn-info btn-xs" data-ng-model="parentCtrl.portfolioChangeRequestDetails" btn-radio="'fundsRequests'">
-                                            Portfolio funds requests
+                                            Funding requested
                                         </label>
                                     </div>
                                 </div>
@@ -264,27 +264,27 @@
                                                         <em>Project changes not associated</em>
                                                     </div>
                                                     <div class="panel-body">
-                                                        <div class="row" data-ng-hide="availableProjectIssues.length !== 0">
+                                                        <div class="row" data-ng-hide="parentCtrl.availableProjectChangeRequests.length !== 0">
                                                             <div class="col-md-12">
                                                                 <div class="alert alert-warning text-center">
                                                                     There are no project changes available for association
                                                                 </div>
                                                             </div>
                                                         </div>
-                                                        <div data-ng-show="availableProjectIssues.length !== 0">
+                                                        <div data-ng-show="parentCtrl.availableProjectChangeRequests.length !== 0">
                                                             <div class="row" data-ng-show="!showChangeFiltersA">
                                                                 <div class="col-md-12 small">
                                                                     <a data-ng-click="showChangeFiltersA = true"><b>Filters</b></a><br>
 
-                                                                    <span data-ng-show="projectIssueFilterA.project"><b>Project: </b><i>"{{projectIssueFilterA.project.identification.name}}" | </i></span>
+                                                                    <span data-ng-show="projectChangeRequestFilterA.project"><b>Project: </b><i>"{{projectChangeRequestFilterA.project.identification.name}}" | </i></span>
 
-                                                                    <span data-ng-show="projectIssueFilterA.title"><b>Title: </b><i>"{{projectIssueFilterA.title}}" | </i></span>
+                                                                    <span data-ng-show="projectChangeRequestFilterA.title"><b>Title: </b><i>"{{projectChangeRequestFilterA.title}}" | </i></span>
 
-                                                                    <span data-ng-show="projectIssueFilterA.priority"><b>Priority: </b><i>"{{projectIssueFilterA.priority.name}}" | </i></span>
+                                                                    <span data-ng-show="projectChangeRequestFilterA.priority"><b>Priority: </b><i>"{{projectChangeRequestFilterA.priority.name}}" | </i></span>
 
-                                                                    <span data-ng-show="projectIssueFilterA.state"><b>State: </b><i>"{{projectIssueFilterA.state.name}}" | </i></span>
+                                                                    <span data-ng-show="projectChangeRequestFilterA.state"><b>State: </b><i>"{{projectChangeRequestFilterA.state.name}}" | </i></span>
 
-                                                                    <span data-ng-show="projectIssueFilterA.reason"><b>Reason: </b><i>"{{projectIssueFilterA.reason.name}}" | </i></span>
+                                                                    <span data-ng-show="projectChangeRequestFilterA.reason"><b>Reason: </b><i>"{{projectChangeRequestFilterA.reason.name}}" | </i></span>
                                                                 </div>
                                                             </div>
                                                             <div data-ng-show="showChangeFiltersA">
@@ -295,14 +295,14 @@
                                                                 </div>
                                                                 <div class="row">
                                                                     <div class="col-md-12">
-                                                                        <input class="form-control input-sm" type="text" placeholder="filter by title" data-ng-model="projectIssueFilterA.title">
+                                                                        <input class="form-control input-sm" type="text" placeholder="filter by title" data-ng-model="projectChangeRequestFilterA.title">
                                                                     </div>
                                                                 </div>
                                                                 <br>
                                                                 <div class="row">
                                                                     <div class="col-md-12">
-                                                                        <select class="form-control input-sm" data-ng-model = "projectIssueFilterA.project"
-                                                                                data-ng-options="project as project.identification.name for project in availableProjects">
+                                                                        <select class="form-control input-sm" data-ng-model = "projectChangeRequestFilterA.project"
+                                                                                data-ng-options="project as project.identification.name for project in parentCtrl.availableProjects">
                                                                             <option value="">--filter by project</option>
                                                                         </select>
                                                                     </div>
@@ -310,7 +310,7 @@
                                                                 <br>
                                                                 <div class="row">
                                                                     <div class="col-md-12">
-                                                                        <select class="form-control input-sm" data-ng-model = "projectIssueFilterA.priority"
+                                                                        <select class="form-control input-sm" data-ng-model = "projectChangeRequestFilterA.priority"
                                                                                 data-ng-options="priority as priority.name for priority in parentCtrl.logPriorities">
                                                                             <option value="">--filter by priority</option>
                                                                         </select>
@@ -319,8 +319,8 @@
                                                                 <br>
                                                                 <div class="row">
                                                                     <div class="col-md-12">
-                                                                        <select class="form-control input-sm" data-ng-model = "projectIssueFilterA.state"
-                                                                                data-ng-options="state as state.name for state in parentCtrl.issueStates">
+                                                                        <select class="form-control input-sm" data-ng-model = "projectChangeRequestFilterA.state"
+                                                                                data-ng-options="state as state.name for state in parentCtrl.changeRequestStates">
                                                                             <option value="">--filter by state</option>
                                                                         </select>
                                                                     </div>
@@ -328,7 +328,7 @@
                                                                 <br>
                                                                 <div class="row">
                                                                     <div class="col-md-12">
-                                                                        <select class="form-control input-sm" data-ng-model = "projectIssueFilterA.reason"
+                                                                        <select class="form-control input-sm" data-ng-model = "projectChangeRequestFilterA.reason"
                                                                                 data-ng-options="reason as reason.name for reason in parentCtrl.logReasons">
                                                                             <option value="">--filter by reason</option>
                                                                         </select>
@@ -338,28 +338,42 @@
                                                             <br>
                                                             <div class="row" style="max-height: 240px; min-height: 240px; overflow-y: auto">
                                                                 <div class="col-xs-12">
+                                                                    <div class="btn-group" data-ng-repeat="projectChangeRequest in parentCtrl.availableProjectChangeRequests track by projectChangeRequest._id | orderBy: 'idNumber'">
+                                                                        <button class="btn btn-default btn-sm" data-ng-bind="projectChangeRequest.title"
+                                                                                data-ng-click="parentCtrl.viewProjectChangeRequest(projectChangeRequest)"></button>
+                                                                        <button class="btn btn-success btn-sm" data-ng-click="parentCtrl.addProjectChangeRequest(parentCtrl.selectedPortfolioChangeRequest, projectChangeRequest)"
+                                                                                data-ng-show="parentCtrl.userHasAuthorization">
+                                                                            <span class="glyphicon glyphicon-plus"></span>
+                                                                        </button>
+                                                                    </div>
+
+
                                                                     <div class="table-responsive">
                                                                         <table class="table table-bordered table-hover table-condensed small">
                                                                             <tbody>
-                                                                            <tr data-ng-repeat="projectIssue in availableProjectIssues track by projectIssue._id | orderBy: 'idNumber'">
+                                                                            <tr data-ng-repeat="projectChangeRequest in parentCtrl.availableProjectChangeRequests track by projectChangeRequest._id | orderBy: 'idNumber'">
                                                                                 <td>
-                                                                                    {{projectIssue.idNumber}}
-                                                                                </td>
-                                                                                <td>{{projectIssue.title}}</td>
-                                                                                <td>
-                                                                                    <span data-ng-show="projectIssue.priority">{{projectIssue.priority.name}}</span>
-                                                                                    <span data-ng-show="!projectIssue.priority">No priority</span>
+                                                                                    {{projectChangeRequest.idNumber}}
                                                                                 </td>
                                                                                 <td>
-                                                                                    <span data-ng-show="projectIssue.state">{{projectIssue.state.name}}</span>
-                                                                                    <span data-ng-show="!projectIssue.state">No state</span>
+                                                                                    <button class="btn-link" data-ng-click="parentCtrl.viewProjectChangeRequest(projectChangeRequest)">
+                                                                                        {{projectChangeRequest.title}}
+                                                                                    </button>
                                                                                 </td>
                                                                                 <td>
-                                                                                    <span data-ng-show="projectIssue.reason">{{projectIssue.reason.name}}</span>
-                                                                                    <span data-ng-show="!projectIssue.reason">No reason</span>
+                                                                                    <span data-ng-show="projectChangeRequest.priority">{{projectChangeRequest.priority.name}}</span>
+                                                                                    <span data-ng-show="!projectChangeRequest.priority">No priority</span>
+                                                                                </td>
+                                                                                <td>
+                                                                                    <span data-ng-show="projectChangeRequest.state">{{projectChangeRequest.state.name}}</span>
+                                                                                    <span data-ng-show="!projectChangeRequest.state">No state</span>
+                                                                                </td>
+                                                                                <td>
+                                                                                    <span data-ng-show="projectChangeRequest.reason">{{projectChangeRequest.reason.name}}</span>
+                                                                                    <span data-ng-show="!projectChangeRequest.reason">No reason</span>
                                                                                 </td>
                                                                                 <td class="text-center">
-                                                                                    <button class="btn btn-success btn-xs" data-ng-click="associateProjectIssue(selectedPortfolioIssue, projectIssue)"
+                                                                                    <button class="btn btn-success btn-xs" data-ng-click="parentCtrl.addProjectChangeRequest(parentCtrl.selectedPortfolioChangeRequest, projectChangeRequest)"
                                                                                             data-ng-show="parentCtrl.userHasAuthorization">
                                                                                         <span class="glyphicon glyphicon-plus"></span>
                                                                                     </button>
@@ -380,45 +394,45 @@
                                                         <em>Associated project changes</em>
                                                     </div>
                                                     <div class="panel-body">
-                                                        <div class="row" data-ng-hide="selectedPortfolioIssue.associatedProjectIssues.length !== 0">
+                                                        <div class="row" data-ng-hide="parentCtrl.selectedPortfolioChangeRequest.associatedProjectChangeRequests.length !== 0">
                                                             <div class="col-md-12">
                                                                 <div class="alert alert-warning text-center">
                                                                     There are no associated project changes
                                                                 </div>
                                                             </div>
                                                         </div>
-                                                        <div data-ng-show="selectedPortfolioIssue.associatedProjectIssues.length !== 0">
-                                                            <div class="row" data-ng-show="!showIssueFiltersNA">
+                                                        <div data-ng-show="parentCtrl.selectedPortfolioChangeRequest.associatedProjectChangeRequests.length !== 0">
+                                                            <div class="row" data-ng-show="!showChangeRequestFiltersNA">
                                                                 <div class="col-md-12 small">
-                                                                    <a data-ng-click="showIssueFiltersNA = true"><b>Filters</b></a><br>
+                                                                    <a data-ng-click="showChangeRequestFiltersNA = true"><b>Filters</b></a><br>
 
-                                                                    <span data-ng-show="projectIssueFilterNA.project"><b>Project: </b><i>"{{projectIssueFilterNA.project.identification.name}}" | </i></span>
+                                                                    <span data-ng-show="projectChangeRequestFilterNA.project"><b>Project: </b><i>"{{projectChangeRequestFilterNA.project.identification.name}}" | </i></span>
 
-                                                                    <span data-ng-show="projectIssueFilterNA.title"><b>Title: </b><i>"{{projectIssueFilterNA.title}}" | </i></span>
+                                                                    <span data-ng-show="projectChangeRequestFilterNA.title"><b>Title: </b><i>"{{projectChangeRequestFilterNA.title}}" | </i></span>
 
-                                                                    <span data-ng-show="projectIssueFilterNA.priority"><b>Priority: </b><i>"{{projectIssueFilterNA.priority.name}}" | </i></span>
+                                                                    <span data-ng-show="projectChangeRequestFilterNA.priority"><b>Priority: </b><i>"{{projectChangeRequestFilterNA.priority.name}}" | </i></span>
 
-                                                                    <span data-ng-show="projectIssueFilterNA.state"><b>State: </b><i>"{{projectIssueFilterNA.state.name}}" | </i></span>
+                                                                    <span data-ng-show="projectChangeRequestFilterNA.state"><b>State: </b><i>"{{projectChangeRequestFilterNA.state.name}}" | </i></span>
 
-                                                                    <span data-ng-show="projectIssueFilterNA.reason"><b>Reason: </b><i>"{{projectIssueFilterNA.reason.name}}" | </i></span>
+                                                                    <span data-ng-show="projectChangeRequestFilterNA.reason"><b>Reason: </b><i>"{{projectChangeRequestFilterNA.reason.name}}" | </i></span>
                                                                 </div>
                                                             </div>
-                                                            <div data-ng-show="showIssueFiltersNA">
+                                                            <div data-ng-show="showChangeRequestFiltersNA">
                                                                 <div class="row">
                                                                     <div class="col-md-12 small">
-                                                                        <a data-ng-click="showIssueFiltersNA = false"><b>Hide filters</b></a>
+                                                                        <a data-ng-click="showChangeRequestFiltersNA = false"><b>Hide filters</b></a>
                                                                     </div>
                                                                 </div>
                                                                 <div class="row">
                                                                     <div class="col-md-12">
-                                                                        <input class="form-control input-sm" type="text" placeholder="filter by title" data-ng-model="projectIssueFilterNA.title">
+                                                                        <input class="form-control input-sm" type="text" placeholder="filter by title" data-ng-model="projectChangeRequestFilterNA.title">
                                                                     </div>
                                                                 </div>
                                                                 <br>
                                                                 <div class="row">
                                                                     <div class="col-md-12">
-                                                                        <select class="form-control input-sm" data-ng-model = "projectIssueFilterNA.project"
-                                                                                data-ng-options="project as project.identification.name for project in availableProjects">
+                                                                        <select class="form-control input-sm" data-ng-model = "projectChangeRequestFilterNA.project"
+                                                                                data-ng-options="project as project.identification.name for project in parentCtrl.availableProjects">
                                                                             <option value="">--filter by project</option>
                                                                         </select>
                                                                     </div>
@@ -426,7 +440,7 @@
                                                                 <br>
                                                                 <div class="row">
                                                                     <div class="col-md-12">
-                                                                        <select class="form-control input-sm" data-ng-model = "projectIssueFilterNA.priority"
+                                                                        <select class="form-control input-sm" data-ng-model = "projectChangeRequestFilterNA.priority"
                                                                                 data-ng-options="priority as priority.name for priority in parentCtrl.logPriorities">
                                                                             <option value="">--filter by priority</option>
                                                                         </select>
@@ -435,8 +449,8 @@
                                                                 <br>
                                                                 <div class="row">
                                                                     <div class="col-md-12">
-                                                                        <select class="form-control input-sm" data-ng-model = "projectIssueFilterNA.state"
-                                                                                data-ng-options="state as state.name for state in parentCtrl.issueStates">
+                                                                        <select class="form-control input-sm" data-ng-model = "projectChangeRequestFilterNA.state"
+                                                                                data-ng-options="state as state.name for state in parentCtrl.changeRequestStates">
                                                                             <option value="">--filter by state</option>
                                                                         </select>
                                                                     </div>
@@ -444,7 +458,7 @@
                                                                 <br>
                                                                 <div class="row">
                                                                     <div class="col-md-12">
-                                                                        <select class="form-control input-sm" data-ng-model = "projectIssueFilterA.reason"
+                                                                        <select class="form-control input-sm" data-ng-model = "projectChangeRequestFilterA.reason"
                                                                                 data-ng-options="reason as reason.name for reason in parentCtrl.logReasons">
                                                                             <option value="">--filter by reason</option>
                                                                         </select>
@@ -454,28 +468,44 @@
                                                             <br>
                                                             <div class="row" style="max-height: 240px; min-height: 240px; overflow-y: auto">
                                                                 <div class="col-xs-12">
+                                                                    <div class="row" data-ng-repeat="associatedProjectChangeRequest in parentCtrl.selectedPortfolioChangeRequest.associatedProjectChangeRequests track by associatedProjectChangeRequest._id | orderBy: 'idNumber' ">
+                                                                        <div class="btn-group" >
+                                                                            <button class="btn btn-default btn-sm" data-ng-bind="associatedProjectChangeRequest.title"
+                                                                                    data-ng-click="parentCtrl.viewProjectChangeRequest(associatedProjectChangeRequest)"></button>
+                                                                            <button class="btn btn-danger btn-sm" data-ng-click="parentCtrl.removeProjectChangeRequest(parentCtrl.selectedPortfolioChangeRequest, associatedProjectChangeRequest)"
+                                                                                    data-ng-show="parentCtrl.userHasAuthorization">
+                                                                                <span class="glyphicon glyphicon-remove"></span>
+                                                                            </button>
+                                                                        </div>
+                                                                    </div>
+
+
                                                                     <div class="table-responsive">
                                                                         <table class="table table-bordered table-hover table-condensed small">
                                                                             <tbody>
-                                                                            <tr data-ng-repeat="associatedProjectIssue in selectedPortfolioIssue.associatedProjectIssues track by associatedProjectIssue._id | orderBy: 'idNumber' ">
+                                                                            <tr data-ng-repeat="associatedProjectChangeRequest in parentCtrl.selectedPortfolioChangeRequest.associatedProjectChangeRequests track by associatedProjectChangeRequest._id | orderBy: 'idNumber' ">
                                                                                 <td>
-                                                                                    {{associatedProjectIssue.idNumber}}
-                                                                                </td>
-                                                                                <td>{{associatedProjectIssue.title}}</td>
-                                                                                <td>
-                                                                                    <span data-ng-show="associatedProjectIssue.priority">{{associatedProjectIssue.priority.name}}</span>
-                                                                                    <span data-ng-show="!associatedProjectIssue.priority">No priority</span>
+                                                                                    {{associatedProjectChangeRequest.idNumber}}
                                                                                 </td>
                                                                                 <td>
-                                                                                    <span data-ng-show="associatedProjectIssue.state">{{associatedProjectIssue.state.name}}</span>
-                                                                                    <span data-ng-show="!associatedProjectIssue.state">No state</span>
+                                                                                    <button class="btn-link" data-ng-click="parentCtrl.viewProjectChangeRequest(associatedProjectChangeRequest)">
+                                                                                        {{associatedProjectChangeRequest.title}}
+                                                                                    </button>
                                                                                 </td>
                                                                                 <td>
-                                                                                    <span data-ng-show="associatedProjectIssue.reason">{{associatedProjectIssue.reason.name}}</span>
-                                                                                    <span data-ng-show="!associatedProjectIssue.reason">No reason</span>
+                                                                                    <span data-ng-show="associatedProjectChangeRequest.priority">{{associatedProjectChangeRequest.priority.name}}</span>
+                                                                                    <span data-ng-show="!associatedProjectChangeRequest.priority">No priority</span>
+                                                                                </td>
+                                                                                <td>
+                                                                                    <span data-ng-show="associatedProjectChangeRequest.state">{{associatedProjectChangeRequest.state.name}}</span>
+                                                                                    <span data-ng-show="!associatedProjectChangeRequest.state">No state</span>
+                                                                                </td>
+                                                                                <td>
+                                                                                    <span data-ng-show="associatedProjectChangeRequest.reason">{{associatedProjectChangeRequest.reason.name}}</span>
+                                                                                    <span data-ng-show="!associatedProjectChangeRequest.reason">No reason</span>
                                                                                 </td>
                                                                                 <td class="text-center">
-                                                                                    <button class="btn btn-danger btn-xs" data-ng-click="disassociateProjectIssue(selectedPortfolioIssue, associatedProjectIssue)"
+                                                                                    <button class="btn btn-danger btn-xs" data-ng-click="parentCtrl.removeProjectChangeRequest(parentCtrl.selectedPortfolioChangeRequest, associatedProjectChangeRequest)"
                                                                                             data-ng-show="parentCtrl.userHasAuthorization">
                                                                                         <span class="glyphicon glyphicon-remove"></span>
                                                                                     </button>

@@ -18,6 +18,24 @@ module.exports = function(app) {
 	app.route('/portfolio-change-requests/:portfolioChangeRequestId/header')
 		.put(users.requiresLogin, portfolioChangeRequests.hasAuthorization, portfolioChangeRequests.updateHeader);
 
+
+// **************** ASSOCIATED PROJECT CHANGES ******************
+
+	// Available project changes
+	app.route('/portfolio-change-requests/:portfolioChangeRequestId/portfolios/:portfolioId')
+		.get(users.requiresLogin, portfolioChangeRequests.availableProjectChangeRequests);
+
+	// Add associated project change
+	app.route('/portfolio-change-requests/:portfolioChangeRequestId/project-change-requests/:projectChangeRequestId/addProjectChange')
+		.put(users.requiresLogin, portfolioChangeRequests.hasAuthorization, portfolioChangeRequests.addProjectChangeRequest);
+
+	// Remove associated project change
+	app.route('/portfolio-change-requests/:portfolioChangeRequestId/project-change-requests/:projectChangeRequestId/removeProjectChange')
+		.put(users.requiresLogin, portfolioChangeRequests.hasAuthorization, portfolioChangeRequests.removeProjectChangeRequest);
+
+
+// **************** MIDDLEWARE ******************
+
 	// Finish by binding the Portfolio change request middleware
 	app.param('portfolioChangeRequestId', portfolioChangeRequests.portfolioChangeRequestByID);
 };
