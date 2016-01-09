@@ -11,7 +11,7 @@ var mongoose = require('mongoose'),
 /**
  * APPLY CHANGES TO PERFORMANCES FROM CR
  */
-exports.applyChange = function(req, res) {
+exports.approve = function(req, res) {
 
     var ProjectChangeRequest = mongoose.mtModel(req.user.tenantId + '.' + 'ProjectChangeRequest');
     var projectChangeRequest = req.projectChangeRequest;
@@ -224,6 +224,7 @@ exports.applyChange = function(req, res) {
         function(callback){
             projectChangeRequest.user = req.user;
             projectChangeRequest.created = Date.now();
+            projectChangeRequest.approval = 'approved';
             projectChangeRequest.appliedChanges.push({
                 user : req.user,
                 created : Date.now()

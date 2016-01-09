@@ -192,8 +192,8 @@
 														<label class="btn btn-info btn-xs" data-ng-model="projectChangeRequestDetails" btn-radio="'completion'">
 															Completion
 														</label>
-														<label class="btn btn-info btn-xs" data-ng-model="projectChangeRequestDetails" btn-radio="'applyChange'">
-															Apply change
+														<label class="btn btn-info btn-xs" data-ng-model="projectChangeRequestDetails" btn-radio="'approval'">
+															Approval
 														</label>
 													</div>
 												</div>
@@ -697,16 +697,24 @@
 															</tr>
 														</table>
 													</div>
-													<div data-ng-show="projectChangeRequestDetails === 'applyChange'">
-                                                        <div class="row" data-ng-show="!showConfirmApplyChange">
-                                                            <div class="col-md-4">
-                                                                <div class="form-group" data-ng-show="userHasAuthorization && !selectedProjectChangeRequest.statusReview.currentRecord.completed">
-                                                                    <button class="btn btn-success btn-sm" data-ng-click="showConfirmApplyChange = true">
-                                                                        Apply gate performance changes
-                                                                    </button>
-                                                                </div>
-                                                            </div>
-                                                        </div>
+													<div data-ng-show="projectChangeRequestDetails === 'approval'">
+														<div class="row">
+															<div class="col-md-4 form-group">
+																<input type="text" class="form-control" data-ng-model="selectedProjectChangeRequest.approval" disabled>
+															</div>
+															<div class="col-md-4 form-group">
+																<div data-ng-show="userHasAuthorization && selectedProjectChangeRequest.approval === 'draft'">
+																	<button class="btn btn-warning" data-ng-click="submit(selectedProject, selectedProjectChangeRequest)">
+																		Submit change request
+																	</button>
+																</div>
+																<div data-ng-show="userHasAuthorization && selectedProjectChangeRequest.approval === 'submitted' && !showConfirmApplyChange">
+																	<button class="btn btn-warning" data-ng-click="showConfirmApplyChange = true">
+																		Approve change request
+																	</button>
+																</div>
+															</div>
+														</div>
                                                         <div class="row" data-ng-show="showConfirmApplyChange">
                                                             <div class="col-md-12">
                                                                 <div class="alert alert-warning text-center">
@@ -714,9 +722,9 @@
                                                                 </div>
                                                             </div>
                                                             <div class="col-md-12">
-                                                                <div class="form-group" data-ng-show="userHasAuthorization && !selectedProjectChangeRequest.statusReview.currentRecord.completed">
-                                                                    <button class="btn btn-warning btn-sm" data-ng-click="applyChange(selectedProject, selectedProjectChangeRequest); showConfirmApplyChange = false;">
-                                                                        Confirm changes to gate performances
+                                                                <div class="form-group">
+                                                                    <button class="btn btn-warning btn-sm" data-ng-click="approve(selectedProject, selectedProjectChangeRequest); showConfirmApplyChange = false;">
+                                                                        Confirm approval
                                                                     </button>
                                                                     <button class="btn btn-info btn-sm" data-ng-click="showConfirmApplyChange = !showConfirmApplyChange">
                                                                         Cancel
@@ -726,15 +734,9 @@
                                                         </div>
                                                         <hr>
                                                         <div class="row">
-                                                            <div class="col-md-12" data-ng-show="selectedProjectChangeRequest.appliedChanges.length === 0">
-                                                                <div class="alert alert-warning text-center">
-                                                                    Changes have not been applied yet
-                                                                </div>
-                                                            </div>
                                                             <div class="col-md-12" data-ng-show="selectedProjectChangeRequest.appliedChanges.length !== 0">
-                                                                <label>Change request applied to gate performances:</label>
                                                                 <div data-ng-repeat="appliedChange in selectedProjectChangeRequest.appliedChanges | orderBy: sortAppliedChanges : true">
-                                                                    <span>Change applied on </span>
+                                                                    <span>Change approved on </span>
                                                                     <span><em data-ng-bind="appliedChange.created | date:'EEE d, MMM yyyy'"></em></span>
                                                                     <span> by </span>
                                                                     <span><em data-ng-bind="appliedChange.user.displayName"></em></span>

@@ -337,15 +337,34 @@ angular.module('project-change-requests').controller('ProjectChangeRequestContro
 		};
 
 
-		// -------------------------------------------------------- APPLY CHANGE -------------------------------------------------
+		// -------------------------------------------------------- SUBMIT - APPROVE -------------------------------------------------
 
-		$scope.applyChange = function(project, projectChangeRequest){
+		$scope.submit = function(project, projectChangeRequest){
+			// Clean-up deepPopulate
+			var copyProjectChangeRequest = _.cloneDeep(projectChangeRequest);
+			copyProjectChangeRequest.project = _.get(copyProjectChangeRequest.project, '_id');
+			copyProjectChangeRequest.gate = _.get(copyProjectChangeRequest.gate, '_id');
+			// Run server side approve
+			ProjectChangeRequests.submit(
+				{
+					projectChangeRequestId : copyProjectChangeRequest._id
+				}, copyProjectChangeRequest,
+				function(res){
+					// Refresh the object with the current performances values
+					$scope.selectProjectChangeRequest(projectChangeRequest);
+					$scope.selectSetFinalForm('view', projectChangeRequest);
+				},
+				function(err){$scope.error = err.data.message;}
+			);
+		};
+
+		$scope.approve = function(project, projectChangeRequest){
 			// Clean-up deepPopulate
 			var copyProjectChangeRequest = _.cloneDeep(projectChangeRequest);
             copyProjectChangeRequest.project = _.get(copyProjectChangeRequest.project, '_id');
             copyProjectChangeRequest.gate = _.get(copyProjectChangeRequest.gate, '_id');
-			// Run server side applyChange
-            ProjectChangeRequests.applyChange(
+			// Run server side approve
+            ProjectChangeRequests.approve(
 				{
                     projectChangeRequestId : copyProjectChangeRequest._id
 				}, copyProjectChangeRequest,

@@ -7,6 +7,13 @@ angular.module('portfolio-change-requests').factory('PortfolioChangeRequests', [
 		}, {
 			update: {
 				method: 'PUT'
+			},
+
+			// --- Header --
+			updateHeader: {
+				method: 'PUT',
+				url: 'portfolio-change-requests/:portfolioChangeRequestId/header'
+				// req.body: {whole portfolioChangeRequest object}
 			}
 		});
 	}

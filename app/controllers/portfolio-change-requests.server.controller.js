@@ -15,6 +15,7 @@ exports.create = function(req, res) {
 	var PortfolioChangeRequest = mongoose.mtModel(req.user.tenantId + '.' + 'PortfolioChangeRequest');
 	var portfolioChangeRequest = new PortfolioChangeRequest(req.body);
 	portfolioChangeRequest.user = req.user;
+    portfolioChangeRequest.approval = 'draft';
 
 	portfolioChangeRequest.save(function(err) {
 		if (err) {
@@ -51,6 +52,29 @@ exports.update = function(req, res) {
 			res.jsonp(portfolioChangeRequest);
 		}
 	});
+};
+
+exports.updateHeader = function(req, res) {
+    var portfolioChangeRequest = req.portfolioChangeRequest ;
+
+    portfolioChangeRequest.raisedOnDate = req.body.raisedOnDate;
+    portfolioChangeRequest.title = req.body.title;
+    portfolioChangeRequest.description = req.body.description;
+    portfolioChangeRequest.state = req.body.state;
+    portfolioChangeRequest.priority = req.body.priority;
+
+    portfolioChangeRequest.user = req.user;
+    portfolioChangeRequest.created = Date.now();
+
+    portfolioChangeRequest.save(function(err) {
+        if (err) {
+            return res.status(400).send({
+                message: errorHandler.getErrorMessage(err)
+            });
+        } else {
+            res.jsonp(portfolioChangeRequest);
+        }
+    });
 };
 
 /**

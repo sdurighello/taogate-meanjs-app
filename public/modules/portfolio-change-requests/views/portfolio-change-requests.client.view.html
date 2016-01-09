@@ -1,4 +1,4 @@
-<section data-ng-controller="PortfolioChangeRequestController"  data-ng-init="init()">
+<section data-ng-controller="PortfolioChangeRequestsController as parentCtrl"  data-ng-init="parentCtrl.init()">
     <br>
     <div class="row">
         <div class="col-sm-12">
@@ -11,8 +11,8 @@
             </div>
         </div>
     </div>
-    <div data-ng-show="initError" class="text-danger">
-        <strong data-ng-bind="initError"></strong>
+    <div data-ng-show="parentCtrl.initError" class="text-danger">
+        <strong data-ng-bind="parentCtrl.initError"></strong>
     </div>
     <div class="row">
         <div class="col-sm-4"><!-- PORTFOLIO LIST -->
@@ -21,12 +21,12 @@
                     <h6 class="panel-title text-center">Portfolio tree</h6>
                 </div>
                 <div class="panel-body" style="min-height: 500px;  max-height: 500px; overflow-y: auto;">
-                    <div class="alert alert-warning text-center" data-ng-hide="!portfolios.$resolved || portfolios.length">
+                    <div class="alert alert-warning text-center" data-ng-hide="!parentCtrl.portfolios.$resolved || parentCtrl.portfolios.length">
                         No portfolios yet
                     </div>
                     <script type="text/ng-template" id="portfolioTree">
                         <hr>
-                        <button class="btn btn-default" data-ng-click="selectPortfolio(tree.node);">
+                        <button class="btn btn-default" data-ng-click="parentCtrl.selectPortfolio(tree.node);">
                             <span data-ng-bind="tree.node.name"></span>
                         </button>
                         <ul data-ng-if="tree.nodeTrees" class="">
@@ -34,7 +34,7 @@
                         </ul>
                     </script>
                     <ul class="">
-                        <li data-ng-repeat="tree in portfolioTrees track by $index" data-ng-include="'portfolioTree'"></li>
+                        <li data-ng-repeat="tree in parentCtrl.portfolioTrees track by $index" data-ng-include="'portfolioTree'"></li>
                     </ul>
                 </div>
             </div>
@@ -42,15 +42,15 @@
         <div class="col-md-8">
             <div class="row">
                 <div class="col-md-12">
-                    <div data-ng-hide="selectedPortfolio || portfolios.length === 0" class="alert alert-warning text-center">
+                    <div data-ng-hide="parentCtrl.selectedPortfolio || parentCtrl.portfolios.length === 0" class="alert alert-warning text-center">
                         Select a portfolio to see its details
                     </div>
                 </div>
             </div>
-            <div class="row" data-ng-show="selectedPortfolio">
+            <div class="row" data-ng-show="parentCtrl.selectedPortfolio">
                 <div class="col-sm-12">
                     <div class="panel panel-default">
-                        <div><h5>&nbsp;Portfolio: <i>{{selectedPortfolio.name}}</i></h5></div>
+                        <div><h5>&nbsp;Portfolio: <i>{{parentCtrl.selectedPortfolio.name}}</i></h5></div>
                     </div>
                 </div>
             </div>
@@ -68,25 +68,25 @@
                                     <div class="form-group-sm col-md-3">
                                         <label for="">Raised on date</label>
                                         <div class="input-group">
-                                            <input type="text" id="" class="form-control" datepicker-popup="dd-MMMM-yyyy" data-ng-model="newPortfolioChangeRequest.raisedOnDate"
-                                                   is-open="newPortfolioCRRaisedOnDateOpened" >
+                                            <input type="text" id="" class="form-control" datepicker-popup="dd-MMMM-yyyy" data-ng-model="parentCtrl.newPortfolioChangeRequest.raisedOnDate"
+                                                   is-open="parentCtrl.newPortfolioCRRaisedOnDateOpened" >
                                                                 <span class="input-group-btn">
-                                                                    <button type="button" class="btn btn-default btn-sm" ng-click="openNewPortfolioCRRaisedOnDate($event)"><i class="glyphicon glyphicon-calendar"></i></button>
+                                                                    <button type="button" class="btn btn-default btn-sm" ng-click="parentCtrl.openNewPortfolioCRRaisedOnDate($event)"><i class="glyphicon glyphicon-calendar"></i></button>
                                                                 </span>
                                         </div>
                                     </div>
                                     <div class="form-group-sm col-md-6">
                                         <label for="reviewTitleNew">Request title</label>
                                         <input id="reviewTitleNew" name="reviewTitleNew" class="form-control" type="text" placeholder="Enter request title"
-                                               data-ng-model="newPortfolioChangeRequest.title" >
+                                               data-ng-model="parentCtrl.newPortfolioChangeRequest.title" >
                                     </div>
                                 </div>
                                 <hr>
                                 <div class="form-group-sm pull-right">
-                                    <button class="btn btn-success btn-xs" data-ng-click="createNewPortfolioChangeRequest(selectedPortfolio); showNewPortfolioChangeRequestForm = false;">
+                                    <button class="btn btn-success btn-xs" data-ng-click="parentCtrl.createNewPortfolioChangeRequest(parentCtrl.selectedPortfolio); showNewPortfolioChangeRequestForm = false;">
                                         Save
                                     </button>
-                                    <button class="btn btn-info btn-xs" data-ng-click="cancelNewPortfolioChangeRequest(); showNewPortfolioChangeRequestForm = false;">
+                                    <button class="btn btn-info btn-xs" data-ng-click="parentCtrl.cancelNewPortfolioChangeRequest(); showNewPortfolioChangeRequestForm = false;">
                                         Cancel
                                     </button>
                                 </div>
@@ -95,7 +95,7 @@
                     </div>
                 </div>
             </div>
-            <div class="row" data-ng-show="!showNewPortfolioChangeRequestForm && selectedPortfolio">
+            <div class="row" data-ng-show="!showNewPortfolioChangeRequestForm && parentCtrl.selectedPortfolio">
                 <div class="col-md-3">
                     <div class="row" data-ng-show="!showNewPortfolioChangeRequestForm">
                         <div class="col-md-12 form-group-sm center-block">
@@ -112,12 +112,12 @@
                                     <h6 class="panel-title text-center">Portfolio changes</h6>
                                 </div>
                                 <div class="panel-body" style="min-height: 390px; max-height: 390px; overflow-y: auto">
-                                    <div data-ng-show="portfolioChangeRequests.length === 0" class="alert alert-warning text-center">
+                                    <div data-ng-show="parentCtrl.portfolioChangeRequests.length === 0" class="alert alert-warning text-center">
                                         There are no requests for this portfolio
                                     </div>
                                     <button type="button"
-                                            data-ng-repeat="portfolioChangeRequest in portfolioChangeRequests | orderBy: sortPortfolioChangeRequests : true"
-                                            data-ng-click="selectPortfolioChangeRequest(portfolioChangeRequest)"
+                                            data-ng-repeat="portfolioChangeRequest in parentCtrl.portfolioChangeRequests | orderBy: parentCtrl.sortPortfolioChangeRequests : true"
+                                            data-ng-click="parentCtrl.selectPortfolioChangeRequest(portfolioChangeRequest)"
                                             class="btn btn-sm center-block btn-block" style="overflow: hidden;">
                                         <span class="small">{{portfolioChangeRequest.raisedOnDate | date:'EEE d, MMM yyyy'}}</span>
                                         <br>
@@ -129,65 +129,59 @@
                     </div>
                 </div>
                 <div class="col-md-9">
-                    <div data-ng-hide="selectedPortfolioChangeRequest || portfolioChangeRequests.length === 0" class="alert alert-warning text-center">
+                    <div data-ng-hide="parentCtrl.selectedPortfolioChangeRequest || parentCtrl.portfolioChangeRequests.length === 0" class="alert alert-warning text-center">
                         Select a change request to see its details
                     </div>
-                    <div class="row" data-ng-show="selectedPortfolioChangeRequest">
+                    <div class="row" data-ng-show="parentCtrl.selectedPortfolioChangeRequest">
                         <div class="col-md-12">
                             <div class="panel panel-default">
                                 <div class="panel-heading">
                                     <div class="row">
                                         <div class="col-md-9 text-center">
-                                            <b><em>{{selectedPortfolioChangeRequest.raisedOnDate | date:'EEE d, MMM yyyy'}} - {{selectedPortfolioChangeRequest.title}}</em></b>
+                                            <b><em>{{parentCtrl.selectedPortfolioChangeRequest.raisedOnDate | date:'EEE d, MMM yyyy'}} - {{parentCtrl.selectedPortfolioChangeRequest.title}}</em></b>
                                         </div>
                                     </div>
                                 </div>
                                 <div class="row">
                                     <div class="col-md-6 btn-group btn-group-xs btn-group-justified">
-                                        <label class="btn btn-info btn-xs" data-ng-model="portfolioChangeRequestDetails" btn-radio="'header'">
+                                        <label class="btn btn-info btn-xs" data-ng-model="parentCtrl.portfolioChangeRequestDetails" btn-radio="'header'">
                                             Header
                                         </label>
-                                        <label class="btn btn-info btn-xs" data-ng-model="portfolioChangeRequestDetails" btn-radio="'associatedProjectChanges'">
+                                        <label class="btn btn-info btn-xs" data-ng-model="parentCtrl.portfolioChangeRequestDetails" btn-radio="'associatedProjectChanges'">
                                             Associated project changes
                                         </label>
-                                        <label class="btn btn-info btn-xs" data-ng-model="portfolioChangeRequestDetails" btn-radio="'fundsRequests'">
+                                        <label class="btn btn-info btn-xs" data-ng-model="parentCtrl.portfolioChangeRequestDetails" btn-radio="'fundsRequests'">
                                             Portfolio funds requests
                                         </label>
                                     </div>
                                 </div>
                                 <div class="panel-body" style="min-height: 415px; max-height: 415px; overflow-y: auto">
-                                    <div data-ng-show="portfolioChangeRequestDetails === 'header'">
-                                        <div data-ng-switch="switchHeaderForm[selectedPortfolioChangeRequest._id]">
+                                    <div data-ng-show="parentCtrl.portfolioChangeRequestDetails === 'header'">
+                                        <div data-ng-switch="parentCtrl.switchHeaderForm[parentCtrl.selectedPortfolioChangeRequest._id]">
                                             <form data-ng-switch-default="view">
                                                 <div class="row">
                                                     <div class="form-group-sm col-md-5">
                                                         <label for="">Raised on date</label>
-                                                        <input type="text" id="" class="form-control" datepicker-popup="dd-MMMM-yyyy" data-ng-model="selectedPortfolioChangeRequest.raisedOnDate" disabled />
+                                                        <input type="text" id="" class="form-control" datepicker-popup="dd-MMMM-yyyy" data-ng-model="parentCtrl.selectedPortfolioChangeRequest.raisedOnDate" disabled />
                                                     </div>
                                                     <div class="form-group-sm col-md-7">
                                                         <label for="reviewTitleEdit">Review title</label>
                                                         <input id="reviewTitleEdit" name="reviewTitleNew" class="form-control" type="text" placeholder="Enter review title"
-                                                               data-ng-model="selectedPortfolioChangeRequest.title" disabled>
+                                                               data-ng-model="parentCtrl.selectedPortfolioChangeRequest.title" disabled>
                                                     </div>
                                                 </div>
                                                 <br>
                                                 <div class="row">
                                                     <div class="form-group-sm col-md-4">
-                                                        <label for="">Reason for change</label>
-                                                        <select id="" class="form-control" data-ng-model = "selectedPortfolioChangeRequest.reason"
-                                                                ng-options="reason._id as reason.name for reason in logReasons" disabled>
-                                                        </select>
-                                                    </div>
-                                                    <div class="form-group-sm col-md-4">
                                                         <label for="">Priority</label>
-                                                        <select id="" class="form-control" data-ng-model = "selectedPortfolioChangeRequest.priority"
-                                                                ng-options="priority._id as priority.name for priority in logPriorities" disabled>
+                                                        <select id="" class="form-control" data-ng-model = "parentCtrl.selectedPortfolioChangeRequest.priority"
+                                                                ng-options="priority._id as priority.name for priority in parentCtrl.logPriorities" disabled>
                                                         </select>
                                                     </div>
                                                     <div class="form-group-sm col-md-4">
                                                         <label for="">State</label>
-                                                        <select id="" class="form-control" data-ng-model = "selectedPortfolioChangeRequest.state"
-                                                                ng-options="state._id as state.name for state in changeRequestStates" disabled>
+                                                        <select id="" class="form-control" data-ng-model = "parentCtrl.selectedPortfolioChangeRequest.state"
+                                                                ng-options="state._id as state.name for state in parentCtrl.changeRequestStates" disabled>
                                                         </select>
                                                     </div>
                                                 </div>
@@ -195,12 +189,12 @@
                                                 <div class="row">
                                                     <div class="form-group-sm col-md-12">
                                                         <label for="">Description</label>
-                                                        <textarea id="" class="form-control" data-ng-model="selectedPortfolioChangeRequest.description" disabled></textarea>
+                                                        <textarea id="" class="form-control" data-ng-model="parentCtrl.selectedPortfolioChangeRequest.description" disabled></textarea>
                                                     </div>
                                                 </div>
                                                 <hr>
-                                                <div class="form-group-sm pull-right" data-ng-show="userHasAuthorization && !selectedPortfolioChangeRequest.final">
-                                                    <button class="btn btn-success btn-xs" data-ng-click="editHeader(selectedPortfolioChangeRequest)">
+                                                <div class="form-group-sm pull-right" data-ng-show="parentCtrl.userHasAuthorization && !parentCtrl.selectedPortfolioChangeRequest.final">
+                                                    <button class="btn btn-success btn-xs" data-ng-click="parentCtrl.editHeader(parentCtrl.selectedPortfolioChangeRequest)">
                                                         Edit
                                                     </button>
                                                 </div>
@@ -210,39 +204,32 @@
                                                     <div class="form-group-sm col-md-5">
                                                         <label for="">Raised on date</label>
                                                         <div class="input-group">
-                                                            <input type="text" id="" class="form-control" datepicker-popup="dd-MMMM-yyyy" data-ng-model="selectedPortfolioChangeRequest.raisedOnDate"
-                                                                   is-open="$parent.headerDateOpened[selectedPortfolioChangeRequest._id]" >
+                                                            <input type="text" id="" class="form-control" datepicker-popup="dd-MMMM-yyyy" data-ng-model="parentCtrl.selectedPortfolioChangeRequest.raisedOnDate"
+                                                                   is-open="parentCtrl.headerDateOpened[parentCtrl.selectedPortfolioChangeRequest._id]" >
                                                                             <span class="input-group-btn">
-                                                                                <button type="button" class="btn btn-default btn-sm" ng-click="openHeaderDate(selectedPortfolioChangeRequest, $event)"><i class="glyphicon glyphicon-calendar"></i></button>
+                                                                                <button type="button" class="btn btn-default btn-sm" ng-click="parentCtrl.openHeaderDate(parentCtrl.selectedPortfolioChangeRequest, $event)"><i class="glyphicon glyphicon-calendar"></i></button>
                                                                             </span>
                                                         </div>
                                                     </div>
                                                     <div class="form-group-sm col-md-7">
                                                         <label for="reviewTitleEdit">Review title</label>
                                                         <input id="reviewTitleEdit" name="reviewTitleNew" class="form-control" type="text" placeholder="Enter title"
-                                                               data-ng-model="selectedPortfolioChangeRequest.title" >
+                                                               data-ng-model="parentCtrl.selectedPortfolioChangeRequest.title" >
                                                     </div>
                                                 </div>
                                                 <br>
                                                 <div class="row">
                                                     <div class="form-group-sm col-md-4">
-                                                        <label for="">Reason for change</label>
-                                                        <select id="" class="form-control" data-ng-model = "selectedPortfolioChangeRequest.reason"
-                                                                ng-options="reason._id as reason.name for reason in logReasons" >
-                                                            <option value="">--choose reason</option>
-                                                        </select>
-                                                    </div>
-                                                    <div class="form-group-sm col-md-4">
                                                         <label for="">Priority</label>
-                                                        <select id="" class="form-control" data-ng-model = "selectedPortfolioChangeRequest.priority"
-                                                                ng-options="priority._id as priority.name for priority in logPriorities" >
+                                                        <select id="" class="form-control" data-ng-model = "parentCtrl.selectedPortfolioChangeRequest.priority"
+                                                                ng-options="priority._id as priority.name for priority in parentCtrl.logPriorities" >
                                                             <option value="">--choose priority</option>
                                                         </select>
                                                     </div>
                                                     <div class="form-group-sm col-md-4">
                                                         <label for="">State</label>
-                                                        <select id="" class="form-control" data-ng-model = "selectedPortfolioChangeRequest.state"
-                                                                ng-options="state._id as state.name for state in changeRequestStates" >
+                                                        <select id="" class="form-control" data-ng-model = "parentCtrl.selectedPortfolioChangeRequest.state"
+                                                                ng-options="state._id as state.name for state in parentCtrl.changeRequestStates" >
                                                             <option value="">--choose state</option>
                                                         </select>
                                                     </div>
@@ -251,81 +238,264 @@
                                                 <div class="row">
                                                     <div class="form-group-sm col-md-12">
                                                         <label for="">Description</label>
-                                                        <textarea id="" class="form-control" placeholder="Enter description" data-ng-model="selectedPortfolioChangeRequest.description"></textarea>
+                                                        <textarea id="" class="form-control" placeholder="Enter description" data-ng-model="parentCtrl.selectedPortfolioChangeRequest.description"></textarea>
                                                     </div>
                                                 </div>
                                                 <hr>
                                                 <div class="form-group-sm pull-right">
-                                                    <button class="btn btn-success btn-xs" data-ng-click="saveEditHeader(selectedPortfolioChangeRequest)">
+                                                    <button class="btn btn-success btn-xs" data-ng-click="parentCtrl.saveEditHeader(parentCtrl.selectedPortfolioChangeRequest)">
                                                         Save
                                                     </button>
-                                                    <button class="btn btn-danger btn-xs" data-ng-click="deletePortfolioChangeRequest(selectedPortfolioChangeRequest)">
+                                                    <button class="btn btn-danger btn-xs" data-ng-click="parentCtrl.deletePortfolioChangeRequest(parentCtrl.selectedPortfolioChangeRequest)">
                                                         Delete change request
                                                     </button>
-                                                    <button class="btn btn-info btn-xs" data-ng-click="cancelEditHeader(selectedPortfolioChangeRequest)">
+                                                    <button class="btn btn-info btn-xs" data-ng-click="parentCtrl.cancelEditHeader(parentCtrl.selectedPortfolioChangeRequest)">
                                                         Cancel
                                                     </button>
                                                 </div>
                                             </form>
                                         </div>
                                     </div>
-                                    <div data-ng-show="portfolioChangeRequestDetails === 'associatedProjectChanges'">
+                                    <div data-ng-show="parentCtrl.portfolioChangeRequestDetails === 'associatedProjectChanges'">
                                         <div class="row">
-                                            <div class="col-md-12">
-                                                <button class="btn btn-primary btn-xs" data-ng-click="addProjectChangeRequest(selectedPortfolioChangeRequest)">
-                                                    Add a project change request
-                                                </button>
-                                            </div>
-                                        </div>
-                                        <hr>
-                                        <div class="row" data-ng-show="selectedPortfolioChangeRequest.associatedProjectChangeRequests !== 0">
-                                            <div class="col-xs-12">
-                                                <div class="table-responsive">
-                                                    <table class="table table-bordered table-hover table-condensed small">
-                                                        <thead>
-                                                        <tr>
-                                                            <th>Raised on</th>
-                                                            <th>Title</th>
-                                                            <th>Priority</th>
-                                                            <th>State</th>
-                                                            <th></th>
-                                                        </tr>
-                                                        </thead>
-                                                        <tbody>
-                                                        <tr data-ng-repeat="associatedCR in selectedPortfolioChangeRequest.associatedProjectChangeRequests">
-                                                            <td data-ng-bind="associatedCR.raisedOnDate | date:'EEE d, MMM yyyy'"></td>
-                                                            <td data-ng-bind="associatedCR.title"></td>
-                                                            <td>
-                                                                <span data-ng-bind="associatedCR.priority.name" data-ng-show="associatedCR.priority"></span>
-                                                                <span data-ng-show="!associatedCR.priority">No priority</span>
-                                                            </td>
-                                                            <td>
-                                                                <span data-ng-bind="associatedCR.state.name" data-ng-show="associatedCR.state"></span>
-                                                                <span data-ng-show="!associatedCR.state">No state</span>
-                                                            </td>
-                                                            <td>
-                                                                <button class="btn btn-danger btn-xs" data-ng-click="removeProjectChangeRequest(selectedPortfolioChangeRequest, associatedCR)">
-                                                                    <span class="glyphicon glyphicon-trash"></span>
-                                                                </button>
-                                                            </td>
-                                                        </tr>
-                                                        </tbody>
-                                                    </table>
+                                            <div class="col-md-6">
+                                                <div class="panel panel-default">
+                                                    <div class="panel-heading text-center">
+                                                        <em>Project changes not associated</em>
+                                                    </div>
+                                                    <div class="panel-body">
+                                                        <div class="row" data-ng-hide="availableProjectIssues.length !== 0">
+                                                            <div class="col-md-12">
+                                                                <div class="alert alert-warning text-center">
+                                                                    There are no project changes available for association
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div data-ng-show="availableProjectIssues.length !== 0">
+                                                            <div class="row" data-ng-show="!showChangeFiltersA">
+                                                                <div class="col-md-12 small">
+                                                                    <a data-ng-click="showChangeFiltersA = true"><b>Filters</b></a><br>
+
+                                                                    <span data-ng-show="projectIssueFilterA.project"><b>Project: </b><i>"{{projectIssueFilterA.project.identification.name}}" | </i></span>
+
+                                                                    <span data-ng-show="projectIssueFilterA.title"><b>Title: </b><i>"{{projectIssueFilterA.title}}" | </i></span>
+
+                                                                    <span data-ng-show="projectIssueFilterA.priority"><b>Priority: </b><i>"{{projectIssueFilterA.priority.name}}" | </i></span>
+
+                                                                    <span data-ng-show="projectIssueFilterA.state"><b>State: </b><i>"{{projectIssueFilterA.state.name}}" | </i></span>
+
+                                                                    <span data-ng-show="projectIssueFilterA.reason"><b>Reason: </b><i>"{{projectIssueFilterA.reason.name}}" | </i></span>
+                                                                </div>
+                                                            </div>
+                                                            <div data-ng-show="showChangeFiltersA">
+                                                                <div class="row">
+                                                                    <div class="col-md-12 small">
+                                                                        <a data-ng-click="showChangeFiltersA = false"><b>Hide filters</b></a>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="row">
+                                                                    <div class="col-md-12">
+                                                                        <input class="form-control input-sm" type="text" placeholder="filter by title" data-ng-model="projectIssueFilterA.title">
+                                                                    </div>
+                                                                </div>
+                                                                <br>
+                                                                <div class="row">
+                                                                    <div class="col-md-12">
+                                                                        <select class="form-control input-sm" data-ng-model = "projectIssueFilterA.project"
+                                                                                data-ng-options="project as project.identification.name for project in availableProjects">
+                                                                            <option value="">--filter by project</option>
+                                                                        </select>
+                                                                    </div>
+                                                                </div>
+                                                                <br>
+                                                                <div class="row">
+                                                                    <div class="col-md-12">
+                                                                        <select class="form-control input-sm" data-ng-model = "projectIssueFilterA.priority"
+                                                                                data-ng-options="priority as priority.name for priority in parentCtrl.logPriorities">
+                                                                            <option value="">--filter by priority</option>
+                                                                        </select>
+                                                                    </div>
+                                                                </div>
+                                                                <br>
+                                                                <div class="row">
+                                                                    <div class="col-md-12">
+                                                                        <select class="form-control input-sm" data-ng-model = "projectIssueFilterA.state"
+                                                                                data-ng-options="state as state.name for state in parentCtrl.issueStates">
+                                                                            <option value="">--filter by state</option>
+                                                                        </select>
+                                                                    </div>
+                                                                </div>
+                                                                <br>
+                                                                <div class="row">
+                                                                    <div class="col-md-12">
+                                                                        <select class="form-control input-sm" data-ng-model = "projectIssueFilterA.reason"
+                                                                                data-ng-options="reason as reason.name for reason in parentCtrl.logReasons">
+                                                                            <option value="">--filter by reason</option>
+                                                                        </select>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <br>
+                                                            <div class="row" style="max-height: 240px; min-height: 240px; overflow-y: auto">
+                                                                <div class="col-xs-12">
+                                                                    <div class="table-responsive">
+                                                                        <table class="table table-bordered table-hover table-condensed small">
+                                                                            <tbody>
+                                                                            <tr data-ng-repeat="projectIssue in availableProjectIssues track by projectIssue._id | orderBy: 'idNumber'">
+                                                                                <td>
+                                                                                    {{projectIssue.idNumber}}
+                                                                                </td>
+                                                                                <td>{{projectIssue.title}}</td>
+                                                                                <td>
+                                                                                    <span data-ng-show="projectIssue.priority">{{projectIssue.priority.name}}</span>
+                                                                                    <span data-ng-show="!projectIssue.priority">No priority</span>
+                                                                                </td>
+                                                                                <td>
+                                                                                    <span data-ng-show="projectIssue.state">{{projectIssue.state.name}}</span>
+                                                                                    <span data-ng-show="!projectIssue.state">No state</span>
+                                                                                </td>
+                                                                                <td>
+                                                                                    <span data-ng-show="projectIssue.reason">{{projectIssue.reason.name}}</span>
+                                                                                    <span data-ng-show="!projectIssue.reason">No reason</span>
+                                                                                </td>
+                                                                                <td class="text-center">
+                                                                                    <button class="btn btn-success btn-xs" data-ng-click="associateProjectIssue(selectedPortfolioIssue, projectIssue)"
+                                                                                            data-ng-show="parentCtrl.userHasAuthorization">
+                                                                                        <span class="glyphicon glyphicon-plus"></span>
+                                                                                    </button>
+                                                                                </td>
+                                                                            </tr>
+                                                                            </tbody>
+                                                                        </table>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
                                                 </div>
                                             </div>
-                                        </div>
-                                        <div class="row" data-ng-hide="selectedPortfolioChangeRequest.associatedProjectChangeRequests !== 0">
-                                            <div class="col-md-12">
-                                                <div class="alert alert-warning text-center">
-                                                    There are no associated project change requests
+                                            <div class="col-md-6">
+                                                <div class="panel panel-default">
+                                                    <div class="panel-heading text-center">
+                                                        <em>Associated project changes</em>
+                                                    </div>
+                                                    <div class="panel-body">
+                                                        <div class="row" data-ng-hide="selectedPortfolioIssue.associatedProjectIssues.length !== 0">
+                                                            <div class="col-md-12">
+                                                                <div class="alert alert-warning text-center">
+                                                                    There are no associated project changes
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div data-ng-show="selectedPortfolioIssue.associatedProjectIssues.length !== 0">
+                                                            <div class="row" data-ng-show="!showIssueFiltersNA">
+                                                                <div class="col-md-12 small">
+                                                                    <a data-ng-click="showIssueFiltersNA = true"><b>Filters</b></a><br>
+
+                                                                    <span data-ng-show="projectIssueFilterNA.project"><b>Project: </b><i>"{{projectIssueFilterNA.project.identification.name}}" | </i></span>
+
+                                                                    <span data-ng-show="projectIssueFilterNA.title"><b>Title: </b><i>"{{projectIssueFilterNA.title}}" | </i></span>
+
+                                                                    <span data-ng-show="projectIssueFilterNA.priority"><b>Priority: </b><i>"{{projectIssueFilterNA.priority.name}}" | </i></span>
+
+                                                                    <span data-ng-show="projectIssueFilterNA.state"><b>State: </b><i>"{{projectIssueFilterNA.state.name}}" | </i></span>
+
+                                                                    <span data-ng-show="projectIssueFilterNA.reason"><b>Reason: </b><i>"{{projectIssueFilterNA.reason.name}}" | </i></span>
+                                                                </div>
+                                                            </div>
+                                                            <div data-ng-show="showIssueFiltersNA">
+                                                                <div class="row">
+                                                                    <div class="col-md-12 small">
+                                                                        <a data-ng-click="showIssueFiltersNA = false"><b>Hide filters</b></a>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="row">
+                                                                    <div class="col-md-12">
+                                                                        <input class="form-control input-sm" type="text" placeholder="filter by title" data-ng-model="projectIssueFilterNA.title">
+                                                                    </div>
+                                                                </div>
+                                                                <br>
+                                                                <div class="row">
+                                                                    <div class="col-md-12">
+                                                                        <select class="form-control input-sm" data-ng-model = "projectIssueFilterNA.project"
+                                                                                data-ng-options="project as project.identification.name for project in availableProjects">
+                                                                            <option value="">--filter by project</option>
+                                                                        </select>
+                                                                    </div>
+                                                                </div>
+                                                                <br>
+                                                                <div class="row">
+                                                                    <div class="col-md-12">
+                                                                        <select class="form-control input-sm" data-ng-model = "projectIssueFilterNA.priority"
+                                                                                data-ng-options="priority as priority.name for priority in parentCtrl.logPriorities">
+                                                                            <option value="">--filter by priority</option>
+                                                                        </select>
+                                                                    </div>
+                                                                </div>
+                                                                <br>
+                                                                <div class="row">
+                                                                    <div class="col-md-12">
+                                                                        <select class="form-control input-sm" data-ng-model = "projectIssueFilterNA.state"
+                                                                                data-ng-options="state as state.name for state in parentCtrl.issueStates">
+                                                                            <option value="">--filter by state</option>
+                                                                        </select>
+                                                                    </div>
+                                                                </div>
+                                                                <br>
+                                                                <div class="row">
+                                                                    <div class="col-md-12">
+                                                                        <select class="form-control input-sm" data-ng-model = "projectIssueFilterA.reason"
+                                                                                data-ng-options="reason as reason.name for reason in parentCtrl.logReasons">
+                                                                            <option value="">--filter by reason</option>
+                                                                        </select>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <br>
+                                                            <div class="row" style="max-height: 240px; min-height: 240px; overflow-y: auto">
+                                                                <div class="col-xs-12">
+                                                                    <div class="table-responsive">
+                                                                        <table class="table table-bordered table-hover table-condensed small">
+                                                                            <tbody>
+                                                                            <tr data-ng-repeat="associatedProjectIssue in selectedPortfolioIssue.associatedProjectIssues track by associatedProjectIssue._id | orderBy: 'idNumber' ">
+                                                                                <td>
+                                                                                    {{associatedProjectIssue.idNumber}}
+                                                                                </td>
+                                                                                <td>{{associatedProjectIssue.title}}</td>
+                                                                                <td>
+                                                                                    <span data-ng-show="associatedProjectIssue.priority">{{associatedProjectIssue.priority.name}}</span>
+                                                                                    <span data-ng-show="!associatedProjectIssue.priority">No priority</span>
+                                                                                </td>
+                                                                                <td>
+                                                                                    <span data-ng-show="associatedProjectIssue.state">{{associatedProjectIssue.state.name}}</span>
+                                                                                    <span data-ng-show="!associatedProjectIssue.state">No state</span>
+                                                                                </td>
+                                                                                <td>
+                                                                                    <span data-ng-show="associatedProjectIssue.reason">{{associatedProjectIssue.reason.name}}</span>
+                                                                                    <span data-ng-show="!associatedProjectIssue.reason">No reason</span>
+                                                                                </td>
+                                                                                <td class="text-center">
+                                                                                    <button class="btn btn-danger btn-xs" data-ng-click="disassociateProjectIssue(selectedPortfolioIssue, associatedProjectIssue)"
+                                                                                            data-ng-show="parentCtrl.userHasAuthorization">
+                                                                                        <span class="glyphicon glyphicon-remove"></span>
+                                                                                    </button>
+                                                                                </td>
+                                                                            </tr>
+                                                                            </tbody>
+                                                                        </table>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
-                                    <div data-ng-show="portfolioChangeRequestDetails === 'fundsRequests'">
+                                    <div data-ng-show="parentCtrl.portfolioChangeRequestDetails === 'fundsRequests'">
                                         <div class="row">
                                             <div class="col-md-12">
-                                                <button class="btn btn-primary btn-xs" data-ng-click="addPortfolioFundsRequest(selectedPortfolioChangeRequest)">
+                                                <button class="btn btn-primary btn-xs" data-ng-click="parentCtrl.addPortfolioFundsRequest(parentCtrl.selectedPortfolioChangeRequest)">
                                                     Add a fund request
                                                 </button>
                                             </div>
@@ -340,13 +510,13 @@
                                                         </div>
                                                         <div class="col-md-4">
                                                             <input id="" name="" class="form-control input-sm" type="number" placeholder="0"
-                                                                   data-ng-model="selectedPortfolioChangeRequest.calculatedFundsRequested.projectRequests" disabled>
+                                                                   data-ng-model="parentCtrl.selectedPortfolioChangeRequest.calculatedFundsRequested.projectRequests" disabled>
                                                         </div>
                                                     </div>
                                                 </div>
                                             </div>
                                         </div>
-                                        <div class="row" data-ng-repeat="fundsRequest in selectedPortfolioChangeRequest.additionalFundsRequests">
+                                        <div class="row" data-ng-repeat="fundsRequest in parentCtrl.selectedPortfolioChangeRequest.additionalFundsRequests">
                                             <div class="col-md-12">
                                                 <div class="panel panel-default panel-body">
                                                     <div class="row">
@@ -372,11 +542,11 @@
                                         <hr>
                                         <div class="row">
                                             <div class="col-md-12">
-                                                <span>Total portfolio requests: </span><span data-ng-bind="selectedPortfolioChangeRequest.calculatedFundsRequested.portfolioRequests"></span>
+                                                <span>Total portfolio requests: </span><span data-ng-bind="parentCtrl.selectedPortfolioChangeRequest.calculatedFundsRequested.portfolioRequests"></span>
                                                 <span class="glyphicon glyphicon-plus"></span>
-                                                <span>Total associated project requests: </span> <span data-ng-bind="selectedPortfolioChangeRequest.calculatedFundsRequested.projectRequests"></span>
+                                                <span>Total associated project requests: </span> <span data-ng-bind="parentCtrl.selectedPortfolioChangeRequest.calculatedFundsRequested.projectRequests"></span>
                                                 <span class="glyphicon glyphicon-arrow-right"></span>
-                                                <span>Total funds requested: </span> <span data-ng-bind="selectedPortfolioChangeRequest.calculatedFundsRequested.total"></span>
+                                                <span>Total funds requested: </span> <span data-ng-bind="parentCtrl.selectedPortfolioChangeRequest.calculatedFundsRequested.total"></span>
                                             </div>
                                         </div>
                                         <div class="row">

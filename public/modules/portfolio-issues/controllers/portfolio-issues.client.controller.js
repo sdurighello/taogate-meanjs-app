@@ -1,11 +1,11 @@
 'use strict';
 
 // PORTFOLIO ISSUES controller
-angular.module('portfolio-issues').controller('PortfolioIssuesController', ['$scope', '$stateParams', '$location', '$q', '$modal', '$log', '_', 'Authentication',
+angular.module('portfolio-issues').controller('PortfolioIssuesController', ['$scope', '$stateParams', '$location', '$q', '_', 'Authentication',
 	'Portfolios', 'Projects', 'ProjectIssues', 'PortfolioIssues', 'GateProcesses', 'LogReasons', 'IssueStates', 'IssueActionStates', 'LogPriorities', 'LogStatusIndicators',
-    'People',
-	function($scope, $stateParams, $location, $q, $modal, $log, _, Authentication,
-			 Portfolios, Projects, ProjectIssues, PortfolioIssues, GateProcesses, LogReasons, IssueStates, IssueActionStates, LogPriorities, LogStatusIndicators, People) {
+    'People', '$modal', '$log',
+	function($scope, $stateParams, $location, $q, _, Authentication,
+			 Portfolios, Projects, ProjectIssues, PortfolioIssues, GateProcesses, LogReasons, IssueStates, IssueActionStates, LogPriorities, LogStatusIndicators, People, $modal, $log) {
 
         var vm = this;
 

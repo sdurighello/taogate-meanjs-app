@@ -31,6 +31,8 @@ var PortfolioChangeRequestSchema = new Schema({
     state : {type: Schema.Types.ObjectId, default: null, ref: 'ChangeRequestState', $tenant:true},
     priority : {type: Schema.Types.ObjectId, default: null, ref: 'LogPriority', $tenant:true},
 
+    approval: {type: String, enum: ['draft', 'submitted', 'approved'], default:'draft', required:'Approval flag is required'},
+
     associatedProjectChangeRequests : [{type: Schema.Types.ObjectId, ref: 'ProjectChangeRequest', $tenant:true}],
 
     additionalFundsRequests : [additionalFundsRequestSchema],

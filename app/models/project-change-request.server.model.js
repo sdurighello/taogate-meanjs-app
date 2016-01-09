@@ -73,6 +73,8 @@ var ProjectChangeRequestSchema = new Schema({
     state : {type: Schema.Types.ObjectId, default: null, ref: 'ChangeRequestState', $tenant:true},
     priority : {type: Schema.Types.ObjectId, default: null, ref: 'LogPriority', $tenant:true},
 
+    approval: {type: String, enum: ['draft', 'submitted', 'approved'], default:'draft', required:'Approval flag is required'},
+
     // This status refers to the changeRequest document implementation itself
     statusReview : {
         currentRecord : statusReviewRecord,

@@ -14,6 +14,10 @@ module.exports = function(app) {
 		.put(users.requiresLogin, portfolioChangeRequests.hasAuthorization, portfolioChangeRequests.update)
 		.delete(users.requiresLogin, portfolioChangeRequests.hasAuthorization, portfolioChangeRequests.delete);
 
+	// Header
+	app.route('/portfolio-change-requests/:portfolioChangeRequestId/header')
+		.put(users.requiresLogin, portfolioChangeRequests.hasAuthorization, portfolioChangeRequests.updateHeader);
+
 	// Finish by binding the Portfolio change request middleware
 	app.param('portfolioChangeRequestId', portfolioChangeRequests.portfolioChangeRequestByID);
 };

@@ -23,7 +23,7 @@ angular.module('project-change-requests').factory('ProjectChangeRequests', ['$re
 			updateHeader: {
 				method: 'PUT',
 				url: 'project-change-requests/:projectChangeRequestId/header'
-				// req.body: {whole gate review object}
+				// req.body: {whole projectChangeRequest object}
 			},
 
             // --- Status --
@@ -31,15 +31,21 @@ angular.module('project-change-requests').factory('ProjectChangeRequests', ['$re
 			updateStatus: {
 				method: 'PUT',
 				url: 'project-change-requests/:projectChangeRequestId/status'
-				// req.body: {whole gate review object}
+				// req.body: {whole projectChangeRequest object}
 			},
 
-			// --- Apply Change --
+			// --- Approval --
 
-			applyChange: {
+			submit: {
 				method: 'PUT',
-				url: 'project-change-requests/:projectChangeRequestId/applyChange'
-				// req.body: {whole gate review object}
+				url: 'project-change-requests/:projectChangeRequestId/submit'
+				// req.body: {whole projectChangeRequest object}
+			},
+
+			approve: {
+				method: 'PUT',
+				url: 'project-change-requests/:projectChangeRequestId/approve'
+				// req.body: {whole projectChangeRequest object}
 			},
 
 			// --- Actuals --

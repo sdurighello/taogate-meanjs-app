@@ -152,6 +152,8 @@ exports.create = function(req, res) {
             projectChangeRequest.reason = null;
             projectChangeRequest.state = null;
             projectChangeRequest.priority = null;
+            // Approval
+            projectChangeRequest.approval = 'draft';
             // Status
             projectChangeRequest.statusReview = {
                 currentRecord : {

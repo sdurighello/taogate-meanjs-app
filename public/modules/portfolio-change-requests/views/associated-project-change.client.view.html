@@ -1,0 +1,151 @@
+<section data-ng-controller="PortfolioChangeRequestsController as parentCtrl" data-ng-init="parentCtrl.init()">
+    <div class="panel panel-default">
+        <div class="panel-heading" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: normal; width: 100%;">
+            <h6 class="panel-title text-center">
+                Add associated project changes for portfolio change: "<i>{{selectedPortfolioChangeRequest.title}}</i>"
+            </h6>
+        </div>
+        <div class="panel-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="panel panel-default">
+                        <div class="panel-heading text-center">
+                            <em>Project changes not associated</em>
+                        </div>
+                        <div class="panel-body">
+                            <div class="row" data-ng-hide="availableProjectIssues.length !== 0">
+                                <div class="col-md-12">
+                                    <div class="alert alert-warning text-center">
+                                        There are no project issues available for association
+                                    </div>
+                                </div>
+                            </div>
+                            <div data-ng-show="availableProjectIssues.length !== 0">
+                                <div class="row" data-ng-show="!showIssueFilters">
+                                    <div class="col-md-12 small">
+                                        <a data-ng-click="showIssueFilters = true"><b>Filters</b></a><br>
+
+                                        <span data-ng-show="projectIssueFilter.project"><b>Project: </b><i>"{{projectIssueFilter.project.identification.name}}" | </i></span>
+
+                                        <span data-ng-show="projectIssueFilter.title"><b>Title: </b><i>"{{projectIssueFilter.title}}" | </i></span>
+
+                                        <span data-ng-show="projectIssueFilter.priority"><b>Priority: </b><i>"{{projectIssueFilter.priority.name}}" | </i></span>
+
+                                        <span data-ng-show="projectIssueFilter.state"><b>State: </b><i>"{{projectIssueFilter.state.name}}" | </i></span>
+
+                                        <span data-ng-show="projectIssueFilter.statusReview.currentRecord.status"><b>Status: </b><i>"{{projectIssueFilter.statusReview.currentRecord.status.name}}" | </i></span>
+
+                                        <span data-ng-show="projectIssueFilter.reason"><b>Reason: </b><i>"{{projectIssueFilter.reason.name}}" | </i></span>
+                                    </div>
+                                </div>
+                                <div class="row" data-ng-show="showIssueFilters">
+                                    <div class="col-md-12">
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                <a data-ng-click="showIssueFilters = false"><b>Hide filters</b></a>
+                                            </div>
+                                        </div>
+                                        <br>
+                                        <div class="row">
+                                            <div class="col-md-4 form-group-sm">
+                                                <select class="form-control" data-ng-model = "projectIssueFilter.project"
+                                                        data-ng-options="project as project.identification.name for project in availableProjects">
+                                                    <option value="">--filter by project</option>
+                                                </select>
+                                            </div>
+                                            <div class="col-md-4 form-group-sm">
+                                                <input class="form-control" type="text" placeholder="filter by title" data-ng-model="projectIssueFilter.title">
+                                            </div>
+                                            <div class="col-md-4 form-group-sm">
+                                                <select class="form-control" data-ng-model = "projectIssueFilter.priority"
+                                                        data-ng-options="priority as priority.name for priority in parentCtrl.logPriorities">
+                                                    <option value="">--filter by priority</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <br>
+                                        <div class="row">
+                                            <div class="col-md-4 form-group-sm">
+                                                <select class="form-control" data-ng-model = "projectIssueFilter.state"
+                                                        data-ng-options="state as state.name for state in parentCtrl.issueStates">
+                                                    <option value="">--filter by state</option>
+                                                </select>
+                                            </div>
+                                            <div class="col-md-4 form-group-sm">
+                                                <select class="form-control" data-ng-model = "projectIssueFilter.statusReview.currentRecord.status"
+                                                        data-ng-options="status as status.name for status in parentCtrl.logStatuses">
+                                                    <option value="">--filter by status</option>
+                                                </select>
+                                            </div>
+                                            <div class="col-md-4 form-group-sm">
+                                                <select class="form-control" data-ng-model = "projectIssueFilter.reason"
+                                                        data-ng-options="reason as reason.name for reason in parentCtrl.logReasons">
+                                                    <option value="">--filter by reason</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <br>
+                                    </div>
+                                </div>
+                                <br>
+                                <div class="row" style="max-height: 350px; min-height: 350px; overflow-y: auto">
+                                    <div class="col-xs-12">
+                                        <div class="table-responsive">
+                                            <table class="table table-bordered table-hover table-condensed small">
+                                                <tbody>
+                                                <tr data-ng-repeat="projectIssue in availableProjectIssues track by projectIssue._id | orderBy: 'idNumber'">
+                                                    <td>
+                                                        {{projectIssue.idNumber}}
+                                                    </td>
+                                                    <td>{{projectIssue.title}}</td>
+                                                    <td>
+                                                        <span data-ng-show="projectIssue.priority">{{projectIssue.priority.name}}</span>
+                                                        <span data-ng-show="!projectIssue.priority">No priority</span>
+                                                    </td>
+                                                    <td>
+                                                        <span data-ng-show="projectIssue.state">{{projectIssue.state.name}}</span>
+                                                        <span data-ng-show="!projectIssue.state">No state</span>
+                                                    </td>
+                                                    <td>
+                                                        <span data-ng-show="projectIssue.statusReview.currentRecord.status">{{projectIssue.statusReview.currentRecord.status.name}}</span>
+                                                        <span data-ng-show="!projectIssue.statusReview.currentRecord.status">No status</span>
+                                                    </td>
+                                                    <td class="text-center">
+                                                        <button class="btn btn-success btn-xs" data-ng-click="associateProjectIssue(selectedPortfolioIssue, projectIssue)"
+                                                                data-ng-show="parentCtrl.userHasAuthorization">
+                                                            <span class="glyphicon glyphicon-plus"></span>
+                                                        </button>
+                                                    </td>
+                                                </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="panel panel-default">
+                        <div class="panel-heading text-center">
+                            <em>change title goes here</em>
+                        </div>
+                        <div class="panel-body">
+                            sjhdfggf ....
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="center-block text-center">
+            <button class="btn btn-primary btn-sm" data-ng-click="cancelModal()">
+                Close
+            </button>
+        </div>
+    </div>
+    <br>
+    <div class="row"></div>
+</section>

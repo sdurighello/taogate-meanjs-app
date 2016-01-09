@@ -49,9 +49,11 @@ exports.updateHeader = require('./project-change-requests/project-change-request
 
 exports.updateStatus = require('./project-change-requests/project-change-requests.updateStatus.server.controller').updateStatus;
 
-// --- Apply Change ---
+// --- Approval ---
 
-exports.applyChange = require('./project-change-requests/project-change-requests.applyChange.server.controller.js').applyChange;
+exports.submit = require('./project-change-requests/project-change-requests.submit.server.controller.js').submit;
+
+exports.approve = require('./project-change-requests/project-change-requests.approve.server.controller.js').approve;
 
 // --- Baseline ---
 

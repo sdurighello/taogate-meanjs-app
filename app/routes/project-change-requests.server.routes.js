@@ -18,10 +18,13 @@ module.exports = function(app) {
 	app.route('/project-change-requests-changeRequestsForProject')
 		.get(users.requiresLogin, projectChangeRequests.changeRequestsForProject);
 
-	// Apply changes
+	// Approval
 
-	app.route('/project-change-requests/:projectChangeRequestId/applyChange')
-		.put(users.requiresLogin, projectChangeRequests.hasAuthorization, projectChangeRequests.applyChange);
+    app.route('/project-change-requests/:projectChangeRequestId/submit')
+        .put(users.requiresLogin, projectChangeRequests.hasAuthorization, projectChangeRequests.submit);
+
+	app.route('/project-change-requests/:projectChangeRequestId/approve')
+		.put(users.requiresLogin, projectChangeRequests.hasAuthorization, projectChangeRequests.approve);
 
 	// Header
 
