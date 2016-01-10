@@ -150,8 +150,8 @@
                                         <label class="btn btn-info btn-xs" data-ng-model="parentCtrl.portfolioChangeRequestDetails" btn-radio="'associatedProjectChanges'">
                                             Associated project changes
                                         </label>
-                                        <label class="btn btn-info btn-xs" data-ng-model="parentCtrl.portfolioChangeRequestDetails" btn-radio="'fundsRequests'">
-                                            Funding requested
+                                        <label class="btn btn-info btn-xs" data-ng-model="parentCtrl.portfolioChangeRequestDetails" btn-radio="'fundingRequests'">
+                                            Funding requests
                                         </label>
                                     </div>
                                 </div>
@@ -338,49 +338,23 @@
                                                             <br>
                                                             <div class="row" style="max-height: 240px; min-height: 240px; overflow-y: auto">
                                                                 <div class="col-xs-12">
-                                                                    <div class="btn-group" data-ng-repeat="projectChangeRequest in parentCtrl.availableProjectChangeRequests track by projectChangeRequest._id | orderBy: 'idNumber'">
-                                                                        <button class="btn btn-default btn-sm" data-ng-bind="projectChangeRequest.title"
-                                                                                data-ng-click="parentCtrl.viewProjectChangeRequest(projectChangeRequest)"></button>
-                                                                        <button class="btn btn-success btn-sm" data-ng-click="parentCtrl.addProjectChangeRequest(parentCtrl.selectedPortfolioChangeRequest, projectChangeRequest)"
-                                                                                data-ng-show="parentCtrl.userHasAuthorization">
-                                                                            <span class="glyphicon glyphicon-plus"></span>
-                                                                        </button>
-                                                                    </div>
+                                                                    <div class="row" data-ng-repeat="projectChangeRequest in parentCtrl.availableProjectChangeRequests track by projectChangeRequest._id | orderBy: parentCtrl.sortPortfolioChangeRequests : true">
+                                                                        <div class="col-md-12">
+                                                                            <div class="btn-group btn-group-justified" style="padding-bottom: 2%">
+                                                                                <div class="btn-group" style="width: 80%">
+                                                                                    <button type="button" class="btn btn-default btn-sm" style="overflow: hidden;" data-ng-bind="projectChangeRequest.title"
+                                                                                            data-ng-click="parentCtrl.viewProjectChangeRequest(projectChangeRequest)">
 
-
-                                                                    <div class="table-responsive">
-                                                                        <table class="table table-bordered table-hover table-condensed small">
-                                                                            <tbody>
-                                                                            <tr data-ng-repeat="projectChangeRequest in parentCtrl.availableProjectChangeRequests track by projectChangeRequest._id | orderBy: 'idNumber'">
-                                                                                <td>
-                                                                                    {{projectChangeRequest.idNumber}}
-                                                                                </td>
-                                                                                <td>
-                                                                                    <button class="btn-link" data-ng-click="parentCtrl.viewProjectChangeRequest(projectChangeRequest)">
-                                                                                        {{projectChangeRequest.title}}
                                                                                     </button>
-                                                                                </td>
-                                                                                <td>
-                                                                                    <span data-ng-show="projectChangeRequest.priority">{{projectChangeRequest.priority.name}}</span>
-                                                                                    <span data-ng-show="!projectChangeRequest.priority">No priority</span>
-                                                                                </td>
-                                                                                <td>
-                                                                                    <span data-ng-show="projectChangeRequest.state">{{projectChangeRequest.state.name}}</span>
-                                                                                    <span data-ng-show="!projectChangeRequest.state">No state</span>
-                                                                                </td>
-                                                                                <td>
-                                                                                    <span data-ng-show="projectChangeRequest.reason">{{projectChangeRequest.reason.name}}</span>
-                                                                                    <span data-ng-show="!projectChangeRequest.reason">No reason</span>
-                                                                                </td>
-                                                                                <td class="text-center">
-                                                                                    <button class="btn btn-success btn-xs" data-ng-click="parentCtrl.addProjectChangeRequest(parentCtrl.selectedPortfolioChangeRequest, projectChangeRequest)"
+                                                                                </div>
+                                                                                <div class="btn-group" style="width: 20%">
+                                                                                    <button type="button" class="btn btn-success btn-sm" data-ng-click="parentCtrl.addProjectChangeRequest(parentCtrl.selectedPortfolioChangeRequest, projectChangeRequest)"
                                                                                             data-ng-show="parentCtrl.userHasAuthorization">
                                                                                         <span class="glyphicon glyphicon-plus"></span>
                                                                                     </button>
-                                                                                </td>
-                                                                            </tr>
-                                                                            </tbody>
-                                                                        </table>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
                                                                     </div>
                                                                 </div>
                                                             </div>
@@ -468,51 +442,23 @@
                                                             <br>
                                                             <div class="row" style="max-height: 240px; min-height: 240px; overflow-y: auto">
                                                                 <div class="col-xs-12">
-                                                                    <div class="row" data-ng-repeat="associatedProjectChangeRequest in parentCtrl.selectedPortfolioChangeRequest.associatedProjectChangeRequests track by associatedProjectChangeRequest._id | orderBy: 'idNumber' ">
-                                                                        <div class="btn-group" >
-                                                                            <button class="btn btn-default btn-sm" data-ng-bind="associatedProjectChangeRequest.title"
-                                                                                    data-ng-click="parentCtrl.viewProjectChangeRequest(associatedProjectChangeRequest)"></button>
-                                                                            <button class="btn btn-danger btn-sm" data-ng-click="parentCtrl.removeProjectChangeRequest(parentCtrl.selectedPortfolioChangeRequest, associatedProjectChangeRequest)"
-                                                                                    data-ng-show="parentCtrl.userHasAuthorization">
-                                                                                <span class="glyphicon glyphicon-remove"></span>
-                                                                            </button>
-                                                                        </div>
-                                                                    </div>
+                                                                    <div class="row" data-ng-repeat="associatedProjectChangeRequest in parentCtrl.selectedPortfolioChangeRequest.associatedProjectChangeRequests track by associatedProjectChangeRequest._id | orderBy: parentCtrl.sortPortfolioChangeRequests : true ">
+                                                                        <div class="col-md-12">
+                                                                            <div class="btn-group btn-group-justified" style="padding-bottom: 2%">
+                                                                                <div class="btn-group" style="width: 80%">
+                                                                                    <button type="button" class="btn btn-default btn-sm" style="overflow: hidden;" data-ng-bind="associatedProjectChangeRequest.title"
+                                                                                            data-ng-click="parentCtrl.viewProjectChangeRequest(associatedProjectChangeRequest)">
 
-
-                                                                    <div class="table-responsive">
-                                                                        <table class="table table-bordered table-hover table-condensed small">
-                                                                            <tbody>
-                                                                            <tr data-ng-repeat="associatedProjectChangeRequest in parentCtrl.selectedPortfolioChangeRequest.associatedProjectChangeRequests track by associatedProjectChangeRequest._id | orderBy: 'idNumber' ">
-                                                                                <td>
-                                                                                    {{associatedProjectChangeRequest.idNumber}}
-                                                                                </td>
-                                                                                <td>
-                                                                                    <button class="btn-link" data-ng-click="parentCtrl.viewProjectChangeRequest(associatedProjectChangeRequest)">
-                                                                                        {{associatedProjectChangeRequest.title}}
                                                                                     </button>
-                                                                                </td>
-                                                                                <td>
-                                                                                    <span data-ng-show="associatedProjectChangeRequest.priority">{{associatedProjectChangeRequest.priority.name}}</span>
-                                                                                    <span data-ng-show="!associatedProjectChangeRequest.priority">No priority</span>
-                                                                                </td>
-                                                                                <td>
-                                                                                    <span data-ng-show="associatedProjectChangeRequest.state">{{associatedProjectChangeRequest.state.name}}</span>
-                                                                                    <span data-ng-show="!associatedProjectChangeRequest.state">No state</span>
-                                                                                </td>
-                                                                                <td>
-                                                                                    <span data-ng-show="associatedProjectChangeRequest.reason">{{associatedProjectChangeRequest.reason.name}}</span>
-                                                                                    <span data-ng-show="!associatedProjectChangeRequest.reason">No reason</span>
-                                                                                </td>
-                                                                                <td class="text-center">
-                                                                                    <button class="btn btn-danger btn-xs" data-ng-click="parentCtrl.removeProjectChangeRequest(parentCtrl.selectedPortfolioChangeRequest, associatedProjectChangeRequest)"
+                                                                                </div>
+                                                                                <div class="btn-group" style="width: 20%">
+                                                                                    <button type="button" class="btn btn-danger btn-sm" data-ng-click="parentCtrl.removeProjectChangeRequest(parentCtrl.selectedPortfolioChangeRequest, associatedProjectChangeRequest)"
                                                                                             data-ng-show="parentCtrl.userHasAuthorization">
                                                                                         <span class="glyphicon glyphicon-remove"></span>
                                                                                     </button>
-                                                                                </td>
-                                                                            </tr>
-                                                                            </tbody>
-                                                                        </table>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
                                                                     </div>
                                                                 </div>
                                                             </div>
@@ -522,11 +468,11 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <div data-ng-show="parentCtrl.portfolioChangeRequestDetails === 'fundsRequests'">
+                                    <div data-ng-show="parentCtrl.portfolioChangeRequestDetails === 'fundingRequests'">
                                         <div class="row">
                                             <div class="col-md-12">
-                                                <button class="btn btn-primary btn-xs" data-ng-click="parentCtrl.addPortfolioFundsRequest(parentCtrl.selectedPortfolioChangeRequest)">
-                                                    Add a fund request
+                                                <button class="btn btn-primary btn-xs" data-ng-click="parentCtrl.createFundingRequest(parentCtrl.selectedPortfolioChangeRequest)">
+                                                    Add a new funding request
                                                 </button>
                                             </div>
                                         </div>
@@ -546,23 +492,42 @@
                                                 </div>
                                             </div>
                                         </div>
-                                        <div class="row" data-ng-repeat="fundsRequest in parentCtrl.selectedPortfolioChangeRequest.additionalFundsRequests">
+                                        <div class="row" data-ng-repeat="fundingRequest in parentCtrl.selectedPortfolioChangeRequest.fundingRequests">
                                             <div class="col-md-12">
-                                                <div class="panel panel-default panel-body">
-                                                    <div class="row">
+                                                <div class="panel panel-default panel-body" data-ng-switch="switchFundingRequestForm[fundingRequest._id]">
+                                                    <div class="row" data-ng-switch-default="view">
                                                         <div class="col-md-6 input-group-sm">
-                                                            <label for="">Request title</label>
-                                                            <input id="" name="" class="form-control" type="text" placeholder="Enter review title"
-                                                                   data-ng-model="fundsRequest.title" disabled>
+                                                            <input id="" name="" class="form-control" type="text" placeholder="No title yet"
+                                                                   data-ng-model="fundingRequest.title" disabled>
                                                         </div>
                                                         <div class="col-md-4 input-group-sm">
-                                                            <label for="">Requested funds</label>
-                                                            <input id="" name="" class="form-control" type="number" placeholder="Enter amount"
-                                                                   data-ng-model="fundsRequest.funds" disabled>
+                                                            <input id="" name="" class="form-control" type="number" placeholder="No amount yet"
+                                                                   data-ng-model="fundingRequest.funds" disabled>
                                                         </div>
                                                         <div class="col-md-2">
-                                                            <button class="btn btn-success btn-xs" data-ng-click="editFundsRequest(selectedPortfolioChangeRequest, fundsRequest)">
+                                                            <button class="btn btn-success btn-xs" data-ng-click="editFundingRequest(fundingRequest)">
                                                                 <span class="glyphicon glyphicon-pencil"></span>
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                    <div class="row" data-ng-switch-when="edit">
+                                                        <div class="col-md-6 input-group-sm">
+                                                            <input id="" name="" class="form-control" type="text" placeholder="Enter review title"
+                                                                   data-ng-model="fundingRequest.title">
+                                                        </div>
+                                                        <div class="col-md-4 input-group-sm">
+                                                            <input id="" name="" class="form-control" type="number" placeholder="Enter amount"
+                                                                   data-ng-model="fundingRequest.funds">
+                                                        </div>
+                                                        <div class="col-md-2">
+                                                            <button class="btn btn-success btn-xs" data-ng-click="saveEditFundingRequest(parentCtrl.selectedPortfolioChangeRequest, fundingRequest)">
+                                                                <span class="glyphicon glyphicon-ok"></span>
+                                                            </button>
+                                                            <button class="btn btn-danger btn-xs" data-ng-click="deleteFundingRequest(parentCtrl.selectedPortfolioChangeRequest, fundingRequest)">
+                                                                <span class="glyphicon glyphicon-trash"></span>
+                                                            </button>
+                                                            <button class="btn btn-info btn-xs" data-ng-click="cancelEditFundingRequest(parentCtrl.selectedPortfolioChangeRequest, fundingRequest)">
+                                                                <span class="glyphicon glyphicon-remove"></span>
                                                             </button>
                                                         </div>
                                                     </div>

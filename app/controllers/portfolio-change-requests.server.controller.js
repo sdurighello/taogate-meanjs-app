@@ -78,6 +78,44 @@ exports.updateHeader = function(req, res) {
 };
 
 
+/**
+ * Delete an Portfolio change request
+ */
+exports.delete = function(req, res) {
+    var portfolioChangeRequest = req.portfolioChangeRequest ;
+
+    portfolioChangeRequest.remove(function(err) {
+        if (err) {
+            return res.status(400).send({
+                message: errorHandler.getErrorMessage(err)
+            });
+        } else {
+            res.jsonp(portfolioChangeRequest);
+        }
+    });
+};
+
+
+/**
+ * List of Portfolio change requests
+ */
+exports.list = function(req, res) {
+    var PortfolioChangeRequest = mongoose.mtModel(req.user.tenantId + '.' + 'PortfolioChangeRequest');
+    PortfolioChangeRequest.find(req.query).populate('user', 'displayName').exec(function(err, portfolioChangeRequests) {
+        if (err) {
+            return res.status(400).send({
+                message: errorHandler.getErrorMessage(err)
+            });
+        } else {
+            res.jsonp(portfolioChangeRequests);
+        }
+    });
+};
+
+
+
+// **************** ASSOCIATED PROJECT CHANGES ******************
+
 
 exports.availableProjectChangeRequests = function(req, res) {
 
@@ -157,46 +195,75 @@ exports.removeProjectChangeRequest = function(req, res) {
 
 
 
+// **************** FUNDING REQUESTS ******************
 
-/**
- * Delete an Portfolio change request
- */
-exports.delete = function(req, res) {
-	var portfolioChangeRequest = req.portfolioChangeRequest ;
 
-	portfolioChangeRequest.remove(function(err) {
-		if (err) {
-			return res.status(400).send({
-				message: errorHandler.getErrorMessage(err)
-			});
-		} else {
-			res.jsonp(portfolioChangeRequest);
-		}
-	});
+
+exports.createFundingRequest = function(req, res) {
+    var portfolioChangeRequest = req.portfolioChangeRequest;
+    portfolioChangeRequest.fundingRequests.push(req.body);
+    portfolioChangeRequest.save(function(err){
+        if (err) {
+            return res.status(400).send({
+                message: errorHandler.getErrorMessage(err)
+            });
+        } else {
+            res.jsonp(portfolioChangeRequest);
+        }
+    });
+
 };
 
-/**
- * List of Portfolio change requests
- */
-exports.list = function(req, res) {
-    var PortfolioChangeRequest = mongoose.mtModel(req.user.tenantId + '.' + 'PortfolioChangeRequest');
-    PortfolioChangeRequest.find(req.query).populate('user', 'displayName').exec(function(err, portfolioChangeRequests) {
-		if (err) {
-			return res.status(400).send({
-				message: errorHandler.getErrorMessage(err)
-			});
-		} else {
-			res.jsonp(portfolioChangeRequests);
-		}
-	});
+
+exports.updateFundingRequest = function(req, res) {
+    var portfolioChangeRequest = req.portfolioChangeRequest;
+    var fundingRequest = portfolioChangeRequest.fundingRequests.id(req.params.fundingRequestId);
+
+    fundingRequest = _.extend(fundingRequest , req.body);
+
+    portfolioChangeRequest.save(function(err){
+        if (err) {
+            return res.status(400).send({
+                message: errorHandler.getErrorMessage(err)
+            });
+        } else {
+            res.jsonp(portfolioChangeRequest);
+        }
+    });
+
 };
+
+
+exports.deleteFundingRequest = function(req, res) {
+    var portfolioChangeRequest = req.portfolioChangeRequest;
+    portfolioChangeRequest.fundingRequests.id(req.params.fundingRequestId).remove();
+    portfolioChangeRequest.save(function(err){
+        if (err) {
+            return res.status(400).send({
+                message: errorHandler.getErrorMessage(err)
+            });
+        } else {
+            res.jsonp(portfolioChangeRequest);
+        }
+    });
+
+};
+
+
+
+
+// **************** MIDDLEWARE ******************
+
+
 
 /**
  * Portfolio change request middleware
  */
 exports.portfolioChangeRequestByID = function(req, res, next, id) {
     var PortfolioChangeRequest = mongoose.mtModel(req.user.tenantId + '.' + 'PortfolioChangeRequest');
-    PortfolioChangeRequest.findById(id).populate('user', 'displayName').exec(function(err, portfolioChangeRequest) {
+    PortfolioChangeRequest.findById(id).deepPopulate([
+        'associatedProjectChangeRequests'
+    ]).populate('user', 'displayName').exec(function(err, portfolioChangeRequest) {
 		if (err) return next(err);
 		if (! portfolioChangeRequest) return next(new Error('Failed to load Portfolio change request ' + id));
 		req.portfolioChangeRequest = portfolioChangeRequest ;

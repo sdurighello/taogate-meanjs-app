@@ -34,6 +34,20 @@ module.exports = function(app) {
 		.put(users.requiresLogin, portfolioChangeRequests.hasAuthorization, portfolioChangeRequests.removeProjectChangeRequest);
 
 
+// **************** FUNDING REQUESTS ******************
+
+    // Create funding request
+    app.route('/portfolio-change-requests/:portfolioChangeRequestId/createFundingRequest')
+        .put(users.requiresLogin, portfolioChangeRequests.hasAuthorization, portfolioChangeRequests.createFundingRequest);
+
+    // Delete funding request
+    app.route('/portfolio-change-requests/:portfolioChangeRequestId/funding-requests/:fundingRequestId/deleteFundingRequest')
+        .put(users.requiresLogin, portfolioChangeRequests.hasAuthorization, portfolioChangeRequests.deleteFundingRequest);
+
+    // Update funding request
+    app.route('/portfolio-change-requests/:portfolioChangeRequestId/funding-requests/:fundingRequestId/updateFundingRequest')
+        .put(users.requiresLogin, portfolioChangeRequests.hasAuthorization, portfolioChangeRequests.updateFundingRequest);
+
 // **************** MIDDLEWARE ******************
 
 	// Finish by binding the Portfolio change request middleware

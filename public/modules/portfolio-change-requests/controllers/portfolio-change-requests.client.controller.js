@@ -308,6 +308,7 @@ angular.module('portfolio-change-requests').controller('PortfolioChangeRequestsC
                 templateUrl: 'modules/portfolio-change-requests/views/associated-project-change.client.view.html',
                 controller: function ($scope, $modalInstance, change) {
                     $scope.selectedProjectChangeRequest = change;
+                    $scope.projectChangeRequestDetails = 'header';
                     $scope.cancelModal = function () {
                         $modalInstance.dismiss();
                     };
@@ -354,6 +355,70 @@ angular.module('portfolio-change-requests').controller('PortfolioChangeRequestsC
                 vm.error = err.data.message;
             });
         };
+
+
+
+        // ----------------------------------------------- FUNDING REQUESTS -------------------------------------------------
+
+        vm.switchFundingRequestForm = {};
+        vm.selectFundingRequestForm = function(string, fundingRequest){
+            if(string === 'view'){ vm.switchFundingRequestForm[fundingRequest._id] = 'view';}
+            if(string === 'edit'){vm.switchFundingRequestForm[fundingRequest._id] = 'edit';}
+        };
+
+        vm.createFundingRequest = function(portfolioChange){
+            var newFundingRequest = {
+                title : 'New funding request item',
+                description : '',
+                funds : 0
+            };
+            PortfolioChangeRequests.createFundingRequest({
+                portfolioChangeRequestId : portfolioChange._id
+            }, newFundingRequest, function(res){
+                portfolioChange.fundingRequests.push(res);
+            }, function(err){
+                vm.error = err.data.message;
+            });
+        };
+
+        var originalFundingRequest = {};
+        vm.editFundingRequest = function(fundingRequest){
+            originalFundingRequest[fundingRequest._id] = _.cloneDeep(fundingRequest);
+            vm.selectedFundingRequest = fundingRequest;
+            vm.selectFundingRequestForm('edit', fundingRequest);
+        };
+
+
+        vm.saveEditFundingRequest = function(portfolioChange, fundingRequest){
+            PortfolioChangeRequests.updateFundingRequest({
+                portfolioChangeRequestId : portfolioChange._id,
+                fundingRequestId : fundingRequest._id
+            }, fundingRequest, function(res){
+
+            }, function(err){
+                vm.error = err.data.message;
+            });
+        };
+
+        vm.cancelEditFundingRequest = function(portfolioChange, fundingRequest){
+            fundingRequest.title = originalFundingRequest.title;
+            fundingRequest.description = originalFundingRequest.description;
+            fundingRequest.funds = originalFundingRequest.funds;
+        };
+
+        vm.deleteFundingRequest = function(portfolioChange, fundingRequest){
+            PortfolioChangeRequests.deleteFundingRequest({
+                portfolioChangeRequestId : portfolioChange._id,
+                fundingRequestId : fundingRequest._id
+            }, fundingRequest, function(res){
+                portfolioChange.fundingRequests = _.without(portfolioChange.fundingRequests, fundingRequest);
+            }, function(err){
+                vm.error = err.data.message;
+            });
+        };
+
+
+
 
 
 	}

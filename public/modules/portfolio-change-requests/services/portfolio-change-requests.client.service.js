@@ -42,7 +42,30 @@ angular.module('portfolio-change-requests').factory('PortfolioChangeRequests', [
 				method: 'PUT',
 				url: 'portfolio-change-requests/:portfolioChangeRequestId/project-change-requests/:projectChangeRequestId/removeProjectChange'
 				// req.body: {portfolio change object}
-			}
+			},
+
+// **************** FUNDING REQUESTS ******************
+
+			// --- Create funding request --
+			createFundingRequest: {
+				method: 'PUT',
+				url: 'portfolio-change-requests/:portfolioChangeRequestId/createFundingRequest'
+				// req.body: {funding request object}
+			},
+
+            // --- Delete funding request --
+            deleteFundingRequest: {
+                method: 'PUT',
+                url: 'portfolio-change-requests/:portfolioChangeRequestId/funding-requests/:fundingRequestId/deleteFundingRequest'
+                // req.body: {funding request object}
+            },
+
+            // --- Delete funding request --
+            updateFundingRequest: {
+                method: 'PUT',
+                url: 'portfolio-change-requests/:portfolioChangeRequestId/funding-requests/:fundingRequestId/updateFundingRequest'
+                // req.body: {funding request object}
+            }
 
 		});
 	}

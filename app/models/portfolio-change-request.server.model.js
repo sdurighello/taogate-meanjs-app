@@ -13,7 +13,7 @@ require('mongoose-multitenant');
  * Portfolio change request Schema
  */
 
-var additionalFundsRequestSchema = new Schema({
+var fundingRequestSchema = new Schema({
         title : {type: String, default:'', trim: true, required:'Request title required'},
         description : {type: String, default:'', trim: true},
         funds : {type: Number, default: 0, required:'Request funds required'}
@@ -35,7 +35,7 @@ var PortfolioChangeRequestSchema = new Schema({
 
     associatedProjectChangeRequests : [{type: Schema.Types.ObjectId, ref: 'ProjectChangeRequest', $tenant:true}],
 
-    additionalFundsRequests : [additionalFundsRequestSchema],
+    fundingRequests : [fundingRequestSchema],
 
     calculatedFundsRequested : {
         projectRequests : {type: Number},
