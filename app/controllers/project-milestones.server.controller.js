@@ -217,7 +217,7 @@ exports.delete = function(req, res) {
  */
 exports.list = function(req, res) {
     var ProjectMilestone = mongoose.mtModel(req.user.tenantId + '.' + 'ProjectMilestone');
-    ProjectMilestone.find().populate('user', 'displayName').exec(function(err, projectMilestones) {
+    ProjectMilestone.find(req.query).populate('user', 'displayName').exec(function(err, projectMilestones) {
 		if (err) {
 			return res.status(400).send({
 				message: errorHandler.getErrorMessage(err)

@@ -1,0 +1,105 @@
+<section data-ng-controller="PortfolioMilestonesController as parentCtrl" data-ng-init="parentCtrl.init()">
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <div class="row">
+                <div class="col-md-12 text-center">
+                    <b><em>{{selectedProjectMilestone.name}}</em></b>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-6 btn-group btn-group-xs btn-group-justified">
+                <label class="btn btn-info btn-xs" data-ng-model="projectMilestoneDetails" btn-radio="'header'">
+                    Header
+                </label>
+                <label class="btn btn-info btn-xs" data-ng-model="projectMilestoneDetails" btn-radio="'status'">
+                    Status
+                </label>
+            </div>
+        </div>
+        <div class="panel-body" style="min-height: 375px; max-height: 375px; overflow-y: auto">
+            <div data-ng-show="projectMilestoneDetails === 'header'">
+                <form>
+                    <div class="row">
+                        <div class="form-group-sm col-md-8">
+                            <label for="">Name</label>
+                            <input id="" class="form-control" type="text" placeholder="Enter name"
+                                   data-ng-model="selectedProjectMilestone.title" disabled>
+                        </div>
+                    </div>
+                    <br>
+                    <div class="row">
+                        <div class="form-group-sm col-md-4">
+                            <label for="">Type</label>
+                            <select id="" class="form-control" data-ng-model = "selectedProjectMilestone.type"
+                                    ng-options="type._id as type.name for type in parentCtrl.projectMilestoneTypes" disabled>
+                            </select>
+                        </div>
+                        <div class="form-group-sm col-md-4">
+                            <label for="">State</label>
+                            <select id="" class="form-control" data-ng-model = "selectedProjectMilestone.state"
+                                    ng-options="state._id as state.name for state in parentCtrl.milestoneStates" disabled>
+                            </select>
+                        </div>
+                    </div>
+                    <br>
+                    <div class="row">
+                        <div class="form-group-sm col-md-12">
+                            <label for="">Description</label>
+                            <textarea id="" class="form-control" data-ng-model="selectedProjectMilestone.description" disabled></textarea>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div data-ng-show="projectMilestoneDetails === 'status'">
+                <form>
+                    <div class="row">
+                        <div class="form-group-sm col-md-4">
+                            <label for="">Baseline delivery date</label>
+                            <input type="text" id="" class="form-control" datepicker-popup="dd-MMMM-yyyy" data-ng-model="selectedProjectMilestone.statusReview.currentRecord.baselineDeliveryDate" disabled />
+                        </div>
+                        <div class="form-group-sm col-md-4">
+                            <label for="">Estimate delivery date</label>
+                            <input type="text" id="" class="form-control" datepicker-popup="dd-MMMM-yyyy" data-ng-model="selectedProjectMilestone.statusReview.currentRecord.estimateDeliveryDate" disabled />
+                        </div>
+                        <div class="form-group-sm col-md-4">
+                            <label for="">Actual delivery date</label>
+                            <input type="text" id="" class="form-control" datepicker-popup="dd-MMMM-yyyy" data-ng-model="selectedProjectMilestone.statusReview.currentRecord.actualDeliveryDate" disabled />
+                        </div>
+                    </div>
+                    <br>
+                    <div class="row">
+                        <div class="form-group-sm col-md-5">
+                            <label for="">Status</label>
+                            <select id="" class="form-control" data-ng-model = "selectedProjectMilestone.statusReview.currentRecord.status"
+                                    ng-options="status._id as status.name for status in parentCtrl.logStatuses" disabled>
+                            </select>
+                        </div>
+                        <br>
+                        <div class="form-group-sm col-md-5">
+                            <label for="prjCrEditCompleted">Completed</label>
+                            <input id="prjCrEditCompleted" class="" type="checkbox"
+                                   data-ng-model="selectedProjectMilestone.statusReview.currentRecord.completed" disabled>
+                        </div>
+                    </div>
+                    <br>
+                    <div class="row">
+                        <div class="form-group-sm col-md-12">
+                            <label for="">Status comment</label>
+                            <textarea id="" class="form-control" data-ng-model="selectedProjectMilestone.statusReview.currentRecord.statusComment" disabled></textarea>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="center-block text-center">
+            <button class="btn btn-primary btn-sm" data-ng-click="cancelModal()">
+                Close
+            </button>
+        </div>
+    </div>
+    <br>
+    <div class="row"></div>
+</section>
