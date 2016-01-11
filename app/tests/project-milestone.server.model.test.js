@@ -6,17 +6,17 @@
 var should = require('should'),
 	mongoose = require('mongoose'),
 	User = mongoose.model('User'),
-	MilestoneType = mongoose.model('MilestoneType');
+	ProjectMilestone = mongoose.model('ProjectMilestone');
 
 /**
  * Globals
  */
-var user, milestoneType;
+var user, projectMilestone;
 
 /**
  * Unit tests
  */
-describe('Milestone type Model Unit Tests:', function() {
+describe('Project milestone Model Unit Tests:', function() {
 	beforeEach(function(done) {
 		user = new User({
 			firstName: 'Full',
@@ -28,8 +28,8 @@ describe('Milestone type Model Unit Tests:', function() {
 		});
 
 		user.save(function() { 
-			milestoneType = new MilestoneType({
-				name: 'Milestone type Name',
+			projectMilestone = new ProjectMilestone({
+				name: 'Project milestone Name',
 				user: user
 			});
 
@@ -39,16 +39,16 @@ describe('Milestone type Model Unit Tests:', function() {
 
 	describe('Method Save', function() {
 		it('should be able to save without problems', function(done) {
-			return milestoneType.save(function(err) {
+			return projectMilestone.save(function(err) {
 				should.not.exist(err);
 				done();
 			});
 		});
 
 		it('should be able to show an error when try to save without name', function(done) { 
-			milestoneType.name = '';
+			projectMilestone.name = '';
 
-			return milestoneType.save(function(err) {
+			return projectMilestone.save(function(err) {
 				should.exist(err);
 				done();
 			});
@@ -56,7 +56,7 @@ describe('Milestone type Model Unit Tests:', function() {
 	});
 
 	afterEach(function(done) { 
-		MilestoneType.remove().exec();
+		ProjectMilestone.remove().exec();
 		User.remove().exec();
 
 		done();

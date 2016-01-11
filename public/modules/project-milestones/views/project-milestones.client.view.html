@@ -1,0 +1,407 @@
+<section data-ng-controller="ProjectMilestoneController"  data-ng-init="init()">
+    <br>
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="panel-heading">
+                <ol class="breadcrumb">
+                    <li>Portfolio delivery</li>
+                    <li>Milestones</li>
+                    <li class="active">Project milestones</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+    <div data-ng-show="initError" class="text-danger">
+        <strong data-ng-bind="initError"></strong>
+    </div>
+    <div class="row">
+        <div class="col-sm-3"><!-- PROJECTS LIST -->
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h6 class="panel-title text-center">Projects</h6>
+                </div>
+                <div class="panel-body">
+                    <div class="row">
+                        <div class=" form-group col-md-12">
+                            <select id="" class="form-control input-sm" data-ng-model="filterProfileProcess"
+                                    ng-options="process.name for process in gateProcesses">
+                                <option value="">--filter by gate process</option>
+                            </select>
+                        </div>
+                        <div class=" form-group col-md-12">
+                            <select id="" class="form-control input-sm" data-ng-model="filterProfilePortfolio"
+                                    ng-options="portfolio.name for portfolio in portfolios">
+                                <option value="">--filter by portfolio</option>
+                            </select>
+                        </div>
+                        <div class="col-md-12 form-group-sm">
+                            <input id="" type="text" class="form-control input-sm"
+                                   data-ng-model="filterProfileProject.name" placeholder="Filter by project name">
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="row" style="min-height: 350px; max-height: 350px; overflow-y: auto">
+                        <div class="col-md-12">
+                            <div data-ng-show="projects.length === 0" class="alert alert-warning text-center">
+                                There are no projects in delivery
+                            </div>
+                            <button type="button"
+                                    data-ng-repeat="project in projects | filter:{identification: filterProfileProject, portfolio: filterProfilePortfolio._id, process: filterProfileProcess._id} "
+                                    data-ng-click="selectProject(project)"
+                                    class="btn btn-default btn-sm center-block btn-block" style="overflow: hidden;">
+                                {{project.identification.idNumber}} - {{project.identification.name}}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-9">
+            <div class="row">
+                <div class="col-md-12">
+                    <div data-ng-hide="selectedProject || projects.length === 0" class="alert alert-warning text-center">
+                        Select a project to see its details
+                    </div>
+                </div>
+            </div>
+            <div class="row" data-ng-show="selectedProject">
+                <div class="col-md-12">
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <div class="panel panel-default">
+                                <div><h5>&nbsp;Project: <i>{{selectedProject.identification.name}}</i></h5></div>
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="panel panel-default">
+                                <div><h5>&nbsp;Process: <i>{{selectedProject.process.name}}</i></h5></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <tabset type="pills">
+                        <tab data-ng-repeat="reviewObject in projectMilestoneList track by $index"
+                             heading="{{reviewObject.gate.name}}" select="milestoneGate()">
+                            <hr>
+                            <div class="row" data-ng-show="showNewProjectMilestoneForm">
+                                <div class="col-md-12">
+                                    <div class="panel panel-default">
+                                        <div class="panel-heading">
+                                            <h6 class="panel-title">
+                                                New milestone
+                                            </h6>
+                                        </div>
+                                        <div class="panel-body">
+                                            <form class="form" name="newProjectMilestoneForm">
+                                                <div class="row">
+                                                    <div class="form-group-sm col-md-4">
+                                                        <label for="typeNew">Type</label>
+                                                        <select id="typeNew" name="typeNew" class="form-control" data-ng-model = "newProjectMilestone.type"
+                                                                ng-options="type._id as type.name for type in projectMilestoneTypes" required>
+                                                            <option value="">--choose type</option>
+                                                        </select>
+                                                    </div>
+                                                    <div class="form-group-sm col-md-6">
+                                                        <label for="nameNew">Name</label>
+                                                        <input id="nameNew" name="nameNew" class="form-control" type="text" placeholder="Enter milestone name"
+                                                               data-ng-model="newProjectMilestone.name" required>
+                                                    </div>
+                                                </div>
+                                                <hr>
+                                                <div class="form-group-sm pull-right">
+                                                    <button class="btn btn-success btn-xs" data-ng-click="createNewProjectMilestone(selectedProject, reviewObject.gate); showNewProjectMilestoneForm = false;"
+                                                            data-ng-disabled="newProjectMilestoneForm.$invalid">
+                                                        Save
+                                                    </button>
+                                                    <button class="btn btn-info btn-xs" data-ng-click="cancelNewProjectMilestone(); showNewProjectMilestoneForm = false;">
+                                                        Cancel
+                                                    </button>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row" data-ng-show="!showNewProjectMilestoneForm">
+                                <div class="col-md-3">
+                                    <div class="row" data-ng-show="!showNewProjectMilestoneForm">
+                                        <div class="col-md-12 form-group-sm center-block">
+                                            <button class="btn btn-warning btn-sm" ng-click="showNewProjectMilestoneForm = true">
+                                                New milestone
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <br>
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <div class="panel panel-default">
+                                                <div class="panel-heading">
+                                                    <h6 class="panel-title text-center">Milestones</h6>
+                                                </div>
+                                                <div class="panel-body" style="min-height: 350px; max-height: 350px; overflow-y: auto">
+                                                    <div data-ng-show="reviewObject.projectMilestones.length === 0" class="alert alert-warning text-center">
+                                                        There are no milestones for this gate
+                                                    </div>
+                                                    <button type="button"
+                                                            data-ng-repeat="projectMilestone in reviewObject.projectMilestones | orderBy: sortProjectMilestones : false"
+                                                            data-ng-click="selectProjectMilestone(projectMilestone)"
+                                                            class="btn btn-sm center-block btn-block" style="overflow: hidden;"
+                                                            data-ng-class="{'btn-default' : projectMilestone.statusReview.currentRecord.completed, 'btn-info' : !projectMilestone.statusReview.currentRecord.completed}">
+                                                        <span class="small" data-ng-show="projectMilestone.statusReview.currentRecord.estimateDeliveryDate">
+                                                            {{projectMilestone.statusReview.currentRecord.estimateDeliveryDate | date:'EEE d, MMM yyyy'}}
+                                                        </span>
+                                                        <span class="small" data-ng-hide="projectMilestone.statusReview.currentRecord.estimateDeliveryDate">
+                                                            - No delivery date -
+                                                        </span>
+                                                        <br>
+                                                        <span class="small">{{projectMilestone.name}}</span>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-9">
+                                    <div data-ng-hide="selectedProjectMilestone || reviewObject.projectMilestones.length === 0" class="alert alert-warning text-center">
+                                        Select a milestone to see its details
+                                    </div>
+                                    <div class="row" data-ng-show="selectedProjectMilestone">
+                                        <div class="col-md-12">
+                                            <div class="panel panel-default">
+                                                <div class="panel-heading">
+                                                    <div class="row">
+                                                        <div class="col-md-12 text-center">
+                                                            <b><em>{{selectedProjectMilestone.name}}</em></b>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-md-6 btn-group btn-group-xs btn-group-justified">
+                                                        <label class="btn btn-info btn-xs" data-ng-model="projectMilestoneDetails" btn-radio="'header'">
+                                                            Header
+                                                        </label>
+                                                        <label class="btn btn-info btn-xs" data-ng-model="projectMilestoneDetails" btn-radio="'status'">
+                                                            Status
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                                <div class="panel-body" style="min-height: 375px; max-height: 375px; overflow-y: auto">
+                                                    <div data-ng-show="projectMilestoneDetails === 'header'">
+                                                        <div data-ng-switch="switchHeaderForm[selectedProjectMilestone._id]">
+                                                            <form data-ng-switch-default="view">
+                                                                <div class="row">
+                                                                    <div class="form-group-sm col-md-8">
+                                                                        <label for="">Name</label>
+                                                                        <input id="" class="form-control" type="text" placeholder="No name yet"
+                                                                               data-ng-model="selectedProjectMilestone.name" disabled>
+                                                                    </div>
+                                                                </div>
+                                                                <br>
+                                                                <div class="row">
+                                                                    <div class="form-group-sm col-md-4">
+                                                                        <label for="">Type</label>
+                                                                        <select id="" class="form-control" data-ng-model = "selectedProjectMilestone.type"
+                                                                                ng-options="type._id as type.name for type in projectMilestoneTypes" disabled>
+                                                                            <option value="">No type yet</option>
+                                                                        </select>
+                                                                    </div>
+                                                                    <div class="form-group-sm col-md-4">
+                                                                        <label for="">State</label>
+                                                                        <select id="" class="form-control" data-ng-model = "selectedProjectMilestone.state"
+                                                                                ng-options="state._id as state.name for state in milestoneStates" disabled>
+                                                                            <option value="">No state yet</option>
+                                                                        </select>
+                                                                    </div>
+                                                                </div>
+                                                                <br>
+                                                                <div class="row">
+                                                                    <div class="form-group-sm col-md-12">
+                                                                        <label for="">Description</label>
+                                                                        <textarea id="" class="form-control" data-ng-model="selectedProjectMilestone.description"
+                                                                                  placeholder="No description yet" disabled></textarea>
+                                                                    </div>
+                                                                </div>
+                                                                <hr>
+                                                                <div class="form-group-sm pull-right" data-ng-show="userHasAuthorization && !selectedProjectMilestone.final">
+                                                                    <button class="btn btn-success btn-xs" data-ng-click="editHeader(selectedProjectMilestone)">
+                                                                        Edit
+                                                                    </button>
+                                                                </div>
+                                                            </form>
+                                                            <form data-ng-switch-when="edit" name="editProjectMilestoneForm">
+                                                                <div class="row">
+                                                                    <div class="form-group-sm col-md-8">
+                                                                        <label for="nameEdit">Name</label>
+                                                                        <input id="nameEdit" name="nameEdit" class="form-control" type="text" placeholder="Enter name"
+                                                                               data-ng-model="selectedProjectMilestone.name" required>
+                                                                    </div>
+                                                                </div>
+                                                                <br>
+                                                                <div class="row">
+                                                                    <div class="form-group-sm col-md-4">
+                                                                        <label for="">Type</label>
+                                                                        <select id="" class="form-control" data-ng-model = "selectedProjectMilestone.type"
+                                                                                ng-options="type._id as type.name for type in projectMilestoneTypes" required>
+                                                                            <option value="">--choose type</option>
+                                                                        </select>
+                                                                    </div>
+                                                                    <div class="form-group-sm col-md-4">
+                                                                        <label for="">State</label>
+                                                                        <select id="" class="form-control" data-ng-model = "selectedProjectMilestone.state"
+                                                                                ng-options="state._id as state.name for state in milestoneStates" >
+                                                                            <option value="">--choose state</option>
+                                                                        </select>
+                                                                    </div>
+                                                                </div>
+                                                                <br>
+                                                                <div class="row">
+                                                                    <div class="form-group-sm col-md-12">
+                                                                        <label for="">Description</label>
+                                                                        <textarea id="" class="form-control" placeholder="Enter description" data-ng-model="selectedProjectMilestone.description"></textarea>
+                                                                    </div>
+                                                                </div>
+                                                                <hr>
+                                                                <div class="form-group-sm pull-right">
+                                                                    <button class="btn btn-success btn-xs" data-ng-click="saveEditHeader(selectedProjectMilestone)" data-ng-disabled="editProjectMilestoneForm.$invalid">
+                                                                        Save
+                                                                    </button>
+                                                                    <button class="btn btn-danger btn-xs" data-ng-click="deleteProjectMilestone(reviewObject, selectedProjectMilestone)">
+                                                                        Delete milestone
+                                                                    </button>
+                                                                    <button class="btn btn-info btn-xs" data-ng-click="cancelEditHeader(selectedProjectMilestone)">
+                                                                        Cancel
+                                                                    </button>
+                                                                </div>
+                                                            </form>
+                                                        </div>
+                                                    </div>
+                                                    <div data-ng-show="projectMilestoneDetails === 'status'">
+                                                        <div data-ng-switch="switchStatusForm[selectedProjectMilestone._id]">
+                                                            <form data-ng-switch-default="view">
+                                                                <div class="row">
+                                                                    <div class="form-group-sm col-md-4">
+                                                                        <label for="">Baseline delivery date</label>
+                                                                        <input type="text" id="" class="form-control" datepicker-popup="dd-MMMM-yyyy" data-ng-model="selectedProjectMilestone.statusReview.currentRecord.baselineDeliveryDate" disabled />
+                                                                    </div>
+                                                                    <div class="form-group-sm col-md-4">
+                                                                        <label for="">Estimate delivery date</label>
+                                                                        <input type="text" id="" class="form-control" datepicker-popup="dd-MMMM-yyyy" data-ng-model="selectedProjectMilestone.statusReview.currentRecord.estimateDeliveryDate" disabled />
+                                                                    </div>
+                                                                    <div class="form-group-sm col-md-4">
+                                                                        <label for="">Actual delivery date</label>
+                                                                        <input type="text" id="" class="form-control" datepicker-popup="dd-MMMM-yyyy" data-ng-model="selectedProjectMilestone.statusReview.currentRecord.actualDeliveryDate" disabled />
+                                                                    </div>
+                                                                </div>
+                                                                <br>
+                                                                <div class="row">
+                                                                    <div class="form-group-sm col-md-5">
+                                                                        <label for="">Status</label>
+                                                                        <select id="" class="form-control" data-ng-model = "selectedProjectMilestone.statusReview.currentRecord.status"
+                                                                                ng-options="status._id as status.name for status in logStatuses" disabled>
+                                                                        </select>
+                                                                    </div>
+                                                                    <br>
+                                                                    <div class="form-group-sm col-md-5">
+                                                                        <label for="prjCrEditCompleted">Change completed</label>
+                                                                        <input id="prjCrEditCompleted" class="" type="checkbox"
+                                                                               data-ng-model="selectedProjectMilestone.statusReview.currentRecord.completed" disabled>
+                                                                    </div>
+                                                                </div>
+                                                                <br>
+                                                                <div class="row">
+                                                                    <div class="form-group-sm col-md-12">
+                                                                        <label for="">Status comment</label>
+                                                                        <textarea id="" class="form-control" data-ng-model="selectedProjectMilestone.statusReview.currentRecord.statusComment" disabled></textarea>
+                                                                    </div>
+                                                                </div>
+                                                                <hr>
+                                                                <div class="pull-right" data-ng-show="userHasAuthorization">
+                                                                    <button class="btn btn-success btn-xs" data-ng-click="editStatus(selectedProjectMilestone)">
+                                                                        Edit
+                                                                    </button>
+                                                                </div>
+                                                            </form>
+                                                            <form data-ng-switch-when="edit">
+                                                                <div class="row">
+                                                                    <div class="form-group-sm col-md-4">
+                                                                        <label for="">Baseline delivery date</label>
+                                                                        <div class="input-group">
+                                                                            <input type="text" id="" class="form-control" datepicker-popup="dd-MMMM-yyyy" data-ng-model="selectedProjectMilestone.statusReview.currentRecord.baselineDeliveryDate"
+                                                                                   is-open="$parent.baselineDeliveryDateOpened[selectedProjectMilestone._id]" >
+                                                                            <span class="input-group-btn">
+                                                                                <button type="button" class="btn btn-default btn-sm" ng-click="openBaselineDeliveryDate(selectedProjectMilestone, $event)"><i class="glyphicon glyphicon-calendar"></i></button>
+                                                                            </span>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="form-group-sm col-md-4">
+                                                                        <label for="">Estimate delivery date</label>
+                                                                        <div class="input-group">
+                                                                            <input type="text" id="" class="form-control" datepicker-popup="dd-MMMM-yyyy" data-ng-model="selectedProjectMilestone.statusReview.currentRecord.estimateDeliveryDate"
+                                                                                   is-open="$parent.estimateDeliveryDateOpened[selectedProjectMilestone._id]" >
+                                                                            <span class="input-group-btn">
+                                                                                <button type="button" class="btn btn-default btn-sm" ng-click="openEstimateDeliveryDate(selectedProjectMilestone, $event)"><i class="glyphicon glyphicon-calendar"></i></button>
+                                                                            </span>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="form-group-sm col-md-4">
+                                                                        <label for="">Actual delivery date</label>
+                                                                        <div class="input-group">
+                                                                            <input type="text" id="" class="form-control" datepicker-popup="dd-MMMM-yyyy" data-ng-model="selectedProjectMilestone.statusReview.currentRecord.actualDeliveryDate"
+                                                                                   is-open="$parent.actualDeliveryDateOpened[selectedProjectMilestone._id]" >
+                                                                            <span class="input-group-btn">
+                                                                                <button type="button" class="btn btn-default btn-sm" ng-click="openActualDeliveryDate(selectedProjectMilestone, $event)"><i class="glyphicon glyphicon-calendar"></i></button>
+                                                                            </span>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                                <br>
+                                                                <div class="row">
+                                                                    <div class="form-group-sm col-md-5">
+                                                                        <label for="">Status</label>
+                                                                        <select id="" class="form-control" data-ng-model = "selectedProjectMilestone.statusReview.currentRecord.status"
+                                                                                data-ng-options="status._id as status.name for status in logStatuses" >
+                                                                            <option value="">--choose status</option>
+                                                                        </select>
+                                                                    </div>
+                                                                    <br>
+                                                                    <div class="form-group-sm col-md-5">
+                                                                        <label for="prjCrEditCompleted">Change completed</label>
+                                                                        <input id="prjCrEditCompleted" class="" type="checkbox"
+                                                                               data-ng-model="selectedProjectMilestone.statusReview.currentRecord.completed" >
+                                                                    </div>
+                                                                </div>
+                                                                <br>
+                                                                <div class="row">
+                                                                    <div class="form-group-sm col-md-12">
+                                                                        <label for="">Status comment</label>
+                                                                        <textarea id="" class="form-control" placeholder="Enter status comment" data-ng-model="selectedProjectMilestone.statusReview.currentRecord.statusComment" ></textarea>
+                                                                    </div>
+                                                                </div>
+                                                                <hr>
+                                                                <div class="pull-right">
+                                                                    <button class="btn btn-success btn-xs" data-ng-click="saveEditStatus(selectedProjectMilestone)">
+                                                                        Save
+                                                                    </button>
+                                                                    <button class="btn btn-info btn-xs" data-ng-click="cancelEditStatus(selectedProjectMilestone)">
+                                                                        Cancel
+                                                                    </button>
+                                                                </div>
+                                                            </form>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </tab>
+                    </tabset>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

@@ -94,7 +94,7 @@
                         <div class="form-group-sm col-md-5">
                             <label for="">Status</label>
                             <select id="" class="form-control" data-ng-model = "selectedProjectChangeRequest.statusReview.currentRecord.status"
-                                    ng-options="status._id as status.name for status in logStatuses" disabled>
+                                    ng-options="status._id as status.name for status in parentCtrl.logStatuses" disabled>
                             </select>
                         </div>
                         <br>

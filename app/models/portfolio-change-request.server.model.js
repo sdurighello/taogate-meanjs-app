@@ -16,7 +16,8 @@ require('mongoose-multitenant');
 var fundingRequestSchema = new Schema({
         title : {type: String, default:'', trim: true, required:'Request title required'},
         description : {type: String, default:'', trim: true},
-        funds : {type: Number, default: 0, required:'Request funds required'}
+        funds : {type: Number, default: 0, required:'Request funds required'},
+        created: { type: Date, default: Date.now }
 });
 
 var PortfolioChangeRequestSchema = new Schema({

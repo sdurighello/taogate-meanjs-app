@@ -351,10 +351,10 @@ angular.module('core').service('Menus', [
 		this.addSubMenuItem('topbar', 'delivery', 'Milestones', 'menuTitle','menuTitle',false,
 			['superAdmin','admin','PMO','projectManager','portfolioManager','executive'],12);
 				// Project milestones
-		this.addSubMenuItem('topbar', 'delivery', 'Project milestones', 'project-log-milestone','project-log-milestone',false,
+		this.addSubMenuItem('topbar', 'delivery', 'Project milestones', 'project-milestones','project-milestones',false,
 			['superAdmin','admin','PMO','projectManager','portfolioManager','executive'],13);
                 // Portfolio milestones
-        this.addSubMenuItem('topbar', 'delivery', 'Portfolio milestones', 'portfolio-log-milestone','portfolio-log-milestone',false,
+        this.addSubMenuItem('topbar', 'delivery', 'Portfolio milestones', 'portfolio-milestones','portfolio-milestones',false,
             ['superAdmin','admin','PMO','projectManager','portfolioManager','executive'],14);
             // Status reports
         this.addSubMenuItem('topbar', 'delivery', '', 'divider','divider',false,

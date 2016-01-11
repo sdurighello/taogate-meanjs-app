@@ -200,15 +200,19 @@ exports.removeProjectChangeRequest = function(req, res) {
 
 
 exports.createFundingRequest = function(req, res) {
+
     var portfolioChangeRequest = req.portfolioChangeRequest;
-    portfolioChangeRequest.fundingRequests.push(req.body);
+
+    var newFundingRequest = portfolioChangeRequest.fundingRequests.create(req.body);
+    portfolioChangeRequest.fundingRequests.push(newFundingRequest);
+
     portfolioChangeRequest.save(function(err){
         if (err) {
             return res.status(400).send({
                 message: errorHandler.getErrorMessage(err)
             });
         } else {
-            res.jsonp(portfolioChangeRequest);
+            res.jsonp(newFundingRequest);
         }
     });
 
@@ -227,7 +231,7 @@ exports.updateFundingRequest = function(req, res) {
                 message: errorHandler.getErrorMessage(err)
             });
         } else {
-            res.jsonp(portfolioChangeRequest);
+            res.jsonp(fundingRequest);
         }
     });
 

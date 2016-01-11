@@ -135,6 +135,10 @@ angular.module('portfolio-change-requests').controller('PortfolioChangeRequestsC
 			return new Date(portfolioChangeRequest.raisedOnDate);
 		};
 
+		vm.sortByCreated = function(object){
+			return new Date(object.created);
+		};
+
 
 		// ------------------- OTHER VARIABLES ---------------------
 
@@ -394,16 +398,18 @@ angular.module('portfolio-change-requests').controller('PortfolioChangeRequestsC
                 portfolioChangeRequestId : portfolioChange._id,
                 fundingRequestId : fundingRequest._id
             }, fundingRequest, function(res){
-
+                vm.selectFundingRequestForm('view', fundingRequest);
             }, function(err){
                 vm.error = err.data.message;
+                vm.selectFundingRequestForm('view', fundingRequest);
             });
         };
 
         vm.cancelEditFundingRequest = function(portfolioChange, fundingRequest){
-            fundingRequest.title = originalFundingRequest.title;
-            fundingRequest.description = originalFundingRequest.description;
-            fundingRequest.funds = originalFundingRequest.funds;
+            fundingRequest.title = originalFundingRequest[fundingRequest._id].title;
+            fundingRequest.description = originalFundingRequest[fundingRequest._id].description;
+            fundingRequest.funds = originalFundingRequest[fundingRequest._id].funds;
+            vm.selectFundingRequestForm('view', fundingRequest);
         };
 
         vm.deleteFundingRequest = function(portfolioChange, fundingRequest){
