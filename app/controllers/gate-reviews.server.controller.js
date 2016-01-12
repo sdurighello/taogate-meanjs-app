@@ -47,6 +47,8 @@ exports.updateHeader = require('./gate-reviews/gate-reviews.updateHeader.server.
 
 exports.updateStatus = require('./gate-reviews/gate-reviews.updateStatus.server.controller').updateStatus;
 
+exports.updateBudget = require('./gate-reviews/gate-reviews.updateBudget.server.controller').updateBudget;
+
 exports.updateOutcome = require('./gate-reviews/gate-reviews.updateOutcome.server.controller').updateOutcome;
 
     // --- Final ---

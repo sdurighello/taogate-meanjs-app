@@ -115,7 +115,8 @@
                                     <button type="button"
                                             data-ng-repeat="portfolioMilestone in parentCtrl.portfolioMilestones | orderBy : parentCtrl.sortMilestones : false track by portfolioMilestone._id"
                                             data-ng-click="parentCtrl.selectPortfolioMilestone(parentCtrl.selectedPortfolio, portfolioMilestone)"
-                                            class="btn btn-sm center-block btn-block" style="overflow: hidden;">
+                                            class="btn btn-sm center-block btn-block" style="overflow: hidden;"
+                                            data-ng-class="{'btn-default' : portfolioMilestone.statusReview.currentRecord.completed, 'btn-info' : !portfolioMilestone.statusReview.currentRecord.completed}">
                                         <span class="small" data-ng-show="portfolioMilestone.statusReview.currentRecord.estimateDeliveryDate">
                                             {{portfolioMilestone.statusReview.currentRecord.estimateDeliveryDate | date:'EEE d, MMM yyyy'}}
                                         </span>

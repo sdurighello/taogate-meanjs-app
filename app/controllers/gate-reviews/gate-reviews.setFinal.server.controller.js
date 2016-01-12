@@ -44,6 +44,7 @@ exports.setFinal = function(req, res) {
                             } else if(!statusAssignment){
                                 return callback(new Error('Cannot find gateStatusAssignment ' + gateReview.gateStatusAssignment));
                             } else {
+                                // Status
                                 statusAssignment.history.push({
                                     user : statusAssignment.currentRecord.user,
                                     created: statusAssignment.currentRecord.created,
@@ -58,6 +59,20 @@ exports.setFinal = function(req, res) {
                                 statusAssignment.currentRecord.sourceGateReview = req.body._id;
                                 statusAssignment.currentRecord.created = Date.now();
                                 statusAssignment.currentRecord.user = req.user;
+                                // Budget
+                                statusAssignment.budget.history.push({
+                                    user : statusAssignment.budget.currentRecord.user,
+                                    created: statusAssignment.budget.currentRecord.created,
+                                    sourceGateReview : statusAssignment.budget.currentRecord.sourceGateReview,
+                                    sourceChangeRequest : statusAssignment.budget.currentRecord.sourceChangeRequest,
+                                    amount : statusAssignment.budget.currentRecord.budget
+                                });
+                                statusAssignment.budget.currentRecord.amount = req.body.budget;
+                                statusAssignment.budget.currentRecord.sourceChangeRequest = null;
+                                statusAssignment.budget.currentRecord.sourceGateReview = req.body._id;
+                                statusAssignment.budget.currentRecord.created = Date.now();
+                                statusAssignment.budget.currentRecord.user = req.user;
+                                // Save
                                 statusAssignment.save(function(err){
                                     callback(err);
                                 });

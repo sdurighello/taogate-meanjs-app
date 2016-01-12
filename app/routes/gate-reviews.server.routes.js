@@ -31,6 +31,9 @@ module.exports = function(app) {
 	app.route('/gate-reviews/:gateReviewId/status')
 		.put(users.requiresLogin, gateReviews.hasAuthorization, gateReviews.updateStatus);
 
+    app.route('/gate-reviews/:gateReviewId/budget')
+        .put(users.requiresLogin, gateReviews.hasAuthorization, gateReviews.updateBudget);
+
     // Outcomes
 
     app.route('/gate-reviews/:gateReviewId/outcome-reviews/:outcomeReviewId')

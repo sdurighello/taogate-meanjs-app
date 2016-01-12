@@ -63,6 +63,7 @@ exports.create = function(req, res) {
                         retObjArrays.gateStatusReview.status = assignment.currentRecord.status;
                         retObjArrays.gateStatusReview.overallScore = assignment.currentRecord.overallScore;
                         retObjArrays.gateStatusReview.completed = assignment.currentRecord.completed;
+                        retObjArrays.gateStatusReview.budget = assignment.budget.currentRecord.amount;
 
                         callback(null);
                     });
@@ -247,11 +248,12 @@ exports.create = function(req, res) {
                 // Header
             gateReview.overallComment = '';
             gateReview.final = false;
-                // Status & Score
+                // Status Assignment
             gateReview.gateStatusAssignment = retObjArrays.gateStatusReview.gateStatusAssignment;
             gateReview.status = retObjArrays.gateStatusReview.status;
             gateReview.overallScore = retObjArrays.gateStatusReview.overallScore;
             gateReview.completed = retObjArrays.gateStatusReview.completed;
+            gateReview.budget = retObjArrays.gateStatusReview.budget;
                 // Performances
             gateReview.outcomeReviews = retObjArrays.outcomeReviews;
             gateReview.baselineDurationReviews = retObjArrays.baselineDurationReviews;

@@ -471,9 +471,10 @@
                                     <div data-ng-show="parentCtrl.portfolioChangeRequestDetails === 'fundingRequests'">
                                         <div class="row">
                                             <div class="col-md-12">
-                                                <span>Requested funds from associated project changes: 100,000</span><br>
-                                                <span>Requested funds from portfolio funding requests: 200,000</span><br>
-                                                <span><b>Total requested funds: 300,000</b></span>
+
+                                                {{parentCtrl.selectedPortfolioChangeRequest.statistics}}
+                                                <br>
+                                                {{parentCtrl.selectedPortfolioChangeRequest.totalFundingRequests}}
                                             </div>
                                         </div>
                                         <hr>

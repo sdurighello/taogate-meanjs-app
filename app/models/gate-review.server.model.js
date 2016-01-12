@@ -83,6 +83,7 @@ var GateReviewSchema = new Schema({
     status : {type: Schema.Types.ObjectId, ref: 'GateStatus', $tenant:true},
     overallScore : {type: Schema.Types.ObjectId, ref: 'GateOutcomeScore', $tenant:true},
     completed : {type: Boolean, default: false, required:'Completed flag required'},
+    budget : {type: Number, default: null},
 
     outcomeReviews : [OutcomeReviewSchema],
     baselineDurationReviews : [BaselineDurationReviewSchema],

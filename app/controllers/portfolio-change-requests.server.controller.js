@@ -15,7 +15,14 @@ exports.create = function(req, res) {
 	var PortfolioChangeRequest = mongoose.mtModel(req.user.tenantId + '.' + 'PortfolioChangeRequest');
 	var portfolioChangeRequest = new PortfolioChangeRequest(req.body);
 	portfolioChangeRequest.user = req.user;
-    portfolioChangeRequest.approval = 'draft';
+    portfolioChangeRequest.approval = {
+        currentRecord : {
+            approvalState: 'draft',
+            created: Date.now(),
+            user: req.user
+        },
+        history : []
+    };
 
 	portfolioChangeRequest.save(function(err) {
 		if (err) {
@@ -264,14 +271,56 @@ exports.deleteFundingRequest = function(req, res) {
  * Portfolio change request middleware
  */
 exports.portfolioChangeRequestByID = function(req, res, next, id) {
+    var ProjectChangeRequest = mongoose.mtModel(req.user.tenantId + '.' + 'ProjectChangeRequest');
+    var BaselineCost = mongoose.mtModel(req.user.tenantId + '.' + 'BaselineCost');
+    var ActualCost = mongoose.mtModel(req.user.tenantId + '.' + 'ActualCost');
+
     var PortfolioChangeRequest = mongoose.mtModel(req.user.tenantId + '.' + 'PortfolioChangeRequest');
     PortfolioChangeRequest.findById(id).deepPopulate([
-        'associatedProjectChangeRequests'
+        'associatedProjectChangeRequests.baselineCostReviews.baselineCost',
+        'associatedProjectChangeRequests.actualCostReviews.actualCost'
     ]).populate('user', 'displayName').exec(function(err, portfolioChangeRequest) {
-		if (err) return next(err);
-		if (! portfolioChangeRequest) return next(new Error('Failed to load Portfolio change request ' + id));
-		req.portfolioChangeRequest = portfolioChangeRequest ;
-		next();
+		if (err){ return next(err); }
+		if (! portfolioChangeRequest){ return next(new Error('Failed to load Portfolio change request ' + id)); }
+
+        var totalBaselineCostChange = 0;
+        var totalCurrentBaselineCost = 0;
+        var totalNewBaselineCost = 0;
+
+        var totalActualCostChange = 0;
+        var totalCurrentActualCost = 0;
+        var totalNewActualCost = 0;
+
+        async.eachSeries(portfolioChangeRequest.associatedProjectChangeRequests, function(change, callback){
+            totalCurrentBaselineCost = totalCurrentBaselineCost + _.reduce(change.baselineCostReviews, function(sum, review){
+                return sum + review.baselineCost.currentRecord.cost;
+                }, 0);
+            totalNewBaselineCost = totalNewBaselineCost + _.reduce(change.baselineCostReviews, function(sum, review){
+                    return sum + review.newCost;
+                }, 0);
+
+            totalCurrentActualCost = totalCurrentActualCost + _.reduce(change.actualCostReviews, function(sum, review){
+                    return sum + review.actualCost.currentRecord.cost;
+                }, 0);
+            totalNewActualCost = totalNewActualCost + _.reduce(change.actualCostReviews, function(sum, review){
+                    return sum + review.newCost;
+                }, 0);
+
+            callback();
+
+        }, function(err){
+            if(err){ return next(err); }
+            totalBaselineCostChange = totalCurrentBaselineCost - totalNewBaselineCost;
+            totalActualCostChange = totalCurrentActualCost - totalNewActualCost;
+            portfolioChangeRequest.statistics.totalActualCostChange = totalActualCostChange;
+            portfolioChangeRequest.statistics.totalBaselineCostChange = totalBaselineCostChange;
+            portfolioChangeRequest.statistics.totalCurrentActualCost = totalCurrentActualCost;
+            portfolioChangeRequest.statistics.totalCurrentBaselineCost = totalCurrentBaselineCost;
+            portfolioChangeRequest.statistics.totalNewActualCost = totalNewActualCost;
+            portfolioChangeRequest.statistics.totalNewBaselineCost = totalNewBaselineCost;
+            req.portfolioChangeRequest = portfolioChangeRequest ;
+            next();
+        });
 	});
 };
 

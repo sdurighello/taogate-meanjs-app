@@ -72,6 +72,12 @@ angular.module('gate-management-review').controller('GateManagementReviewControl
             if(string === 'edit'){$scope.switchHeaderForm[gateReview._id] = 'edit';}
         };
 
+        $scope.switchBudgetForm = {};
+        $scope.selectBudgetForm = function(string, gateReview){
+            if(string === 'view'){ $scope.switchBudgetForm[gateReview._id] = 'view';}
+            if(string === 'edit'){$scope.switchBudgetForm[gateReview._id] = 'edit';}
+        };
+
         $scope.switchSetFinalForm = {};
         $scope.selectSetFinalForm = function(string, gateReview){
             if(string === 'view'){ $scope.switchSetFinalForm[gateReview._id] = 'view';}
@@ -408,6 +414,39 @@ angular.module('gate-management-review').controller('GateManagementReviewControl
             gateReview.completed = originalGateReview[gateReview._id].completed;
             $scope.selectStatusForm('view', gateReview);
         };
+
+
+
+        // -------------------------------------------------------- BUDGET -------------------------------------------------
+
+        $scope.editBudget = function(gateReview){
+            $scope.selectBudgetForm('edit', gateReview);
+        };
+
+        $scope.saveEditBudget = function(gateReview){
+            // Clean-up deepPopulate
+            var copyGateReview = _.cloneDeep(gateReview);
+            copyGateReview.project = _.get(copyGateReview.project, '_id');
+            copyGateReview.gate = _.get(copyGateReview.gate, '_id');
+            copyGateReview.gateStatusAssignment = _.get(copyGateReview.gateStatusAssignment, '_id');
+            // Update server header
+            GateReviews.updateBudget( { gateReviewId : copyGateReview._id }, copyGateReview,
+                function(res){
+                    originalGateReview[gateReview._id].budget = gateReview.budget;
+                    $scope.selectBudgetForm('view', gateReview);
+                },
+                function(err){
+                    $scope.error = err.data.message;
+                }
+            );
+        };
+
+        $scope.cancelEditBudget = function(gateReview){
+            gateReview.budget = originalGateReview[gateReview._id].budget;
+            $scope.selectBudgetForm('view', gateReview);
+        };
+
+
 
 
         // -------------------------------------------------------- OUTCOMES -------------------------------------------------

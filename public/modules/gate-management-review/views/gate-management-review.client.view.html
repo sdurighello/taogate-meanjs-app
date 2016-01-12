@@ -637,6 +637,45 @@
                                                     <div data-ng-show="gateReviewDetails === 'cost'">
                                                         <table class="table small">
                                                             <caption>
+                                                                Gate budget
+                                                            </caption>
+                                                            <tr>
+                                                                <th>Current budget</th>
+                                                                <th>New budget</th>
+                                                                <th> </th>
+                                                            </tr>
+                                                            <tr>
+                                                                <td>
+                                                                    <span data-ng-hide="selectedGateReview.gateStatusAssignment.budget.currentRecord.amount">No amount</span>
+                                                                    <span data-ng-bind="selectedGateReview.gateStatusAssignment.budget.currentRecord.amount"></span>
+                                                                </td>
+                                                                <td>
+                                                                    <div data-ng-switch="switchBudgetForm[selectedGateReview._id]">
+                                                                        <div data-ng-switch-default="view">
+                                                                            <span data-ng-hide="selectedGateReview.budget">No amount</span>
+                                                                            <span data-ng-bind="selectedGateReview.budget"></span>
+                                                                            <button class="btn btn-success btn-xs" data-ng-show="userHasAuthorization && !selectedGateReview.final" data-ng-click="editBudget(selectedGateReview)">
+                                                                                <span class="glyphicon glyphicon-pencil"></span>
+                                                                            </button>
+                                                                        </div>
+                                                                        <div data-ng-switch-when="edit">
+                                                                            <div class="input-group input-group-sm">
+                                                                                <input type="number" min="0" id="" class="form-control" data-ng-model="selectedGateReview.budget">
+                                                                            </div>
+                                                                            <br>
+                                                                            <button class="btn btn-success btn-xs" data-ng-click="saveEditBudget(selectedGateReview)">
+                                                                                <span class="glyphicon glyphicon-ok"></span>
+                                                                            </button>
+                                                                            <button class="btn btn-info btn-xs" data-ng-click="cancelEditBudget(selectedGateReview)">
+                                                                                <span class="glyphicon glyphicon-remove"></span>
+                                                                            </button>
+                                                                        </div>
+                                                                    </div>
+                                                                </td>
+                                                            </tr>
+                                                        </table>
+                                                        <table class="table small">
+                                                            <caption>
                                                                 Baseline cost
                                                             </caption>
                                                             <tr>

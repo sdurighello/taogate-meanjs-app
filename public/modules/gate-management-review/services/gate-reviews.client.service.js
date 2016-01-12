@@ -30,6 +30,11 @@ angular.module('gate-management-review').factory('GateReviews', ['$resource',
                 url: 'gate-reviews/:gateReviewId/status'
                 // req.body: {whole gate review object}
             },
+            updateBudget: {
+                method: 'PUT',
+                url: 'gate-reviews/:gateReviewId/budget'
+                // req.body: {whole gate review object}
+            },
 
             // --- Final --
 

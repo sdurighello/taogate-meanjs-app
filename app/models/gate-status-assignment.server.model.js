@@ -21,6 +21,14 @@ var GateStatusAssignmentRecord = {
     user: {type: Schema.ObjectId, ref: 'User'}
 };
 
+var BudgetRecord = {
+    amount: {type: Number, default: null},
+    sourceChangeRequest: {type: Schema.Types.ObjectId, ref: 'ProjectChangeRequest', default:null, $tenant:true},
+    sourceGateReview: {type: Schema.Types.ObjectId, ref: 'GateReview', default:null, $tenant:true},
+    created: {type: Date, default: Date.now},
+    user: {type: Schema.ObjectId, ref: 'User'}
+};
+
 var OverallStatusRecord = {
     status: {type: Schema.Types.ObjectId, ref: 'LogStatusIndicator', default:null, $tenant:true},
     sourceStatusUpdate: {type: Schema.Types.ObjectId, ref: 'ProjectStatusUpdate', default:null, $tenant:true},
@@ -59,6 +67,11 @@ var GateStatusAssignmentSchema = new Schema({
 
     currentRecord: GateStatusAssignmentRecord,
     history:[GateStatusAssignmentRecord],
+
+    budget : {
+        currentRecord: BudgetRecord,
+        history:[BudgetRecord]
+    },
 
     overallStatus : {
         currentRecord: OverallStatusRecord,
