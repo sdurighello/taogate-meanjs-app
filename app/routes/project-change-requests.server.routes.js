@@ -26,6 +26,12 @@ module.exports = function(app) {
 	app.route('/project-change-requests/:projectChangeRequestId/approve')
 		.put(users.requiresLogin, projectChangeRequests.hasAuthorization, projectChangeRequests.approve);
 
+	app.route('/project-change-requests/:projectChangeRequestId/reject')
+		.put(users.requiresLogin, projectChangeRequests.hasAuthorization, projectChangeRequests.reject);
+
+	app.route('/project-change-requests/:projectChangeRequestId/draft')
+		.put(users.requiresLogin, projectChangeRequests.hasAuthorization, projectChangeRequests.draft);
+
 	// Header
 
 	app.route('/project-change-requests/:projectChangeRequestId/header')
@@ -35,6 +41,11 @@ module.exports = function(app) {
 
 	app.route('/project-change-requests/:projectChangeRequestId/status')
 		.put(users.requiresLogin, projectChangeRequests.hasAuthorization, projectChangeRequests.updateStatus);
+
+	// Budget
+
+	app.route('/project-change-requests/:projectChangeRequestId/budget')
+		.put(users.requiresLogin, projectChangeRequests.hasAuthorization, projectChangeRequests.updateBudget);
 
 	// Baseline
 

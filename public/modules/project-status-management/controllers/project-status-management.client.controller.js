@@ -585,10 +585,9 @@ angular.module('project-status-management').controller('ProjectStatusManagementC
 		};
 
 
-        // -------------------------------------------------------- APPLY UPDATE -------------------------------------------------
+        // -------------------------------------------------------- APPROVAL -------------------------------------------------
 
-
-        $scope.applyUpdate = function(project, projectStatusUpdate){
+        $scope.submit = function(project, projectStatusUpdate){
             // Clean-up deepPopulate
             var copyProjectStatusUpdate = _.cloneDeep(projectStatusUpdate);
             copyProjectStatusUpdate.project = _.get(copyProjectStatusUpdate.project, '_id');
@@ -596,13 +595,73 @@ angular.module('project-status-management').controller('ProjectStatusManagementC
             copyProjectStatusUpdate.gateStatusUpdate.gateStatusAssignment = _.get(copyProjectStatusUpdate.gateStatusUpdate.gateStatusAssignment, '_id');
 
             // Run server side applyChange
-            ProjectStatusUpdates.applyUpdate(
+            ProjectStatusUpdates.submit(
+                {
+                    projectStatusUpdateId : projectStatusUpdate._id
+                }, copyProjectStatusUpdate,
+                function(res){
+                    // Refresh the object with the current performances values
+                    projectStatusUpdate.approval = res.approval;
+                },
+                function(err){$scope.error = err.data.message;}
+            );
+        };
+
+        $scope.approve = function(project, projectStatusUpdate){
+            // Clean-up deepPopulate
+            var copyProjectStatusUpdate = _.cloneDeep(projectStatusUpdate);
+            copyProjectStatusUpdate.project = _.get(copyProjectStatusUpdate.project, '_id');
+            copyProjectStatusUpdate.gate = _.get(copyProjectStatusUpdate.gate, '_id');
+            copyProjectStatusUpdate.gateStatusUpdate.gateStatusAssignment = _.get(copyProjectStatusUpdate.gateStatusUpdate.gateStatusAssignment, '_id');
+
+            // Run server side applyChange
+            ProjectStatusUpdates.approve(
                 {
                     projectStatusUpdateId : projectStatusUpdate._id
                 }, copyProjectStatusUpdate,
                 function(res){
                     // Refresh the object with the current performances values
                     $scope.selectProjectStatusUpdate(projectStatusUpdate);
+                },
+                function(err){$scope.error = err.data.message;}
+            );
+        };
+
+        $scope.reject = function(project, projectStatusUpdate){
+            // Clean-up deepPopulate
+            var copyProjectStatusUpdate = _.cloneDeep(projectStatusUpdate);
+            copyProjectStatusUpdate.project = _.get(copyProjectStatusUpdate.project, '_id');
+            copyProjectStatusUpdate.gate = _.get(copyProjectStatusUpdate.gate, '_id');
+            copyProjectStatusUpdate.gateStatusUpdate.gateStatusAssignment = _.get(copyProjectStatusUpdate.gateStatusUpdate.gateStatusAssignment, '_id');
+
+            // Run server side applyChange
+            ProjectStatusUpdates.reject(
+                {
+                    projectStatusUpdateId : projectStatusUpdate._id
+                }, copyProjectStatusUpdate,
+                function(res){
+                    // Refresh the object with the current performances values
+                    projectStatusUpdate.approval = res.approval;
+                },
+                function(err){$scope.error = err.data.message;}
+            );
+        };
+
+        $scope.draft = function(project, projectStatusUpdate){
+            // Clean-up deepPopulate
+            var copyProjectStatusUpdate = _.cloneDeep(projectStatusUpdate);
+            copyProjectStatusUpdate.project = _.get(copyProjectStatusUpdate.project, '_id');
+            copyProjectStatusUpdate.gate = _.get(copyProjectStatusUpdate.gate, '_id');
+            copyProjectStatusUpdate.gateStatusUpdate.gateStatusAssignment = _.get(copyProjectStatusUpdate.gateStatusUpdate.gateStatusAssignment, '_id');
+
+            // Run server side applyChange
+            ProjectStatusUpdates.draft(
+                {
+                    projectStatusUpdateId : projectStatusUpdate._id
+                }, copyProjectStatusUpdate,
+                function(res){
+                    // Refresh the object with the current performances values
+                    projectStatusUpdate.approval = res.approval;
                 },
                 function(err){$scope.error = err.data.message;}
             );

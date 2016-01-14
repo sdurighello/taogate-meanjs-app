@@ -49,11 +49,18 @@ exports.updateHeader = require('./project-change-requests/project-change-request
 
 exports.updateStatus = require('./project-change-requests/project-change-requests.updateStatus.server.controller').updateStatus;
 
+exports.updateBudget = require('./project-change-requests/project-change-requests.updateBudget.server.controller').updateBudget;
+
 // --- Approval ---
 
 exports.submit = require('./project-change-requests/project-change-requests.submit.server.controller.js').submit;
 
 exports.approve = require('./project-change-requests/project-change-requests.approve.server.controller.js').approve;
+
+exports.reject = require('./project-change-requests/project-change-requests.reject.server.controller.js').reject;
+
+exports.draft = require('./project-change-requests/project-change-requests.draft.server.controller.js').draft;
+
 
 // --- Baseline ---
 
@@ -128,10 +135,11 @@ exports.changeRequestsForProject = require('./project-change-requests/project-ch
 exports.projectChangeRequestByID = function(req, res, next, id) {
     var ProjectChangeRequest = mongoose.mtModel(req.user.tenantId + '.' + 'ProjectChangeRequest');
 	ProjectChangeRequest.findById(id).deepPopulate([
+        'gateAssignmentReview.gateStatusAssignment',
         'baselineDurationReviews.baselineDuration.targetGate', 'estimateDurationReviews.estimateDuration.targetGate', 'actualDurationReviews.actualDuration.targetGate',
         'baselineCostReviews.baselineCost.targetGate', 'estimateCostReviews.estimateCost.targetGate', 'actualCostReviews.actualCost.targetGate',
         'baselineCompletionReviews.baselineCompletion.targetGate', 'estimateCompletionReviews.estimateCompletion.targetGate', 'actualCompletionReviews.actualCompletion.targetGate'
-    ]).populate('user', 'displayName').populate('appliedChanges.user', 'displayName').exec(function(err, projectChangeRequest) {
+    ]).populate('user', 'displayName').populate('approval.history.user', 'displayName').populate('approval.currentRecord.user', 'displayName').exec(function(err, projectChangeRequest) {
 		if (err) return next(err);
 		if (! projectChangeRequest) return next(new Error('Failed to load Project change request ' + id));
 		req.projectChangeRequest = projectChangeRequest ;

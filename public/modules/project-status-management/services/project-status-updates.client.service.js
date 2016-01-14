@@ -45,11 +45,29 @@ angular.module('project-status-management').factory('ProjectStatusUpdates', ['$r
                 // req.body: {whole gate review object}
             },
 
-			// --- Apply update --
+			// --- Approval --
 
-			applyUpdate: {
+			submit: {
 				method: 'PUT',
-				url: 'project-status-updates/:projectStatusUpdateId/applyUpdate'
+				url: 'project-status-updates/:projectStatusUpdateId/submit'
+				// req.body: {whole gate review object}
+			},
+
+			approve: {
+				method: 'PUT',
+				url: 'project-status-updates/:projectStatusUpdateId/approve'
+				// req.body: {whole gate review object}
+			},
+
+			reject: {
+				method: 'PUT',
+				url: 'project-status-updates/:projectStatusUpdateId/reject'
+				// req.body: {whole gate review object}
+			},
+
+			draft: {
+				method: 'PUT',
+				url: 'project-status-updates/:projectStatusUpdateId/draft'
 				// req.body: {whole gate review object}
 			},
 

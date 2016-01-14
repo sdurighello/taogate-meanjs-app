@@ -195,8 +195,8 @@
                                                         <label class="btn btn-info btn-xs" data-ng-model="gateReviewDetails" btn-radio="'completion'">
                                                             Completion
                                                         </label>
-                                                        <label class="btn btn-info btn-xs" data-ng-model="gateReviewDetails" btn-radio="'final'">
-                                                            Final
+                                                        <label class="btn btn-info btn-xs" data-ng-model="gateReviewDetails" btn-radio="'approval'">
+                                                            Approval
                                                         </label>
                                                     </div>
                                                 </div>
@@ -935,51 +935,60 @@
                                                             </tr>
                                                         </table>
                                                     </div>
-                                                    <div data-ng-show="gateReviewDetails === 'final'">
-                                                        <div data-ng-switch="switchSetFinalForm[selectedGateReview._id]">
-                                                            <form data-ng-switch-default="view">
-                                                                <div class="row">
-                                                                    <div class="form-group-sm col-md-6">
-                                                                        <label for="">Set gate review as final</label><br>
-                                                                        <input id="" class="" type="checkbox" data-ng-model="selectedGateReview.final" disabled>
-                                                                    </div>
-                                                                </div>
-                                                                <div class="row">
-                                                                    <div class="col-md-6">
-                                                                        <span data-ng-show="selectedGateReview.final === true">Final</span>
-                                                                        <span data-ng-show="selectedGateReview.final === false">Not final</span>
-                                                                    </div>
-                                                                </div>
-                                                                <hr>
-                                                                <div class="form-group-sm pull-right" data-ng-show="userHasAuthorization && !selectedGateReview.final">
-                                                                    <button class="btn btn-success btn-xs" data-ng-click="editSetFinal(selectedGateReview)">
-                                                                        Edit
+                                                    <div data-ng-show="gateReviewDetails === 'approval'">
+                                                        <div class="row">
+                                                            <div class="col-md-12">
+                                                                <label>Current state</label>
+                                                                <br>
+                                                                <span data-ng-show="selectedGateReview.approval.currentRecord.approvalState === 'draft'">Drafted on </span>
+                                                                <span data-ng-show="selectedGateReview.approval.currentRecord.approvalState === 'submitted'">Submitted on </span>
+                                                                <span data-ng-show="selectedGateReview.approval.currentRecord.approvalState === 'approved'">Approved on </span>
+                                                                <span data-ng-show="selectedGateReview.approval.currentRecord.approvalState === 'rejected'">Rejected on </span>
+                                                                <span><em data-ng-bind="selectedGateReview.approval.currentRecord.created | date:'EEE d, MMM yyyy'"></em></span>
+                                                                <span> by </span>
+                                                                <span><em data-ng-bind="selectedGateReview.approval.currentRecord.user.displayName"></em></span>
+                                                            </div>
+                                                        </div>
+                                                        <br>
+                                                        <div class="row">
+                                                            <div class="col-md-4" data-ng-show="userHasAuthorization && selectedGateReview.approval.currentRecord.approvalState === 'draft' ">
+                                                                <button class="form-control btn btn-success" data-ng-click="submit(selectedProject, selectedGateReview)">
+                                                                    Submit gate review
+                                                                </button>
+                                                            </div>
+                                                            <div data-ng-show="userHasAuthorization && selectedGateReview.approval.currentRecord.approvalState === 'submitted'">
+                                                                <div class="col-md-4">
+                                                                    <button class="form-control btn btn-success" data-ng-click="approve(selectedProject, selectedGateReview)">
+                                                                        Approve gate review
                                                                     </button>
                                                                 </div>
-                                                            </form>
-                                                            <form data-ng-switch-when="edit">
-                                                                <div class="row">
-                                                                    <div class="form-group-sm col-md-6">
-                                                                        <label for="">Set gate review as final</label><br>
-                                                                        <input id="" class="" type="checkbox" data-ng-model="selectedGateReview.final">
-                                                                    </div>
-                                                                </div>
-                                                                <div class="row">
-                                                                    <div class="col-md-6">
-                                                                        <span data-ng-show="selectedGateReview.final === true">Final</span>
-                                                                        <span data-ng-show="selectedGateReview.final === false">Not final</span>
-                                                                    </div>
-                                                                </div>
-                                                                <hr>
-                                                                <div class="form-group-sm pull-right">
-                                                                    <button class="btn btn-success btn-xs" data-ng-click="saveEditSetFinal(selectedProject, selectedGateReview)">
-                                                                        Save
-                                                                    </button>
-                                                                    <button class="btn btn-info btn-xs" data-ng-click="cancelEditSetFinal(selectedGateReview)">
-                                                                        Cancel
+                                                                <div class="col-md-4">
+                                                                    <button class="form-control btn btn-danger" data-ng-click="reject(selectedProject, selectedGateReview)">
+                                                                        Reject gate review
                                                                     </button>
                                                                 </div>
-                                                            </form>
+                                                            </div>
+                                                            <div class="col-md-4" data-ng-show="userHasAuthorization && selectedGateReview.approval.currentRecord.approvalState === 'rejected'">
+                                                                <button class="form-control btn btn-success" data-ng-click="draft(selectedProject, selectedGateReview)">
+                                                                    Draft gate review
+                                                                </button>
+                                                            </div>
+                                                        </div>
+                                                        <hr>
+                                                        <div class="row">
+                                                            <div class="col-md-12" data-ng-show="selectedProjectChangeRequest.approval.history.length !== 0">
+                                                                <label>History</label>
+                                                                <br>
+                                                                <div data-ng-repeat="historyRecord in selectedGateReview.approval.history | orderBy: sortAppliedChanges : true">
+                                                                    <span data-ng-show="historyRecord.approvalState === 'draft'">Drafted on </span>
+                                                                    <span data-ng-show="historyRecord.approvalState === 'submitted'">Submitted on </span>
+                                                                    <span data-ng-show="historyRecord.approvalState === 'approved'">Approved on </span>
+                                                                    <span data-ng-show="historyRecord.approvalState === 'rejected'">Rejected on </span>
+                                                                    <span><em data-ng-bind="historyRecord.created | date:'EEE d, MMM yyyy'"></em></span>
+                                                                    <span> by </span>
+                                                                    <span><em data-ng-bind="historyRecord.user.displayName"></em></span>
+                                                                </div>
+                                                            </div>
                                                         </div>
                                                     </div>
                                                 </div>

@@ -264,18 +264,31 @@
             </div>
             <div data-ng-show="projectChangeRequestDetails === 'approval'">
                 <div class="row">
-                    <div class="col-md-4 form-group">
-                        <input type="text" class="form-control" data-ng-model="selectedProjectChangeRequest.approval" disabled>
+                    <div class="col-md-12">
+                        <label>Current state</label>
+                        <br>
+                        <span data-ng-show="selectedProjectChangeRequest.approval.currentRecord.approvalState === 'draft'">Drafted on </span>
+                        <span data-ng-show="selectedProjectChangeRequest.approval.currentRecord.approvalState === 'submitted'">Submitted on </span>
+                        <span data-ng-show="selectedProjectChangeRequest.approval.currentRecord.approvalState === 'approved'">Approved on </span>
+                        <span data-ng-show="selectedProjectChangeRequest.approval.currentRecord.approvalState === 'rejected'">Rejected on </span>
+                        <span><em data-ng-bind="selectedProjectChangeRequest.approval.currentRecord.created | date:'EEE d, MMM yyyy'"></em></span>
+                        <span> by </span>
+                        <span><em data-ng-bind="selectedProjectChangeRequest.approval.currentRecord.user.displayName"></em></span>
                     </div>
                 </div>
                 <hr>
                 <div class="row">
-                    <div class="col-md-12" data-ng-show="selectedProjectChangeRequest.appliedChanges.length !== 0">
-                        <div data-ng-repeat="appliedChange in selectedProjectChangeRequest.appliedChanges | orderBy: sortAppliedChanges : true">
-                            <span>Change approved on </span>
-                            <span><em data-ng-bind="appliedChange.created | date:'EEE d, MMM yyyy'"></em></span>
+                    <div class="col-md-12" data-ng-show="selectedProjectChangeRequest.approval.history.length !== 0">
+                        <label>History</label>
+                        <br>
+                        <div data-ng-repeat="historyRecord in selectedProjectChangeRequest.approval.history | orderBy: sortByCreated : true">
+                            <span data-ng-show="historyRecord.approvalState === 'draft'">Drafted on </span>
+                            <span data-ng-show="historyRecord.approvalState === 'submitted'">Submitted on </span>
+                            <span data-ng-show="historyRecord.approvalState === 'approved'">Approved on </span>
+                            <span data-ng-show="historyRecord.approvalState === 'rejected'">Rejected on </span>
+                            <span><em data-ng-bind="historyRecord.created | date:'EEE d, MMM yyyy'"></em></span>
                             <span> by </span>
-                            <span><em data-ng-bind="appliedChange.user.displayName"></em></span>
+                            <span><em data-ng-bind="historyRecord.user.displayName"></em></span>
                         </div>
                     </div>
                 </div>

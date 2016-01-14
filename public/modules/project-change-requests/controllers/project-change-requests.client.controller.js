@@ -84,10 +84,10 @@ angular.module('project-change-requests').controller('ProjectChangeRequestContro
 			if(string === 'edit'){$scope.switchHeaderForm[projectChangeRequest._id] = 'edit';}
 		};
 
-		$scope.switchApplyChangeForm = {};
-		$scope.selectSetFinalForm = function(string, projectChangeRequest){
-			if(string === 'view'){ $scope.switchApplyChangeForm[projectChangeRequest._id] = 'view';}
-			if(string === 'edit'){$scope.switchApplyChangeForm[projectChangeRequest._id] = 'edit';}
+		$scope.switchBudgetForm = {};
+		$scope.selectBudgetForm = function(string, projectChangeRequest){
+			if(string === 'view'){ $scope.switchBudgetForm[projectChangeRequest._id] = 'view';}
+			if(string === 'edit'){$scope.switchBudgetForm[projectChangeRequest._id] = 'edit';}
 		};
 
 		$scope.switchStatusForm = {};
@@ -152,6 +152,13 @@ angular.module('project-change-requests').controller('ProjectChangeRequestContro
             return new Date(appliedChange.created);
         };
 
+        $scope.calculateDate = function(date, change){
+            if(date){
+                date = new Date(date);
+                return date.setDate(date.getDate() + change);
+            }
+            return null;
+        };
 
 		// ------------------- OTHER VARIABLES ---------------------
 
@@ -179,21 +186,6 @@ angular.module('project-change-requests').controller('ProjectChangeRequestContro
 				$scope.error = err.data.message;
 			});
 
-            // Old client-side code now moved server-side
-            //ProjectChangeRequests.query({
-			//	project: project._id
-			//}, function (projectCRs) {
-			//	$scope.projectChangeRequestList = _.chain(_.get(project, 'process.gates'))
-			//		.map(function (gate) {
-			//			return {
-			//				gate: gate,
-             //               projectChangeRequests: _.filter(projectCRs, _.matchesProperty('gate', gate._id))};
-			//		})
-			//		.sortBy('gate.position')
-			//		.value();
-			//}, function (err) {
-			//	$scope.error = err.data.message;
-			//});
 		};
 
 		$scope.cancelViewProject = function(){
@@ -242,7 +234,7 @@ angular.module('project-change-requests').controller('ProjectChangeRequestContro
 		};
 
 
-		// ------------- SELECT GATE REVIEW ------------
+		// ------------- SELECT CHANGE REQUEST ------------
 
 		var projectChangeRequestFromList = {};
 		// Required to update the list when changes details
@@ -291,7 +283,8 @@ angular.module('project-change-requests').controller('ProjectChangeRequestContro
 			var copyProjectChangeRequest = _.cloneDeep(projectChangeRequest);
 			copyProjectChangeRequest.project = _.get(copyProjectChangeRequest.project, '_id');
             copyProjectChangeRequest.gate = _.get(copyProjectChangeRequest.gate, '_id');
-			// Update server header
+            copyProjectChangeRequest.gateAssignmentReview.gateStatusAssignment = allowNull(copyProjectChangeRequest.gateAssignmentReview.gateStatusAssignment);
+            // Update server header
             ProjectChangeRequests.updateHeader(
 				{
                     projectChangeRequestId : copyProjectChangeRequest._id
@@ -337,22 +330,23 @@ angular.module('project-change-requests').controller('ProjectChangeRequestContro
 		};
 
 
-		// -------------------------------------------------------- SUBMIT - APPROVE -------------------------------------------------
+		// ----------------------------------------------- SUBMIT - APPROVE - REJECT -----------------------------------------
 
 		$scope.submit = function(project, projectChangeRequest){
 			// Clean-up deepPopulate
 			var copyProjectChangeRequest = _.cloneDeep(projectChangeRequest);
 			copyProjectChangeRequest.project = _.get(copyProjectChangeRequest.project, '_id');
 			copyProjectChangeRequest.gate = _.get(copyProjectChangeRequest.gate, '_id');
-			// Run server side approve
+            copyProjectChangeRequest.gateAssignmentReview.gateStatusAssignment = allowNull(copyProjectChangeRequest.gateAssignmentReview.gateStatusAssignment);
+            // Run server side approve
 			ProjectChangeRequests.submit(
 				{
 					projectChangeRequestId : copyProjectChangeRequest._id
 				}, copyProjectChangeRequest,
 				function(res){
-					// Refresh the object with the current performances values
-					$scope.selectProjectChangeRequest(projectChangeRequest);
-					$scope.selectSetFinalForm('view', projectChangeRequest);
+					// Refresh the approval history
+                    projectChangeRequestFromList[projectChangeRequest._id].approval = res.approval;
+                    projectChangeRequest.approval = res.approval;
 				},
 				function(err){$scope.error = err.data.message;}
 			);
@@ -363,21 +357,99 @@ angular.module('project-change-requests').controller('ProjectChangeRequestContro
 			var copyProjectChangeRequest = _.cloneDeep(projectChangeRequest);
             copyProjectChangeRequest.project = _.get(copyProjectChangeRequest.project, '_id');
             copyProjectChangeRequest.gate = _.get(copyProjectChangeRequest.gate, '_id');
-			// Run server side approve
+            copyProjectChangeRequest.gateAssignmentReview.gateStatusAssignment = allowNull(copyProjectChangeRequest.gateAssignmentReview.gateStatusAssignment);
+            // Run server side approve
             ProjectChangeRequests.approve(
 				{
                     projectChangeRequestId : copyProjectChangeRequest._id
 				}, copyProjectChangeRequest,
 				function(res){
-					// Refresh the object with the current performances values
-					$scope.selectProjectChangeRequest(projectChangeRequest);
-					$scope.selectSetFinalForm('view', projectChangeRequest);
+					// Refresh the object with the current performances values since you approved
+                    $scope.selectProjectChangeRequest(projectChangeRequest);
 				},
 				function(err){$scope.error = err.data.message;}
 			);
 		};
 
-		// -------------------------------------------------------- STATUS -------------------------------------------------
+        $scope.reject = function(project, projectChangeRequest){
+            // Clean-up deepPopulate
+            var copyProjectChangeRequest = _.cloneDeep(projectChangeRequest);
+            copyProjectChangeRequest.project = _.get(copyProjectChangeRequest.project, '_id');
+            copyProjectChangeRequest.gate = _.get(copyProjectChangeRequest.gate, '_id');
+            copyProjectChangeRequest.gateAssignmentReview.gateStatusAssignment = allowNull(copyProjectChangeRequest.gateAssignmentReview.gateStatusAssignment);
+            // Run server side approve
+            ProjectChangeRequests.reject(
+                {
+                    projectChangeRequestId : copyProjectChangeRequest._id
+                }, copyProjectChangeRequest,
+                function(res){
+                    // Refresh the approval history
+                    projectChangeRequestFromList[projectChangeRequest._id].approval = res.approval;
+                    projectChangeRequest.approval = res.approval;
+                },
+                function(err){$scope.error = err.data.message;}
+            );
+        };
+
+        $scope.draft = function(project, projectChangeRequest){
+            // Clean-up deepPopulate
+            var copyProjectChangeRequest = _.cloneDeep(projectChangeRequest);
+            copyProjectChangeRequest.project = _.get(copyProjectChangeRequest.project, '_id');
+            copyProjectChangeRequest.gate = _.get(copyProjectChangeRequest.gate, '_id');
+            copyProjectChangeRequest.gateAssignmentReview.gateStatusAssignment = _.get(copyProjectChangeRequest.gateAssignmentReview.gateStatusAssignment, '_id');
+            // Run server side approve
+            ProjectChangeRequests.draft(
+                {
+                    projectChangeRequestId : copyProjectChangeRequest._id
+                }, copyProjectChangeRequest,
+                function(res){
+                    // Refresh the approval history
+                    projectChangeRequestFromList[projectChangeRequest._id].approval = res.approval;
+                    projectChangeRequest.approval = res.approval;
+                },
+                function(err){$scope.error = err.data.message;}
+            );
+        };
+
+
+        // -------------------------------------------------------- BUDGET -------------------------------------------------
+
+
+        $scope.editBudget = function(projectChangeRequest){
+            $scope.selectBudgetForm('edit', projectChangeRequest);
+        };
+
+        $scope.saveEditBudget = function(projectChangeRequest){
+            // Clean-up deepPopulate
+            var copyProjectChangeRequest = _.cloneDeep(projectChangeRequest);
+            copyProjectChangeRequest.project = _.get(copyProjectChangeRequest.project, '_id');
+            copyProjectChangeRequest.gate = _.get(copyProjectChangeRequest.gate, '_id');
+            // Update server header
+            ProjectChangeRequests.updateBudget(
+                {
+                    projectChangeRequestId : copyProjectChangeRequest._id
+                }, copyProjectChangeRequest,
+                function(res){
+                    // Update details pane view with new saved details
+                    originalProjectChangeRequest[projectChangeRequest._id].gateAssignmentReview.budgetChange = projectChangeRequest.gateAssignmentReview.budgetChange;
+                    // Update list of reviews with new date / title
+                    projectChangeRequestFromList[projectChangeRequest._id].gateAssignmentReview.budgetChange = projectChangeRequest.gateAssignmentReview.budgetChange;
+                    // Close edit header form and back to view
+                    $scope.selectBudgetForm('view', projectChangeRequest);
+                },
+                function(err){$scope.error = err.data.message;}
+            );
+        };
+
+        $scope.cancelEditBudget = function(projectChangeRequest){
+            projectChangeRequest.gateAssignmentReview.budgetChange = originalProjectChangeRequest[projectChangeRequest._id].gateAssignmentReview.budgetChange;
+            $scope.selectBudgetForm('view', projectChangeRequest);
+        };
+
+
+
+
+        // -------------------------------------------------------- STATUS -------------------------------------------------
 
         $scope.baselineDeliveryDateOpened = {};
         $scope.openBaselineDeliveryDate = function(projectChangeRequest, $event){
@@ -442,13 +514,6 @@ angular.module('project-change-requests').controller('ProjectChangeRequestContro
 
 		// -------------------------------------------------------- BASELINE DURATION -------------------------------------------------
 
-		$scope.baselineDurationDateOpened = {};
-		$scope.openBaselineDurationDate = function(baselineDurationReview, $event){
-			$event.preventDefault();
-			$event.stopPropagation();
-			$scope.baselineDurationDateOpened[baselineDurationReview._id] = true;
-		};
-
 		var originalBaselineDurationReview = {};
 
 		$scope.editBaselineDuration = function(baselineDurationReview){
@@ -471,19 +536,13 @@ angular.module('project-change-requests').controller('ProjectChangeRequestContro
 		};
 
 		$scope.cancelEditBaselineDuration = function(baselineDurationReview){
-			baselineDurationReview.newDate = originalBaselineDurationReview[baselineDurationReview._id].newDate;
+			baselineDurationReview.dateChange = originalBaselineDurationReview[baselineDurationReview._id].dateChange;
 			$scope.selectBaselineDurationForm('view', baselineDurationReview);
 		};
 
 
 		// -------------------------------------------------------- ACTUAL DURATION -------------------------------------------------
 
-		$scope.actualDurationDateOpened = {};
-		$scope.openActualDurationDate = function(actualDurationReview, $event){
-			$event.preventDefault();
-			$event.stopPropagation();
-			$scope.actualDurationDateOpened[actualDurationReview._id] = true;
-		};
 
 		var originalActualDurationReview = {};
 
@@ -507,7 +566,7 @@ angular.module('project-change-requests').controller('ProjectChangeRequestContro
 		};
 
 		$scope.cancelEditActualDuration = function(actualDurationReview){
-			actualDurationReview.newDate = originalActualDurationReview[actualDurationReview._id].newDate;
+			actualDurationReview.dateChange = originalActualDurationReview[actualDurationReview._id].dateChange;
 			$scope.selectActualDurationForm('view', actualDurationReview);
 		};
 
@@ -536,7 +595,7 @@ angular.module('project-change-requests').controller('ProjectChangeRequestContro
 		};
 
 		$scope.cancelEditBaselineCost = function(baselineCostReview){
-			baselineCostReview.newCost = originalBaselineCostReview[baselineCostReview._id].newCost;
+			baselineCostReview.costChange = originalBaselineCostReview[baselineCostReview._id].costChange;
 			$scope.selectBaselineCostForm('view', baselineCostReview);
 		};
 
@@ -565,7 +624,7 @@ angular.module('project-change-requests').controller('ProjectChangeRequestContro
 		};
 
 		$scope.cancelEditActualCost = function(actualCostReview){
-			actualCostReview.newCost = originalActualCostReview[actualCostReview._id].newCost;
+			actualCostReview.costChange = originalActualCostReview[actualCostReview._id].costChange;
 			$scope.selectActualCostForm('view', actualCostReview);
 		};
 
@@ -595,7 +654,7 @@ angular.module('project-change-requests').controller('ProjectChangeRequestContro
 		};
 
 		$scope.cancelEditBaselineCompletion = function(baselineCompletionReview){
-			baselineCompletionReview.newCompletion = originalBaselineCompletionReview[baselineCompletionReview._id].newCompletion;
+			baselineCompletionReview.completionChange = originalBaselineCompletionReview[baselineCompletionReview._id].completionChange;
 			$scope.selectBaselineCompletionForm('view', baselineCompletionReview);
 		};
 
@@ -624,7 +683,7 @@ angular.module('project-change-requests').controller('ProjectChangeRequestContro
 		};
 
 		$scope.cancelEditActualCompletion = function(actualCompletionReview){
-			actualCompletionReview.newCompletion = originalActualCompletionReview[actualCompletionReview._id].newCompletion;
+			actualCompletionReview.completionChange = originalActualCompletionReview[actualCompletionReview._id].completionChange;
 			$scope.selectActualCompletionForm('view', actualCompletionReview);
 		};
 

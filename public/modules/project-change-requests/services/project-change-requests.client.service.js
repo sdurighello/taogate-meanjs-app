@@ -34,6 +34,14 @@ angular.module('project-change-requests').factory('ProjectChangeRequests', ['$re
 				// req.body: {whole projectChangeRequest object}
 			},
 
+			// --- Budget --
+
+			updateBudget: {
+				method: 'PUT',
+				url: 'project-change-requests/:projectChangeRequestId/budget'
+				// req.body: {whole projectChangeRequest object}
+			},
+
 			// --- Approval --
 
 			submit: {
@@ -45,6 +53,18 @@ angular.module('project-change-requests').factory('ProjectChangeRequests', ['$re
 			approve: {
 				method: 'PUT',
 				url: 'project-change-requests/:projectChangeRequestId/approve'
+				// req.body: {whole projectChangeRequest object}
+			},
+
+            reject: {
+                method: 'PUT',
+                url: 'project-change-requests/:projectChangeRequestId/reject'
+                // req.body: {whole projectChangeRequest object}
+            },
+
+			draft: {
+				method: 'PUT',
+				url: 'project-change-requests/:projectChangeRequestId/draft'
 				// req.body: {whole projectChangeRequest object}
 			},
 

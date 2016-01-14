@@ -18,6 +18,7 @@ exports.create = function(req, res) {
 
     var Gate = mongoose.mtModel(req.user.tenantId + '.' + 'Gate');
 
+    var GateStatusAssignment = mongoose.mtModel(req.user.tenantId + '.' + 'GateStatusAssignment');
     var BaselineDuration = mongoose.mtModel(req.user.tenantId + '.' + 'BaselineDuration');
     var BaselineCost = mongoose.mtModel(req.user.tenantId + '.' + 'BaselineCost');
     var BaselineCompletion = mongoose.mtModel(req.user.tenantId + '.' + 'BaselineCompletion');
@@ -32,6 +33,9 @@ exports.create = function(req, res) {
         // Create all the CR arrays and passed them on
         function(callback){
             var retObjArrays = {
+
+                gateAssignmentReview : {},
+
                 baselineDurationReviews : [],
                 estimateDurationReviews : [],
                 actualDurationReviews : [],
@@ -45,6 +49,17 @@ exports.create = function(req, res) {
                 actualCompletionReviews : []
             };
             async.parallel([
+                // Gate Status Assignment
+                function(callback){
+                    GateStatusAssignment.findOne({project: req.body.project, gate: req.body.gate}, function(err, assignment){
+                        if(err){
+                            return callback(err);
+                        }
+                        retObjArrays.gateAssignmentReview.gateStatusAssignment = assignment._id;
+                        retObjArrays.gateAssignmentReview.budgetChange = 0;
+                        callback(null);
+                    });
+                },
                 // Duration
                 function(callback){
                     BaselineDuration.find({project: req.body.project, sourceGate: req.body.gate}, function(err, baselineDurations){
@@ -54,7 +69,7 @@ exports.create = function(req, res) {
                         async.each(baselineDurations, function(baselineDuration, callback){
                             retObjArrays.baselineDurationReviews.push({
                                 baselineDuration: baselineDuration._id,
-                                newDate: baselineDuration.currentRecord.gateDate
+                                dateChange: 0
                             });
                             callback();
                         });
@@ -69,7 +84,7 @@ exports.create = function(req, res) {
                         async.each(actualDurations, function(actualDuration, callback){
                             retObjArrays.actualDurationReviews.push({
                                 actualDuration: actualDuration._id,
-                                newDate: actualDuration.currentRecord.gateDate
+                                dateChange: 0
                             });
                             callback();
                         });
@@ -85,7 +100,7 @@ exports.create = function(req, res) {
                         async.each(baselineCosts, function(baselineCost, callback){
                             retObjArrays.baselineCostReviews.push({
                                 baselineCost: baselineCost._id,
-                                newCost: baselineCost.currentRecord.cost
+                                costChange: 0
                             });
                             callback();
                         });
@@ -100,7 +115,7 @@ exports.create = function(req, res) {
                         async.each(actualCosts, function(actualCost, callback){
                             retObjArrays.actualCostReviews.push({
                                 actualCost: actualCost._id,
-                                newCost: actualCost.currentRecord.cost
+                                costChange: 0
                             });
                             callback();
                         });
@@ -116,7 +131,7 @@ exports.create = function(req, res) {
                         async.each(baselineCompletions, function(baselineCompletion, callback){
                             retObjArrays.baselineCompletionReviews.push({
                                 baselineCompletion: baselineCompletion._id,
-                                newCompletion: baselineCompletion.currentRecord.completion
+                                completionChange: 0
                             });
                             callback();
                         });
@@ -131,7 +146,7 @@ exports.create = function(req, res) {
                         async.each(actualCompletions, function(actualCompletion, callback){
                             retObjArrays.actualCompletionReviews.push({
                                 actualCompletion: actualCompletion._id,
-                                newCompletion: actualCompletion.currentRecord.completion
+                                completionChange: 0
                             });
                             callback();
                         });
@@ -152,8 +167,18 @@ exports.create = function(req, res) {
             projectChangeRequest.reason = null;
             projectChangeRequest.state = null;
             projectChangeRequest.priority = null;
+            // Gate Assignment Review (Budget)
+            projectChangeRequest.gateAssignmentReview.gateStatusAssignment = retObjArrays.gateAssignmentReview.gateStatusAssignment;
+            projectChangeRequest.gateAssignmentReview.budgetChange = retObjArrays.gateAssignmentReview.budgetChange;
             // Approval
-            projectChangeRequest.approval = 'draft';
+            projectChangeRequest.approval = {
+                currentRecord : {
+                    approvalState : 'draft',
+                    created : Date.now(),
+                    user : req.user
+                },
+                history : []
+            };
             // Status
             projectChangeRequest.statusReview = {
                 currentRecord : {
@@ -166,7 +191,6 @@ exports.create = function(req, res) {
                 },
                 history : []
             };
-            projectChangeRequest.appliedChanges = [];
             // Performances
             projectChangeRequest.baselineDurationReviews = retObjArrays.baselineDurationReviews;
             projectChangeRequest.actualDurationReviews = retObjArrays.actualDurationReviews;

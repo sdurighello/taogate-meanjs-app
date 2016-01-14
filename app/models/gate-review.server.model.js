@@ -65,6 +65,12 @@ var ActualCompletionReviewSchema = new Schema({
     newCompletion : {type: Number}
 });
 
+var approvalRecord = {
+    approvalState: {type: String, enum: ['draft', 'submitted', 'approved','rejected'], default:'draft', required:'Approval flag is required'},
+    created: { type: Date, default: Date.now },
+    user: { type: Schema.ObjectId, ref: 'User' }
+};
+
 var GateReviewSchema = new Schema({
 
     project: {type: Schema.Types.ObjectId, ref: 'Project', $tenant:true, required:'Project for gate review required'},
@@ -73,11 +79,11 @@ var GateReviewSchema = new Schema({
     reviewDate : {type: Date, default: Date.now, required:'Review date required'},
     title : {type: String, default:'', required:'Review title required'},
     overallComment : {type: String, default:''},
-    // This "final" refers to the gate review document and not to the gate
-    // So it doesn't belong to gate-status-assignment but to the header
-    // When the gate review is approved, it will apply the changes to the performances
-    // and the gate-review document cannot be changed or deleted anymore
-    final : {type: Boolean, default: false, required:'Final flag required'},
+
+    approval : {
+        currentRecord : approvalRecord,
+        history : [approvalRecord]
+    },
 
     gateStatusAssignment: {type: Schema.Types.ObjectId, ref: 'GateStatusAssignment', $tenant:true},
     status : {type: Schema.Types.ObjectId, ref: 'GateStatus', $tenant:true},

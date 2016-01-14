@@ -120,6 +120,116 @@ exports.list = function(req, res) {
 };
 
 
+// ************************** APPROVAL **************************
+
+exports.submit = function(req, res) {
+    var portfolioChangeRequest = req.portfolioChangeRequest;
+    if(portfolioChangeRequest.approval.currentRecord.approvalState === 'draft'){
+        portfolioChangeRequest.approval.history.push({
+            approvalState : portfolioChangeRequest.approval.currentRecord.approvalState,
+            user : portfolioChangeRequest.approval.currentRecord.user,
+            created : portfolioChangeRequest.approval.currentRecord.created
+        });
+        portfolioChangeRequest.approval.currentRecord.approvalState = 'submitted';
+        portfolioChangeRequest.approval.currentRecord.user = req.user;
+        portfolioChangeRequest.approval.currentRecord.created = Date.now();
+
+        portfolioChangeRequest.save(function(err){
+            if (err) {
+                console.log(err);
+                return res.status(400).send({
+                    message: errorHandler.getErrorMessage(err)
+                });
+            } else {
+                res.jsonp(portfolioChangeRequest);
+            }
+        });
+    } else {
+        res.status(403).send({message :'Current document is '+ portfolioChangeRequest.approval.currentRecord.approvalState +' and cannot be submitted'});
+    }
+};
+
+exports.approve = function(req, res) {
+    var portfolioChangeRequest = req.portfolioChangeRequest;
+    if(portfolioChangeRequest.approval.currentRecord.approvalState === 'submitted'){
+        portfolioChangeRequest.approval.history.push({
+            approvalState : portfolioChangeRequest.approval.currentRecord.approvalState,
+            user : portfolioChangeRequest.approval.currentRecord.user,
+            created : portfolioChangeRequest.approval.currentRecord.created
+        });
+        portfolioChangeRequest.approval.currentRecord.approvalState = 'approved';
+        portfolioChangeRequest.approval.currentRecord.user = req.user;
+        portfolioChangeRequest.approval.currentRecord.created = Date.now();
+
+        portfolioChangeRequest.save(function(err){
+            if (err) {
+                console.log(err);
+                return res.status(400).send({
+                    message: errorHandler.getErrorMessage(err)
+                });
+            } else {
+                res.jsonp(portfolioChangeRequest);
+            }
+        });
+    } else {
+        res.status(403).send({message :'Current document is '+ portfolioChangeRequest.approval.currentRecord.approvalState +' and cannot be approved'});
+    }
+};
+
+exports.reject = function(req, res) {
+    var portfolioChangeRequest = req.portfolioChangeRequest;
+    if(portfolioChangeRequest.approval.currentRecord.approvalState === 'submitted'){
+        portfolioChangeRequest.approval.history.push({
+            approvalState : portfolioChangeRequest.approval.currentRecord.approvalState,
+            user : portfolioChangeRequest.approval.currentRecord.user,
+            created : portfolioChangeRequest.approval.currentRecord.created
+        });
+        portfolioChangeRequest.approval.currentRecord.approvalState = 'rejected';
+        portfolioChangeRequest.approval.currentRecord.user = req.user;
+        portfolioChangeRequest.approval.currentRecord.created = Date.now();
+
+        portfolioChangeRequest.save(function(err){
+            if (err) {
+                console.log(err);
+                return res.status(400).send({
+                    message: errorHandler.getErrorMessage(err)
+                });
+            } else {
+                res.jsonp(portfolioChangeRequest);
+            }
+        });
+    } else {
+        res.status(403).send({message :'Current document is '+ portfolioChangeRequest.approval.currentRecord.approvalState +' and cannot be rejected'});
+    }
+};
+
+exports.draft = function(req, res) {
+    var portfolioChangeRequest = req.portfolioChangeRequest;
+    if(portfolioChangeRequest.approval.currentRecord.approvalState === 'rejected'){
+        portfolioChangeRequest.approval.history.push({
+            approvalState : portfolioChangeRequest.approval.currentRecord.approvalState,
+            user : portfolioChangeRequest.approval.currentRecord.user,
+            created : portfolioChangeRequest.approval.currentRecord.created
+        });
+        portfolioChangeRequest.approval.currentRecord.approvalState = 'draft';
+        portfolioChangeRequest.approval.currentRecord.user = req.user;
+        portfolioChangeRequest.approval.currentRecord.created = Date.now();
+
+        portfolioChangeRequest.save(function(err){
+            if (err) {
+                console.log(err);
+                return res.status(400).send({
+                    message: errorHandler.getErrorMessage(err)
+                });
+            } else {
+                res.jsonp(portfolioChangeRequest);
+            }
+        });
+    } else {
+        res.status(403).send({message :'Current document is '+ portfolioChangeRequest.approval.currentRecord.approvalState +' and cannot be drafted'});
+    }
+};
+
 
 // **************** ASSOCIATED PROJECT CHANGES ******************
 
@@ -277,50 +387,13 @@ exports.portfolioChangeRequestByID = function(req, res, next, id) {
 
     var PortfolioChangeRequest = mongoose.mtModel(req.user.tenantId + '.' + 'PortfolioChangeRequest');
     PortfolioChangeRequest.findById(id).deepPopulate([
-        'associatedProjectChangeRequests.baselineCostReviews.baselineCost',
-        'associatedProjectChangeRequests.actualCostReviews.actualCost'
-    ]).populate('user', 'displayName').exec(function(err, portfolioChangeRequest) {
+        'associatedProjectChangeRequests'
+    ]).populate('user', 'displayName').populate('approval.currentRecord.user', 'displayName').populate('approval.history.user', 'displayName')
+        .exec(function(err, portfolioChangeRequest) {
 		if (err){ return next(err); }
-		if (! portfolioChangeRequest){ return next(new Error('Failed to load Portfolio change request ' + id)); }
-
-        var totalBaselineCostChange = 0;
-        var totalCurrentBaselineCost = 0;
-        var totalNewBaselineCost = 0;
-
-        var totalActualCostChange = 0;
-        var totalCurrentActualCost = 0;
-        var totalNewActualCost = 0;
-
-        async.eachSeries(portfolioChangeRequest.associatedProjectChangeRequests, function(change, callback){
-            totalCurrentBaselineCost = totalCurrentBaselineCost + _.reduce(change.baselineCostReviews, function(sum, review){
-                return sum + review.baselineCost.currentRecord.cost;
-                }, 0);
-            totalNewBaselineCost = totalNewBaselineCost + _.reduce(change.baselineCostReviews, function(sum, review){
-                    return sum + review.newCost;
-                }, 0);
-
-            totalCurrentActualCost = totalCurrentActualCost + _.reduce(change.actualCostReviews, function(sum, review){
-                    return sum + review.actualCost.currentRecord.cost;
-                }, 0);
-            totalNewActualCost = totalNewActualCost + _.reduce(change.actualCostReviews, function(sum, review){
-                    return sum + review.newCost;
-                }, 0);
-
-            callback();
-
-        }, function(err){
-            if(err){ return next(err); }
-            totalBaselineCostChange = totalCurrentBaselineCost - totalNewBaselineCost;
-            totalActualCostChange = totalCurrentActualCost - totalNewActualCost;
-            portfolioChangeRequest.statistics.totalActualCostChange = totalActualCostChange;
-            portfolioChangeRequest.statistics.totalBaselineCostChange = totalBaselineCostChange;
-            portfolioChangeRequest.statistics.totalCurrentActualCost = totalCurrentActualCost;
-            portfolioChangeRequest.statistics.totalCurrentBaselineCost = totalCurrentBaselineCost;
-            portfolioChangeRequest.statistics.totalNewActualCost = totalNewActualCost;
-            portfolioChangeRequest.statistics.totalNewBaselineCost = totalNewBaselineCost;
-            req.portfolioChangeRequest = portfolioChangeRequest ;
-            next();
-        });
+		if (! portfolioChangeRequest){ return next(new Error({message:'Failed to load Portfolio change request ' + id})); }
+        req.portfolioChangeRequest = portfolioChangeRequest ;
+        next();
 	});
 };
 

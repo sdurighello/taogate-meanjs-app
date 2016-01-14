@@ -36,11 +36,29 @@ angular.module('gate-management-review').factory('GateReviews', ['$resource',
                 // req.body: {whole gate review object}
             },
 
-            // --- Final --
+            // --- Approval --
 
-            setFinal: {
+            submit: {
                 method: 'PUT',
-                url: 'gate-reviews/:gateReviewId/final'
+                url: 'gate-reviews/:gateReviewId/submit'
+                // req.body: {whole gate review object}
+            },
+
+            approve: {
+                method: 'PUT',
+                url: 'gate-reviews/:gateReviewId/approve'
+                // req.body: {whole gate review object}
+            },
+
+            reject: {
+                method: 'PUT',
+                url: 'gate-reviews/:gateReviewId/reject'
+                // req.body: {whole gate review object}
+            },
+
+            draft: {
+                method: 'PUT',
+                url: 'gate-reviews/:gateReviewId/draft'
                 // req.body: {whole gate review object}
             },
 

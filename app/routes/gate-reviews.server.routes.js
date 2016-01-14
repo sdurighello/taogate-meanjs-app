@@ -18,10 +18,19 @@ module.exports = function(app) {
     app.route('/gate-reviews-reviewsForProject')
         .get(users.requiresLogin, gateReviews.reviewsForProject);
 
-    // Final
+    // Approval
 
-    app.route('/gate-reviews/:gateReviewId/final')
-        .put(users.requiresLogin, gateReviews.hasAuthorization, gateReviews.setFinal);
+    app.route('/gate-reviews/:gateReviewId/submit')
+        .put(users.requiresLogin, gateReviews.hasAuthorization, gateReviews.submit);
+
+    app.route('/gate-reviews/:gateReviewId/approve')
+        .put(users.requiresLogin, gateReviews.hasAuthorization, gateReviews.approve);
+
+    app.route('/gate-reviews/:gateReviewId/reject')
+        .put(users.requiresLogin, gateReviews.hasAuthorization, gateReviews.reject);
+
+    app.route('/gate-reviews/:gateReviewId/draft')
+        .put(users.requiresLogin, gateReviews.hasAuthorization, gateReviews.draft);
 
     // Header & Status
 

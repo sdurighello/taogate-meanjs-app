@@ -16,6 +16,8 @@ exports.approve = function(req, res) {
     var ProjectChangeRequest = mongoose.mtModel(req.user.tenantId + '.' + 'ProjectChangeRequest');
     var projectChangeRequest = req.projectChangeRequest;
 
+    var GateStatusAssignment = mongoose.mtModel(req.user.tenantId + '.' + 'GateStatusAssignment');
+
     var Gate = mongoose.mtModel(req.user.tenantId + '.' + 'Gate');
 
     var BaselineDuration = mongoose.mtModel(req.user.tenantId + '.' + 'BaselineDuration');
@@ -32,6 +34,34 @@ exports.approve = function(req, res) {
         function(callback){
             // Async.series inside an async.series so it doesn't save the projectChangeRequest if the rest is not done
             async.series([
+                // GATE-STATUS-ASSIGNMENT
+                function(callback){
+                    GateStatusAssignment.findById(req.body.gateAssignmentReview.gateStatusAssignment).exec(function(err, statusAssignment){
+                        if(err){
+                            return callback(err);
+                        } else if(!statusAssignment){
+                            return callback(new Error('Cannot find gateStatusAssignment ' + req.body.gateAssignmentReview.gateStatusAssignment));
+                        } else {
+                            // Budget
+                            statusAssignment.budget.history.push({
+                                user : statusAssignment.budget.currentRecord.user,
+                                created: statusAssignment.budget.currentRecord.created,
+                                sourceGateReview : statusAssignment.budget.currentRecord.sourceGateReview,
+                                sourceChangeRequest : statusAssignment.budget.currentRecord.sourceChangeRequest,
+                                amount : statusAssignment.budget.currentRecord.amount
+                            });
+                            statusAssignment.budget.currentRecord.amount = req.body.gateAssignmentReview.budgetChange;
+                            statusAssignment.budget.currentRecord.sourceChangeRequest = req.body._id;
+                            statusAssignment.budget.currentRecord.sourceGateReview = null;
+                            statusAssignment.budget.currentRecord.created = Date.now();
+                            statusAssignment.budget.currentRecord.user = req.user;
+                            // Save
+                            statusAssignment.save(function(err){
+                                callback(err);
+                            });
+                        }
+                    });
+                },
                 // BASELINE-DURATION
                 function(callback){
                     async.eachSeries(req.body.baselineDurationReviews, function(baselineDurationReview, callback){
@@ -48,7 +78,9 @@ exports.approve = function(req, res) {
                                     sourceGateReview : performance.currentRecord.sourceGateReview,
                                     gateDate : performance.currentRecord.gateDate
                                 });
-                                performance.currentRecord.gateDate = baselineDurationReview.newDate;
+                                if(performance.currentRecord.gateDate){
+                                    performance.currentRecord.gateDate = performance.currentRecord.gateDate.setDate(performance.currentRecord.gateDate.getDate() + baselineDurationReview.dateChange);
+                                }
                                 performance.currentRecord.sourceGateReview = null;
                                 performance.currentRecord.sourceChangeRequest = req.body._id;
                                 performance.currentRecord.created = Date.now();
@@ -78,7 +110,9 @@ exports.approve = function(req, res) {
                                     sourceGateReview : performance.currentRecord.sourceGateReview,
                                     gateDate : performance.currentRecord.gateDate
                                 });
-                                performance.currentRecord.gateDate = actualDurationReview.newDate;
+                                if(performance.currentRecord.gateDate){
+                                    performance.currentRecord.gateDate = performance.currentRecord.gateDate.setDate(performance.currentRecord.gateDate.getDate() + actualDurationReview.dateChange);
+                                }
                                 performance.currentRecord.sourceGateReview = null;
                                 performance.currentRecord.sourceChangeRequest = req.body._id;
                                 performance.currentRecord.created = Date.now();
@@ -108,7 +142,7 @@ exports.approve = function(req, res) {
                                     sourceGateReview : performance.currentRecord.sourceGateReview,
                                     cost : performance.currentRecord.cost
                                 });
-                                performance.currentRecord.cost = baselineCostReview.newCost;
+                                performance.currentRecord.cost = performance.currentRecord.cost + baselineCostReview.costChange;
                                 performance.currentRecord.sourceGateReview = null;
                                 performance.currentRecord.sourceChangeRequest = req.body._id;
                                 performance.currentRecord.created = Date.now();
@@ -138,7 +172,7 @@ exports.approve = function(req, res) {
                                     sourceGateReview : performance.currentRecord.sourceGateReview,
                                     cost : performance.currentRecord.cost
                                 });
-                                performance.currentRecord.cost = actualCostReview.newCost;
+                                performance.currentRecord.cost = performance.currentRecord.cost + actualCostReview.costChange;
                                 performance.currentRecord.sourceGateReview = null;
                                 performance.currentRecord.sourceChangeRequest = req.body._id;
                                 performance.currentRecord.created = Date.now();
@@ -168,7 +202,7 @@ exports.approve = function(req, res) {
                                     sourceGateReview : performance.currentRecord.sourceGateReview,
                                     completion : performance.currentRecord.completion
                                 });
-                                performance.currentRecord.completion = baselineCompletionReview.newCompletion;
+                                performance.currentRecord.completion = performance.currentRecord.completion + baselineCompletionReview.completionChange;
                                 performance.currentRecord.sourceGateReview = null;
                                 performance.currentRecord.sourceChangeRequest = req.body._id;
                                 performance.currentRecord.created = Date.now();
@@ -198,7 +232,7 @@ exports.approve = function(req, res) {
                                     sourceGateReview : performance.currentRecord.sourceGateReview,
                                     completion : performance.currentRecord.completion
                                 });
-                                performance.currentRecord.completion = actualCompletionReview.newCompletion;
+                                performance.currentRecord.completion = performance.currentRecord.completion + actualCompletionReview.completionChange;
                                 performance.currentRecord.sourceGateReview = null;
                                 performance.currentRecord.sourceChangeRequest = req.body._id;
                                 performance.currentRecord.created = Date.now();
@@ -220,15 +254,21 @@ exports.approve = function(req, res) {
                 }
             });
         },
-        // If all the above series function are successful, created an 'applyChange" record
+        // If all the above series function are successful, set the CR to approved
         function(callback){
             projectChangeRequest.user = req.user;
             projectChangeRequest.created = Date.now();
-            projectChangeRequest.approval = 'approved';
-            projectChangeRequest.appliedChanges.push({
-                user : req.user,
-                created : Date.now()
+
+            projectChangeRequest.approval.history.push({
+                approvalState : projectChangeRequest.approval.currentRecord.approvalState,
+                user : projectChangeRequest.approval.currentRecord.user,
+                created : projectChangeRequest.approval.currentRecord.created
             });
+
+            projectChangeRequest.approval.currentRecord.approvalState = 'approved';
+            projectChangeRequest.approval.currentRecord.user = req.user;
+            projectChangeRequest.approval.currentRecord.created = Date.now();
+
             projectChangeRequest.save(function(err){
                 callback(err);
             });

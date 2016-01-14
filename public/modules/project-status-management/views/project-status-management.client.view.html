@@ -141,7 +141,7 @@
 															data-ng-repeat="projectStatusUpdate in reviewObject.projectStatusUpdates | orderBy: sortProjectStatusUpdates : true"
 															data-ng-click="selectProjectStatusUpdate(projectStatusUpdate)"
 															class="btn btn-sm center-block btn-block" style="overflow: hidden;"
-															data-ng-class="{'btn-default' : projectStatusUpdate.final, 'btn-info' : !projectStatusUpdate.final}">
+															data-ng-class="{'btn-default' : projectStatusUpdate.approval.currentRecord.approvalState === 'approved', 'btn-info' : projectStatusUpdate.approval.currentRecord.approvalState !== 'approved'}">
 														<span class="small">{{projectStatusUpdate.title}}</span>
 													</button>
 												</div>
@@ -176,8 +176,8 @@
 														<label class="btn btn-info btn-xs" data-ng-model="projectStatusUpdateDetails" btn-radio="'estimates'">
 															Estimates
 														</label>
-														<label class="btn btn-info btn-xs" data-ng-model="projectStatusUpdateDetails" btn-radio="'applyUpdate'">
-															Apply update
+														<label class="btn btn-info btn-xs" data-ng-model="projectStatusUpdateDetails" btn-radio="'approval'">
+															Approval
 														</label>
 													</div>
 												</div>
@@ -200,7 +200,7 @@
 																	</div>
 																</div>
 																<hr>
-																<div class="form-group-sm pull-right" data-ng-show="userHasAuthorization && !selectedProjectStatusUpdate.final">
+																<div class="form-group-sm pull-right" data-ng-show="userHasAuthorization">
 																	<button class="btn btn-success btn-xs" data-ng-click="editHeader(selectedProjectStatusUpdate)">
 																		Edit
 																	</button>
@@ -274,7 +274,7 @@
 																					New
 																				</div>
 																				<div class="col-md-6">
-																					<div class="pull-right" data-ng-show="userHasAuthorization && !selectedProjectStatusUpdate.final">
+																					<div class="pull-right" data-ng-show="userHasAuthorization">
 																						<button class="btn btn-success btn-xs" data-ng-click="editOverallStatus(selectedProjectStatusUpdate)">
 																							Edit
 																						</button>
@@ -370,7 +370,7 @@
                                                                                     New
                                                                                 </div>
                                                                                 <div class="col-md-6">
-                                                                                    <div class="pull-right" data-ng-show="userHasAuthorization && !selectedProjectStatusUpdate.final">
+                                                                                    <div class="pull-right" data-ng-show="userHasAuthorization ">
                                                                                         <button class="btn btn-success btn-xs" data-ng-click="editDurationStatus(selectedProjectStatusUpdate)">
                                                                                             Edit
                                                                                         </button>
@@ -466,7 +466,7 @@
                                                                                     New
                                                                                 </div>
                                                                                 <div class="col-md-6">
-                                                                                    <div class="pull-right" data-ng-show="userHasAuthorization && !selectedProjectStatusUpdate.final">
+                                                                                    <div class="pull-right" data-ng-show="userHasAuthorization ">
                                                                                         <button class="btn btn-success btn-xs" data-ng-click="editCostStatus(selectedProjectStatusUpdate)">
                                                                                             Edit
                                                                                         </button>
@@ -562,7 +562,7 @@
                                                                                     New
                                                                                 </div>
                                                                                 <div class="col-md-6">
-                                                                                    <div class="pull-right" data-ng-show="userHasAuthorization && !selectedProjectStatusUpdate.final">
+                                                                                    <div class="pull-right" data-ng-show="userHasAuthorization ">
                                                                                         <button class="btn btn-success btn-xs" data-ng-click="editCompletionStatus(selectedProjectStatusUpdate)">
                                                                                             Edit
                                                                                         </button>
@@ -660,9 +660,8 @@
                                                                                     New
                                                                                 </div>
                                                                                 <div class="col-md-6">
-                                                                                    <div class="pull-right" data-ng-show="userHasAuthorization && !selectedProjectStatusUpdate.final">
-                                                                                        <button class="btn btn-success btn-xs" data-ng-click="editStatusArea(selectedAreaUpdate)"
-                                                                                                data-ng-show="userHasAuthorization && !selectedProjectStatusUpdate.final">
+                                                                                    <div class="pull-right" data-ng-show="userHasAuthorization ">
+                                                                                        <button class="btn btn-success btn-xs" data-ng-click="editStatusArea(selectedAreaUpdate)">
                                                                                             Edit
                                                                                         </button>
                                                                                     </div>
@@ -759,9 +758,8 @@
                                                                                     New
                                                                                 </div>
                                                                                 <div class="col-md-6">
-                                                                                    <div class="pull-right" data-ng-show="userHasAuthorization && !selectedProjectStatusUpdate.final">
-                                                                                        <button class="btn btn-success btn-xs" data-ng-click="editOutcomeUpdate(selectedOutcomeUpdate)"
-                                                                                                data-ng-show="userHasAuthorization && !selectedProjectStatusUpdate.final">
+                                                                                    <div class="pull-right" data-ng-show="userHasAuthorization">
+                                                                                        <button class="btn btn-success btn-xs" data-ng-click="editOutcomeUpdate(selectedOutcomeUpdate)">
                                                                                             Edit
                                                                                         </button>
                                                                                     </div>
@@ -844,7 +842,8 @@
 																		<div data-ng-switch-default="view">
 																			<span data-ng-show="!estimateDurationReview.newDate">No new estimate yet</span>
 																			<span data-ng-bind="estimateDurationReview.newDate | date:'EEE d, MMM yyyy'"></span>
-																			<button class="btn btn-success btn-xs" data-ng-show="userHasAuthorization && !selectedProjectStatusUpdate.final" data-ng-click="editEstimateDuration(estimateDurationReview)">
+																			<button class="btn btn-success btn-xs" data-ng-show="userHasAuthorization "
+																					data-ng-click="editEstimateDuration(estimateDurationReview)">
 																				<span class="glyphicon glyphicon-pencil"></span>
 																			</button>
 																		</div>
@@ -891,7 +890,7 @@
 																		<div data-ng-switch-default="view">
 																			<span data-ng-show="!estimateCostReview.newCost">No new estimate yet</span>
 																			<span data-ng-bind="estimateCostReview.newCost"></span>
-																			<button class="btn btn-success btn-xs" data-ng-show="userHasAuthorization && !selectedProjectStatusUpdate.final" data-ng-click="editEstimateCost(estimateCostReview)">
+																			<button class="btn btn-success btn-xs" data-ng-show="userHasAuthorization" data-ng-click="editEstimateCost(estimateCostReview)">
 																				<span class="glyphicon glyphicon-pencil"></span>
 																			</button>
 																		</div>
@@ -934,7 +933,7 @@
 																		<div data-ng-switch-default="view">
 																			<span data-ng-show="!estimateCompletionReview.newCompletion">No new estimate yet</span>
 																			<span data-ng-bind="estimateCompletionReview.newCompletion"></span>
-																			<button class="btn btn-success btn-xs" data-ng-show="userHasAuthorization && !selectedProjectStatusUpdate.final" data-ng-click="editEstimateCompletion(estimateCompletionReview)">
+																			<button class="btn btn-success btn-xs" data-ng-show="userHasAuthorization" data-ng-click="editEstimateCompletion(estimateCompletionReview)">
 																				<span class="glyphicon glyphicon-pencil"></span>
 																			</button>
 																		</div>
@@ -955,49 +954,61 @@
 															</tr>
 														</table>
 													</div>
-													<div data-ng-show="projectStatusUpdateDetails === 'applyUpdate'">
-                                                        <div class="row" data-ng-show="!showConfirmApplyUpdate">
-                                                            <div class="col-md-4">
-                                                                <div class="form-group" data-ng-show="userHasAuthorization && !selectedProjectStatusUpdate.final">
-                                                                    <button class="btn btn-success btn-sm" data-ng-click="showConfirmApplyUpdate = true">
-                                                                        Apply estimate and status changes
-                                                                    </button>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                        <div class="row" data-ng-show="showConfirmApplyUpdate">
-                                                            <div class="col-md-12">
-                                                                <div class="alert alert-warning text-center">
-                                                                    Gate estimates and statuses will be updated. This status update will be set to "final" and will no longer be modifiable.
-                                                                </div>
-                                                            </div>
-                                                            <div class="col-md-12">
-                                                                <div class="form-group" data-ng-show="userHasAuthorization && !selectedProjectStatusUpdate.final">
-                                                                    <button class="btn btn-warning btn-sm" data-ng-click="applyUpdate(selectedProject, selectedProjectStatusUpdate); showConfirmApplyUpdate = false;">
-                                                                        Confirm changes to gate performances and statuses
-                                                                    </button>
-                                                                    <button class="btn btn-info btn-sm" data-ng-click="showConfirmApplyUpdate = !showConfirmApplyUpdate">
-                                                                        Cancel
-                                                                    </button>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                        <hr>
-                                                        <div class="row">
-                                                            <div class="col-md-12" data-ng-show="selectedProjectStatusUpdate.appliedUpdates.length === 0">
-                                                                <div class="alert alert-warning text-center">
-                                                                    This status update has not been applied yet
-                                                                </div>
-                                                            </div>
-                                                            <div class="col-md-12" data-ng-show="selectedProjectStatusUpdate.appliedUpdates.length !== 0">
-                                                                <div data-ng-repeat="appliedUpdate in selectedProjectStatusUpdate.appliedUpdates | orderBy: sortAppliedUpdates : true">
-                                                                    <span>Status update applied on </span>
-                                                                    <span><em data-ng-bind="appliedUpdate.created | date:'EEE d, MMM yyyy'"></em></span>
-                                                                    <span> by </span>
-                                                                    <span><em data-ng-bind="appliedUpdate.user.displayName"></em></span>
-                                                                </div>
-                                                            </div>
-                                                        </div>
+													<div data-ng-show="projectStatusUpdateDetails === 'approval'">
+														<div class="row">
+															<div class="col-md-12">
+																<label>Current state</label>
+																<br>
+																<span data-ng-show="selectedProjectStatusUpdate.approval.currentRecord.approvalState === 'draft'">Drafted on </span>
+																<span data-ng-show="selectedProjectStatusUpdate.approval.currentRecord.approvalState === 'submitted'">Submitted on </span>
+																<span data-ng-show="selectedProjectStatusUpdate.approval.currentRecord.approvalState === 'approved'">Approved on </span>
+																<span data-ng-show="selectedProjectStatusUpdate.approval.currentRecord.approvalState === 'rejected'">Rejected on </span>
+																<span><em data-ng-bind="selectedProjectStatusUpdate.approval.currentRecord.created | date:'EEE d, MMM yyyy'"></em></span>
+																<span> by </span>
+																<span><em data-ng-bind="selectedProjectStatusUpdate.approval.currentRecord.user.displayName"></em></span>
+															</div>
+														</div>
+														<br>
+														<div class="row">
+															<div class="col-md-4" data-ng-show="userHasAuthorization && selectedProjectStatusUpdate.approval.currentRecord.approvalState === 'draft'">
+																<button class="form-control btn btn-success" data-ng-click="submit(selectedProject, selectedProjectStatusUpdate)">
+																	Submit status update
+																</button>
+															</div>
+															<div data-ng-show="userHasAuthorization && selectedProjectStatusUpdate.approval.currentRecord.approvalState === 'submitted'">
+																<div class="col-md-4">
+																	<button class="form-control btn btn-success" data-ng-click="approve(selectedProject, selectedProjectStatusUpdate)">
+																		Approve status update
+																	</button>
+																</div>
+																<div class="col-md-4">
+																	<button class="form-control btn btn-danger" data-ng-click="reject(selectedProject, selectedProjectStatusUpdate)">
+																		Reject status update
+																	</button>
+																</div>
+															</div>
+															<div class="col-md-4" data-ng-show="userHasAuthorization && selectedProjectStatusUpdate.approval.currentRecord.approvalState === 'rejected'">
+																<button class="form-control btn btn-success" data-ng-click="draft(selectedProject, selectedProjectStatusUpdate)">
+																	Draft status update
+																</button>
+															</div>
+														</div>
+														<hr>
+														<div class="row">
+															<div class="col-md-12" data-ng-show="selectedProjectStatusUpdate.approval.history.length !== 0">
+																<label>History</label>
+																<br>
+																<div data-ng-repeat="historyRecord in selectedProjectStatusUpdate.approval.history | orderBy: sortProjectStatusUpdates : true">
+																	<span data-ng-show="historyRecord.approvalState === 'draft'">Drafted on </span>
+																	<span data-ng-show="historyRecord.approvalState === 'submitted'">Submitted on </span>
+																	<span data-ng-show="historyRecord.approvalState === 'approved'">Approved on </span>
+																	<span data-ng-show="historyRecord.approvalState === 'rejected'">Rejected on </span>
+																	<span><em data-ng-bind="historyRecord.created | date:'EEE d, MMM yyyy'"></em></span>
+																	<span> by </span>
+																	<span><em data-ng-bind="historyRecord.user.displayName"></em></span>
+																</div>
+															</div>
+														</div>
 													</div>
 												</div>
 											</div>

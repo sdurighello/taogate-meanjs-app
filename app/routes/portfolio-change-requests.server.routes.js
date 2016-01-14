@@ -19,6 +19,20 @@ module.exports = function(app) {
 		.put(users.requiresLogin, portfolioChangeRequests.hasAuthorization, portfolioChangeRequests.updateHeader);
 
 
+// **************************  APPROVAL  ************************
+
+	app.route('/portfolio-change-requests/:portfolioChangeRequestId/submit')
+		.put(users.requiresLogin, portfolioChangeRequests.hasAuthorization, portfolioChangeRequests.submit);
+
+	app.route('/portfolio-change-requests/:portfolioChangeRequestId/approve')
+		.put(users.requiresLogin, portfolioChangeRequests.hasAuthorization, portfolioChangeRequests.approve);
+
+	app.route('/portfolio-change-requests/:portfolioChangeRequestId/reject')
+		.put(users.requiresLogin, portfolioChangeRequests.hasAuthorization, portfolioChangeRequests.reject);
+
+	app.route('/portfolio-change-requests/:portfolioChangeRequestId/draft')
+		.put(users.requiresLogin, portfolioChangeRequests.hasAuthorization, portfolioChangeRequests.draft);
+
 // **************** ASSOCIATED PROJECT CHANGES ******************
 
 	// Available project changes

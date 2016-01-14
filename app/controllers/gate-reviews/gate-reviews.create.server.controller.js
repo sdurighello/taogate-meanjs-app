@@ -247,7 +247,15 @@ exports.create = function(req, res) {
         function(retObjArrays, callback){
                 // Header
             gateReview.overallComment = '';
-            gateReview.final = false;
+                // Approval
+            gateReview.approval = {
+                currentRecord:{
+                    approvalState : 'draft',
+                    created : Date.now(),
+                    user : req.user
+                },
+                history : []
+            };
                 // Status Assignment
             gateReview.gateStatusAssignment = retObjArrays.gateStatusReview.gateStatusAssignment;
             gateReview.status = retObjArrays.gateStatusReview.status;

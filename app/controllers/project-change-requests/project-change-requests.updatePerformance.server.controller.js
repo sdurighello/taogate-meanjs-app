@@ -19,7 +19,7 @@ exports.updateBaselineDuration = function(req, res) {
     projectChangeRequest.user = req.user;
     projectChangeRequest.created = Date.now();
     var baselineDurationReview = projectChangeRequest.baselineDurationReviews.id(req.params.baselineDurationReviewId);
-    baselineDurationReview.newDate = req.body.newDate;
+    baselineDurationReview.dateChange = req.body.dateChange;
     projectChangeRequest.save(function(err){
         if (err) {
             return res.status(400).send({
@@ -36,7 +36,7 @@ exports.updateBaselineCost = function(req, res) {
     projectChangeRequest.user = req.user;
     projectChangeRequest.created = Date.now();
     var baselineCostReview = projectChangeRequest.baselineCostReviews.id(req.params.baselineCostReviewId);
-    baselineCostReview.newCost = req.body.newCost;
+    baselineCostReview.costChange = req.body.costChange;
     projectChangeRequest.save(function(err){
         if (err) {
             return res.status(400).send({
@@ -53,7 +53,7 @@ exports.updateBaselineCompletion = function(req, res) {
     projectChangeRequest.user = req.user;
     projectChangeRequest.created = Date.now();
     var baselineCompletionReview = projectChangeRequest.baselineCompletionReviews.id(req.params.baselineCompletionReviewId);
-    baselineCompletionReview.newCompletion = req.body.newCompletion;
+    baselineCompletionReview.completionChange = req.body.completionChange;
     projectChangeRequest.save(function(err){
         if (err) {
             return res.status(400).send({
@@ -74,7 +74,7 @@ exports.updateEstimateDuration = function(req, res) {
     projectChangeRequest.user = req.user;
     projectChangeRequest.created = Date.now();
     var estimateDurationReview = projectChangeRequest.estimateDurationReviews.id(req.params.estimateDurationReviewId);
-    estimateDurationReview.newDate = req.body.newDate;
+    estimateDurationReview.dateChange = req.body.dateChange;
     projectChangeRequest.save(function(err){
         if (err) {
             return res.status(400).send({
@@ -91,7 +91,7 @@ exports.updateEstimateCost = function(req, res) {
     projectChangeRequest.user = req.user;
     projectChangeRequest.created = Date.now();
     var estimateCostReview = projectChangeRequest.estimateCostReviews.id(req.params.estimateCostReviewId);
-    estimateCostReview.newCost = req.body.newCost;
+    estimateCostReview.costChange = req.body.costChange;
     projectChangeRequest.save(function(err){
         if (err) {
             return res.status(400).send({
@@ -108,7 +108,7 @@ exports.updateEstimateCompletion = function(req, res) {
     projectChangeRequest.user = req.user;
     projectChangeRequest.created = Date.now();
     var estimateCompletionReview = projectChangeRequest.estimateCompletionReviews.id(req.params.estimateCompletionReviewId);
-    estimateCompletionReview.newCompletion = req.body.newCompletion;
+    estimateCompletionReview.completionChange = req.body.completionChange;
     projectChangeRequest.save(function(err){
         if (err) {
             return res.status(400).send({
@@ -129,7 +129,7 @@ exports.updateActualDuration = function(req, res) {
     projectChangeRequest.user = req.user;
     projectChangeRequest.created = Date.now();
     var actualDurationReview = projectChangeRequest.actualDurationReviews.id(req.params.actualDurationReviewId);
-    actualDurationReview.newDate = req.body.newDate;
+    actualDurationReview.dateChange = req.body.dateChange;
     projectChangeRequest.save(function(err){
         if (err) {
             return res.status(400).send({
@@ -146,7 +146,7 @@ exports.updateActualCost = function(req, res) {
     projectChangeRequest.user = req.user;
     projectChangeRequest.created = Date.now();
     var actualCostReview = projectChangeRequest.actualCostReviews.id(req.params.actualCostReviewId);
-    actualCostReview.newCost = req.body.newCost;
+    actualCostReview.costChange = req.body.costChange;
     projectChangeRequest.save(function(err){
         if (err) {
             return res.status(400).send({
@@ -163,7 +163,7 @@ exports.updateActualCompletion = function(req, res) {
     projectChangeRequest.user = req.user;
     projectChangeRequest.created = Date.now();
     var actualCompletionReview = projectChangeRequest.actualCompletionReviews.id(req.params.actualCompletionReviewId);
-    actualCompletionReview.newCompletion = req.body.newCompletion;
+    actualCompletionReview.completionChange = req.body.completionChange;
     projectChangeRequest.save(function(err){
         if (err) {
             return res.status(400).send({

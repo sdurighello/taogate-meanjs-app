@@ -168,6 +168,10 @@ angular.module('gate-management-review').controller('GateManagementReviewControl
             return new Date(gateReview.reviewDate);
         };
 
+        $scope.sortAppliedChanges = function(record) {
+            return new Date(record.created);
+        };
+
 
         // ------------------- OTHER VARIABLES ---------------------
 
@@ -348,37 +352,91 @@ angular.module('gate-management-review').controller('GateManagementReviewControl
         };
 
 
-        // -------------------------------------------------------- SET FINAL -------------------------------------------------
+        // -------------------------------------------------------- APPROVAL -------------------------------------------------
 
-        $scope.editSetFinal = function(gateReview){
-            $scope.selectSetFinalForm('edit', gateReview);
-        };
 
-        $scope.saveEditSetFinal = function(project, gateReview){
+        $scope.submit = function(project, gateReview){
             // Clean-up deepPopulate
             var copyGateReview = _.cloneDeep(gateReview);
             copyGateReview.project = _.get(copyGateReview.project, '_id');
             copyGateReview.gate = _.get(copyGateReview.gate, '_id');
             copyGateReview.gateStatusAssignment = _.get(copyGateReview.gateStatusAssignment, '_id');
             // Update server header
-            GateReviews.setFinal(
+            GateReviews.submit(
                 {
                     gateReviewId : copyGateReview._id
                 }, copyGateReview,
                 function(res){
-                    // Set the "final" in the gate from the list
-                    gateReviewFromList[gateReview._id].final = gateReview.final;
+                    // Set the "approval" in the gate from the list
+                    gateReviewFromList[gateReview._id].approval = res.approval;
                     // Refresh the object with the current performances values
                     $scope.selectGateReview(gateReview);
-                    $scope.selectSetFinalForm('view', gateReview);
                 },
                 function(err){$scope.error = err.data.message;}
             );
         };
 
-        $scope.cancelEditSetFinal = function(gateReview){
-            gateReview.final = originalGateReview[gateReview._id].final;
-            $scope.selectSetFinalForm('view', gateReview);
+        $scope.approve = function(project, gateReview){
+            // Clean-up deepPopulate
+            var copyGateReview = _.cloneDeep(gateReview);
+            copyGateReview.project = _.get(copyGateReview.project, '_id');
+            copyGateReview.gate = _.get(copyGateReview.gate, '_id');
+            copyGateReview.gateStatusAssignment = _.get(copyGateReview.gateStatusAssignment, '_id');
+            // Update server header
+            GateReviews.approve(
+                {
+                    gateReviewId : copyGateReview._id
+                }, copyGateReview,
+                function(res){
+                    // Set the "approval" in the gate from the list
+                    gateReviewFromList[gateReview._id].approval = res.approval;
+                    // Refresh the object with the current performances values
+                    $scope.selectGateReview(gateReview);
+                },
+                function(err){$scope.error = err.data.message;}
+            );
+        };
+
+        $scope.reject = function(project, gateReview){
+            // Clean-up deepPopulate
+            var copyGateReview = _.cloneDeep(gateReview);
+            copyGateReview.project = _.get(copyGateReview.project, '_id');
+            copyGateReview.gate = _.get(copyGateReview.gate, '_id');
+            copyGateReview.gateStatusAssignment = _.get(copyGateReview.gateStatusAssignment, '_id');
+            // Update server header
+            GateReviews.reject(
+                {
+                    gateReviewId : copyGateReview._id
+                }, copyGateReview,
+                function(res){
+                    // Set the "approval" in the gate from the list
+                    gateReviewFromList[gateReview._id].approval = res.approval;
+                    // Refresh the object with the current performances values
+                    $scope.selectGateReview(gateReview);
+                },
+                function(err){$scope.error = err.data.message;}
+            );
+        };
+
+        $scope.draft = function(project, gateReview){
+            // Clean-up deepPopulate
+            var copyGateReview = _.cloneDeep(gateReview);
+            copyGateReview.project = _.get(copyGateReview.project, '_id');
+            copyGateReview.gate = _.get(copyGateReview.gate, '_id');
+            copyGateReview.gateStatusAssignment = _.get(copyGateReview.gateStatusAssignment, '_id');
+            // Update server header
+            GateReviews.draft(
+                {
+                    gateReviewId : copyGateReview._id
+                }, copyGateReview,
+                function(res){
+                    // Set the "approval" in the gate from the list
+                    gateReviewFromList[gateReview._id].approval = res.approval;
+                    // Refresh the object with the current performances values
+                    $scope.selectGateReview(gateReview);
+                },
+                function(err){$scope.error = err.data.message;}
+            );
         };
 
 

@@ -118,8 +118,9 @@
                                     <button type="button"
                                             data-ng-repeat="portfolioChangeRequest in parentCtrl.portfolioChangeRequests | orderBy: parentCtrl.sortPortfolioChangeRequests : true"
                                             data-ng-click="parentCtrl.selectPortfolioChangeRequest(parentCtrl.selectedPortfolio, portfolioChangeRequest)"
-                                            class="btn btn-sm center-block btn-block" style="overflow: hidden;">
-                                        <span class="small">{{portfolioChangeRequest.raisedOnDate | date:'EEE d, MMM yyyy'}}</span>
+                                            class="btn btn-sm center-block btn-block" style="overflow: hidden;"
+                                            data-ng-class="{'btn-default' : portfolioChangeRequest.approval.currentRecord.approvalState === 'approved', 'btn-info' : portfolioChangeRequest.approval.currentRecord.approvalState !== 'approved'}">
+                                    <span class="small">{{portfolioChangeRequest.raisedOnDate | date:'EEE d, MMM yyyy'}}</span>
                                         <br>
                                         <span class="small">{{portfolioChangeRequest.title}}</span>
                                     </button>
@@ -148,10 +149,13 @@
                                             Header
                                         </label>
                                         <label class="btn btn-info btn-xs" data-ng-model="parentCtrl.portfolioChangeRequestDetails" btn-radio="'associatedProjectChanges'">
-                                            Associated project changes
+                                            Project changes
                                         </label>
                                         <label class="btn btn-info btn-xs" data-ng-model="parentCtrl.portfolioChangeRequestDetails" btn-radio="'fundingRequests'">
                                             Funding requests
+                                        </label>
+                                        <label class="btn btn-info btn-xs" data-ng-model="parentCtrl.portfolioChangeRequestDetails" btn-radio="'approval'">
+                                            Approval
                                         </label>
                                     </div>
                                 </div>
@@ -470,11 +474,16 @@
                                     </div>
                                     <div data-ng-show="parentCtrl.portfolioChangeRequestDetails === 'fundingRequests'">
                                         <div class="row">
-                                            <div class="col-md-12">
-
-                                                {{parentCtrl.selectedPortfolioChangeRequest.statistics}}
-                                                <br>
-                                                {{parentCtrl.selectedPortfolioChangeRequest.totalFundingRequests}}
+                                            <div class="col-md-offset-1 col-md-10">
+                                                <div class="well well-sm" style="margin-bottom: 1%; padding: 1%">
+                                                    <span>Project budget changes: <em>{{parentCtrl.calculateTotalCRBudget()}}</em></span>
+                                                </div>
+                                                <div class="well well-sm" style="margin-bottom: 1%; padding: 1%">
+                                                    <span>Portfolio funding requests: <em>{{parentCtrl.calculateTotalRequests()}}</em></span>
+                                                </div>
+                                                <div class="well well-sm" style="margin-bottom: 0%; padding: 1%">
+                                                    <span><b>Total funding requested: <em>{{parentCtrl.calculateTotalCRBudget() + parentCtrl.calculateTotalRequests()}}</em></b></span>
+                                                </div>
                                             </div>
                                         </div>
                                         <hr>
@@ -533,6 +542,62 @@
                                                             </div>
                                                         </div>
                                                     </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div data-ng-show="parentCtrl.portfolioChangeRequestDetails === 'approval'">
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                <label>Current state</label>
+                                                <br>
+                                                <span data-ng-show="parentCtrl.selectedPortfolioChangeRequest.approval.currentRecord.approvalState === 'draft'">Drafted on </span>
+                                                <span data-ng-show="parentCtrl.selectedPortfolioChangeRequest.approval.currentRecord.approvalState === 'submitted'">Submitted on </span>
+                                                <span data-ng-show="parentCtrl.selectedPortfolioChangeRequest.approval.currentRecord.approvalState === 'approved'">Approved on </span>
+                                                <span data-ng-show="parentCtrl.selectedPortfolioChangeRequest.approval.currentRecord.approvalState === 'rejected'">Rejected on </span>
+                                                <span><em data-ng-bind="parentCtrl.selectedPortfolioChangeRequest.approval.currentRecord.created | date:'EEE d, MMM yyyy'"></em></span>
+                                                <span> by </span>
+                                                <span><em data-ng-bind="parentCtrl.selectedPortfolioChangeRequest.approval.currentRecord.user.displayName"></em></span>
+                                            </div>
+                                        </div>
+                                        <br>
+                                        <div class="row">
+                                            <div class="col-md-6" data-ng-show="parentCtrl.userHasAuthorization && parentCtrl.selectedPortfolioChangeRequest.approval.currentRecord.approvalState === 'draft'">
+                                                <button class="form-control btn btn-success" data-ng-click="parentCtrl.submit(parentCtrl.selectedPortfolio, parentCtrl.selectedPortfolioChangeRequest)">
+                                                    Submit change request
+                                                </button>
+                                            </div>
+                                            <div data-ng-show="parentCtrl.userHasAuthorization && parentCtrl.selectedPortfolioChangeRequest.approval.currentRecord.approvalState === 'submitted'">
+                                                <div class="col-md-6">
+                                                    <button class="form-control btn btn-success" data-ng-click="parentCtrl.approve(parentCtrl.selectedPortfolio, parentCtrl.selectedPortfolioChangeRequest)">
+                                                        Approve change request
+                                                    </button>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <button class="form-control btn btn-danger" data-ng-click="parentCtrl.reject(parentCtrl.selectedPortfolio, parentCtrl.selectedPortfolioChangeRequest)">
+                                                        Reject change request
+                                                    </button>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6" data-ng-show="parentCtrl.userHasAuthorization && parentCtrl.selectedPortfolioChangeRequest.approval.currentRecord.approvalState === 'rejected'">
+                                                <button class="form-control btn btn-success" data-ng-click="parentCtrl.draft(parentCtrl.selectedPortfolio, parentCtrl.selectedPortfolioChangeRequest)">
+                                                    Draft change request
+                                                </button>
+                                            </div>
+                                        </div>
+                                        <hr>
+                                        <div class="row">
+                                            <div class="col-md-12" data-ng-show="parentCtrl.selectedPortfolioChangeRequest.approval.history.length !== 0">
+                                                <label>History</label>
+                                                <br>
+                                                <div data-ng-repeat="historyRecord in parentCtrl.selectedPortfolioChangeRequest.approval.history | orderBy: sortByCreated : true">
+                                                    <span data-ng-show="historyRecord.approvalState === 'draft'">Drafted on </span>
+                                                    <span data-ng-show="historyRecord.approvalState === 'submitted'">Submitted on </span>
+                                                    <span data-ng-show="historyRecord.approvalState === 'approved'">Approved on </span>
+                                                    <span data-ng-show="historyRecord.approvalState === 'rejected'">Rejected on </span>
+                                                    <span><em data-ng-bind="historyRecord.created | date:'EEE d, MMM yyyy'"></em></span>
+                                                    <span> by </span>
+                                                    <span><em data-ng-bind="historyRecord.user.displayName"></em></span>
                                                 </div>
                                             </div>
                                         </div>

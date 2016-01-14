@@ -26,11 +26,6 @@ var OutcomeStatusUpdateSchema = new Schema({
     comment : {type: String}
 });
 
-var appliedUpdateSchema = new Schema({
-    created: { type: Date, default: Date.now },
-    user: { type: Schema.ObjectId, ref: 'User' }
-});
-
 var EstimateDurationReviewSchema = new Schema({
     estimateDuration: {type: Schema.Types.ObjectId, ref: 'EstimateDuration', $tenant:true},
     newDate : {type: Date}
@@ -46,6 +41,12 @@ var EstimateCompletionReviewSchema = new Schema({
     newCompletion : {type: Number}
 });
 
+var approvalRecord = {
+    approvalState: {type: String, enum: ['draft', 'submitted', 'approved','rejected'], default:'draft', required:'Approval flag is required'},
+    created: { type: Date, default: Date.now },
+    user: { type: Schema.ObjectId, ref: 'User' }
+};
+
 // -- Main schema --
 
 var ProjectStatusUpdateSchema = new Schema({
@@ -55,7 +56,10 @@ var ProjectStatusUpdateSchema = new Schema({
 	title : {type: String, default:'', trim: true, required:'Review title required'},
     description : {type: String, default:'', trim: true},
 
-    final : {type: Boolean, default: false, required:'Final flag required'},
+    approval : {
+        currentRecord : approvalRecord,
+        history : [approvalRecord]
+    },
 
     // Gate Status Assignment
     gateStatusUpdate : {
@@ -88,8 +92,6 @@ var ProjectStatusUpdateSchema = new Schema({
     estimateDurationReviews : [EstimateDurationReviewSchema],
     estimateCostReviews : [EstimateCostReviewSchema],
     estimateCompletionReviews : [EstimateCompletionReviewSchema],
-
-    appliedUpdates : [appliedUpdateSchema],
 
 	created: { type: Date, default: Date.now },
 	user: { type: Schema.ObjectId, ref: 'User' }

@@ -9,9 +9,9 @@ var mongoose = require('mongoose'),
     _ = require('lodash');
 
 /**
- * APPLY CHANGES TO PERFORMANCES FROM PROJECT-STATUS-UPDATE
+ * APPROVE PROJECT-STATUS-UPDATE
  */
-exports.applyUpdate = function(req, res) {
+exports.approve = function(req, res) {
 
     var ProjectStatusUpdate = mongoose.mtModel(req.user.tenantId + '.' + 'ProjectStatusUpdate');
     var projectStatusUpdate = req.projectStatusUpdate;
@@ -255,15 +255,20 @@ exports.applyUpdate = function(req, res) {
                 }
             });
         },
-        // If all the above series function are successful, create an 'applyUpdate" record and set update to "final"
+        // If all the above series function are successful, set the 'approval' record
         function(callback){
+            projectStatusUpdate.approval.history.push({
+                approvalState : projectStatusUpdate.approval.currentRecord.approvalState,
+                user : projectStatusUpdate.approval.currentRecord.user,
+                created : projectStatusUpdate.approval.currentRecord.created
+            });
+            projectStatusUpdate.approval.currentRecord.approvalState = 'approved';
+            projectStatusUpdate.approval.currentRecord.user = req.user;
+            projectStatusUpdate.approval.currentRecord.created = Date.now();
+
             projectStatusUpdate.user = req.user;
             projectStatusUpdate.created = Date.now();
-            projectStatusUpdate.appliedUpdates.push({
-                user : req.user,
-                created : Date.now()
-            });
-            projectStatusUpdate.final = true;
+
             projectStatusUpdate.save(function(err){
                 callback(err);
             });

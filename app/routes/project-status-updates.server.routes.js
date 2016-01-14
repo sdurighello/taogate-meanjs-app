@@ -14,9 +14,18 @@ module.exports = function(app) {
 		.put(users.requiresLogin, projectStatusUpdates.hasAuthorization, projectStatusUpdates.update)
 		.delete(users.requiresLogin, projectStatusUpdates.hasAuthorization, projectStatusUpdates.delete);
 
-	// Apply update
-	app.route('/project-status-updates/:projectStatusUpdateId/applyUpdate')
-		.put(users.requiresLogin, projectStatusUpdates.hasAuthorization, projectStatusUpdates.applyUpdate);
+	// Approval
+	app.route('/project-status-updates/:projectStatusUpdateId/submit')
+		.put(users.requiresLogin, projectStatusUpdates.hasAuthorization, projectStatusUpdates.submit);
+
+	app.route('/project-status-updates/:projectStatusUpdateId/approve')
+		.put(users.requiresLogin, projectStatusUpdates.hasAuthorization, projectStatusUpdates.approve);
+
+	app.route('/project-status-updates/:projectStatusUpdateId/reject')
+		.put(users.requiresLogin, projectStatusUpdates.hasAuthorization, projectStatusUpdates.reject);
+
+	app.route('/project-status-updates/:projectStatusUpdateId/draft')
+		.put(users.requiresLogin, projectStatusUpdates.hasAuthorization, projectStatusUpdates.draft);
 
 	// Header
 	app.route('/project-status-updates/:projectStatusUpdateId/header')

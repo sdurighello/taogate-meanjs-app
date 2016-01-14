@@ -19,6 +19,34 @@ angular.module('portfolio-change-requests').factory('PortfolioChangeRequests', [
 				// req.body: {whole portfolioChangeRequest object}
 			},
 
+
+// ********************* APPROVAL **********************
+
+			submit: {
+				method: 'PUT',
+				url: 'portfolio-change-requests/:portfolioChangeRequestId/submit'
+				// req.body: {whole portfolioChangeRequest object}
+			},
+
+			approve: {
+				method: 'PUT',
+				url: 'portfolio-change-requests/:portfolioChangeRequestId/approve'
+				// req.body: {whole portfolioChangeRequest object}
+			},
+
+			reject: {
+				method: 'PUT',
+				url: 'portfolio-change-requests/:portfolioChangeRequestId/reject'
+				// req.body: {whole portfolioChangeRequest object}
+			},
+
+			draft: {
+				method: 'PUT',
+				url: 'portfolio-change-requests/:portfolioChangeRequestId/draft'
+				// req.body: {whole portfolioChangeRequest object}
+			},
+
+
 // **************** ASSOCIATED PROJECT CHANGES ******************
 
 			// --- Get available project changes --

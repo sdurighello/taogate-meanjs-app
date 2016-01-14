@@ -9,11 +9,11 @@ var mongoose = require('mongoose'),
     _ = require('lodash');
 
 /**
- * SUBMIT CHANGE REQUEST
+ * REJECT CHANGE REQUEST
  */
 
 
-exports.submit = function(req, res) {
+exports.reject = function(req, res) {
 
     var projectChangeRequest = req.projectChangeRequest;
 
@@ -23,7 +23,7 @@ exports.submit = function(req, res) {
         created : projectChangeRequest.approval.currentRecord.created
     });
 
-    projectChangeRequest.approval.currentRecord.approvalState = 'submitted';
+    projectChangeRequest.approval.currentRecord.approvalState = 'rejected';
     projectChangeRequest.approval.currentRecord.user = req.user;
     projectChangeRequest.approval.currentRecord.created = Date.now();
 

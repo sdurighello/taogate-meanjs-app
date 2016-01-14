@@ -24,7 +24,7 @@ var fundingRequestSchema = new Schema({
 });
 
 var approvalRecord = {
-    approvalState: {type: String, enum: ['draft', 'submitted', 'approved'], default:'draft', required:'Approval flag is required'},
+    approvalState: {type: String, enum: ['draft', 'submitted', 'approved','rejected'], default:'draft', required:'Approval flag is required'},
     created: { type: Date, default: Date.now },
     user: { type: Schema.ObjectId, ref: 'User' }
 };
@@ -51,17 +51,7 @@ var PortfolioChangeRequestSchema = new Schema({
     fundingRequests : [fundingRequestSchema],
 
     created: { type: Date, default: Date.now },
-    user: { type: Schema.ObjectId, ref: 'User' },
-
-    statistics : {
-        totalBaselineCostChange : {type: Number},
-        totalCurrentBaselineCost : {type: Number},
-        totalNewBaselineCost : {type: Number},
-
-        totalActualCostChange : {type: Number},
-        totalCurrentActualCost : {type: Number},
-        totalNewActualCost : {type: Number}
-    }
+    user: { type: Schema.ObjectId, ref: 'User' }
 
 }, {
     toObject: {

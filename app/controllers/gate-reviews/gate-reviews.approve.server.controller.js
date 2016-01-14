@@ -11,7 +11,7 @@ var mongoose = require('mongoose'),
 /**
  * Set FINAL for a Gate review
  */
-exports.setFinal = function(req, res) {
+exports.approve = function(req, res) {
 
     var GateReview = mongoose.mtModel(req.user.tenantId + '.' + 'GateReview');
     var gateReview = req.gateReview;
@@ -65,7 +65,7 @@ exports.setFinal = function(req, res) {
                                     created: statusAssignment.budget.currentRecord.created,
                                     sourceGateReview : statusAssignment.budget.currentRecord.sourceGateReview,
                                     sourceChangeRequest : statusAssignment.budget.currentRecord.sourceChangeRequest,
-                                    amount : statusAssignment.budget.currentRecord.budget
+                                    amount : statusAssignment.budget.currentRecord.amount
                                 });
                                 statusAssignment.budget.currentRecord.amount = req.body.budget;
                                 statusAssignment.budget.currentRecord.sourceChangeRequest = null;
@@ -391,11 +391,21 @@ exports.setFinal = function(req, res) {
                 callback(null);
             }
         },
-        // If all the above series function are successful, change "final" and save gateReview
+        // If all the above series function are successful, change "approved" and save gateReview
         function(callback){
             gateReview.user = req.user;
             gateReview.created = Date.now();
-            gateReview.final = req.body.final;
+
+            gateReview.approval.history.push({
+                approvalState : gateReview.approval.currentRecord.approvalState,
+                user : gateReview.approval.currentRecord.user,
+                created : gateReview.approval.currentRecord.created
+            });
+
+            gateReview.approval.currentRecord.approvalState = 'approved';
+            gateReview.approval.currentRecord.user = req.user;
+            gateReview.approval.currentRecord.created = Date.now();
+
             gateReview.save(function(err){
                 callback(err);
             });

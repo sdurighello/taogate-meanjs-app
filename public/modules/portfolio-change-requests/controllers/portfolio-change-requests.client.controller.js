@@ -139,6 +139,26 @@ angular.module('portfolio-change-requests').controller('PortfolioChangeRequestsC
 			return new Date(object.created);
 		};
 
+        vm.calculateTotalCRBudget = function(){
+            if(vm.selectedPortfolioChangeRequest){
+                return _.reduce(vm.selectedPortfolioChangeRequest.associatedProjectChangeRequests, function(sum, request){
+                    return sum + request.gateAssignmentReview.budgetChange;
+                }, 0);
+            } else {
+                return 0;
+            }
+        };
+
+        vm.calculateTotalRequests = function(){
+            if(vm.selectedPortfolioChangeRequest){
+                return _.reduce(vm.selectedPortfolioChangeRequest.fundingRequests, function(sum, request){
+                    return sum + request.funds;
+                }, 0);
+            } else {
+                return 0;
+            }
+        };
+
 
 		// ------------------- OTHER VARIABLES ---------------------
 
@@ -300,6 +320,86 @@ angular.module('portfolio-change-requests').controller('PortfolioChangeRequestsC
 				vm.error = err.data.message;
 			});
 		};
+
+
+		// ---------------------------------------------------------- APPROVAL -----------------------------------------------------------
+
+        vm.submit = function(portfolio, portfolioChangeRequest){
+            // Clean-up deepPopulate
+            var copyPortfolioChangeRequest = _.cloneDeep(portfolioChangeRequest);
+            copyPortfolioChangeRequest.portfolio = _.get(copyPortfolioChangeRequest.portfolio, '_id');
+            // Run server side approve
+            PortfolioChangeRequests.submit(
+                {
+                    portfolioChangeRequestId : copyPortfolioChangeRequest._id
+                }, copyPortfolioChangeRequest,
+                function(res){
+                    // Refresh the object with the current performances values
+                    originalPortfolioChangeRequest[portfolioChangeRequest._id].approval = res.approval;
+                    portfolioChangeRequest.approval = res.approval;
+                },
+                function(err){
+                    $scope.error = err.data.message;
+                }
+            );
+        };
+
+        vm.approve = function(portfolio, portfolioChangeRequest){
+            // Clean-up deepPopulate
+            var copyPortfolioChangeRequest = _.cloneDeep(portfolioChangeRequest);
+            copyPortfolioChangeRequest.portfolio = _.get(copyPortfolioChangeRequest.portfolio, '_id');
+            // Run server side approve
+            PortfolioChangeRequests.approve(
+                {
+                    portfolioChangeRequestId : copyPortfolioChangeRequest._id
+                }, copyPortfolioChangeRequest,
+                function(res){
+                    // Refresh the object with the current performances values
+                    originalPortfolioChangeRequest[portfolioChangeRequest._id].approval = res.approval;
+                    portfolioChangeRequest.approval = res.approval;
+                },
+                function(err){
+                    $scope.error = err.data.message;
+                }
+            );
+        };
+
+        vm.reject = function(portfolio, portfolioChangeRequest){
+            // Clean-up deepPopulate
+            var copyPortfolioChangeRequest = _.cloneDeep(portfolioChangeRequest);
+            copyPortfolioChangeRequest.portfolio = _.get(copyPortfolioChangeRequest.portfolio, '_id');
+            // Run server side approve
+            PortfolioChangeRequests.reject(
+                {
+                    portfolioChangeRequestId : copyPortfolioChangeRequest._id
+                }, copyPortfolioChangeRequest,
+                function(res){
+                    // Refresh the object with the current performances values
+                    originalPortfolioChangeRequest[portfolioChangeRequest._id].approval = res.approval;
+                    portfolioChangeRequest.approval = res.approval;
+                },
+                function(err){$scope.error = err.data.message;}
+            );
+        };
+
+        vm.draft = function(portfolio, portfolioChangeRequest){
+            // Clean-up deepPopulate
+            var copyPortfolioChangeRequest = _.cloneDeep(portfolioChangeRequest);
+            copyPortfolioChangeRequest.portfolio = _.get(copyPortfolioChangeRequest.portfolio, '_id');
+            // Run server side approve
+            PortfolioChangeRequests.draft(
+                {
+                    portfolioChangeRequestId : copyPortfolioChangeRequest._id
+                }, copyPortfolioChangeRequest,
+                function(res){
+                    // Refresh the object with the current performances values
+                    originalPortfolioChangeRequest[portfolioChangeRequest._id].approval = res.approval;
+                    portfolioChangeRequest.approval = res.approval;
+                },
+                function(err){$scope.error = err.data.message;}
+            );
+        };
+
 
 
         // ----------------------------------------------- ASSOCIATED PROJECT CHANGE REQUESTS -------------------------------------------------

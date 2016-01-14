@@ -14,32 +14,32 @@ require('mongoose-multitenant');
 
 var BaselineDurationReviewSchema = new Schema({
     baselineDuration: {type: Schema.Types.ObjectId, ref: 'BaselineDuration', $tenant:true},
-    newDate : {type: Date}
+    dateChange : {type: Number}
 });
 
 var ActualDurationReviewSchema = new Schema({
     actualDuration: {type: Schema.Types.ObjectId, ref: 'ActualDuration', $tenant:true},
-    newDate : {type: Date}
+    dateChange : {type: Number}
 });
 
 var BaselineCostReviewSchema = new Schema({
     baselineCost: {type: Schema.Types.ObjectId, ref: 'BaselineCost', $tenant:true},
-    newCost : {type: Number}
+    costChange : {type: Number}
 });
 
 var ActualCostReviewSchema = new Schema({
     actualCost: {type: Schema.Types.ObjectId, ref: 'ActualCost', $tenant:true},
-    newCost : {type: Number}
+    costChange : {type: Number}
 });
 
 var BaselineCompletionReviewSchema = new Schema({
     baselineCompletion: {type: Schema.Types.ObjectId, ref: 'BaselineCompletion', $tenant:true},
-    newCompletion : {type: Number}
+    completionChange : {type: Number}
 });
 
 var ActualCompletionReviewSchema = new Schema({
     actualCompletion: {type: Schema.Types.ObjectId, ref: 'ActualCompletion', $tenant:true},
-    newCompletion : {type: Number}
+    completionChange : {type: Number}
 });
 
 var statusReviewRecord = {
@@ -53,10 +53,11 @@ var statusReviewRecord = {
     user: { type: Schema.ObjectId, ref: 'User' }
 };
 
-var appliedChangeRecord = new Schema({
+var approvalRecord = {
+    approvalState: {type: String, enum: ['draft', 'submitted', 'approved','rejected'], default:'draft', required:'Approval flag is required'},
     created: { type: Date, default: Date.now },
     user: { type: Schema.ObjectId, ref: 'User' }
-});
+};
 
 
 var ProjectChangeRequestSchema = new Schema({
@@ -73,7 +74,10 @@ var ProjectChangeRequestSchema = new Schema({
     state : {type: Schema.Types.ObjectId, default: null, ref: 'ChangeRequestState', $tenant:true},
     priority : {type: Schema.Types.ObjectId, default: null, ref: 'LogPriority', $tenant:true},
 
-    approval: {type: String, enum: ['draft', 'submitted', 'approved'], default:'draft', required:'Approval flag is required'},
+    approval : {
+        currentRecord : approvalRecord,
+        history : [approvalRecord]
+    },
 
     // This status refers to the changeRequest document implementation itself
     statusReview : {
@@ -81,7 +85,10 @@ var ProjectChangeRequestSchema = new Schema({
         history : [statusReviewRecord]
     },
 
-    appliedChanges : [appliedChangeRecord],
+    gateAssignmentReview : {
+        gateStatusAssignment: {type: Schema.Types.ObjectId, ref: 'GateStatusAssignment', $tenant:true},
+        budgetChange : {type: Number, default: null}
+    },
 
     baselineDurationReviews : [BaselineDurationReviewSchema],
     actualDurationReviews : [ActualDurationReviewSchema],

@@ -60,9 +60,15 @@ exports.updateOutcome = require('./project-status-updates/project-status-updates
 exports.updateStatusArea = require('./project-status-updates/project-status-updates.updateStatusArea.server.controller').updateStatusArea;
 
 
-// --- Apply update ---
+// --- Approval ---
 
-exports.applyUpdate = require('./project-status-updates/project-status-updates.applyUpdate.server.controller.js').applyUpdate;
+exports.submit = require('./project-status-updates/project-status-updates.submit.server.controller.js').submit;
+
+exports.approve = require('./project-status-updates/project-status-updates.approve.server.controller.js').approve;
+
+exports.reject = require('./project-status-updates/project-status-updates.reject.server.controller.js').reject;
+
+exports.draft = require('./project-status-updates/project-status-updates.draft.server.controller.js').draft;
 
 // --- Estimate ---
 

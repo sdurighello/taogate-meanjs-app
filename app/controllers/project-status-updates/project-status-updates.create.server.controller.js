@@ -205,7 +205,15 @@ exports.create = function(req, res) {
         function(retObjArrays, callback){
             // Header
             projectStatusUpdate.description = '';
-            projectStatusUpdate.final = false;
+            // Approval
+            projectStatusUpdate.approval = {
+                currentRecord : {
+                    approvalState : 'draft',
+                    user : req.user,
+                    created : Date.now()
+                },
+                history : []
+            };
             // Status Areas Update
             projectStatusUpdate.statusAreaUpdates = retObjArrays.statusAreaUpdates;
             // Gate Status

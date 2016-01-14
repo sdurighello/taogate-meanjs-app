@@ -51,9 +51,16 @@ exports.updateBudget = require('./gate-reviews/gate-reviews.updateBudget.server.
 
 exports.updateOutcome = require('./gate-reviews/gate-reviews.updateOutcome.server.controller').updateOutcome;
 
-    // --- Final ---
+    // --- Approval ---
 
-exports.setFinal = require('./gate-reviews/gate-reviews.setFinal.server.controller.js').setFinal;
+exports.submit = require('./gate-reviews/gate-reviews.submit.server.controller.js').submit;
+
+exports.approve = require('./gate-reviews/gate-reviews.approve.server.controller.js').approve;
+
+exports.reject = require('./gate-reviews/gate-reviews.reject.server.controller.js').reject;
+
+exports.draft = require('./gate-reviews/gate-reviews.draft.server.controller.js').draft;
+
 
     // --- Baseline ---
 
@@ -197,7 +204,7 @@ exports.gateReviewByID = function(req, res, next, id) {
         'baselineDurationReviews.baselineDuration.targetGate', 'estimateDurationReviews.estimateDuration.targetGate', 'actualDurationReviews.actualDuration.targetGate',
         'baselineCostReviews.baselineCost.targetGate', 'estimateCostReviews.estimateCost.targetGate', 'actualCostReviews.actualCost.targetGate',
         'baselineCompletionReviews.baselineCompletion.targetGate', 'estimateCompletionReviews.estimateCompletion.targetGate', 'actualCompletionReviews.actualCompletion.targetGate'
-    ]).populate('user', 'displayName').exec(function(err, gateReview) {
+    ]).populate('user', 'displayName').populate('approval.currentRecord.user', 'displayName').populate('approval.history.user', 'displayName').exec(function(err, gateReview) {
         if (err){ return next(err); }
         if (! gateReview){ return next(new Error('Failed to load Gate review ' + id)); }
         req.gateReview = gateReview ;
@@ -217,15 +224,6 @@ exports.hasAuthorization = function(req, res, next) {
         return res.status(403).send({
             message: 'Role is not authorized'
         });
-    }
-
-    if(req.gateReview){ // When you create the object doesn't exist in the req
-        var objectIsAuthorized = _.isEqual(req.gateReview.final, false);
-        if(!objectIsAuthorized){
-            return res.status(403).send({
-                message: 'Object is not authorized'
-            });
-        }
     }
 
     next();
