@@ -4,6 +4,16 @@ angular.module('users').controller('SettingsController', ['$scope', '$http', '$l
 	function($scope, $http, $location, Users, Authentication) {
 		$scope.user = Authentication.user;
 
+        // SD: To see the roles in the 'view'
+		$scope.roles = [
+            {roleString:'superAdmin', roleTitle: 'Super Administrator', selected:false},
+			{roleString:'admin', roleTitle: 'Administrator', selected:false},
+			{roleString:'pmo', roleTitle: 'PMO', selected:false},
+			{roleString: 'projectManager', roleTitle: 'Project Manager', selected:false},
+			{roleString: 'portfolioManager', roleTitle: 'Portfolio Manager', selected:false},
+			{roleString: 'executive', roleTitle: 'Executive', selected:false}
+		];
+
 		// If user is not signed in then redirect back home
 		if (!$scope.user) $location.path('/signin');
 
@@ -40,7 +50,8 @@ angular.module('users').controller('SettingsController', ['$scope', '$http', '$l
 
 		// Update a user profile
 		$scope.updateUserProfile = function(isValid) {
-			if (isValid) {
+            // SD: isValid defaults to false, so I've negated the if, before it was if(isValid){}
+			if (!isValid) {
 				$scope.success = $scope.error = null;
 				var user = new Users($scope.user);
 

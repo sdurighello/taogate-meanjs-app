@@ -5,7 +5,7 @@ var ApplicationConfiguration = (function() {
 	// Init module configuration options
 	var applicationModuleName = 'meanjs-test2';
 	var applicationModuleVendorDependencies = ['ngResource', 'ngCookies',  'ngAnimate',  'ngTouch',  'ngSanitize',
-		'ui.router', 'ui.bootstrap', 'ui.utils','checklist-model','as.sortable', 'angular-loading-bar'];
+		'ui.router', 'ui.bootstrap', 'ui.utils','checklist-model','as.sortable', 'angular-loading-bar','highcharts-ng'];
 
 	// Add a new vertical module
 	var registerModule = function(moduleName, dependencies) {

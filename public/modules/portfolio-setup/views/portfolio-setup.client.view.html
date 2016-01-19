@@ -117,15 +117,15 @@
 										No Portfolios yet, why don't you create a new one?
 									</div>
 									<script type="text/ng-template" id="portfolioTree">
-										<hr>
-										<button class="btn btn-default" data-ng-click="selectPortfolio(tree.node._id);">
+										<button class="btn btn-default btn-sm" data-ng-click="selectPortfolio(tree.node._id)"
+												style="overflow: hidden; margin: 1%;">
 											{{tree.node.name}}
 										</button>
 										<ul data-ng-if="tree.nodeTrees" class="">
 											<li data-ng-repeat="tree in tree.nodeTrees" data-ng-include="'portfolioTree'"></li>
 										</ul>
 									</script>
-									<ul class="">
+									<ul>
 										<li data-ng-repeat="tree in portfolioTrees" data-ng-include="'portfolioTree'"></li>
 									</ul>
 								</div>

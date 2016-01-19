@@ -26,7 +26,11 @@ exports.signup = function(req, res) {
 	// Add missing user fields
 	user.provider = 'local';
 	user.displayName = user.firstName + ' ' + user.lastName;
-	user.tenantId = 'tid' + user._id.toString();
+
+    // Set tenant and superAdmin flag
+    user.tenantId = 'tid' + user._id.toString();
+    user.isSuperAdmin = true;
+    user.roles = ['superAdmin'];
 
 	// Then save the user 
 	user.save(function(err) {

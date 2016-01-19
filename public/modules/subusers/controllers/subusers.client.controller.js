@@ -34,6 +34,15 @@ angular.module('subusers').controller('SubusersController', ['$http','$scope', '
 			roles:['portfolioManager']
 		};
 
+		$scope.subuserFilter = {
+			firstName: '',
+			lastName: '',
+			company : '',
+			email : '',
+			username : '',
+			roles : []
+		};
+
 		// Create new Subuser
 		$scope.create = function() {
 			$http.post('/subusers', $scope.credentials).success(function(response) {

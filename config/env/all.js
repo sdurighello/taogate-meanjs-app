@@ -32,7 +32,10 @@ module.exports = {
 				'public/lib/angular-bootstrap/ui-bootstrap-tpls.js',
 				'public/lib/checklist-model/checklist-model.js',
 				'public/lib/ng-sortable/dist/ng-sortable.js',
-				'public/lib/angular-loading-bar/build/loading-bar.js'
+				'public/lib/angular-loading-bar/build/loading-bar.js',
+                'public/lib/highcharts/adapters/standalone-frameworks.js',
+                'public/lib/highcharts/highcharts.js',
+				'public/lib/highcharts-ng/dist/highcharts-ng.js'
             ]
 		},
 		css: [

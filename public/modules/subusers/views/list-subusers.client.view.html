@@ -11,18 +11,77 @@
             </div>
         </div>
     </div>
-    <div class="list-group">
-        <a data-ng-repeat="subuser in subusers" data-ng-href="#!/subusers/{{subuser._id}}" class="list-group-item">
-			<small class="list-group-item-text">
-				Posted on
-				<span data-ng-bind="subuser.created | date:'medium'"></span>
-				by
-				<span data-ng-bind="subuser.user.displayName"></span>
-			</small>
-			<h4 class="list-group-item-heading" data-ng-bind="subuser.displayName"></h4>
-        </a>
+    {{subuserFilter}}
+    <div class="row">
+        <div class="col-md-12">
+            <div class="form-group">
+                <label>Filter by role</label>
+                <div ng-repeat="role in roles" >
+                    <input required id="role" name="role" type="checkbox" checklist-model="subuserFilter.roles" checklist-value="role.roleString"> {{role.roleTitle}}
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-xs-12">
+            <div class="table-responsive">
+                <table class="table table-bordered">
+                    <thead>
+                    <tr>
+                        <th>
+                            <label>Username</label>
+                            <input class="form-control input-sm" data-ng-model="subuserFilter.username" placeholder="--filter">
+                        </th>
+                        <th>
+                            <label>First name</label>
+                            <input class="form-control input-sm" data-ng-model="subuserFilter.firstName" placeholder="--filter">
+                        </th>
+                        <th>
+                            <label>Last name</label>
+                            <input class="form-control input-sm" data-ng-model="subuserFilter.lastName" placeholder="--filter">
+                        </th>
+                        <th>
+                            <label>Organization</label>
+                            <input class="form-control input-sm" data-ng-model="subuserFilter.organization" placeholder="--filter">
+                        </th>
+                        <th>
+                            <label>Email</label>
+                            <input class="form-control input-sm" data-ng-model="subuserFilter.email" placeholder="--filter">
+                        </th>
+                    </tr>
+                    </thead>
+                    <tbody data-ng-repeat="subuser in subusers | filter : {
+                    username : subuserFilter.username,
+                    firstName : subuserFilter.firstName,
+                    lastName : subuserFilter.lastName,
+                    organization : subuserFilter.organization,
+                    email : subuserFilter.email
+                    }">
+                    <tr style="background-color: lightgrey">
+                        <td><a data-ng-bind="subuser.username" data-ng-href="#!/subusers/{{subuser._id}}"></a></td>
+                        <td><span data-ng-bind="subuser.firstName"></span></td>
+                        <td><span data-ng-bind="subuser.lastName"></span></td>
+                        <td><span data-ng-bind="subuser.organization"></span></td>
+                        <td><span data-ng-bind="subuser.email"></span></td>
+                    </tr>
+                    <tr>
+                        <td colspan="5">
+                            <span data-ng-repeat="role in subuser.roles">
+                                <span data-ng-show="role === 'superAdmin'">| Super administrator | </span>
+                                <span data-ng-show="role === 'admin'">| Administrator | </span>
+                                <span data-ng-show="role === 'PMO'">| PMO | </span>
+                                <span data-ng-show="role === 'projectManager'">| Project Manager | </span>
+                                <span data-ng-show="role === 'portfolioManager'">| Portfolio Manager | </span>
+                                <span data-ng-show="role === 'executive'">| Executive | </span>
+                            </span>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
     </div>
     <div class="alert alert-warning text-center" data-ng-hide="!subusers.$resolved || subusers.length">
-    	No Subusers yet, why don't you <a href="/#!/subusers/create">create one</a>?
+    	There are no Subusers
     </div>
 </section>

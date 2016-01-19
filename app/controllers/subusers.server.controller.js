@@ -11,23 +11,6 @@ var mongoose = require('mongoose'),
 	passport = require('passport'),
 	User = mongoose.model('User');
 
-/**
- * Create a Subuser
- */
-//exports.create = function(req, res) {
-//	var subuser = new Subuser(req.body);
-//	subuser.user = req.user;
-//
-//	subuser.save(function(err) {
-//		if (err) {
-//			return res.status(400).send({
-//				message: errorHandler.getErrorMessage(err)
-//			});
-//		} else {
-//			res.jsonp(subuser);
-//		}
-//	});
-//};
 
 /**
  * Signup new subuser
@@ -44,7 +27,10 @@ exports.create = function(req, res) {
 	// Add missing user fields
 	user.provider = 'local';
 	user.displayName = user.firstName + ' ' + user.lastName;
+
+	// Set tenant and superAdmin flag
 	user.tenantId = req.user.tenantId;
+	user.isSuperAdmin = false;
 
 	// Then save the user
 	user.save(function(err) {
@@ -153,7 +139,7 @@ exports.delete = function(req, res) {
  * List of Subusers
  */
 exports.list = function(req, res) {
-	User.find({'tenantId': req.user.tenantId}).sort('-created').populate('user', 'displayName').exec(function(err, subusers) {
+	User.find({'tenantId': req.user.tenantId, isSuperAdmin: false}).sort('-lastName').populate('user', 'displayName').exec(function(err, subusers) {
 		if (err) {
 			return res.status(400).send({
 				message: errorHandler.getErrorMessage(err)

@@ -12,12 +12,12 @@
         </div>
     </div>
     <div class="row">
-        <div class="col-xs-offset-2 col-xs-8 col-md-offset-5 col-md-2">
+        <div class="col-xs-offset-2 col-xs-8 col-md-offset-4 col-md-4">
             <form class="form-horizontal" data-ng-submit="update()" novalidate>
                 <fieldset>
                     <div class="form-group">
-                        <label for="company">Company</label>
-                        <input type="text" required id="company" name="company" class="form-control" data-ng-model="subuser.company" placeholder="Company">
+                        <label for="organization">Organization</label>
+                        <input type="text" required id="organization" name="organization" class="form-control" data-ng-model="subuser.organization" placeholder="Organization">
                     </div>
                     <div class="form-group">
                         <label for="role">Roles</label>
@@ -25,7 +25,6 @@
                             <input required id="role" name="role" type="checkbox" checklist-model="subuser.roles" checklist-value="role.roleString"> {{role.roleTitle}}
                         </div>
                     </div>
-                    {{subuser.roles}}
                     <div class="form-group">
                         <label for="firstName">First Name</label>
                         <input type="text" required id="firstName" name="firstName" class="form-control" data-ng-model="subuser.firstName" placeholder="First Name">
@@ -48,7 +47,7 @@
                     </div>
                     <div class="text-center form-group">
                         <button type="submit" class="btn btn-large btn-success">Update</button>
-                        <button class="btn btn-large btn-info">Cancel</button>
+                        <a class="btn btn-large btn-info" href="/#!/subusers">Cancel</a>
                     </div>
                     <div data-ng-show="error" class="text-center text-danger">
                         <strong data-ng-bind="error"></strong>

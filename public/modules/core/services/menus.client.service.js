@@ -165,7 +165,7 @@ angular.module('core').service('Menus', [
 
 		// taoPortfolio.com additions for menu
 		this.addMenuItem('topbar','My taoPortfolio','mytao','item','mytao',false,['superAdmin','admin','PMO','projectManager','portfolioManager','executive'],0);
-		this.addMenuItem('topbar','Admin','admin','dropdown','admin',false,['superAdmin','admin','PMO','projectManager','portfolioManager','executive'],1);
+		this.addMenuItem('topbar','Admin','admin','dropdown','admin',false,['superAdmin','admin'],1);
 
 		// SETUP
 		this.addMenuItem('topbar','Setup','setup','dropdown','setup',false,['superAdmin','admin','PMO','projectManager','portfolioManager','executive'],2);
@@ -365,13 +365,30 @@ angular.module('core').service('Menus', [
         this.addSubMenuItem('topbar', 'delivery', 'Project status', 'project-status-management','project-status-management',false,
             ['superAdmin','admin','PMO','projectManager','portfolioManager','executive'],17);
                 // Portfolio status
-        this.addSubMenuItem('topbar', 'delivery', 'Portfolio status', 'portfolio-status-management','portfolio-status-management',false,
-            ['superAdmin','admin','PMO','projectManager','portfolioManager','executive'],18);
+        //this.addSubMenuItem('topbar', 'delivery', 'Portfolio status', 'portfolio-status-management','portfolio-status-management',false,
+        //    ['superAdmin','admin','PMO','projectManager','portfolioManager','executive'],18);
 
 
 
         // DASHBOARDS
 		this.addMenuItem('topbar','Dashboards','dashboards','dropdown','dashboards',false,
             ['superAdmin','admin','PMO','projectManager','portfolioManager','executive'],6);
+		    // Definition
+		this.addSubMenuItem('topbar', 'dashboards', 'Definition', 'menuTitle','menuTitle',false,
+			['superAdmin','admin','PMO','projectManager','portfolioManager','executive'],0);
+		        // Definition dashboards
+		this.addSubMenuItem('topbar', 'dashboards', 'Definition dashboards', 'definition-dashboards','definition-dashboards',false,
+			['superAdmin','admin','PMO','projectManager','portfolioManager','executive'],1);
+		        // Prioritization
+		this.addSubMenuItem('topbar', 'dashboards', 'Prioritization', 'gate-management-review','gate-management-review',false,
+			['superAdmin','admin','PMO','projectManager','portfolioManager','executive'],2);
+		    // Evaluation
+		this.addSubMenuItem('topbar', 'dashboards', '', 'divider','divider',false,
+			['superAdmin','admin','PMO','projectManager','portfolioManager','executive'],3);
+		this.addSubMenuItem('topbar', 'dashboards', 'Evaluation', 'menuTitle','menuTitle',false,
+			['superAdmin','admin','PMO','projectManager','portfolioManager','executive'],4);
+		        // Financial
+		this.addSubMenuItem('topbar', 'dashboards', 'Financial', 'project-change-requests','project-change-requests',false,
+			['superAdmin','admin','PMO','projectManager','portfolioManager','executive'],5);
 	}
 ]);

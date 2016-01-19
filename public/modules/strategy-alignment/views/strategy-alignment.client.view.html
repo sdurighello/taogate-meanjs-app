@@ -25,8 +25,8 @@
 						No strategy nodes yet
 					</div>
 					<script type="text/ng-template" id="portfolioTree">
-						<hr>
-						<button class="btn btn-default" data-ng-click="selectNode(tree.node);">
+						<button class="btn btn-default btn-sm" data-ng-click="selectNode(tree.node);"
+                                style="overflow: hidden; margin: 2%;">
                             <span data-ng-bind="tree.node.name"></span> &nbsp;
                             <span class="badge" data-ng-bind="selectedAssignments.assignedProjects[tree.node._id].length"></span>
 						</button>

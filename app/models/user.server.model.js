@@ -25,8 +25,8 @@ var validateLocalStrategyPassword = function(password) {
  * User Schema
  */
 var UserSchema = new Schema({
-	tenantId : {type: String},
-	company: {
+	tenantId : {type: String, required:'tenant id is required'},
+	organization: {
 		type: String,
 		trim: true,
 		default: '',
@@ -92,8 +92,9 @@ var UserSchema = new Schema({
 				'executive' // Read only everything + use of dashboards
 			]
 		}],
-		default: ['superAdmin']
+		required:'A role is required'
 	},
+    isSuperAdmin : {type:Boolean, default: false, required:'isSuperAdmin flag must be set'},
 	updated: {
 		type: Date
 	},

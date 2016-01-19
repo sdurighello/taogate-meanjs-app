@@ -25,8 +25,8 @@
 						No portfolios yet
 					</div>
 					<script type="text/ng-template" id="portfolioTree">
-						<hr>
-						<button class="btn btn-default" data-ng-click="parentCtrl.selectPortfolio(tree.node);">
+						<button class="btn btn-default btn-sm" data-ng-click="parentCtrl.selectPortfolio(tree.node);"
+								style="overflow: hidden; margin: 1%;">
 							<span data-ng-bind="tree.node.name"></span>
 						</button>
 						<ul data-ng-if="tree.nodeTrees" class="">

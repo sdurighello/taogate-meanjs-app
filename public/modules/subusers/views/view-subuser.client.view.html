@@ -12,23 +12,50 @@
 			</div>
 		</div>
 	</div>
-	<div class="page-header">
-		<h1 data-ng-bind="subuser.displayName"></h1>
-	</div>
-	<div class="pull-right" data-ng-show="((authentication.user) && (authentication.user._id == subuser.user._id))">
-		<a class="btn btn-success" href="/#!/subusers/{{subuser._id}}/edit">
-			<i class="glyphicon glyphicon-edit"></i>
-		</a>
-		<a class="btn btn-danger" data-ng-click="remove();">
-			<i class="glyphicon glyphicon-trash"></i>
-		</a>
-	</div>
-	<small>
-		<em class="text-muted">
-			Posted on
-			<span data-ng-bind="subuser.created | date:'mediumDate'"></span>
-			by
-			<span data-ng-bind="subuser.user.displayName"></span>
-		</em>
-	</small>
+	<div class="row">
+        <div class="col-xs-offset-2 col-xs-8 col-md-offset-4 col-md-4">
+            <form>
+                <fieldset disabled>
+                    <div class="form-group">
+                        <label for="organization">Organization</label>
+                        <input type="text" required id="organization" name="organization" class="form-control" data-ng-model="subuser.organization" placeholder="Organization">
+                    </div>
+                    <div class="form-group">
+                        <label for="role">Roles</label>
+                        <div ng-repeat="role in roles">
+                            <input required id="role" name="role" type="checkbox" checklist-model="subuser.roles" checklist-value="role.roleString"> {{role.roleTitle}}
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="firstName">First Name</label>
+                        <input type="text" required id="firstName" name="firstName" class="form-control" data-ng-model="subuser.firstName" placeholder="First Name">
+                    </div>
+                    <div class="form-group">
+                        <label for="lastName">Last Name</label>
+                        <input type="text" id="lastName" name="lastName" class="form-control" data-ng-model="subuser.lastName" placeholder="Last Name">
+                    </div>
+                    <div class="form-group">
+                        <label for="email">Email</label>
+                        <input type="email" id="email" name="email" class="form-control" data-ng-model="subuser.email" placeholder="Email">
+                    </div>
+                    <div class="form-group">
+                        <label for="username">Username</label>
+                        <input type="text" id="username" name="username" class="form-control" data-ng-model="subuser.username" placeholder="Username">
+                    </div>
+                    <div class="form-group">
+                        <label for="password">Password</label>
+                        <input type="password" id="password" name="password" class="form-control" data-ng-model="subuser.password" placeholder="Password">
+                    </div>
+                </fieldset>
+                <div class="form-group text-center">
+                    <a class="btn btn-success" href="/#!/subusers/{{subuser._id}}/edit">
+                        Edit
+                    </a>
+                    <a class="btn btn-danger" data-ng-click="remove();">
+                        Delete user
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
 </section>
