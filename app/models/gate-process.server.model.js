@@ -26,6 +26,9 @@ var GateProcessSchema = new Schema({
     startupGate: {type: Schema.Types.ObjectId, ref: 'Gate', $tenant:true},
     closureGate: {type: Schema.Types.ObjectId, ref: 'Gate', $tenant:true},
 	gates : [{type: Schema.Types.ObjectId, ref: 'Gate', $tenant:true}],
+
+    isAssigned: {type:Boolean, default: false},
+
     created: {
 		type: Date,
 		default: Date.now
@@ -35,6 +38,8 @@ var GateProcessSchema = new Schema({
 		ref: 'User'
 	}
 });
+
+
 
 GateProcessSchema.plugin(deepPopulate);
 mongoose.mtModel('GateProcess', GateProcessSchema);

@@ -41,8 +41,9 @@
 					<div class="row" style="min-height: 400px; max-height: 400px; overflow-y: scroll">
 						<div class="col-md-12 form-group" data-ng-repeat="process in gateProcesses track by $index">
 							<button class="btn btn-default btn-block" data-ng-click="selectGateProcess(process)"
-									data-ng-bind="process.name">
-							</button>
+									data-ng-bind="process.name" style="overflow: hidden"
+                                    data-ng-class="{'btn-default' : process.isAssigned, 'btn-info' : !process.isAssigned}">
+                            </button>
 						</div>
 					</div>
 				</div>

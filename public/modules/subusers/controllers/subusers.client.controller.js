@@ -43,6 +43,22 @@ angular.module('subusers').controller('SubusersController', ['$http','$scope', '
 			roles : []
 		};
 
+		$scope.hasRole = function(subuser){
+            if($scope.subuserFilter.roles.length){
+                var foundRole = false;
+                _.forEach(subuser.roles, function(role){
+                    _.forEach($scope.subuserFilter.roles, function(fRole){
+                       if(role === fRole){
+                           foundRole = true;
+                       }
+                    });
+                });
+                return foundRole;
+            } else {
+                return true;
+            }
+        };
+
 		// Create new Subuser
 		$scope.create = function() {
 			$http.post('/subusers', $scope.credentials).success(function(response) {

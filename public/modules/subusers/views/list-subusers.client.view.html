@@ -11,13 +11,23 @@
             </div>
         </div>
     </div>
-    {{subuserFilter}}
     <div class="row">
         <div class="col-md-12">
-            <div class="form-group">
-                <label>Filter by role</label>
-                <div ng-repeat="role in roles" >
-                    <input required id="role" name="role" type="checkbox" checklist-model="subuserFilter.roles" checklist-value="role.roleString"> {{role.roleTitle}}
+            <div class="panel panel-default">
+                <div class="panel-body">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <label>Filter by role</label>
+                        </div>
+                    </div>
+                    <hr style="margin: 0.8%; padding: 0%">
+                    <div class="row">
+                        <div class="col-md-2" ng-repeat="role in roles" >
+                            <div class="form-group">
+                                <input class="" required id="role" name="role" type="checkbox" checklist-model="subuserFilter.roles" checklist-value="role.roleString"> {{role.roleTitle}}
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -56,7 +66,7 @@
                     lastName : subuserFilter.lastName,
                     organization : subuserFilter.organization,
                     email : subuserFilter.email
-                    }">
+                    } | filter : hasRole">
                     <tr style="background-color: lightgrey">
                         <td><a data-ng-bind="subuser.username" data-ng-href="#!/subusers/{{subuser._id}}"></a></td>
                         <td><span data-ng-bind="subuser.firstName"></span></td>

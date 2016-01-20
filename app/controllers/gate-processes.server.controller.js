@@ -163,15 +163,52 @@ exports.delete = function(req, res) {
  */
 exports.list = function(req, res) {
 	var GateProcess = mongoose.mtModel(req.user.tenantId + '.' + 'GateProcess');
-	GateProcess.find().deepPopulate(['startupGate','closureGate','gates.gateOutcomes']).populate('user', 'displayName').exec(function(err, gateProcesses) {
-		if (err) {
-			return res.status(400).send({
-				message: errorHandler.getErrorMessage(err)
-			});
-		} else {
-			res.jsonp(gateProcesses);
-		}
-	});
+    var Project = mongoose.mtModel(req.user.tenantId + '.' + 'Project');
+
+    async.waterfall([
+        // Get all the gate processes
+        function(callback) {
+            GateProcess.find().deepPopulate([
+                'startupGate','closureGate','gates.gateOutcomes'
+            ]).populate('user', 'displayName').exec(function(err, gateProcesses) {
+                if(err){
+                    return callback(err);
+                }
+                callback(null, gateProcesses);
+            });
+        },
+        // Check if each process is assigned to at least one project and set its isAssigned flag
+        function(gateProcesses, callback) {
+            async.eachSeries(gateProcesses, function(process, callback) {
+                Project.findOne({process : process._id}, function(err, project){
+                    if(err){
+                        return callback(err);
+                    }
+                    if(project){
+                        process.isAssigned = true;
+                    }
+                    if(!project){
+                        process.isAssigned = false;
+                    }
+                    callback();
+                });
+            }, function(err){
+                if( err ) {
+                    return callback(err);
+                }
+                callback(null, gateProcesses);
+            });
+
+        }
+    ], function (err, gateProcesses) {
+        if (err) {
+            return res.status(400).send({
+                message: errorHandler.getErrorMessage(err)
+            });
+        } else {
+            res.jsonp(gateProcesses);
+        }
+    });
 };
 
 /**
@@ -179,12 +216,46 @@ exports.list = function(req, res) {
  */
 exports.gateProcessByID = function(req, res, next, id) {
 	var GateProcess = mongoose.mtModel(req.user.tenantId + '.' + 'GateProcess');
-	GateProcess.findById(id).deepPopulate(['gates.gateOutcomes']).populate('user', 'displayName').exec(function(err, gateProcess) {
-		if (err) return next(err);
-		if (! gateProcess) return next(new Error('Failed to load Gate process ' + id));
-		req.gateProcess = gateProcess ;
-		next();
-	});
+    var Project = mongoose.mtModel(req.user.tenantId + '.' + 'Project');
+
+    async.waterfall([
+        // Get the gate process object by Id
+        function(callback) {
+            GateProcess.findById(id).deepPopulate(['gates.gateOutcomes']).populate('user', 'displayName').exec(function(err, gateProcess) {
+                if (err){
+                    return callback(err);
+                }
+                if (! gateProcess){
+                    return callback(new Error('Failed to load Gate process ' + id));
+                }
+                callback(null, gateProcess);
+            });
+        },
+        // Check if it is assigned to at least a project and set the isAssigned flag
+        function(gateProcess, callback) {
+            Project.findOne({process : gateProcess._id}, function(err, project){
+                if(err){
+                    return callback(err);
+                }
+                if(project){
+                    gateProcess.isAssigned = true;
+                }
+                if(!project){
+                    gateProcess.isAssigned = false;
+                }
+                callback(null, gateProcess);
+            });
+        }
+    ], function (err, gateProcess) {
+        if (err) {
+            return next(err);
+        } else {
+            req.gateProcess = gateProcess ;
+            next();
+        }
+    });
+
+
 };
 
 /**

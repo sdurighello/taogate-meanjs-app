@@ -28,7 +28,6 @@ exports.create = function(req, res) {
     var PeopleCategory = mongoose.mtModel(req.user.tenantId + '.' + 'PeopleCategory');
     var PeopleProjectGroup = mongoose.mtModel(req.user.tenantId + '.' + 'PeopleProjectGroup');
     var PeopleProjectRole = mongoose.mtModel(req.user.tenantId + '.' + 'PeopleProjectRole');
-    var ProcessAssignment = mongoose.mtModel(req.user.tenantId + '.' + 'ProcessAssignment');
 
 
     async.series([
@@ -194,18 +193,6 @@ exports.create = function(req, res) {
                 } else {
                     callback(null);
                 }
-            });
-        },
-        // PROCESS-ASSIGNMENTS: Create project entry for gate process data
-        function(callback){
-            var processAssignment = new ProcessAssignment({
-                project : project._id,
-                process : null,
-                gates : [],
-                user : req.user
-            });
-            processAssignment.save(function(err){
-                if(err){callback(err);} else {callback(null);}
             });
         }
     ],function(err){

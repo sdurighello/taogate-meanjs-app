@@ -283,6 +283,31 @@ exports.updateProcessAssignment = function(req, res) {
                 callback(err);
             });
         },
+        // GATE-PROCESS: Make sure the "isAssigned" flag on the process is set to true
+        function(callback){
+            async.waterfall([
+                function(callback) {
+                    GateProcess.findById(req.body.processId).exec(function(err, process){
+                        if(err){
+                            return callback(err);
+                        }
+                        if(!process){
+                            return callback(new Error({message:'Cannot find process '+req.body.processId}));
+                        }
+                        process.isAssigned = true;
+                        callback(null, process);
+                    });
+                },
+                function(process, callback) {
+                    process.save(function(err){
+                        if(err){ return callback(err); }
+                        callback(null);
+                    });
+                }
+            ], function (err) {
+                callback(err);
+            });
+        },
         // NEW PERFORMANCES: Create an expected performance record for each gate
         function(callback){
             if(req.body.processId){ // Check project.process is set to a new process or just to "null", then find one

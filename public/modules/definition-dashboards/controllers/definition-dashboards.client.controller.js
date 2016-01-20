@@ -1,9 +1,38 @@
 'use strict';
 
 // Definition dashboards controller
-angular.module('definition-dashboards').controller('DefinitionDashboardsController', ['$scope', '$stateParams', '$location', 'Authentication', 'DefinitionDashboards',
-	function($scope, $stateParams, $location, Authentication, DefinitionDashboards) {
-		$scope.authentication = Authentication;
+angular.module('definition-dashboards').controller('DefinitionDashboardsController', ['$scope', '$stateParams', '$location', 'Authentication',
+    'DefinitionDashboards', '_','$q',
+	function($scope, $stateParams, $location, Authentication, DefinitionDashboards, _, $q) {
+
+        // ----------- INIT ---------------
+
+        $scope.initError = [];
+
+        $scope.init = function(){
+
+            DefinitionDashboards.projectCategorization(function(array){
+                console.log(array);
+                $scope.projectCategorization = array;
+            }, function(err){
+                $scope.initError.push(err.data.message);
+            });
+
+
+        };
+
+
+        // ------- ROLES FOR BUTTONS ------
+
+        var d = $q.defer();
+        d.resolve(Authentication);
+
+        d.promise.then(function(data){
+            var obj = _.clone(data);
+            $scope.userHasAuthorization = _.some(obj.user.roles, function(role){
+                return role === 'superAdmin' || role === 'admin' || role === 'pmo';
+            });
+        });
 
 
 		//This is not a highcharts object. It just looks a little like one!
@@ -13,7 +42,7 @@ angular.module('definition-dashboards').controller('DefinitionDashboardsControll
 				//This is the Main Highcharts chart config. Any Highchart options are valid here.
 				//will be overriden by values specified below.
 				chart: {
-					type: 'bar'
+					type: 'pie'
 				},
 				tooltip: {
 					style: {
@@ -45,79 +74,85 @@ angular.module('definition-dashboards').controller('DefinitionDashboardsControll
 			//Whether to use Highstocks instead of Highcharts (optional). Defaults to false.
 			useHighStocks: false,
 			//size (optional) if left out the chart will default to size of the div or something sensible.
-			size: {
-				width: 400,
-				height: 300
-			},
+			//size: {
+			//	width: 400,
+			//	height: 300
+			//},
 			//function (optional)
 			func: function (chart) {
 				//setup some logic for the chart
 			}
 		};
 
+		$scope.chartConfig2 = {
 
+			title: {
+				text: 'Basic drilldown'
+			},
+			xAxis: {
+				type: 'category'
+			},
 
+			legend: {
+				enabled: false
+			},
 
+            options : {
 
+                chart: {
+                    type: 'column'
+                },
 
+                plotOptions: {
+                    series: {
+                        borderWidth: 0,
+                        dataLabels: {
+                            enabled: true
+                        }
+                    }
+                },
 
+                drilldown: {
+                    series: [{
+                        id: 'animals',
+                        name: 'Animals',
+                        data: [{
+                            name: 'Cats',
+                            y: 4,
+                            drilldown: 'cats'
+                        }, ['Dogs', 2],
+                            ['Cows', 1],
+                            ['Sheep', 2],
+                            ['Pigs', 1]
+                        ]
+                    }, {
 
-		// Create new Definition dashboard
-		$scope.create = function() {
-			// Create new Definition dashboard object
-			var definitionDashboard = new DefinitionDashboards ({
-				name: this.name
-			});
+                        id: 'cats',
+                        data: [{name:'calico',
+                            y:1},
+                            {name:'tabby',
+                                y:2},
+                            {name:'mix',
+                                y:1}
+                        ]
+                    }]
+                }
+            },
 
-			// Redirect after save
-			definitionDashboard.$save(function(response) {
-				$location.path('definition-dashboards/' + response._id);
-
-				// Clear form fields
-				$scope.name = '';
-			}, function(errorResponse) {
-				$scope.error = errorResponse.data.message;
-			});
+            series: [{
+                name: 'Things',
+                colorByPoint: true,
+                data: [{
+                    name: 'Animals',
+                    y: 5,
+                    drilldown: 'animals'
+                }]
+            }]
 		};
 
-		// Remove existing Definition dashboard
-		$scope.remove = function(definitionDashboard) {
-			if ( definitionDashboard ) { 
-				definitionDashboard.$remove();
 
-				for (var i in $scope.definitionDashboards) {
-					if ($scope.definitionDashboards [i] === definitionDashboard) {
-						$scope.definitionDashboards.splice(i, 1);
-					}
-				}
-			} else {
-				$scope.definitionDashboard.$remove(function() {
-					$location.path('definition-dashboards');
-				});
-			}
-		};
 
-		// Update existing Definition dashboard
-		$scope.update = function() {
-			var definitionDashboard = $scope.definitionDashboard;
 
-			definitionDashboard.$update(function() {
-				$location.path('definition-dashboards/' + definitionDashboard._id);
-			}, function(errorResponse) {
-				$scope.error = errorResponse.data.message;
-			});
-		};
 
-		// Find a list of Definition dashboards
-		$scope.find = function() {
-			$scope.definitionDashboards = DefinitionDashboards.query();
-		};
-
-		// Find existing Definition dashboard
-		$scope.findOne = function() {
-			$scope.definitionDashboard = DefinitionDashboards.get({ 
-				definitionDashboardId: $stateParams.definitionDashboardId
-			});
-		};
 	}
 ]);
