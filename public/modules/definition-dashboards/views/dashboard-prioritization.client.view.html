@@ -1,0 +1,70 @@
+<section data-ng-controller="DashboardPrioritizationController" data-ng-init="init()">
+	<br>
+	<div class="row">
+		<div class="col-sm-12">
+			<div class="panel-heading">
+				<ol class="breadcrumb">
+					<li>Dashboards</li>
+					<li>Portfolio definition</li>
+					<li class="active">Prioritization</li>
+				</ol>
+			</div>
+		</div>
+	</div>
+	<div class="row">
+		<div class="col-sm-3">
+			<div class="panel panel-default">
+				<div class="panel-heading">
+					<h6 class="panel-title text-center">Category groups</h6>
+				</div>
+				<div class="panel-body">
+					<div class="row" style="min-height: 350px; max-height: 350px; overflow-y: auto">
+						<div class="col-md-12">
+							<div data-ng-show="priorityGroups.length === 0" class="alert alert-warning text-center">
+								There are no priorities
+							</div>
+							<button type="button"
+									data-ng-repeat="group in priorityGroups"
+									data-ng-click="selectPriorityGroup(group)"
+									class="btn btn-default btn-sm center-block btn-block" style="overflow: hidden;">
+								{{group.name}}
+							</button>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="col-md-9">
+			<div class="row">
+				<div class="col-md-12">
+					<div data-ng-hide="selectedPriorityGroup || priorityGroups.length === 0" class="alert alert-warning text-center">
+						Select a priority group to see its details
+					</div>
+				</div>
+			</div>
+			<div data-ng-show="selectedPriorityGroup">
+				<div class="row">
+					<div class="col-md-6 btn-group btn-group-xs btn-group-justified">
+						<label class="btn btn-info btn-xs" data-ng-model="typeOfChart" btn-radio="'number'">
+							Number of projects by priority
+						</label>
+						<label class="btn btn-info btn-xs" data-ng-model="typeOfChart" btn-radio="'funds'">
+							Earmarked project funds by priority
+						</label>
+					</div>
+				</div>
+				<hr>
+				<div class="row" data-ng-show="typeOfChart === 'number'">
+					<div class="col-md-6" data-ng-repeat="config in priorityChartConfigs.countPriorityValue">
+						<highchart config="config"></highchart>
+					</div>
+				</div>
+				<div class="row" data-ng-show="typeOfChart === 'funds'">
+					<div class="col-md-6" data-ng-repeat="config in priorityChartConfigs.fundsPriorityValue">
+						<highchart config="config"></highchart>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</section>

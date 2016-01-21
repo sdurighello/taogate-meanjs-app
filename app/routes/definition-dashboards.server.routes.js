@@ -8,4 +8,7 @@ module.exports = function(app) {
 	app.route('/definition-dashboards/projectCategorization')
 		.get(users.requiresLogin, definitionDashboards.hasAuthorization, definitionDashboards.projectCategorization);
 
+	app.route('/definition-dashboards/projectPrioritization')
+		.get(users.requiresLogin, definitionDashboards.hasAuthorization, definitionDashboards.projectPrioritization);
+
 };

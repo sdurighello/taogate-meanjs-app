@@ -376,11 +376,11 @@ angular.module('core').service('Menus', [
 		    // Definition
 		this.addSubMenuItem('topbar', 'dashboards', 'Definition', 'menuTitle','menuTitle',false,
 			['superAdmin','admin','PMO','projectManager','portfolioManager','executive'],0);
-		        // Definition dashboards
-		this.addSubMenuItem('topbar', 'dashboards', 'Definition dashboards', 'definition-dashboards','definition-dashboards',false,
+		        // Categorization
+		this.addSubMenuItem('topbar', 'dashboards', 'Categorization', 'dashboard-categorization','dashboard-categorization',false,
 			['superAdmin','admin','PMO','projectManager','portfolioManager','executive'],1);
 		        // Prioritization
-		this.addSubMenuItem('topbar', 'dashboards', 'Prioritization', 'gate-management-review','gate-management-review',false,
+		this.addSubMenuItem('topbar', 'dashboards', 'Prioritization', 'dashboard-prioritization','dashboard-prioritization',false,
 			['superAdmin','admin','PMO','projectManager','portfolioManager','executive'],2);
 		    // Evaluation
 		this.addSubMenuItem('topbar', 'dashboards', '', 'divider','divider',false,
