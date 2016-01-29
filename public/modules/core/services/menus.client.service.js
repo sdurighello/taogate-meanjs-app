@@ -373,6 +373,7 @@ angular.module('core').service('Menus', [
         // DASHBOARDS
 		this.addMenuItem('topbar','Dashboards','dashboards','dropdown','dashboards',false,
             ['superAdmin','admin','PMO','projectManager','portfolioManager','executive'],6);
+
 		    // Definition
 		this.addSubMenuItem('topbar', 'dashboards', 'Definition', 'menuTitle','menuTitle',false,
 			['superAdmin','admin','PMO','projectManager','portfolioManager','executive'],0);
@@ -382,13 +383,24 @@ angular.module('core').service('Menus', [
 		        // Prioritization
 		this.addSubMenuItem('topbar', 'dashboards', 'Prioritization', 'dashboard-prioritization','dashboard-prioritization',false,
 			['superAdmin','admin','PMO','projectManager','portfolioManager','executive'],2);
+
 		    // Evaluation
 		this.addSubMenuItem('topbar', 'dashboards', '', 'divider','divider',false,
 			['superAdmin','admin','PMO','projectManager','portfolioManager','executive'],3);
 		this.addSubMenuItem('topbar', 'dashboards', 'Evaluation', 'menuTitle','menuTitle',false,
 			['superAdmin','admin','PMO','projectManager','portfolioManager','executive'],4);
-		        // Financial
-		this.addSubMenuItem('topbar', 'dashboards', 'Financial', 'project-change-requests','project-change-requests',false,
+				// Financial
+		this.addSubMenuItem('topbar', 'dashboards', 'Financial analysis', 'dashboard-financial','dashboard-financial',false,
 			['superAdmin','admin','PMO','projectManager','portfolioManager','executive'],5);
+
+			// Delivery
+		this.addSubMenuItem('topbar', 'dashboards', '', 'divider','divider',false,
+			['superAdmin','admin','PMO','projectManager','portfolioManager','executive'],6);
+		this.addSubMenuItem('topbar', 'dashboards', 'Delivery', 'menuTitle','menuTitle',false,
+			['superAdmin','admin','PMO','projectManager','portfolioManager','executive'],7);
+				// Performances
+		this.addSubMenuItem('topbar', 'dashboards', 'Gate performances', 'dashboard-performances','dashboard-performances',false,
+			['superAdmin','admin','PMO','projectManager','portfolioManager','executive'],8);
+
 	}
 ]);

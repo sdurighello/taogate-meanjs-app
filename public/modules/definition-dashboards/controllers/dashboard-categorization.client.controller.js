@@ -88,6 +88,10 @@ angular.module('definition-dashboards').controller('DashboardCategorizationContr
                             name : nameSeries,
                             data : []
                         };
+                        categoryChartObj.size = {
+                            width : 400,
+                            height : 300
+                        };
                         _.forEach(categoryObj.categoryValues, function (valueObj) {
                             seriesObj.data.push({
                                 name: valueObj.categoryValue.name,
