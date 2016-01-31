@@ -49,7 +49,10 @@ exports.gatePerformances = function(req, res){
                 process : process,
                 gateAssignments : [],
                 lastCompleted : {},
-                current : {}
+                current : {},
+                baselineDurations : [],
+                baselineCosts : [],
+                baselineCompletions : []
             };
             async.waterfall([
                 function(callback){
@@ -119,6 +122,90 @@ exports.gatePerformances = function(req, res){
                         retObj.baselineCosts = performances;
                         callback(null);
                     });
+                },
+                function(callback){
+                    BaselineCompletion.find({project: req.params.projectId}).exec(function(err, performances){
+                        if(err){
+                            return callback(err);
+                        }
+                        if(!performances){
+                            return callback(new Error ({message: 'Cannot find baseline cost for project' + req.params.projectId}));
+                        }
+                        retObj.baselineCompletions = performances;
+                        callback(null);
+                    });
+                },
+                function(callback){
+                    EstimateDuration.find({project: req.params.projectId}).exec(function(err, performances){
+                        if(err){
+                            return callback(err);
+                        }
+                        if(!performances){
+                            return callback(new Error ({message: 'Cannot find baseline duration for project' + req.params.projectId}));
+                        }
+                        retObj.estimateDurations = performances;
+                        callback(null);
+                    });
+                },
+                function(callback){
+                    EstimateCost.find({project: req.params.projectId}).exec(function(err, performances){
+                        if(err){
+                            return callback(err);
+                        }
+                        if(!performances){
+                            return callback(new Error ({message: 'Cannot find baseline cost for project' + req.params.projectId}));
+                        }
+                        retObj.estimateCosts = performances;
+                        callback(null);
+                    });
+                },
+                function(callback){
+                    EstimateCompletion.find({project: req.params.projectId}).exec(function(err, performances){
+                        if(err){
+                            return callback(err);
+                        }
+                        if(!performances){
+                            return callback(new Error ({message: 'Cannot find baseline cost for project' + req.params.projectId}));
+                        }
+                        retObj.estimateCompletions = performances;
+                        callback(null);
+                    });
+                },
+                function(callback){
+                    ActualDuration.find({project: req.params.projectId}).exec(function(err, performances){
+                        if(err){
+                            return callback(err);
+                        }
+                        if(!performances){
+                            return callback(new Error ({message: 'Cannot find baseline duration for project' + req.params.projectId}));
+                        }
+                        retObj.actualDurations = performances;
+                        callback(null);
+                    });
+                },
+                function(callback){
+                    ActualCost.find({project: req.params.projectId}).exec(function(err, performances){
+                        if(err){
+                            return callback(err);
+                        }
+                        if(!performances){
+                            return callback(new Error ({message: 'Cannot find baseline cost for project' + req.params.projectId}));
+                        }
+                        retObj.actualCosts = performances;
+                        callback(null);
+                    });
+                },
+                function(callback){
+                    ActualCompletion.find({project: req.params.projectId}).exec(function(err, performances){
+                        if(err){
+                            return callback(err);
+                        }
+                        if(!performances){
+                            return callback(new Error ({message: 'Cannot find baseline cost for project' + req.params.projectId}));
+                        }
+                        retObj.actualCompletions = performances;
+                        callback(null);
+                    });
                 }
             ], function(err){
                 if(err){
@@ -130,39 +217,27 @@ exports.gatePerformances = function(req, res){
         },
         // Create result array
         function(retObj, callback){
-            /*
-            result = [
-                {
-                    gate : object,
-                    completed : true/false,
-                    current : true/false
-                    currentStage : {
-                        duration : {
-                                baselineDate : date,
-                                baselineDays : days,
-                                estimateDate : date,
-                                estimateDays : ...,
-                                actualDate : ...,
-                                actualDays : ...
-                            }
-                    },
-                    cumulative : {
-                        duration : {
-                                 baselineDays : days,
-                                 estimateDays : ...,
-                                 actualDays : ...
-                            }
-                    }
-                }
-            ]
-             */
-            var result = [];
+            var result = []; // contains resultObjects
 
             // VARIABLES
             var currentPosition = retObj.current.gate.position;
             var closureGatePosition = _.find(retObj.gateAssignments, function(assignment){
                 return assignment.gate._id.equals(retObj.process.closureGate);
             }).gate.position;
+
+            var previousGateDateBaseline = null;
+            var previousGateDateEstimate = null;
+            var previousGateDateActual = null;
+
+            var cumulativeBaselineDays = 0;
+            var cumulativeBaselineCost = 0;
+            var cumulativeBaselineCompletion = 0;
+            var cumulativeEstimateDays = 0;
+            var cumulativeEstimateCost = 0;
+            var cumulativeEstimateCompletion = 0;
+            var cumulativeActualDays = 0;
+            var cumulativeActualCost = 0;
+            var cumulativeActualCompletion = 0;
 
             // STARTUP GATE
             if(retObj.current.gate.position === 1){
@@ -176,25 +251,113 @@ exports.gatePerformances = function(req, res){
 
             // INTERIM GATES
             if(retObj.current.gate.position !== 1 && retObj.current.gate._id !== retObj.process.closureGate){
-                var cumulativeBaselineDays = 0;
-                var cumulativeBaselineCost = 0;
-                var previousGateBaselineDate = _.find(retObj.baselineDurations, function(performance){
-                    return performance.sourceGate.equals(retObj.process.startupGate) && performance.targetGate.equals(retObj.process.startupGate);
-                }).currentRecord.gateDate;
-
                 // For all gates before current (treat as completed) (but not Startup)
-                for(var lastPositionSeenBefore = 1; lastPositionSeenBefore < currentPosition; lastPositionSeenBefore++){
 
+                var loopFunction = function(lp){
+                    var resultObj = {
+                        gate : {},
+                        current : false,
+                        oneStage : {
+                            duration : {
+                                baselineDate : null,
+                                baselineDays : 0,
+                                estimateDate : null,
+                                estimateDays : 0,
+                                actualDate : null,
+                                actualDays : 0
+                            },
+                            cost : {
+                                baseline : 0,
+                                estimate : 0,
+                                actual : 0
+                            },
+                            completion : {
+                                baseline : 0,
+                                estimate : 0,
+                                actual : 0
+                            }
+                        },
+                        cumulative : {
+                            duration : {
+                                baselineDays : 0,
+                                estimateDays : 0,
+                                actualDays : 0
+                            },
+                            cost : {
+                                baseline : 0,
+                                estimate : 0,
+                                actual : 0
+                            },
+                            completion : {
+                                baseline : 0,
+                                estimate : 0,
+                                actual : 0
+                            }
+                        }
+                    };
+                    var loopAssignment = _.find(retObj.gateAssignments, function(assignment){
+                        return assignment.gate.position === lp;
+                    });
+                    var loopGate = loopAssignment.gate;
+
+                    resultObj.gate = loopGate;
+                    resultObj.current = false;
+
+                    var baselineDuration = _.find(retObj.baselineDurations, function(performance){
+                        return performance.sourceGate.equals(loopGate._id) && performance.targetGate.equals(loopGate._id);
+                    });
+                    var estimateDuration = _.find(retObj.estimateDurations, function(performance){
+                        return performance.sourceGate.equals(loopGate._id) && performance.targetGate.equals(loopGate._id);
+                    });
+                    var actualDuration = _.find(retObj.actualDurations, function(performance){
+                        return performance.sourceGate.equals(loopGate._id) && performance.targetGate.equals(loopGate._id);
+                    });
+
+                    var baselineCost = _.find(retObj.baselineCosts, function(performance){
+                        return performance.sourceGate.equals(loopGate._id) && performance.targetGate.equals(loopGate._id);
+                    });
+                    var estimateCost = _.find(retObj.estimateCosts, function(performance){
+                        return performance.sourceGate.equals(loopGate._id) && performance.targetGate.equals(loopGate._id);
+                    });
+                    var actualCost = _.find(retObj.actualCosts, function(performance){
+                        return performance.sourceGate.equals(loopGate._id) && performance.targetGate.equals(loopGate._id);
+                    });
+
+                    var baselineCompletion = _.find(retObj.baselineCompletions, function(performance){
+                        return performance.sourceGate.equals(loopGate._id) && performance.targetGate.equals(loopGate._id);
+                    });
+                    var estimateCompletion = _.find(retObj.estimateCompletions, function(performance){
+                        return performance.sourceGate.equals(loopGate._id) && performance.targetGate.equals(loopGate._id);
+                    });
+                    var actualCompletion = _.find(retObj.actualCompletions, function(performance){
+                        return performance.sourceGate.equals(loopGate._id) && performance.targetGate.equals(loopGate._id);
+                    });
+
+                    resultObj.oneStage.duration.baselineDate = baselineDuration.currentRecord.gateDate;
+                    if(lp !== 1){
+                        resultObj.oneStage.duration.baselineDays = (baselineDuration.currentRecord.gateDate - previousGateDateBaseline)/(1000*60*60*24);
+                        resultObj.cumulative.duration.baselineDays = cumulativeBaselineDays + resultObj.oneStage.duration.baselineDays;
+                    }
+                    previousGateDateBaseline = baselineDuration.currentRecord.gateDate;
+                    cumulativeBaselineDays = cumulativeBaselineDays + resultObj.oneStage.duration.baselineDays;
+
+                    result.push(resultObj);
+                };
+
+                for(var lastPositionSeenBefore = 1; lastPositionSeenBefore < currentPosition; lastPositionSeenBefore++){
+                    loopFunction(lastPositionSeenBefore);
                 }
 
                 // For current gate
 
-                // For all gates after current (but not Closure)
+                // For all gates after current
                 for(var lastPositionSeenAfter = currentPosition; lastPositionSeenAfter < closureGatePosition; lastPositionSeenAfter++){
 
                 }
 
             }
+
+            callback(null, result);
         }
 	], function (err, result) {
 		if (err) {
