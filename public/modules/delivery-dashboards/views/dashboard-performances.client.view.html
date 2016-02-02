@@ -79,27 +79,418 @@
                     </div>
                 </div>
                 <div class="row">
-                    <div class="col-md-12">
-                        <div class="panel panel-default">
-                            <div class="row">
-                                <div class="col-md-6 btn-group btn-group-xs btn-group-justified">
-                                    <label class="btn btn-info btn-xs" data-ng-model="typeOfChart" btn-radio="'duration'">
-                                        Duration
-                                    </label>
-                                    <label class="btn btn-info btn-xs" data-ng-model="typeOfChart" btn-radio="'cost'">
-                                        Cost
-                                    </label>
-                                    <label class="btn btn-info btn-xs" data-ng-model="typeOfChart" btn-radio="'completion'">
-                                        Completion
-                                    </label>
-                                    <label class="btn btn-info btn-xs" data-ng-model="typeOfChart" btn-radio="'earnedValue'">
-                                        Earned value analysis
-                                    </label>
-                                </div>
-                            </div>
-                            <div class="panel-body">
+                    <div class="col-xs-12">
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-hover table-condensed small">
+                                <thead>
+                                <tr>
+                                    <th> </th>
+                                    <th data-ng-repeat="record in gatePerformances" data-ng-class="{success : record.current}">
+                                        {{record.gate.name}}
+                                    </th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr>
+                                    <th>Completion</th>
+                                    <td data-ng-repeat="record in gatePerformances" data-ng-class="{success : record.current}">
+                                        <span data-ng-show="record.completed">Completed</span>
+                                        <span data-ng-show="!record.completed">Not completed</span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>Review status</th>
+                                    <td data-ng-repeat="record in gatePerformances" data-ng-class="{success : record.current}">
+                                        <span data-ng-show="record.gateStatus">{{record.gateStatus.name}}</span>
+                                        <span data-ng-show="!record.gateStatus">No status</span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>Overall score</th>
+                                    <td data-ng-repeat="record in gatePerformances" data-ng-class="{success : record.current}">
+                                        <span data-ng-show="record.overallScore">{{record.overallScore.name}}</span>
+                                        <span data-ng-show="!record.overallScore">No score</span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>Delivery status</th>
+                                    <td data-ng-repeat="record in gatePerformances" data-ng-class="{success : record.current}">
+                                        <span data-ng-show="record.overallStatus">{{record.overallStatus.name}}</span>
+                                        <span data-ng-show="!record.overallStatus">No status</span>
+                                    </td>
+                                </tr>
+                                <tr class="info">
+                                    <td colspan="{{gatePerformances.length + 1}}" class="text-center">
+                                        <span><b>Gate performances</b></span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td colspan="{{gatePerformances.length + 1}}" class="text-center">
+                                        <em>Budget</em>
+                                    </td>
+                                </tr>
+                                <tr >
+                                    <th>Budget amount</th>
+                                    <td data-ng-repeat="record in gatePerformances" data-ng-class="{success : record.current}">
+                                        {{record.oneStage.budget.amount | number : 0}}
+                                    </td>
+                                </tr>
+                                <tr >
+                                    <th>Variance on baseline</th>
+                                    <td data-ng-repeat="record in gatePerformances" data-ng-class="{success : record.current}">
+                                        {{record.oneStage.budget.varianceBaseline | number : 0}} ({{100 * record.oneStage.budget.varianceBaselinePercent | number : 1}}%)
+                                    </td>
+                                </tr>
+                                <tr >
+                                    <th>Variance at completion</th>
+                                    <td data-ng-repeat="record in gatePerformances" data-ng-class="{success : record.current}">
+                                        {{record.oneStage.budget.varianceAtCompletion | number : 0}} ({{100 * record.oneStage.budget.varianceAtCompletionPercent | number : 1}}%)
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td colspan="{{gatePerformances.length + 1}}" class="text-center">
+                                        <em>Duration</em>
+                                    </td>
+                                </tr>
+                                <tr >
+                                    <th>Baseline date</th>
+                                    <td data-ng-repeat="record in gatePerformances" data-ng-class="{success : record.current}">
+                                        {{record.oneStage.duration.baselineDate | date : format : 'MMM d yyyy'}}
+                                    </td>
+                                </tr>
+                                <tr >
+                                    <th>Baseline days</th>
+                                    <td data-ng-repeat="record in gatePerformances" data-ng-class="{success : record.current}">
+                                        {{record.oneStage.duration.baselineDays | number : 0}}
+                                    </td>
+                                </tr>
+                                <tr >
+                                    <th>Estimate date</th>
+                                    <td data-ng-repeat="record in gatePerformances" data-ng-class="{success : record.current}">
+                                        {{record.oneStage.duration.estimateDate | date : format : 'MMM d yyyy'}}
+                                    </td>
+                                </tr>
+                                <tr >
+                                    <th>Estimate days</th>
+                                    <td data-ng-repeat="record in gatePerformances" data-ng-class="{success : record.current}">
+                                        {{record.oneStage.duration.estimateDays | number : 0}}
+                                    </td>
+                                </tr>
+                                <tr >
+                                    <th>Actual date</th>
+                                    <td data-ng-repeat="record in gatePerformances" data-ng-class="{success : record.current}">
+                                        {{record.oneStage.duration.actualDate | date : format : 'MMM d yyyy'}}
+                                    </td>
+                                </tr>
+                                <tr >
+                                    <th>Actual days</th>
+                                    <td data-ng-repeat="record in gatePerformances" data-ng-class="{success : record.current}">
+                                        {{record.oneStage.duration.actualDays | number : 0}}
+                                    </td>
+                                </tr>
+                                <tr >
+                                    <th>Variance</th>
+                                    <td data-ng-repeat="record in gatePerformances" data-ng-class="{success : record.current}">
+                                        {{record.oneStage.duration.variance | number : 0}} ({{100 * record.oneStage.duration.variancePercent | number : 1}}%)
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td colspan="{{gatePerformances.length + 1}}" class="text-center">
+                                        <em>Cost</em>
+                                    </td>
+                                </tr>
+                                <tr >
+                                    <th>Baseline</th>
+                                    <td data-ng-repeat="record in gatePerformances" data-ng-class="{success : record.current}">
+                                        {{record.oneStage.cost.baseline | number : 0}}
+                                    </td>
+                                </tr>
+                                <tr >
+                                    <th>Estimate</th>
+                                    <td data-ng-repeat="record in gatePerformances" data-ng-class="{success : record.current}">
+                                        {{record.oneStage.cost.estimate | number : 0}}
+                                    </td>
+                                </tr>
+                                <tr >
+                                    <th>Actual</th>
+                                    <td data-ng-repeat="record in gatePerformances" data-ng-class="{success : record.current}">
+                                        {{record.oneStage.cost.actual | number : 0}}
+                                    </td>
+                                </tr>
+                                <tr >
+                                    <th>Variance</th>
+                                    <td data-ng-repeat="record in gatePerformances" data-ng-class="{success : record.current}">
+                                        {{record.oneStage.cost.variance | number : 0}} ({{100 * record.oneStage.cost.variancePercent | number : 1}}%)
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td colspan="{{gatePerformances.length + 1}}" class="text-center">
+                                        <em>Completion</em>
+                                    </td>
+                                </tr>
+                                <tr >
+                                    <th>Baseline</th>
+                                    <td data-ng-repeat="record in gatePerformances" data-ng-class="{success : record.current}">
+                                        {{record.oneStage.completion.baseline | number : 0}}
+                                    </td>
+                                </tr>
+                                <tr >
+                                    <th>Estimate</th>
+                                    <td data-ng-repeat="record in gatePerformances" data-ng-class="{success : record.current}">
+                                        {{record.oneStage.completion.estimate | number : 0}}
+                                    </td>
+                                </tr>
+                                <tr >
+                                    <th>Actual</th>
+                                    <td data-ng-repeat="record in gatePerformances" data-ng-class="{success : record.current}">
+                                        {{record.oneStage.completion.actual | number : 0}}
+                                    </td>
+                                </tr>
+                                <tr >
+                                    <th>Variance</th>
+                                    <td data-ng-repeat="record in gatePerformances" data-ng-class="{success : record.current}">
+                                        {{record.oneStage.completion.variance | number : 0}} ({{100 * record.oneStage.completion.variancePercent | number : 1}}%)
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td colspan="{{gatePerformances.length + 1}}" class="text-center">
+                                        <em>Earned value analysis</em>
+                                    </td>
+                                </tr>
+                                <tr >
+                                    <th>Earned value ratio</th>
+                                    <td data-ng-repeat="record in gatePerformances" data-ng-class="{success : record.current}">
+                                        {{record.oneStage.earnedValueAnalysis.earnedValueRatio | number : 1}}
+                                    </td>
+                                </tr>
+                                <tr >
+                                    <th>Earned value</th>
+                                    <td data-ng-repeat="record in gatePerformances" data-ng-class="{success : record.current}">
+                                        {{record.oneStage.earnedValueAnalysis.earnedValue | number : 0}}
+                                    </td>
+                                </tr>
+                                <tr >
+                                    <th>Cost variance</th>
+                                    <td data-ng-repeat="record in gatePerformances" data-ng-class="{success : record.current}">
+                                        {{record.oneStage.earnedValueAnalysis.costVariance | number : 0}} ({{100 * record.oneStage.earnedValueAnalysis.percentCostVariance | number : 1}}%)
+                                    </td>
+                                </tr>
+                                <tr >
+                                    <th>Schedule variance</th>
+                                    <td data-ng-repeat="record in gatePerformances" data-ng-class="{success : record.current}">
+                                        {{record.oneStage.earnedValueAnalysis.scheduleVariance | number : 0}} ({{100 * record.oneStage.earnedValueAnalysis.percentScheduleVariance | number : 1}}%)
+                                    </td>
+                                </tr>
+                                <tr >
+                                    <th>Cost Performance Index</th>
+                                    <td data-ng-repeat="record in gatePerformances" data-ng-class="{success : record.current}">
+                                        {{record.oneStage.earnedValueAnalysis.costPerformanceIndex | number : 1}}
+                                    </td>
+                                </tr>
+                                <tr >
+                                    <th>Schedule Performance Index</th>
+                                    <td data-ng-repeat="record in gatePerformances" data-ng-class="{success : record.current}">
+                                        {{record.oneStage.earnedValueAnalysis.schedulePerformanceIndex | number : 1}}
+                                    </td>
+                                </tr>
+                                <tr >
+                                    <th>Percent spent</th>
+                                    <td data-ng-repeat="record in gatePerformances" data-ng-class="{success : record.current}">
+                                        {{100 * record.oneStage.earnedValueAnalysis.percentSpent | number : 1}}%
+                                    </td>
+                                </tr>
+                                <tr >
+                                    <th>Percent complete</th>
+                                    <td data-ng-repeat="record in gatePerformances" data-ng-class="{success : record.current}">
+                                        {{100 * record.oneStage.earnedValueAnalysis.percentComplete | number : 1}}%
+                                    </td>
+                                </tr>
+                                </tbody>
 
-                            </div>
+
+                                <tbody>
+                                <tr class="info">
+                                    <td colspan="{{gatePerformances.length + 1}}" class="text-center">
+                                        <span><b>Cumulative performances</b></span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td colspan="{{gatePerformances.length + 1}}" class="text-center">
+                                        <em>Budget</em>
+                                    </td>
+                                </tr>
+                                <tr >
+                                    <th>Budget amount</th>
+                                    <td data-ng-repeat="record in gatePerformances" data-ng-class="{success : record.current}">
+                                        {{record.cumulative.budget.amount | number : 0}}
+                                    </td>
+                                </tr>
+                                <tr >
+                                    <th>Variance on baseline</th>
+                                    <td data-ng-repeat="record in gatePerformances" data-ng-class="{success : record.current}">
+                                        {{record.cumulative.budget.varianceBaseline | number : 0}} ({{100 * record.cumulative.budget.varianceBaselinePercent | number : 1}}%)
+                                    </td>
+                                </tr>
+                                <tr >
+                                    <th>Variance at completion</th>
+                                    <td data-ng-repeat="record in gatePerformances" data-ng-class="{success : record.current}">
+                                        {{record.cumulative.budget.varianceAtCompletion | number : 0}} ({{100 * record.cumulative.budget.varianceAtCompletionPercent | number : 1}}%)
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td colspan="{{gatePerformances.length + 1}}" class="text-center">
+                                        <em>Duration</em>
+                                    </td>
+                                </tr>
+                                <tr >
+                                    <th>Baseline days</th>
+                                    <td data-ng-repeat="record in gatePerformances" data-ng-class="{success : record.current}">
+                                        {{record.cumulative.duration.baselineDays | number : 0}}
+                                    </td>
+                                </tr>
+                                <tr >
+                                    <th>Estimate days</th>
+                                    <td data-ng-repeat="record in gatePerformances" data-ng-class="{success : record.current}">
+                                        {{record.cumulative.duration.estimateDays | number : 0}}
+                                    </td>
+                                </tr>
+                                <tr >
+                                    <th>Actual days</th>
+                                    <td data-ng-repeat="record in gatePerformances" data-ng-class="{success : record.current}">
+                                        {{record.cumulative.duration.actualDays | number : 0}}
+                                    </td>
+                                </tr>
+                                <tr >
+                                    <th>Variance</th>
+                                    <td data-ng-repeat="record in gatePerformances" data-ng-class="{success : record.current}">
+                                        {{record.cumulative.duration.variance | number : 0}} ({{100 * record.cumulative.duration.variancePercent | number : 1}}%)
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td colspan="{{gatePerformances.length + 1}}" class="text-center">
+                                        <em>Cost</em>
+                                    </td>
+                                </tr>
+                                <tr >
+                                    <th>Baseline</th>
+                                    <td data-ng-repeat="record in gatePerformances" data-ng-class="{success : record.current}">
+                                        {{record.cumulative.cost.baseline | number : 0}}
+                                    </td>
+                                </tr>
+                                <tr >
+                                    <th>Estimate</th>
+                                    <td data-ng-repeat="record in gatePerformances" data-ng-class="{success : record.current}">
+                                        {{record.cumulative.cost.estimate | number : 0}}
+                                    </td>
+                                </tr>
+                                <tr >
+                                    <th>Actual</th>
+                                    <td data-ng-repeat="record in gatePerformances" data-ng-class="{success : record.current}">
+                                        {{record.cumulative.cost.actual | number : 0}}
+                                    </td>
+                                </tr>
+                                <tr >
+                                    <th>Variance</th>
+                                    <td data-ng-repeat="record in gatePerformances" data-ng-class="{success : record.current}">
+                                        {{record.cumulative.cost.variance | number : 0}} ({{100 * record.cumulative.cost.variancePercent | number : 1}}%)
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td colspan="{{gatePerformances.length + 1}}" class="text-center">
+                                        <em>Completion</em>
+                                    </td>
+                                </tr>
+                                <tr >
+                                    <th>Baseline</th>
+                                    <td data-ng-repeat="record in gatePerformances" data-ng-class="{success : record.current}">
+                                        {{record.cumulative.completion.baseline | number : 0}}
+                                    </td>
+                                </tr>
+                                <tr >
+                                    <th>Estimate</th>
+                                    <td data-ng-repeat="record in gatePerformances" data-ng-class="{success : record.current}">
+                                        {{record.cumulative.completion.estimate | number : 0}}
+                                    </td>
+                                </tr>
+                                <tr >
+                                    <th>Actual</th>
+                                    <td data-ng-repeat="record in gatePerformances" data-ng-class="{success : record.current}">
+                                        {{record.cumulative.completion.actual | number : 0}}
+                                    </td>
+                                </tr>
+                                <tr >
+                                    <th>Variance</th>
+                                    <td data-ng-repeat="record in gatePerformances" data-ng-class="{success : record.current}">
+                                        {{record.cumulative.completion.variance | number : 0}} ({{100 * record.cumulative.completion.variancePercent | number : 1}}%)
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td colspan="{{gatePerformances.length + 1}}" class="text-center">
+                                        <em>Earned value analysis</em>
+                                    </td>
+                                </tr>
+                                <tr >
+                                    <th>Earned value ratio</th>
+                                    <td data-ng-repeat="record in gatePerformances" data-ng-class="{success : record.current}">
+                                        {{record.cumulative.earnedValueAnalysis.earnedValueRatio | number : 1}}
+                                    </td>
+                                </tr>
+                                <tr >
+                                    <th>Earned value</th>
+                                    <td data-ng-repeat="record in gatePerformances" data-ng-class="{success : record.current}">
+                                        {{record.cumulative.earnedValueAnalysis.earnedValue | number : 0}}
+                                    </td>
+                                </tr>
+                                <tr >
+                                    <th>Cost variance</th>
+                                    <td data-ng-repeat="record in gatePerformances" data-ng-class="{success : record.current}">
+                                        {{record.cumulative.earnedValueAnalysis.costVariance | number : 0}} ({{100 * record.cumulative.earnedValueAnalysis.percentCostVariance | number : 1}}%)
+                                    </td>
+                                </tr>
+                                <tr >
+                                    <th>Schedule variance</th>
+                                    <td data-ng-repeat="record in gatePerformances" data-ng-class="{success : record.current}">
+                                        {{record.cumulative.earnedValueAnalysis.scheduleVariance | number : 0}} ({{100 * record.cumulative.earnedValueAnalysis.percentScheduleVariance | number : 1}}%)
+                                    </td>
+                                </tr>
+                                <tr >
+                                    <th>Cost Performance Index</th>
+                                    <td data-ng-repeat="record in gatePerformances" data-ng-class="{success : record.current}">
+                                        {{record.cumulative.earnedValueAnalysis.costPerformanceIndex | number : 1}}
+                                    </td>
+                                </tr>
+                                <tr >
+                                    <th>Schedule Performance Index</th>
+                                    <td data-ng-repeat="record in gatePerformances" data-ng-class="{success : record.current}">
+                                        {{record.cumulative.earnedValueAnalysis.schedulePerformanceIndex | number : 1}}
+                                    </td>
+                                </tr>
+                                <tr >
+                                    <th>Percent spent</th>
+                                    <td data-ng-repeat="record in gatePerformances" data-ng-class="{success : record.current}">
+                                        {{100 * record.cumulative.earnedValueAnalysis.percentSpent | number : 1}}%
+                                    </td>
+                                </tr>
+                                <tr >
+                                    <th>Percent complete</th>
+                                    <td data-ng-repeat="record in gatePerformances" data-ng-class="{success : record.current}">
+                                        {{100 * record.cumulative.earnedValueAnalysis.percentComplete | number : 1}}%
+                                    </td>
+                                </tr>
+                                <tr >
+                                    <th>To-complete Performance Index</th>
+                                    <td data-ng-repeat="record in gatePerformances" data-ng-class="{success : record.current}">
+                                        {{100 * record.cumulative.earnedValueAnalysis.toCompletePerformanceIndex | number : 1}}
+                                    </td>
+                                </tr>
+                                <tr >
+                                    <th>At-completion cost</th>
+                                    <td data-ng-repeat="record in gatePerformances" data-ng-class="{success : record.current}">
+                                        {{100 * record.cumulative.earnedValueAnalysis.atCompletionCost | number : 0}}
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
                         </div>
                     </div>
                 </div>

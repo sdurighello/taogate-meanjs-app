@@ -56,7 +56,9 @@ exports.gatePerformances = function(req, res){
             };
             async.waterfall([
                 function(callback){
-                    GateStatusAssignment.find({project: req.params.projectId, gate: {$in:process.gates}}).populate('gate').exec(function(err, assignments){
+                    GateStatusAssignment.find({project: req.params.projectId, gate: {$in:process.gates}})
+                        .populate('gate').populate('currentRecord.status').populate('currentRecord.overallScore').populate('overallStatus.currentRecord.status')
+                        .exec(function(err, assignments){
                         if(err){
                             return callback(err);
                         }
@@ -229,6 +231,8 @@ exports.gatePerformances = function(req, res){
             var previousGateDateEstimate = null;
             var previousGateDateActual = null;
 
+            var cumulativeBudget = 0;
+
             var cumulativeBaselineDays = 0;
             var cumulativeBaselineCost = 0;
             var cumulativeBaselineCompletion = 0;
@@ -249,6 +253,13 @@ exports.gatePerformances = function(req, res){
                     overallScore : null,
                     overallStatus : null,
                     oneStage : {
+                        budget : {
+                            amount : 0,
+                            varianceBaseline : 0, // costBaseline - budget
+                            varianceBaselinePercent : 0, // varianceBaseline / budget
+                            varianceAtCompletion : 0, // estimateCost (actual if completed) - budget
+                            varianceAtCompletionPercent : 0 // varianceAtCompletion / budget
+                        },
                         duration : {
                             baselineDate : null,
                             baselineDays : 0,
@@ -280,24 +291,22 @@ exports.gatePerformances = function(req, res){
                             earnedValue : 0,
                             costVariance : 0,
                             scheduleVariance : 0,
-                            percentSpent : 0,
-                            percentComplete : 0,
                             percentScheduleVariance : 0,
                             percentCostVariance : 0,
                             costPerformanceIndex : 0,
                             schedulePerformanceIndex : 0,
-
-                            earnedScheduleDate : null,
-                            earnedScheduleDays : 0,
-                            actualElapsedDays : 0,
-                            plannedDurationRemainingWork : 0,
-                            timeRemaining : 0,
-                            scheduleVarianceTime : 0,
-                            schedulePerformanceIndexTime : 0,
-                            estimatedCompletionDate : null
+                            percentSpent : 0,
+                            percentComplete : 0
                         }
                     },
                     cumulative : {
+                        budget : {
+                            amount : 0,
+                            varianceBaseline : 0, // costBaseline - budget
+                            varianceBaselinePercent : 0, // varianceBaseline / budget
+                            varianceAtCompletion : 0, // estimateCost (actual if completed) - budget
+                            varianceAtCompletionPercent : 0 // varianceAtCompletion / budget
+                        },
                         duration : {
                             baselineDays : 0,
                             estimateDays : 0,
@@ -326,23 +335,14 @@ exports.gatePerformances = function(req, res){
                             earnedValue : 0,
                             costVariance : 0,
                             scheduleVariance : 0,
-                            percentSpent : 0,
-                            percentComplete : 0,
                             percentScheduleVariance : 0,
                             percentCostVariance : 0,
                             costPerformanceIndex : 0,
                             schedulePerformanceIndex : 0,
+                            percentSpent : 0,
+                            percentComplete : 0,
                             toCompletePerformanceIndex : 0,
-                            atCompletionCost : 0,
-
-                            earnedScheduleDate : null,
-                            earnedScheduleDays : 0,
-                            actualElapsedDays : 0,
-                            plannedDurationRemainingWork : 0,
-                            timeRemaining : 0,
-                            scheduleVarianceTime : 0,
-                            schedulePerformanceIndexTime : 0,
-                            estimatedCompletionDate : null
+                            atCompletionCost : 0
                         }
                     }
                 };
@@ -356,7 +356,7 @@ exports.gatePerformances = function(req, res){
                 resultObj.completed = loopAssignment.currentRecord.completed;
                 resultObj.gateStatus = loopAssignment.currentRecord.status;
                 resultObj.overallScore = loopAssignment.currentRecord.overallScore;
-                resultObj.overallStatus = loopAssignment.overallStatus.status;
+                resultObj.overallStatus = loopAssignment.overallStatus.currentRecord.status;
 
                 // Duration
 
@@ -364,7 +364,8 @@ exports.gatePerformances = function(req, res){
                     return performance.sourceGate.equals(loopGate._id) && performance.targetGate.equals(loopGate._id);
                 });
                 resultObj.oneStage.duration.baselineDate = baselineDuration.currentRecord.gateDate;
-                if(lp !== 1){
+
+                if(lp !== 1 && baselineDuration.currentRecord.gateDate && previousGateDateBaseline){
                     resultObj.oneStage.duration.baselineDays = (baselineDuration.currentRecord.gateDate - previousGateDateBaseline)/(1000*60*60*24);
                     resultObj.cumulative.duration.baselineDays = cumulativeBaselineDays + resultObj.oneStage.duration.baselineDays;
                 }
@@ -375,7 +376,7 @@ exports.gatePerformances = function(req, res){
                     return performance.sourceGate.equals(loopGate._id) && performance.targetGate.equals(loopGate._id);
                 });
                 resultObj.oneStage.duration.estimateDate = estimateDuration.currentRecord.gateDate;
-                if(lp !== 1){
+                if(lp !== 1 && estimateDuration.currentRecord.gateDate && previousGateDateEstimate){
                     resultObj.oneStage.duration.estimateDays = (estimateDuration.currentRecord.gateDate - previousGateDateEstimate)/(1000*60*60*24);
                     resultObj.cumulative.duration.estimateDays = cumulativeEstimateDays + resultObj.oneStage.duration.estimateDays;
                 }
@@ -386,7 +387,7 @@ exports.gatePerformances = function(req, res){
                     return performance.sourceGate.equals(loopGate._id) && performance.targetGate.equals(loopGate._id);
                 });
                 resultObj.oneStage.duration.actualDate = actualDuration.currentRecord.gateDate;
-                if(lp !== 1){
+                if(lp !== 1 && actualDuration.currentRecord.gateDate && previousGateDateActual){
                     resultObj.oneStage.duration.actualDays = (actualDuration.currentRecord.gateDate - previousGateDateActual)/(1000*60*60*24);
                     resultObj.cumulative.duration.actualDays = cumulativeActualDays + resultObj.oneStage.duration.actualDays;
                 }
@@ -439,27 +440,55 @@ exports.gatePerformances = function(req, res){
                 resultObj.cumulative.completion.actual = cumulativeActualCompletion + resultObj.oneStage.completion.actual;
                 cumulativeActualCompletion = cumulativeActualCompletion + resultObj.oneStage.completion.actual;
 
+                // Budget
+                resultObj.oneStage.budget.amount = loopAssignment.budget.currentRecord.amount;
+                resultObj.cumulative.budget.amount = cumulativeBudget + loopAssignment.budget.currentRecord.amount;
+                cumulativeBudget = cumulativeBudget + loopAssignment.budget.currentRecord.amount;
+
                 // Variances
 
                 if(loopAssignment.currentRecord.completed){
-                    resultObj.oneStage.duration.variance = resultObj.oneStage.duration.baselineDays - resultObj.oneStage.duration.actualDays;
-                    resultObj.cumulative.duration.variance = resultObj.cumulative.duration.baselineDays - resultObj.cumulative.duration.actualDays;
+                    resultObj.oneStage.duration.variance = resultObj.oneStage.duration.actualDays - resultObj.oneStage.duration.baselineDays;
+                    resultObj.cumulative.duration.variance = resultObj.cumulative.duration.actualDays - resultObj.cumulative.duration.baselineDays;
 
-                    resultObj.oneStage.cost.variance = resultObj.oneStage.cost.baseline - resultObj.oneStage.cost.actual;
-                    resultObj.cumulative.cost.variance = resultObj.cumulative.cost.baseline - resultObj.cumulative.cost.actual;
+                    resultObj.oneStage.cost.variance = resultObj.oneStage.cost.actual - resultObj.oneStage.cost.baseline;
+                    resultObj.cumulative.cost.variance = resultObj.cumulative.cost.actual - resultObj.cumulative.cost.baseline;
 
-                    resultObj.oneStage.completion.variance = resultObj.oneStage.completion.baseline - resultObj.oneStage.completion.actual;
-                    resultObj.cumulative.completion.variance = resultObj.cumulative.completion.baseline - resultObj.cumulative.completion.actual;
+                    resultObj.oneStage.completion.variance = resultObj.oneStage.completion.actual - resultObj.oneStage.completion.baseline;
+                    resultObj.cumulative.completion.variance = resultObj.cumulative.completion.actual - resultObj.cumulative.completion.baseline;
+
+                    resultObj.oneStage.budget.varianceAtCompletion = resultObj.oneStage.budget.amount - resultObj.oneStage.cost.actual;
+                    resultObj.cumulative.budget.varianceAtCompletion = resultObj.cumulative.budget.amount - resultObj.cumulative.cost.actual;
 
                 } else {
-                    resultObj.oneStage.duration.variance = resultObj.oneStage.duration.baselineDays - resultObj.oneStage.duration.estimateDays;
-                    resultObj.cumulative.duration.variance = resultObj.cumulative.duration.baselineDays - resultObj.cumulative.duration.estimateDays;
+                    resultObj.oneStage.duration.variance = resultObj.oneStage.duration.estimateDays - resultObj.oneStage.duration.baselineDays;
+                    resultObj.cumulative.duration.variance = resultObj.cumulative.duration.estimateDays - resultObj.cumulative.duration.baselineDays;
 
-                    resultObj.oneStage.cost.variance = resultObj.oneStage.cost.baseline - resultObj.oneStage.cost.estimate;
-                    resultObj.cumulative.cost.variance = resultObj.cumulative.cost.baseline - resultObj.cumulative.cost.estimate;
+                    resultObj.oneStage.cost.variance = resultObj.oneStage.cost.estimate - resultObj.oneStage.cost.baseline;
+                    resultObj.cumulative.cost.variance = resultObj.cumulative.cost.estimate - resultObj.cumulative.cost.baseline;
 
-                    resultObj.oneStage.completion.variance = resultObj.oneStage.completion.baseline - resultObj.oneStage.completion.estimate;
-                    resultObj.cumulative.completion.variance = resultObj.cumulative.completion.baseline - resultObj.cumulative.completion.estimate;
+                    resultObj.oneStage.completion.variance = resultObj.oneStage.completion.estimate - resultObj.oneStage.completion.baseline;
+                    resultObj.cumulative.completion.variance = resultObj.cumulative.completion.estimate - resultObj.cumulative.completion.baseline;
+
+                    resultObj.oneStage.budget.varianceAtCompletion = resultObj.oneStage.budget.amount - resultObj.oneStage.cost.estimate;
+                    resultObj.cumulative.budget.varianceAtCompletion = resultObj.cumulative.budget.amount - resultObj.cumulative.cost.estimate;
+                }
+
+                resultObj.oneStage.budget.varianceBaseline = resultObj.oneStage.budget.amount - resultObj.oneStage.cost.baseline;
+                resultObj.cumulative.budget.varianceBaseline = resultObj.cumulative.budget.amount - resultObj.cumulative.cost.baseline;
+
+                if(resultObj.oneStage.budget.amount !== 0){
+                    resultObj.oneStage.budget.varianceAtCompletionPercent = resultObj.oneStage.budget.varianceAtCompletion / resultObj.oneStage.budget.amount;
+                }
+                if(resultObj.cumulative.budget.amount !== 0){
+                    resultObj.cumulative.budget.varianceAtCompletionPercent = resultObj.cumulative.budget.varianceAtCompletion / resultObj.cumulative.budget.amount;
+                }
+
+                if(resultObj.oneStage.budget.amount !== 0){
+                    resultObj.oneStage.budget.varianceBaselinePercent = resultObj.oneStage.budget.varianceBaseline / resultObj.oneStage.budget.amount;
+                }
+                if(resultObj.cumulative.budget.amount !== 0){
+                    resultObj.cumulative.budget.varianceBaselinePercent = resultObj.cumulative.budget.varianceBaseline / resultObj.cumulative.budget.amount;
                 }
 
                 if(resultObj.oneStage.duration.baselineDays !== 0){
@@ -572,6 +601,13 @@ exports.gatePerformances = function(req, res){
                     overallScore : null,
                     overallStatus : null,
                     oneStage : {
+                        budget : {
+                            amount : 0,
+                            varianceBaseline : 0, // costBaseline - budget
+                            varianceBaselinePercent : 0, // varianceBaseline / budget
+                            varianceAtCompletion : 0, // estimateCost (actual if completed) - budget
+                            varianceAtCompletionPercent : 0 // varianceAtCompletion / budget
+                        },
                         duration : {
                             baselineDate : null,
                             baselineDays : 0,
@@ -607,21 +643,18 @@ exports.gatePerformances = function(req, res){
                             percentCostVariance : 0,
                             costPerformanceIndex : 0,
                             schedulePerformanceIndex : 0,
-
                             percentSpent : 0,
-                            percentComplete : 0,
-
-                            earnedScheduleDate : null,
-                            earnedScheduleDays : 0,
-                            actualElapsedDays : 0,
-                            plannedDurationRemainingWork : 0,
-                            timeRemaining : 0,
-                            scheduleVarianceTime : 0,
-                            schedulePerformanceIndexTime : 0,
-                            estimatedCompletionDate : null
+                            percentComplete : 0
                         }
                     },
                     cumulative : {
+                        budget : {
+                            amount : 0,
+                            varianceBaseline : 0, // costBaseline - budget
+                            varianceBaselinePercent : 0, // varianceBaseline / budget
+                            varianceAtCompletion : 0, // estimateCost (actual if completed) - budget
+                            varianceAtCompletionPercent : 0 // varianceAtCompletion / budget
+                        },
                         duration : {
                             baselineDays : 0,
                             estimateDays : 0,
@@ -644,23 +677,14 @@ exports.gatePerformances = function(req, res){
                             earnedValue : 0,
                             costVariance : 0,
                             scheduleVariance : 0,
-                            percentSpent : 0,
-                            percentComplete : 0,
                             percentScheduleVariance : 0,
                             percentCostVariance : 0,
                             costPerformanceIndex : 0,
                             schedulePerformanceIndex : 0,
+                            percentSpent : 0,
+                            percentComplete : 0,
                             toCompletePerformanceIndex : 0,
-                            atCompletionCost : 0,
-
-                            earnedScheduleDate : null,
-                            earnedScheduleDays : 0,
-                            actualElapsedDays : 0,
-                            plannedDurationRemainingWork : 0,
-                            timeRemaining : 0,
-                            scheduleVarianceTime : 0,
-                            schedulePerformanceIndexTime : 0,
-                            estimatedCompletionDate : null
+                            atCompletionCost : 0
                         }
                     }
                 };
@@ -676,7 +700,7 @@ exports.gatePerformances = function(req, res){
                 resultObj.completed = loopAssignment.currentRecord.completed;
                 resultObj.gateStatus = loopAssignment.currentRecord.status;
                 resultObj.overallScore = loopAssignment.currentRecord.overallScore;
-                resultObj.overallStatus = loopAssignment.overallStatus.status;
+                resultObj.overallStatus = loopAssignment.overallStatus.currentRecord.status;
 
                 // Duration
 
@@ -684,7 +708,7 @@ exports.gatePerformances = function(req, res){
                     return performance.sourceGate.equals(retObj.current.gate._id) && performance.targetGate.equals(loopGate._id);
                 });
                 resultObj.oneStage.duration.baselineDate = baselineDuration.currentRecord.gateDate;
-                if(lp !== 1){
+                if(lp !== 1 && baselineDuration.currentRecord.gateDate && previousGateDateBaseline){
                     resultObj.oneStage.duration.baselineDays = (baselineDuration.currentRecord.gateDate - previousGateDateBaseline)/(1000*60*60*24);
                     resultObj.cumulative.duration.baselineDays = cumulativeBaselineDays + resultObj.oneStage.duration.baselineDays;
                 }
@@ -695,7 +719,7 @@ exports.gatePerformances = function(req, res){
                     return performance.sourceGate.equals(retObj.current.gate._id) && performance.targetGate.equals(loopGate._id);
                 });
                 resultObj.oneStage.duration.estimateDate = estimateDuration.currentRecord.gateDate;
-                if(lp !== 1){
+                if(lp !== 1 && estimateDuration.currentRecord.gateDate && previousGateDateEstimate){
                     resultObj.oneStage.duration.estimateDays = (estimateDuration.currentRecord.gateDate - previousGateDateEstimate)/(1000*60*60*24);
                     resultObj.cumulative.duration.estimateDays = cumulativeEstimateDays + resultObj.oneStage.duration.estimateDays;
                 }
@@ -706,7 +730,7 @@ exports.gatePerformances = function(req, res){
                     return performance.sourceGate.equals(loopGate._id) && performance.targetGate.equals(loopGate._id);
                 });
                 resultObj.oneStage.duration.actualDate = actualDuration.currentRecord.gateDate;
-                if(lp !== 1){
+                if(lp !== 1 && actualDuration.currentRecord.gateDate && previousGateDateActual){
                     resultObj.oneStage.duration.actualDays = (actualDuration.currentRecord.gateDate - previousGateDateActual)/(1000*60*60*24);
                     resultObj.cumulative.duration.actualDays = cumulativeActualDays + resultObj.oneStage.duration.actualDays;
                 }
@@ -759,28 +783,55 @@ exports.gatePerformances = function(req, res){
                 resultObj.cumulative.completion.actual = cumulativeActualCompletion + resultObj.oneStage.completion.actual;
                 cumulativeActualCompletion = cumulativeActualCompletion + resultObj.oneStage.completion.actual;
 
+                // Budget
+                resultObj.oneStage.budget.amount = loopAssignment.budget.currentRecord.amount;
+                resultObj.cumulative.budget.amount = cumulativeBudget + loopAssignment.budget.currentRecord.amount;
+                cumulativeBudget = cumulativeBudget + loopAssignment.budget.currentRecord.amount;
+
                 // Variances
 
                 if(loopAssignment.currentRecord.completed){
-                    resultObj.oneStage.duration.variance = resultObj.oneStage.duration.baselineDays - resultObj.oneStage.duration.actualDays;
-                    resultObj.cumulative.duration.variance = resultObj.cumulative.duration.baselineDays - resultObj.cumulative.duration.actualDays;
+                    resultObj.oneStage.duration.variance = resultObj.oneStage.duration.actualDays - resultObj.oneStage.duration.baselineDays;
+                    resultObj.cumulative.duration.variance = resultObj.cumulative.duration.actualDays - resultObj.cumulative.duration.baselineDays;
 
-                    resultObj.oneStage.cost.variance = resultObj.oneStage.cost.baseline - resultObj.oneStage.cost.actual;
-                    resultObj.cumulative.cost.variance = resultObj.cumulative.cost.baseline - resultObj.cumulative.cost.actual;
+                    resultObj.oneStage.cost.variance = resultObj.oneStage.cost.actual - resultObj.oneStage.cost.baseline;
+                    resultObj.cumulative.cost.variance = resultObj.cumulative.cost.actual - resultObj.cumulative.cost.baseline;
 
-                    resultObj.oneStage.completion.variance = resultObj.oneStage.completion.baseline - resultObj.oneStage.completion.actual;
-                    resultObj.cumulative.completion.variance = resultObj.cumulative.completion.baseline - resultObj.cumulative.completion.actual;
+                    resultObj.oneStage.completion.variance = resultObj.oneStage.completion.actual - resultObj.oneStage.completion.baseline;
+                    resultObj.cumulative.completion.variance = resultObj.cumulative.completion.actual - resultObj.cumulative.completion.baseline;
 
+                    resultObj.oneStage.budget.varianceAtCompletion = resultObj.oneStage.budget.amount - resultObj.oneStage.cost.actual;
+                    resultObj.cumulative.budget.varianceAtCompletion = resultObj.cumulative.budget.amount - resultObj.cumulative.cost.actual;
+
+                } else {
+                    resultObj.oneStage.duration.variance = resultObj.oneStage.duration.estimateDays - resultObj.oneStage.duration.baselineDays;
+                    resultObj.cumulative.duration.variance = resultObj.cumulative.duration.estimateDays - resultObj.cumulative.duration.baselineDays;
+
+                    resultObj.oneStage.cost.variance = resultObj.oneStage.cost.estimate - resultObj.oneStage.cost.baseline;
+                    resultObj.cumulative.cost.variance = resultObj.cumulative.cost.estimate - resultObj.cumulative.cost.baseline;
+
+                    resultObj.oneStage.completion.variance = resultObj.oneStage.completion.estimate - resultObj.oneStage.completion.baseline;
+                    resultObj.cumulative.completion.variance = resultObj.cumulative.completion.estimate - resultObj.cumulative.completion.baseline;
+
+                    resultObj.oneStage.budget.varianceAtCompletion = resultObj.oneStage.budget.amount - resultObj.oneStage.cost.estimate;
+                    resultObj.cumulative.budget.varianceAtCompletion = resultObj.cumulative.budget.amount - resultObj.cumulative.cost.estimate;
                 }
-                else {
-                    resultObj.oneStage.duration.variance = resultObj.oneStage.duration.baselineDays - resultObj.oneStage.duration.estimateDays;
-                    resultObj.cumulative.duration.variance = resultObj.cumulative.duration.baselineDays - resultObj.cumulative.duration.estimateDays;
 
-                    resultObj.oneStage.cost.variance = resultObj.oneStage.cost.baseline - resultObj.oneStage.cost.estimate;
-                    resultObj.cumulative.cost.variance = resultObj.cumulative.cost.baseline - resultObj.cumulative.cost.estimate;
+                resultObj.oneStage.budget.varianceBaseline = resultObj.oneStage.budget.amount - resultObj.oneStage.cost.baseline;
+                resultObj.cumulative.budget.varianceBaseline = resultObj.cumulative.budget.amount - resultObj.cumulative.cost.baseline;
 
-                    resultObj.oneStage.completion.variance = resultObj.oneStage.completion.baseline - resultObj.oneStage.completion.estimate;
-                    resultObj.cumulative.completion.variance = resultObj.cumulative.completion.baseline - resultObj.cumulative.completion.estimate;
+                if(resultObj.oneStage.budget.amount !== 0){
+                    resultObj.oneStage.budget.varianceAtCompletionPercent = resultObj.oneStage.budget.varianceAtCompletion / resultObj.oneStage.budget.amount;
+                }
+                if(resultObj.cumulative.budget.amount !== 0){
+                    resultObj.cumulative.budget.varianceAtCompletionPercent = resultObj.cumulative.budget.varianceAtCompletion / resultObj.cumulative.budget.amount;
+                }
+
+                if(resultObj.oneStage.budget.amount !== 0){
+                    resultObj.oneStage.budget.varianceBaselinePercent = resultObj.oneStage.budget.varianceBaseline / resultObj.oneStage.budget.amount;
+                }
+                if(resultObj.cumulative.budget.amount !== 0){
+                    resultObj.cumulative.budget.varianceBaselinePercent = resultObj.cumulative.budget.varianceBaseline / resultObj.cumulative.budget.amount;
                 }
 
                 if(resultObj.oneStage.duration.baselineDays !== 0){
