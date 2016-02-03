@@ -206,7 +206,7 @@
                                                                 {{cost.year}}
                                                             </td>
                                                             <td>
-                                                                {{cost.amount}}
+                                                                {{cost.amount | number}}
                                                             </td>
                                                             <td colspan="3">
                                                                 <button class="btn btn-success btn-xs" data-ng-click="costEditFlag = true; selectCostAssignment(cost)" data-ng-show="!costEditFlag">
@@ -419,7 +419,7 @@
                                                                 {{benefit.year}}
                                                             </td>
                                                             <td>
-                                                                {{benefit.amount}}
+                                                                {{benefit.amount | number}}
                                                             </td>
                                                             <td colspan="3">
                                                                 <button class="btn btn-success btn-xs" data-ng-click="benefitEditFlag = true; selectBenefitAssignment(benefit)" data-ng-show="!benefitEditFlag">

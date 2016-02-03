@@ -8,182 +8,133 @@ var mongoose = require('mongoose'),
 	async = require('async'),
 	_ = require('lodash');
 
-exports.projectCategorization = function(req, res){
-	var Project = mongoose.mtModel(req.user.tenantId + '.' + 'Project');
-	var CategoryGroup = mongoose.mtModel(req.user.tenantId + '.' + 'CategoryGroup');
-	var Category = mongoose.mtModel(req.user.tenantId + '.' + 'Category');
-	var CategoryValue = mongoose.mtModel(req.user.tenantId + '.' + 'CategoryValue');
 
-	async.waterfall([
-		// Aggregate
-		function(callback) {
-			Project.aggregate([
-				{'$unwind': '$categorization'},
-				{'$unwind' : '$categorization.categories'},
-				{'$group' : {
-					_id : {
-						categoryValue : '$categorization.categories.categoryValue',
-						category :'$categorization.categories.category',
-						group : '$categorization.group'
-					},
-					countCategoryValue : {'$sum': 1},
-					fundsCategoryValue : {'$sum' : '$identification.earmarkedFunds'}
-				}},
-				{'$group' : {
-					_id : {
-						category :'$_id.category',
-						group : '$_id.group'
-					},
-					categoryValues : {'$push' : {categoryValue : '$_id.categoryValue', countCategoryValue : '$countCategoryValue', fundsCategoryValue : '$fundsCategoryValue'}},
-					countCategory : {'$sum': 1}
-				}},
-				{'$group' : {
-					_id : {
-						group : '$_id.group'
-					},
-					categories : {'$push' : {category : '$_id.category', countCategory : '$countCategory', categoryValues : '$categoryValues'}},
-					countGroup : {'$sum': 1}
-				}},
-				{'$project' : {
-					group : '$_id.group',
-					categories : '$categories',
-					countGroup : '$countGroup'
-				}}
-			], function (err, result) {
-				if (err) {
-					return callback(err);
-				} else {
-					callback(null, result);
-				}
-			});
-		},
-		// Populate groups
-		function(result, callback) {
-			CategoryGroup.populate(result, {path: 'group'}, function(err, populatedGroups){
-				if(err){
-					return callback(err);
-				}
-				callback(null, populatedGroups);
-			});
-		},
-		// Populate categories
-		function(populatedGroups, callback) {
-			Category.populate(populatedGroups, {path: 'categories.category'}, function(err, populatedCategories){
-				if(err){
-					return callback(err);
-				}
-				callback(null, populatedCategories);
-			});
-		},
-		// Populate values
-		function(populatedCategories, callback) {
-			CategoryValue.populate(populatedCategories, {path: 'categories.categoryValues.categoryValue'}, function(err, populatedValues){
-				if(err){
-					return callback(err);
-				}
-				callback(null, populatedValues);
-			});
-		}
-	], function (err, populatedValues) {
-		if (err) {
-			console.log(err);
-			return res.status(400).send({
-				message: errorHandler.getErrorMessage(err)
-			});
-		} else {
-			res.jsonp(populatedValues);
-		}
-	});
+exports.financialProfile = function(req, res){
 
-};
+    var FinancialBenefit = mongoose.mtModel(req.user.tenantId + '.' + 'FinancialBenefit');
+    var FinancialCost = mongoose.mtModel(req.user.tenantId + '.' + 'FinancialCost');
+    var Project = mongoose.mtModel(req.user.tenantId + '.' + 'Project');
 
+    async.waterfall([
+        // Get Benefits and Costs for the project
+        function(callback) {
+            async.series([
+                function(callback){
+                    FinancialBenefit.find({_id : {$in: req.project.benefits}}).exec(function(err, benefits) {
+                        if (err) {
+                            return callback(err);
+                        }
+                        callback(null, benefits);
+                    });
+                },
+                function(callback){
+                    FinancialCost.find({_id : {$in: req.project.costs}}).exec(function(err, costs) {
+                        if (err) {
+                            return callback(err);
+                        }
+                        callback(null, costs);
+                    });
+                }
+            ], function(err, financialData){
+                // financialData = [ [benefits], [costs] ]
+                if(err){
+                    callback(err);
+                } else {
+                    callback(null, financialData);
+                }
+            });
+        },
+        // Create yearly aggregation
+        function(financialData, callback) {
+            var aggregatedBenefits = _.chain(financialData[0])
+                .sortBy('year')
+                .groupBy('year')// {'2015' : [{benefit}, ..], '2016' : [{benefit}, ..]}
+                .map(function(v, k){
+                    return {
+                        year : k,
+                        yearlyBenefit : _.reduce(v, function(sum, benefit){
+                            return sum + benefit.amount;
+                        }, 0),
+                        yearlyCost : 0
+                    };
+                })
+                .value();
 
-exports.projectPrioritization = function(req, res){
-	var Project = mongoose.mtModel(req.user.tenantId + '.' + 'Project');
-	var PriorityGroup = mongoose.mtModel(req.user.tenantId + '.' + 'PriorityGroup');
-	var Priority = mongoose.mtModel(req.user.tenantId + '.' + 'Priority');
-	var PriorityValue = mongoose.mtModel(req.user.tenantId + '.' + 'PriorityValue');
+            var aggregatedCosts = _.chain(financialData[1])
+                .sortBy('year')
+                .groupBy('year')// {'2015' : [{benefit}, ..], '2016' : [{benefit}, ..]}
+                .map(function(v, k){
+                    return {
+                        year : k,
+                        yearlyCost : _.reduce(v, function(sum, benefit){
+                            return sum + benefit.amount;
+                        }, 0),
+                        yearlyBenefit : 0
+                    };
+                })
+                .value();
 
-	async.waterfall([
-		// Aggregate
-		function(callback) {
-			Project.aggregate([
-				{'$unwind': '$prioritization'},
-				{'$unwind' : '$prioritization.priorities'},
-				{'$group' : {
-					_id : {
-						priorityValue : '$prioritization.priorities.priorityValue',
-						priority :'$prioritization.priorities.priority',
-						group : '$prioritization.group'
-					},
-					countPriorityValue : {'$sum': 1},
-					fundsPriorityValue : {'$sum' : '$identification.earmarkedFunds'}
-				}},
-				{'$group' : {
-					_id : {
-						priority :'$_id.priority',
-						group : '$_id.group'
-					},
-					priorityValues : {'$push' : {priorityValue : '$_id.priorityValue', countPriorityValue : '$countPriorityValue', fundsPriorityValue : '$fundsPriorityValue'}},
-					countPriority : {'$sum': 1}
-				}},
-				{'$group' : {
-					_id : {
-						group : '$_id.group'
-					},
-					priorities : {'$push' : {priority : '$_id.priority', countPriority : '$countPriority', priorityValues : '$priorityValues'}},
-					countGroup : {'$sum': 1}
-				}},
-				{'$project' : {
-					group : '$_id.group',
-					priorities : '$priorities',
-					countGroup : '$countGroup'
-				}}
-			], function (err, result) {
-				if (err) {
-					return callback(err);
-				} else {
-					callback(null, result);
-				}
-			});
-		},
-		// Populate groups
-		function(result, callback) {
-			PriorityGroup.populate(result, {path: 'group'}, function(err, populatedGroups){
-				if(err){
-					return callback(err);
-				}
-				callback(null, populatedGroups);
-			});
-		},
-		// Populate priorities
-		function(populatedGroups, callback) {
-			Priority.populate(populatedGroups, {path: 'priorities.priority'}, function(err, populatedCategories){
-				if(err){
-					return callback(err);
-				}
-				callback(null, populatedCategories);
-			});
-		},
-		// Populate values
-		function(populatedCategories, callback) {
-			PriorityValue.populate(populatedCategories, {path: 'priorities.priorityValues.priorityValue'}, function(err, populatedValues){
-				if(err){
-					return callback(err);
-				}
-				callback(null, populatedValues);
-			});
-		}
-	], function (err, populatedValues) {
-		if (err) {
-			console.log(err);
-			return res.status(400).send({
-				message: errorHandler.getErrorMessage(err)
-			});
-		} else {
-			res.jsonp(populatedValues);
-		}
-	});
+            var combinedFinancialDataToBeReduced = []; // [ {year, yearlyBenefit}, {year, yearlyCost} ]
+            _.each(aggregatedBenefits, function(obj){
+                combinedFinancialDataToBeReduced.push(obj);
+            });
+            _.each(aggregatedCosts, function(obj){
+                combinedFinancialDataToBeReduced.push(obj);
+            });
+
+            var combinedFinancialData = _.chain(combinedFinancialDataToBeReduced)
+                .sortBy('year')
+                .groupBy('year')// {'2015' : [{aggBenefit}, {aggCost}], '2016' : [...]}
+                .map(function(v, k){
+                    var yearlyBenefit = _.reduce(v, function(sum, item){
+                        return sum + item.yearlyBenefit;
+                    }, 0);
+                    var yearlyCost = _.reduce(v, function(sum, item){
+                        return sum + item.yearlyCost;
+                    }, 0);
+                    var yearlyNet = yearlyBenefit - yearlyCost;
+                    return {
+                        year : k,
+                        yearlyBenefit : yearlyBenefit,
+                        yearlyCost : yearlyCost,
+                        yearlyNet : yearlyNet
+                    };
+                })
+                .value();
+
+            // Discounting
+            if(!req.project.baseYear){
+                return callback(new Error({message : 'Missing base year'}));
+            }
+            if(!req.project.discountRate){
+                return callback(new Error({message : 'Missing discount rate'}));
+            }
+            if(!combinedFinancialData.length){
+                return callback(new Error({message : 'No financial data'}));
+            }
+            var baseYear = req.project.baseYear;
+            var discountRate = req.project.discountRate;
+
+            _.each(combinedFinancialData, function(yearlyItem){
+                var n = yearlyItem.year - baseYear;
+                yearlyItem.yearlyBenefitDiscounted = yearlyItem.yearlyBenefit * (1 / Math.pow(1 + (discountRate/100), n));
+                yearlyItem.yearlyCostDiscounted = yearlyItem.yearlyCost * (1 / Math.pow(1 + (discountRate/100), n));
+                yearlyItem.yearlyNetDiscounted = yearlyItem.yearlyBenefitDiscounted - yearlyItem.yearlyCostDiscounted;
+            });
+
+            callback(null, combinedFinancialData);
+        }
+    ], function (err, result) {
+        if (err) {
+            console.log(err);
+            return res.status(400).send({
+                message: errorHandler.getErrorMessage(err)
+            });
+        } else {
+            res.jsonp(result);
+        }
+    });
+
 
 };
 

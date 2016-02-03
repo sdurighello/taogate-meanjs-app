@@ -5,9 +5,6 @@ module.exports = function(app) {
 	var evaluationDashboards = require('../../app/controllers/evaluation-dashboards.server.controller');
 
 	// Evaluation dashboards Routes
-	app.route('/evaluation-dashboards/projectCategorization')
-		.get(users.requiresLogin, evaluationDashboards.hasAuthorization, evaluationDashboards.projectCategorization);
-
-	app.route('/evaluation-dashboards/projectPrioritization')
-		.get(users.requiresLogin, evaluationDashboards.hasAuthorization, evaluationDashboards.projectPrioritization);
+	app.route('/evaluation-dashboards/financialProfile/:projectId')
+		.get(users.requiresLogin, evaluationDashboards.hasAuthorization, evaluationDashboards.financialProfile);
 };

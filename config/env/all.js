@@ -33,6 +33,7 @@ module.exports = {
 				'public/lib/checklist-model/checklist-model.js',
 				'public/lib/ng-sortable/dist/ng-sortable.js',
 				'public/lib/angular-loading-bar/build/loading-bar.js',
+				// High-Charts
                 'public/lib/highcharts/adapters/standalone-frameworks.js',
                 'public/lib/highcharts/highcharts.js',
 				'public/lib/highcharts/modules/drilldown.js',
