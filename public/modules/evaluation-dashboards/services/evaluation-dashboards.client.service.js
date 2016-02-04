@@ -7,7 +7,7 @@ angular.module('evaluation-dashboards').factory('EvaluationDashboards', ['$resou
 		}, {
 			financialProfile: {
 				method: 'GET',
-				isArray: true,
+				isArray: false,
 				url: 'evaluation-dashboards/financialProfile/:projectId'
 			}
 		});

@@ -112,7 +112,7 @@ exports.financialProfile = function(req, res){
             if(!combinedFinancialData.length){
                 return callback(new Error({message : 'No financial data'}));
             }
-            var baseYear = req.project.baseYear;
+            var baseYear = _.min(combinedFinancialData, function(yearlyItem) { return yearlyItem.year; }).year;
             var discountRate = req.project.discountRate;
 
             _.each(combinedFinancialData, function(yearlyItem){
@@ -122,7 +122,96 @@ exports.financialProfile = function(req, res){
                 yearlyItem.yearlyNetDiscounted = yearlyItem.yearlyBenefitDiscounted - yearlyItem.yearlyCostDiscounted;
             });
 
-            callback(null, combinedFinancialData);
+            var financialRatios = {
+                totalCost : 0,
+                totalCostDiscounted : 0,
+                totalBenefit : 0,
+                totalBenefitDiscounted : 0,
+                totalNet : 0,
+                totalNetDiscounted : 0, // NPV
+                IRR : 0,
+                BenefitCostRatio : 0,
+                payback : 0
+            };
+
+            financialRatios.totalCost = _.reduce(combinedFinancialData, function(sum, yearItem){
+                return sum + yearItem.yearlyCost;
+            }, 0);
+            financialRatios.totalCostDiscounted = _.reduce(combinedFinancialData, function(sum, yearItem){
+                return sum + yearItem.yearlyCostDiscounted;
+            }, 0);
+            financialRatios.totalBenefit = _.reduce(combinedFinancialData, function(sum, yearItem){
+                return sum + yearItem.yearlyBenefit;
+            }, 0);
+            financialRatios.totalBenefitDiscounted = _.reduce(combinedFinancialData, function(sum, yearItem){
+                return sum + yearItem.yearlyBenefitDiscounted;
+            }, 0);
+
+            financialRatios.totalNet = _.reduce(combinedFinancialData, function(sum, yearItem){
+                return sum + yearItem.yearlyNet;
+            }, 0);
+            financialRatios.totalNetDiscounted = _.reduce(combinedFinancialData, function(sum, yearItem){
+                return sum + yearItem.yearlyNetDiscounted;
+            }, 0);
+
+            if(financialRatios.totalCostDiscounted !==0){
+                financialRatios.BenefitCostRatio = financialRatios.totalBenefitDiscounted / financialRatios.totalCostDiscounted;
+            }
+
+            var calculatePayback = function(paybackDataInput, paybackRatioInput){
+                var paybackCounter = 0;
+                var yearNet = 0;
+                var cumulativeBenefits = 0;
+                var cumulativeBenefitPrev = 0;
+                for(var i = 0; i < paybackDataInput.length; i++){
+                    paybackCounter++;
+                    cumulativeBenefits = cumulativeBenefits + paybackDataInput[i].yearlyBenefitDiscounted;
+                    if (cumulativeBenefits >= paybackRatioInput.totalBenefitDiscounted){
+                        yearNet = paybackDataInput[i].yearlyNetDiscounted;
+                        cumulativeBenefitPrev = cumulativeBenefits - paybackDataInput[i].yearlyBenefitDiscounted;
+                        break;
+                    }
+                }
+                return ((paybackCounter-1)+((paybackRatioInput.totalCostDiscounted-cumulativeBenefitPrev)/yearNet)).toFixed(1);
+            };
+            financialRatios.payback = calculatePayback(combinedFinancialData, financialRatios);
+
+            var calculateIRR = function(irrInputData){
+                var min = 0.0;
+                var max = 1.0;
+                var guess = 0;
+                var NPV = 0;
+                var maxIterations = 100000;
+                var iterationCounter = 0;
+                do {
+                    iterationCounter++;
+                    if(iterationCounter === maxIterations){
+                        guess = null;
+                        return;
+                    }
+                    guess = (min + max) / 2;
+                    NPV = 0;
+                    for (var j=0; j<irrInputData.length; j++) {
+                        NPV += irrInputData[j].yearlyNet/Math.pow((1+guess),j);
+                    }
+                    if (NPV > 0) {
+                        min = guess;
+                    }
+                    else {
+                        max = guess;
+                    }
+                } while(Math.abs(NPV) > 0.000001);
+
+                return guess;
+            };
+            financialRatios.IRR = calculateIRR(combinedFinancialData);
+
+            var result = {
+                yearlyData : combinedFinancialData,
+                financialRatios : financialRatios
+            };
+
+            callback(null, result);
         }
     ], function (err, result) {
         if (err) {
