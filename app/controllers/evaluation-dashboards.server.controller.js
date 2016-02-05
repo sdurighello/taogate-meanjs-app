@@ -104,13 +104,13 @@ exports.financialProfile = function(req, res){
 
             // Discounting
             if(!req.project.baseYear){
-                return callback(new Error({message : 'Missing base year'}));
+                return callback(new Error('Missing base year'));
             }
             if(!req.project.discountRate){
-                return callback(new Error({message : 'Missing discount rate'}));
+                return callback(new Error('Missing discount rate'));
             }
             if(!combinedFinancialData.length){
-                return callback(new Error({message : 'No financial data'}));
+                return callback(new Error('No financial data'));
             }
             var baseYear = _.min(combinedFinancialData, function(yearlyItem) { return yearlyItem.year; }).year;
             var discountRate = req.project.discountRate;
@@ -130,8 +130,8 @@ exports.financialProfile = function(req, res){
                 totalNet : 0,
                 totalNetDiscounted : 0, // NPV
                 IRR : 0,
-                BenefitCostRatio : 0,
-                payback : 0
+                benefitCostRatio : 0,
+                paybackPeriod : 0
             };
 
             financialRatios.totalCost = _.reduce(combinedFinancialData, function(sum, yearItem){
@@ -155,7 +155,7 @@ exports.financialProfile = function(req, res){
             }, 0);
 
             if(financialRatios.totalCostDiscounted !==0){
-                financialRatios.BenefitCostRatio = financialRatios.totalBenefitDiscounted / financialRatios.totalCostDiscounted;
+                financialRatios.benefitCostRatio = financialRatios.totalBenefitDiscounted / financialRatios.totalCostDiscounted;
             }
 
             var calculatePayback = function(paybackDataInput, paybackRatioInput){
@@ -174,7 +174,7 @@ exports.financialProfile = function(req, res){
                 }
                 return ((paybackCounter-1)+((paybackRatioInput.totalCostDiscounted-cumulativeBenefitPrev)/yearNet)).toFixed(1);
             };
-            financialRatios.payback = calculatePayback(combinedFinancialData, financialRatios);
+            financialRatios.paybackPeriod = calculatePayback(combinedFinancialData, financialRatios);
 
             var calculateIRR = function(irrInputData){
                 var min = 0.0;
@@ -215,7 +215,6 @@ exports.financialProfile = function(req, res){
         }
     ], function (err, result) {
         if (err) {
-            console.log(err);
             return res.status(400).send({
                 message: errorHandler.getErrorMessage(err)
             });
@@ -227,7 +226,117 @@ exports.financialProfile = function(req, res){
 
 };
 
+exports.qualitativeProfiles = function(req, res){
 
+    var Project = mongoose.mtModel(req.user.tenantId + '.' + 'Project');
+
+    async.waterfall([
+        function(callback) {
+            Project.find({'selection.selectedForEvaluation':true}, {'portfolio':1, 'parent':1, 'identification.name':1, 'identification.earmarkedFunds':1, 'qualitativeAnalysis':1}).deepPopulate([
+                'qualitativeAnalysis.group', 'qualitativeAnalysis.impacts.impact', 'qualitativeAnalysis.impacts.score', 'portfolio','parent'
+            ]).exec(function (err, projects) {
+                if (err) {
+                    return callback(err);
+                }
+                callback(null, projects);
+            });
+        },
+        function(projects, callback) {
+            var projectProfiles = [];
+
+            _.each(projects, function(project){
+                var profile = {
+                    projectId : project._id,
+                    projectName : project.identification.name,
+                    earmarkedFunds : project.identification.earmarkedFunds,
+                    portfolio : project.portfolio,
+                    parent : project.parent,
+                    qualitativeScore : 0,
+                    qualitativeAnalysis : []
+                };
+                _.each(project.qualitativeAnalysis, function(groupObj){
+                    var profileGroupObj = {
+                        groupId : groupObj.group._id,
+                        groupName : groupObj.group.name,
+                        groupWeight : groupObj.group.weight,
+                        sumImpactScores : 0,
+                        weightedScore : 0,
+                        impacts : []
+                    };
+                    _.each(groupObj.impacts, function(impactObj){
+                        var profileImpactObj = {
+                            impactId : impactObj.impact._id,
+                            impactName : impactObj.impact.name,
+                            impactWeight : impactObj.impact.weight,
+                            score : impactObj.score,
+                            weightedScore : impactObj.score.numericalValue * (impactObj.impact.weight/100)
+                        };
+                        profileGroupObj.impacts.push(profileImpactObj);
+                        profileGroupObj.sumImpactScores = profileGroupObj.sumImpactScores + profileImpactObj.weightedScore;
+                    });
+                    profileGroupObj.weightedScore = profileGroupObj.sumImpactScores * (profileGroupObj.groupWeight/100);
+                    profile.qualitativeAnalysis.push(profileGroupObj);
+                    profile.qualitativeScore = profile.qualitativeScore + profileGroupObj.weightedScore;
+                });
+                projectProfiles.push(profile);
+            });
+
+            var portfolioProfiles = _.chain(projectProfiles)
+                .groupBy(function(profile){
+                    if(profile.portfolio){
+                        return profile.portfolio._id;
+                    }
+                    return 'unassigned';
+                })// {'2015' : [{aggBenefit}, {aggCost}], '2016' : [...]}
+                .map(function(v, k){
+                    var portfolioScore = _.reduce(v, function(sum, item){
+                        return sum + item.qualitativeScore;
+                    }, 0);
+                    return {
+                        portfolio : v[0].portfolio,
+                        portfolioScore : portfolioScore
+                    };
+                })
+                .value();
+
+            var strategyProfiles = _.chain(projectProfiles)
+                .groupBy(function(profile){
+                    if(profile.parent){
+                        return profile.parent._id;
+                    }
+                    return 'unassigned';
+                })// {'2015' : [{aggBenefit}, {aggCost}], '2016' : [...]}
+                .map(function(v, k){
+                    var parentScore = _.reduce(v, function(sum, item){
+                        return sum + item.qualitativeScore;
+                    }, 0);
+                    return {
+                        parent : v[0].parent,
+                        parentScore : parentScore
+                    };
+                })
+                .value();
+
+            var result = {
+                projectProfiles : projectProfiles,
+                portfolioProfiles : portfolioProfiles,
+                strategyProfiles : strategyProfiles
+            };
+
+            callback(null, result);
+        }
+    ], function (err, result) {
+        if (err) {
+            console.log(err);
+            return res.status(400).send({
+                message: errorHandler.getErrorMessage(err)
+            });
+        } else {
+            res.jsonp(result);
+        }
+    });
+
+};
 
 /**
  * Definition dashboard authorization middleware

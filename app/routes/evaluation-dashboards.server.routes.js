@@ -7,4 +7,7 @@ module.exports = function(app) {
 	// Evaluation dashboards Routes
 	app.route('/evaluation-dashboards/financialProfile/:projectId')
 		.get(users.requiresLogin, evaluationDashboards.hasAuthorization, evaluationDashboards.financialProfile);
+
+	app.route('/evaluation-dashboards/qualitativeProfiles')
+		.get(users.requiresLogin, evaluationDashboards.hasAuthorization, evaluationDashboards.qualitativeProfiles);
 };

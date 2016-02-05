@@ -109,6 +109,7 @@ angular.module('strategy-alignment').controller('StrategyAlignmentController', [
                     var aProject = assignedProjects[i];
                     if (aProject.parent !== node._id){
                         aProject.parent = node._id;
+						aProject.process = aProject.process._id; // Clean up deep populate
                         Projects.update(aProject);
                     }
 
@@ -118,6 +119,7 @@ angular.module('strategy-alignment').controller('StrategyAlignmentController', [
                     var uProject = unassignedProjects[j];
                     if (uProject.parent !== null){
                         uProject.parent = null;
+						uProject.process = uProject.process._id;
                         Projects.update(uProject);
                     }
 

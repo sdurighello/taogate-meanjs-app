@@ -9,6 +9,11 @@ angular.module('evaluation-dashboards').factory('EvaluationDashboards', ['$resou
 				method: 'GET',
 				isArray: false,
 				url: 'evaluation-dashboards/financialProfile/:projectId'
+			},
+			qualitativeAnalysis: {
+				method: 'GET',
+				isArray: false,
+				url: 'evaluation-dashboards/qualitativeProfiles'
 			}
 		});
 	}

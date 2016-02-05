@@ -1,10 +1,10 @@
 'use strict';
 
 angular.module('financial-analysis').controller('FinancialAnalysisController', ['$scope','$stateParams', '$location',
-	'Authentication','FinancialBenefitGroups','FinancialBenefitTypes','FinancialCostGroups','FinancialCostTypes',
+	'Authentication','FinancialBenefitGroups','FinancialBenefitTypes','FinancialCostGroups','FinancialCostTypes','EvaluationDashboards',
     'FinancialCosts', 'FinancialBenefits', 'Projects', 'Portfolios', '$q', '_',
 	function($scope, $stateParams, $location, Authentication, FinancialBenefitGroups, FinancialBenefitTypes, FinancialCostGroups,
-			 FinancialCostTypes, FinancialCosts, FinancialBenefits, Projects, Portfolios, $q, _) {
+			 FinancialCostTypes, EvaluationDashboards, FinancialCosts, FinancialBenefits, Projects, Portfolios, $q, _) {
 
 		// ------------- INIT -------------
 
@@ -101,6 +101,26 @@ angular.module('financial-analysis').controller('FinancialAnalysisController', [
         // ------------- SELECT VIEW PROJECT ------------
 
 
+        $scope.selectFinancialOverview = function(project){
+            $scope.error = null;
+            if(project){
+                EvaluationDashboards.financialProfile(
+                    {
+                        projectId : project._id
+                    }, project,
+                    function(res){
+                        $scope.financialProfile = res;
+                    },
+                    function(err){
+                        $scope.financialProfile = null;
+                        $scope.error = err.data.message;
+                    }
+                );
+            } else {
+                $scope.financialProfile = null;
+            }
+        };
+
         var originalCostAssignment, originalBenefitAssignment, originalDiscountRate, originalBaseYear;
 
         $scope.selectProject = function(project){
@@ -119,6 +139,7 @@ angular.module('financial-analysis').controller('FinancialAnalysisController', [
             }, function(res){
                 res.costs = _.sortBy(res.costs, 'year');
                 $scope.selectedProject = res;
+                $scope.selectFinancialOverview(res);
             },function(errorResponse){
                 $scope.error = errorResponse.data.message;
             });
@@ -336,9 +357,6 @@ angular.module('financial-analysis').controller('FinancialAnalysisController', [
             project.discountRate = originalDiscountRate;
             project.baseYear = originalBaseYear;
         };
-
-
-
 
 
 
