@@ -11,36 +11,44 @@ require('mongoose-multitenant');
  * Person Schema
  */
 var PersonSchema = new Schema({
-  name: {
+    name: {
     type: String,
     default: '',
     required: 'Please fill name',
     trim: true
-  },
-  title: {
+    },
+    organization: {
+        type: String,
+        trim: true,
+        default: ''
+    },
+    title: {
     type: String,
     default: '',
     trim: true
-  },
-  email: {
+    },
+    email: {
     type: String,
     trim: true,
     default: '',
     match: [/.+\@.+\..+/, 'Please fill a valid email address']
-  },
-  phone: {
+    },
+    phone: {
     type: String,
     default: '',
     trim: true
-  },
-  created: {
+    },
+    created: {
     type: Date,
     default: Date.now
-  },
-  user: {
+    },
+
+    assignedUser : {type: Schema.Types.ObjectId, ref: 'User', default:null},
+
+    user: {
     type: Schema.ObjectId,
     ref: 'User'
-  }
+    }
 });
 
 mongoose.mtModel('Person', PersonSchema);

@@ -200,33 +200,48 @@ angular.module('core').service('Menus', [
                 // Risk analysis
         this.addSubMenuItem('topbar', 'setup', 'Risk analysis', 'risk-analysis-setup','risk-analysis-setup',false,
             ['superAdmin','admin','PMO','projectManager','portfolioManager','executive'],9);
-				// Stakeholders
-		this.addSubMenuItem('topbar', 'setup', 'Stakeholders', 'people-setup','people-setup',false,
-			['superAdmin','admin','PMO','projectManager','portfolioManager','executive'],10);
 				// Dependencies
 		this.addSubMenuItem('topbar', 'setup', 'Dependencies', 'dependency-setup','dependency-setup',false,
-			['superAdmin','admin','PMO','projectManager','portfolioManager','executive'],11);
+			['superAdmin','admin','PMO','projectManager','portfolioManager','executive'],10);
+
+            // Stakeholders management
+        this.addSubMenuItem('topbar', 'setup', '', 'divider','divider',false,
+            ['superAdmin','admin','PMO','projectManager','portfolioManager','executive'],11);
+        this.addSubMenuItem('topbar', 'setup', 'Stakeholders management', 'menuTitle','menuTitle',false,
+            ['superAdmin','admin','PMO','projectManager','portfolioManager','executive'],12);
+                // Stakeholders
+        this.addSubMenuItem('topbar', 'setup', 'Stakeholders', 'people-setup','people-setup',false,
+            ['superAdmin','admin','PMO','projectManager','portfolioManager','executive'],13);
+                // Review setup
+        this.addSubMenuItem('topbar', 'setup', 'Review setup', 'project-review-setup','project-review-setup',false,
+            ['superAdmin','admin','PMO','projectManager','portfolioManager','executive'],14);
+                // Project Review
+        this.addSubMenuItem('topbar', 'setup', 'Project review', 'project-review-templates','project-review-templates',false,
+            ['superAdmin','admin','PMO','projectManager','portfolioManager','executive'],15);
+                // Portfolio Review
+        this.addSubMenuItem('topbar', 'setup', 'Portfolio review', 'portfolio-review-templates','portfolio-review-templates',false,
+            ['superAdmin','admin','PMO','projectManager','portfolioManager','executive'],16);
 
         // Portfolio Delivery
         this.addSubMenuItem('topbar', 'setup', '', 'divider','divider',false,
-            ['superAdmin','admin','PMO','projectManager','portfolioManager','executive'],12);
+            ['superAdmin','admin','PMO','projectManager','portfolioManager','executive'],17);
         this.addSubMenuItem('topbar', 'setup', 'Portfolio delivery', 'menuTitle','menuTitle',false,
-            ['superAdmin','admin','PMO','projectManager','portfolioManager','executive'],13);
+            ['superAdmin','admin','PMO','projectManager','portfolioManager','executive'],18);
             // Gate Process
         this.addSubMenuItem('topbar', 'setup', 'Gate process', 'gate-management-setup','gate-management-setup',false,
-            ['superAdmin','admin','PMO','projectManager','portfolioManager','executive'],14);
+            ['superAdmin','admin','PMO','projectManager','portfolioManager','executive'],19);
             // Gate Review
         this.addSubMenuItem('topbar', 'setup', 'Gate review', 'gate-review-setup','gate-review-setup',false,
-            ['superAdmin','admin','PMO','projectManager','portfolioManager','executive'],15);
+            ['superAdmin','admin','PMO','projectManager','portfolioManager','executive'],20);
             // Issues & Changes
         this.addSubMenuItem('topbar', 'setup', 'Issues & Changes', 'log-delivery-setup','log-delivery-setup',false,
-            ['superAdmin','admin','PMO','projectManager','portfolioManager','executive'],16);
+            ['superAdmin','admin','PMO','projectManager','portfolioManager','executive'],21);
             // Milestone log
         this.addSubMenuItem('topbar', 'setup', 'Milestones', 'log-milestone-setup','log-milestone-setup',false,
-            ['superAdmin','admin','PMO','projectManager','portfolioManager','executive'],17);
+            ['superAdmin','admin','PMO','projectManager','portfolioManager','executive'],22);
 			// Status Report
 		this.addSubMenuItem('topbar', 'setup', 'Status report', 'status-report-setup','status-report-setup',false,
-			['superAdmin','admin','PMO','projectManager','portfolioManager','executive'],18);
+			['superAdmin','admin','PMO','projectManager','portfolioManager','executive'],23);
 
 
         // DEFINITION
@@ -300,11 +315,22 @@ angular.module('core').service('Menus', [
                 // Portfolio Stakeholders analysis
         this.addSubMenuItem('topbar', 'evaluation', 'Portfolio stakeholders analysis', 'people-portfolio-analysis','people-portfolio-analysis',false,
             ['superAdmin','admin','PMO','projectManager','portfolioManager','executive'],7);
-            // Dependencies
+            // Reviews
         this.addSubMenuItem('topbar', 'evaluation', '', 'divider','divider',false,
             ['superAdmin','admin','PMO','projectManager','portfolioManager','executive'],8);
-        this.addSubMenuItem('topbar', 'evaluation', 'Dependencies', 'menuTitle','menuTitle',false,
+        this.addSubMenuItem('topbar', 'evaluation', 'Reviews', 'menuTitle','menuTitle',false,
             ['superAdmin','admin','PMO','projectManager','portfolioManager','executive'],9);
+                // Project Reviews
+        this.addSubMenuItem('topbar', 'evaluation', 'Project reviews', 'project-reviews','project-reviews',false,
+            ['superAdmin','admin','PMO','projectManager','portfolioManager','executive'],10);
+                // Portfolio Reviews
+        this.addSubMenuItem('topbar', 'evaluation', 'Portfolio reviews', 'portfolio-reviews','portfolio-reviews',false,
+            ['superAdmin','admin','PMO','projectManager','portfolioManager','executive'],11);
+            // Dependencies
+        this.addSubMenuItem('topbar', 'evaluation', '', 'divider','divider',false,
+            ['superAdmin','admin','PMO','projectManager','portfolioManager','executive'],12);
+        this.addSubMenuItem('topbar', 'evaluation', 'Dependencies', 'menuTitle','menuTitle',false,
+            ['superAdmin','admin','PMO','projectManager','portfolioManager','executive'],13);
                 // Project dependencies
         this.addSubMenuItem('topbar', 'evaluation', 'Project dependencies', 'dependency-analysis','dependency-analysis',false,
             ['superAdmin','admin','PMO','projectManager','portfolioManager','executive'],10);

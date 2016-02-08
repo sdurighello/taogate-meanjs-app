@@ -32,26 +32,56 @@ exports.signup = function(req, res) {
     user.isSuperAdmin = true;
     user.roles = ['superAdmin'];
 
-	// Then save the user 
-	user.save(function(err) {
-		if (err) {
-			return res.status(400).send({
-				message: errorHandler.getErrorMessage(err)
-			});
-		} else {
-			// Remove sensitive data before login
-			user.password = undefined;
-			user.salt = undefined;
+    var Person = mongoose.mtModel(user.tenantId + '.' + 'Person');
 
-			req.login(user, function(err) {
-				if (err) {
-					res.status(400).send(err);
-				} else {
-					res.json(user);
-				}
-			});
-		}
-	});
+    async.waterfall([
+        // Save the new user
+        function(callback) {
+            user.save(function(err){
+                if(err){
+                    return callback(err);
+                }
+                callback(null, user);
+            });
+        },
+        // Create a stakeholder person for the new user
+        function(createdUser, callback) {
+            var person = new Person({
+                name : createdUser.displayName,
+                organization : createdUser.organization,
+                title : null,
+                email : createdUser.email,
+                phone : createdUser.phone,
+                assignedUser : createdUser._id,
+                user : user._id,
+                created : Date.now()
+            });
+            person.save(function(err){
+                if(err){
+                    return callback(err);
+                }
+                callback(null, createdUser);
+            });
+        }
+    ], function (err) {
+        if (err) {
+            return res.status(400).send({
+                message: errorHandler.getErrorMessage(err)
+            });
+        } else {
+            // Remove sensitive data before login
+            user.password = undefined;
+            user.salt = undefined;
+
+            req.login(user, function(err) {
+                if (err) {
+                    res.status(400).send(err);
+                } else {
+                    res.json(user);
+                }
+            });
+        }
+    });
 };
 
 /**

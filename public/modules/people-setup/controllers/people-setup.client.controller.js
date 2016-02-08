@@ -106,6 +106,7 @@ angular.module('people-setup').controller('PeopleSetupController', ['$scope', '$
 
 		$scope.cancelEditPerson = function(person){
 			person.name = originalPerson.name;
+            person.organization = originalPerson.organization;
             person.title = originalPerson.title;
             person.email = originalPerson.email;
             person.phone = originalPerson.phone;
@@ -129,6 +130,7 @@ angular.module('people-setup').controller('PeopleSetupController', ['$scope', '$
 		$scope.createPerson = function() {
 			var person = new People ({
 				name: 'New person',
+                organization: '',
 				title: '',
 				email: '',
 				phone: ''

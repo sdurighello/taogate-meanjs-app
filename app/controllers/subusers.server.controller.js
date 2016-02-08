@@ -5,7 +5,7 @@
  */
 var mongoose = require('mongoose'),
 	errorHandler = require('./errors.server.controller'),
-	//Subuser = mongoose.model('Subuser'),
+    async = require('async'),
 	_ = require('lodash'),
 
 	passport = require('passport'),
@@ -19,7 +19,7 @@ exports.create = function(req, res) {
 	// For security measurement we remove the roles from the req.body object
 	//delete req.body.roles;
 
-	// Init Variables
+    // Init Variables
 	var user = new User(req.body);
 	user.user = req.user;
 	var message = null;
@@ -32,27 +32,50 @@ exports.create = function(req, res) {
 	user.tenantId = req.user.tenantId;
 	user.isSuperAdmin = false;
 
-	// Then save the user
-	user.save(function(err) {
-		if (err) {
-			return res.status(400).send({
-				message: errorHandler.getErrorMessage(err)
-			});
-		} else {
-			// Remove sensitive data before login
-			user.password = undefined;
-			user.salt = undefined;
-			res.json(user);
+	// Then save the user and create a stakeholder person
 
-			//req.login(user, function(err) {
-			//	if (err) {
-			//		res.status(400).send(err);
-			//	} else {
-			//		res.json(user);
-			//	}
-			//});
-		}
-	});
+    var Person = mongoose.mtModel(req.user.tenantId + '.' + 'Person');
+
+    async.waterfall([
+        function(callback) {
+            user.save(function(err){
+                if(err){
+                    return callback(err);
+                }
+                callback(null, user);
+            });
+        },
+        function(createdUser, callback) {
+            var person = new Person({
+                name : createdUser.displayName,
+                organization : createdUser.organization,
+                title : null,
+                email : createdUser.email,
+                phone : createdUser.phone,
+                assignedUser : createdUser._id,
+                user : req.user._id,
+                created : Date.now()
+            });
+            person.save(function(err){
+                if(err){
+                    return callback(err);
+                }
+                callback(null, createdUser);
+            });
+        }
+    ], function (err) {
+        if (err) {
+            return res.status(400).send({
+                message: errorHandler.getErrorMessage(err)
+            });
+        } else {
+            // Remove sensitive data before login
+            user.password = undefined;
+            user.salt = undefined;
+            res.json(user);
+        }
+    });
+
 };
 
 /**

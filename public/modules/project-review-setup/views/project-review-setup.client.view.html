@@ -1,0 +1,347 @@
+<section data-ng-controller="ProjectReviewSetupController" data-ng-init="init()">
+	<br>
+	<div class="row">
+		<div class="col-sm-12">
+			<div class="panel-heading">
+				<ol class="breadcrumb">
+					<li>Setup</li>
+					<li>Portfolio evaluation</li>
+					<li class="active">Review setup</li>
+				</ol>
+			</div>
+		</div>
+	</div>
+	<div data-ng-show="initError" class="text-danger">
+		<strong data-ng-bind="initError"></strong>
+	</div>
+	<div class="row">
+		<div class="col-md-12">
+			<tabset>
+				<tab heading="Review scores">
+					<br>
+					<div class="row">
+						<div class="col-md-5">
+							<div class="panel panel-default">
+								<div class="panel-body" style="overflow-y: auto; max-height: 500px; min-height: 500px;">
+									<div class="alert alert-warning text-center" data-ng-hide="reviewScores.length">
+										<span>No review scores yet, why don't you create one?</span>
+									</div>
+									<button data-ng-repeat="score in reviewScores | orderBy : 'numericalValue'" data-ng-click="selectScore(score)"
+											class="btn btn-default btn-lg btn-block center-block" style="overflow: hidden;">
+										<div class="row">
+											<div class="col-md-2">
+												<span class="badge" data-ng-bind="score.numericalValue"></span>
+											</div>
+											<div class="col-md-10 text-center">
+												<span data-ng-bind="score.name"></span>
+											</div>
+										</div>
+									</button>
+								</div>
+							</div>
+						</div>
+						<div class="col-md-4" data-ng-switch="switchScoreForm">
+							<div class="row" ng-show="userHasAuthorization" ng-switch-default="view">
+								<div class="col-md-12">
+									<button class="btn btn-primary" data-ng-click="createScore()">
+										New score
+									</button>
+									<button class="btn btn-success" data-ng-click="selectScoreForm('edit')" data-ng-show="reviewScore">
+										Edit Score
+									</button>
+									<div data-ng-show="error" class="text-danger">
+										<strong data-ng-bind="error"></strong>
+									</div>
+								</div>
+							</div>
+							<br>
+							<div class="row">
+								<div class="col-md-12">
+									<div class="panel panel-default">
+										<div class="panel-heading">
+											<h6 class="panel-title" data-ng-bind="reviewScore.name"></h6>
+											<div class="alert alert-warning text-center" data-ng-hide="reviewScore">
+												<em>Please select a review score to see the details</em>
+											</div>
+										</div>
+										<div class="panel-body" data-ng-show="reviewScore">
+											<div ng-switch-default="view">
+												<form class="form">
+													<fieldset>
+														<div class="row">
+															<div class="col-md-12">
+																<div class="form-group">
+																	<label class="control-label">Score name</label>
+																	<div class="controls">
+																		<input disabled type="text" class="form-control" ng-model="reviewScore.name">
+																	</div>
+																</div>
+																<div class="form-group">
+																	<label class="control-label">Numerical value</label>
+																	<div class="controls">
+																		<input disabled type="number" class="form-control" ng-model="reviewScore.numericalValue">
+																	</div>
+																</div>
+																<div class="form-group">
+																	<label class="control-label"> description</label>
+																	<div class="controls">
+																		<textarea disabled class="form-control" ng-model="reviewScore.description"></textarea>
+																	</div>
+																</div>
+																<div class="form-group">
+																	<div data-ng-show="error" class="text-danger">
+																		<strong data-ng-bind="error"></strong>
+																	</div>
+																</div>
+															</div>
+														</div>
+													</fieldset>
+												</form>
+												<div class="row">
+													<div class="col-md-12">
+														<small>
+															<em class="text-muted">
+																Last updated on
+																<span data-ng-bind="reviewScore.created | date:'mediumDate'"></span>
+																by
+																<span data-ng-bind="reviewScore.user.displayName"></span>
+															</em>
+														</small>
+													</div>
+												</div>
+											</div>
+											<div data-ng-switch-when="edit">
+												<form class="form" name="EditScoreForm" data-ng-submit="updateScore(reviewScore)" novalidate>
+													<fieldset>
+														<div class="row">
+															<div class="col-md-12">
+																<div class="form-group">
+																	<label class="control-label" for="scoreNameEdit">Score name</label>
+																	<div class="controls">
+																		<input type="text" id="scoreNameEdit" name="scoreNameEdit" class="form-control"
+																			   data-ng-model="reviewScore.name" placeholder="Name" required>
+																	</div>
+                                                                    <span data-ng-show="EditScoreForm.scoreNameEdit.$error.required">
+                                                                        <em style="color: red">Name is required</em>
+                                                                    </span>
+																</div>
+																<div class="form-group">
+																	<label class="control-label" for="scoreNumericalEdit">Numerical value</label>
+																	<div class="controls">
+																		<input type="number" id="scoreNumericalEdit" name="scoreNumericalEdit" class="form-control" min="0" step="1" max="100" onkeyup="this.value=this.value.replace(/[^0-9]/g,'');"
+																			   data-ng-model="reviewScore.numericalValue" placeholder="Enter positive integer" required>
+																	</div>
+                                                                    <span data-ng-show="EditScoreForm.scoreNumericalEdit.$error.min || EditScoreForm.scoreNumericalEdit.$error.max">
+                                                                        <em style="color: red">Enter integer between 0 and 100</em>
+                                                                    </span>
+																</div>
+																<div class="form-group">
+																	<label class="control-label" for="description">Score description</label>
+																	<div class="controls">
+																		<textarea id="description" class="form-control" data-ng-model="reviewScore.description" placeholder="Description"></textarea>
+																	</div>
+																</div>
+																<div class="form-group center-block">
+																	<input type="submit" value="Save" class="btn btn-success" data-ng-disabled="EditScoreForm.$invalid">
+																	<a class="btn btn-danger" data-ng-click="removeScore(reviewScore)">
+																		<i class="glyphicon glyphicon-trash"></i>
+																	</a>
+																	<button type="button" class="btn btn-info" data-ng-click="cancelEditScore(reviewScore)">
+																		Cancel
+																	</button>
+																</div>
+																<div class="form-group">
+																	<div data-ng-show="error" class="text-danger">
+																		<strong data-ng-bind="error"></strong>
+																	</div>
+																</div>
+															</div>
+														</div>
+													</fieldset>
+												</form>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</tab>
+				<tab heading="Portfolio review types">
+					<br>
+					<div class="row" ng-show="userHasAuthorization">
+						<div class="col-md-3">
+							<br>
+							<button class="btn btn-primary"
+									ng-click="createPortfolioType()">
+								New portfolio review type
+							</button>
+						</div>
+					</div>
+					<hr>
+					<div class="row">
+						<div class="alert alert-warning text-center" data-ng-hide="portfolioReviewTypes.length">
+							No portfolio review types yet
+						</div>
+						<div class="col-md-4" data-ng-repeat="type in portfolioReviewTypes" data-ng-switch="switchPortfolioTypeForm[type._id]" >
+							<div class="panel panel-default" title="Last updated on {{type.created | date:'medium'}} by {{type.user.displayName}}">
+								<div class="panel-heading">
+									<h6 class="panel-title text-center" data-ng-bind="type.name"></h6>
+								</div>
+								<div class="panel-body">
+									<div ng-switch-default="view">
+										<form class="form">
+											<fieldset>
+												<div class="row">
+													<div class="col-md-12">
+														<div class="form-group">
+															<label for="name" class="control-label">Name</label>
+															<input id="name" disabled type="text" class="form-control" ng-model="type.name">
+														</div>
+														<div class="form-group">
+															<label for="description" class="control-label">Description</label>
+															<textarea id="description" disabled class="form-control" ng-model="type.description"></textarea>
+														</div>
+														<div class="pull-right" data-ng-show="userHasAuthorization">
+															<button type="button" class="btn btn-success" ng-click="selectPortfolioType(type)">
+																Edit
+															</button>
+														</div>
+														<div data-ng-show="error" class="text-danger">
+															<strong data-ng-bind="error"></strong>
+														</div>
+													</div>
+												</div>
+											</fieldset>
+										</form>
+									</div>
+									<div data-ng-switch-when="edit">
+										<form class="form" name="editPortfolioTypeForm" data-ng-submit="updatePortfolioType(type)" novalidate>
+											<fieldset>
+												<div class="row">
+													<div class="col-md-12">
+														<div class="form-group">
+															<label for="typeNameEdit" class="control-label">Name</label>
+															<input type="text" id="typeNameEdit" class="form-control" name="typeNameEdit"
+																   data-ng-model="type.name" placeholder="Name" required>
+															<span data-ng-show="editPortfolioTypeForm.typeNameEdit.$error.required">
+																<em style="color: red">Name is required</em>
+															</span>
+														</div>
+														<div class="form-group">
+															<label for="descriptionEdit" class="control-label">Description</label>
+															<textarea id="descriptionEdit" class="form-control" data-ng-model="type.description" placeholder="Description"></textarea>
+														</div>
+														<div class="pull-right">
+															<input type="submit" value="Save" class="btn btn-success" data-ng-disabled="editPortfolioTypeForm.$invalid">
+															<a class="btn btn-danger" data-ng-click="removePortfolioType(type)" data-ng-show="userHasAuthorization">
+																<i class="glyphicon glyphicon-trash"></i>
+															</a>
+															<button type="button" class="btn btn-info" data-ng-click="cancelEditPortfolioType(type)">
+																Cancel
+															</button>
+														</div>
+														<div data-ng-show="error" class="text-danger">
+															<strong data-ng-bind="error"></strong>
+														</div>
+													</div>
+												</div>
+											</fieldset>
+										</form>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</tab>
+                <tab heading="Project review types">
+                    <br>
+                    <div class="row" ng-show="userHasAuthorization">
+                        <div class="col-md-3">
+                            <br>
+                            <button class="btn btn-primary"
+                                    ng-click="createProjectType()">
+                                New project review type
+                            </button>
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="row">
+                        <div class="alert alert-warning text-center" data-ng-hide="projectReviewTypes.length">
+                            No project review types yet
+                        </div>
+                        <div class="col-md-4" data-ng-repeat="type in projectReviewTypes" data-ng-switch="switchProjectTypeForm[type._id]" >
+                            <div class="panel panel-default" title="Last updated on {{type.created | date:'medium'}} by {{type.user.displayName}}">
+                                <div class="panel-heading">
+                                    <h6 class="panel-title text-center" data-ng-bind="type.name"></h6>
+                                </div>
+                                <div class="panel-body">
+                                    <div ng-switch-default="view">
+                                        <form class="form">
+                                            <fieldset>
+                                                <div class="row">
+                                                    <div class="col-md-12">
+                                                        <div class="form-group">
+                                                            <label for="name" class="control-label">Name</label>
+                                                            <input id="name" disabled type="text" class="form-control" ng-model="type.name">
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label for="description" class="control-label">Description</label>
+                                                            <textarea id="description" disabled class="form-control" ng-model="type.description"></textarea>
+                                                        </div>
+                                                        <div class="pull-right" data-ng-show="userHasAuthorization">
+                                                            <button type="button" class="btn btn-success" ng-click="selectProjectType(type)">
+                                                                Edit
+                                                            </button>
+                                                        </div>
+                                                        <div data-ng-show="error" class="text-danger">
+                                                            <strong data-ng-bind="error"></strong>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </fieldset>
+                                        </form>
+                                    </div>
+                                    <div data-ng-switch-when="edit">
+                                        <form class="form" name="editProjectTypeForm" data-ng-submit="updateProjectType(type)" novalidate>
+                                            <fieldset>
+                                                <div class="row">
+                                                    <div class="col-md-12">
+                                                        <div class="form-group">
+                                                            <label for="typeNameEdit" class="control-label">Name</label>
+                                                            <input type="text" id="typeNameEdit" class="form-control" name="typeNameEdit"
+                                                                   data-ng-model="type.name" placeholder="Name" required>
+															<span data-ng-show="editProjectTypeForm.typeNameEdit.$error.required">
+																<em style="color: red">Name is required</em>
+															</span>
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label for="descriptionEdit" class="control-label">Description</label>
+                                                            <textarea id="descriptionEdit" class="form-control" data-ng-model="type.description" placeholder="Description"></textarea>
+                                                        </div>
+                                                        <div class="pull-right">
+                                                            <input type="submit" value="Save" class="btn btn-success" data-ng-disabled="editProjectTypeForm.$invalid">
+                                                            <a class="btn btn-danger" data-ng-click="removeProjectType(type)" data-ng-show="userHasAuthorization">
+                                                                <i class="glyphicon glyphicon-trash"></i>
+                                                            </a>
+                                                            <button type="button" class="btn btn-info" data-ng-click="cancelEditProjectType(type)">
+                                                                Cancel
+                                                            </button>
+                                                        </div>
+                                                        <div data-ng-show="error" class="text-danger">
+                                                            <strong data-ng-bind="error"></strong>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </fieldset>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </tab>
+			</tabset>
+		</div>
+	</div>
+</section>

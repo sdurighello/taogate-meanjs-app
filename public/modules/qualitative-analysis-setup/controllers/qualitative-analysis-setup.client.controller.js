@@ -18,7 +18,8 @@ angular.module('qualitative-analysis-setup').controller('QualitativeAnalysisSetu
 
             QualitativeImpactGroups.query(function(groups){
                 $scope.impactGroups = groups;
-            }, function(err){
+				$scope.totalGroupWeights = calculateTotalGroupWeights(groups);
+			}, function(err){
                 $scope.initError.push(err.data.message);
             });
 

@@ -59,6 +59,12 @@ exports.update = function(req, res) {
 exports.delete = function(req, res) {
 	var person = req.person ;
 
+	if(person.assignedUser){
+        return res.status(400).send({
+            message: 'Cannot delete stakeholder with associated user'
+        });
+    }
+
 	person.remove(function(err) {
 		if (err) {
 			return res.status(400).send({
