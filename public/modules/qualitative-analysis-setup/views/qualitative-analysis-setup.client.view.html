@@ -32,8 +32,8 @@
                         <div class="col-md-9">
                             <br>
                             <span><b>Total group weights: </b></span>
-                            <span data-ng-bind="totalGroupWeights+' %'"></span>
-                            <span data-ng-show="totalGroupWeights < 99 || totalGroupWeights > 100" class="alert alert-warning text-center">Warning: total should add up to 100%</span>
+                            <span data-ng-bind="getTotalGroupWeights(impactGroups)+' %'"></span>
+                            <span data-ng-show="getTotalGroupWeights(impactGroups) < 99 || getTotalGroupWeights(impactGroups) > 100" class="alert alert-warning text-center">Warning: total should add up to 100%</span>
                         </div>
 					</div>
 					<hr>
@@ -159,8 +159,8 @@
                                                             <div class="col-md-9">
                                                                 <div class="form-group panel">
                                                                     <span><b>Total impact weights: </b></span>
-                                                                    <span data-ng-bind="totalImpactWeights[group._id]+' %'"></span>
-                                                                    <span data-ng-show="totalImpactWeights[group._id] < 99 || totalImpactWeights[group._id] > 100" class="alert alert-warning text-center">Warning: total should add up to 100%</span>
+                                                                    <span data-ng-bind="getImpactWeights(group)+' %'"></span>
+                                                                    <span data-ng-show="getImpactWeights(group) < 99 || getImpactWeights(group) > 100" class="alert alert-warning text-center">Warning: total should add up to 100%</span>
                                                                 </div>
                                                             </div>
 														</div>

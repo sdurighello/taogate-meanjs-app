@@ -333,7 +333,7 @@ angular.module('core').service('Menus', [
             ['superAdmin','admin','PMO','projectManager','portfolioManager','executive'],13);
                 // Project dependencies
         this.addSubMenuItem('topbar', 'evaluation', 'Project dependencies', 'dependency-analysis','dependency-analysis',false,
-            ['superAdmin','admin','PMO','projectManager','portfolioManager','executive'],10);
+            ['superAdmin','admin','PMO','projectManager','portfolioManager','executive'],14);
 
 
 

@@ -75,21 +75,54 @@ angular.module('project-review-templates').controller('ProjectReviewTemplatesCon
 		};
 
 
+        // ------------------- CALCULATE WEIGHTS -------------
+
+        $scope.getTotalTemplateWeights = function(template){
+            if(template){
+                return _.reduce(template.groups, function(memo, group){
+                    return memo + group.weight;
+                }, 0);
+            }
+        };
+
+        $scope.getTotalItemWeights = function(group){
+            if(group){
+                return _.reduce(group.items, function(memo, impact){
+                    return memo + impact.weight;
+                }, 0);
+            }
+        };
+
+
+
 		// ------------------ CREATE TEMPLATE ----------------
 
-		$scope.createTemplate = function() {
+        $scope.newTemplate = {};
+
+        $scope.showNewTemplateForm = false;
+
+		$scope.saveNewTemplate = function(newTemplate) {
 			$scope.error = null;
 			var template = new ProjectReviewTemplates ({
-				name: 'New review template',
+				name: newTemplate.name,
+                type: newTemplate.type,
 				groups : []
 			});
 			template.$save(function(res) {
                 $scope.error = null;
+                $scope.newTemplate = {};
+                $scope.showNewTemplateForm = false;
 				$scope.templateList();
 			}, function(err) {
 				$scope.error = err.data.message;
 			});
 		};
+
+        $scope.cancelNewTemplate = function(){
+            $scope.error = null;
+            $scope.newTemplate = {};
+            $scope.showNewTemplateForm = false;
+        };
 
             // ------------------- EDIT TEMPLATE (HEADER ONLY) -----------------
 
@@ -151,9 +184,10 @@ angular.module('project-review-templates').controller('ProjectReviewTemplatesCon
 		// ------------------- EDIT GROUP (HEADER ONLY) -----------------
 
 		var originalEditGroup = {};
+        $scope.selectedStakeholderGroup = {};
 
 		$scope.selectGroup = function(group){
-            $scope.selectedStakeholderGroup = null;
+            $scope.selectedStakeholderGroup[group._id] = null;
             originalEditGroup[group._id] = _.clone(group);
 			$scope.error = null;
 			$scope.selectGroupForm(group, 'edit');
@@ -181,9 +215,22 @@ angular.module('project-review-templates').controller('ProjectReviewTemplatesCon
 
 
 
-        // ----- MANAGE STAKEHOLDER GROUPS ----
+        // ----- ADD/REMOVE STAKEHOLDER GROUPS ----
+
+
+
+        $scope.getAllowedStakeholderGroups = function(reviewGroup){
+            return _.filter($scope.stakeholderGroups, function(stakeholderGroup){
+                return !_.find(reviewGroup.peopleGroups, function(sGroup){
+                    return sGroup._id === stakeholderGroup._id;
+                });
+            });
+        };
+
+        $scope.stringForAllowedStakeholderGroups = 'No selectable groups';
 
         $scope.addStakeholderGroup = function(template, group, stakeholderGroup){
+            $scope.selectedStakeholderGroup[group._id] = null;
             ProjectReviewTemplates.addStakeholderGroup(
                 {
                     projectReviewTemplateId : template._id,
@@ -201,6 +248,7 @@ angular.module('project-review-templates').controller('ProjectReviewTemplatesCon
         };
 
         $scope.removeStakeholderGroup = function(template, group, stakeholderGroup){
+            $scope.selectedStakeholderGroup[group._id] = null;
             ProjectReviewTemplates.removeStakeholderGroup(
                 {
                     projectReviewTemplateId : template._id,
@@ -253,7 +301,7 @@ angular.module('project-review-templates').controller('ProjectReviewTemplatesCon
 		};
 
         $scope.updateItem = function(template, group, item) {
-            ProjectReviewTemplates.updateGroup({
+            ProjectReviewTemplates.updateItem({
                 projectReviewTemplateId : template._id,
                 groupId : group._id,
                 itemId : item._id

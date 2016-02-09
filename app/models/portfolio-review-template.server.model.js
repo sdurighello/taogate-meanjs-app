@@ -18,7 +18,11 @@ var PeopleReviewSchema = new Schema({
 	person : {type: Schema.Types.ObjectId, ref: 'Person', default:null, $tenant:true},
 
 	comment: {type: String, default: '', trim: true},
-	score : {type: Schema.Types.ObjectId, ref: 'ProjectReviewScore', default:null, $tenant:true}
+	score : {type: Schema.Types.ObjectId, ref: 'ProjectReviewScore', default:null, $tenant:true},
+    submitted : {type: Boolean, default:false},
+
+    created: {type: Date, default: Date.now},
+    user: {type: Schema.ObjectId, ref: 'User'}
 });
 
 var PortfolioReviewItemSchema = new Schema({
@@ -52,7 +56,7 @@ var PortfolioReviewTemplateSchema = new Schema({
 	name: {type: String, default: '', required: 'Please fill Portfolio review template name', trim: true},
 	description:{type: String, default: '', trim: true},
 
-	type : {type: Schema.Types.ObjectId, ref: 'ProjectReviewType', default:null, $tenant:true},
+	type : {type: Schema.Types.ObjectId, ref: 'ProjectReviewType', default:null, required: 'Type for Portfolio review template required', $tenant:true},
 	groups : [PortfolioReviewGroupSchema],
 
 	created: {type: Date, default: Date.now},

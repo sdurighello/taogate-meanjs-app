@@ -18,8 +18,7 @@ angular.module('qualitative-analysis-setup').controller('QualitativeAnalysisSetu
 
             QualitativeImpactGroups.query(function(groups){
                 $scope.impactGroups = groups;
-				$scope.totalGroupWeights = calculateTotalGroupWeights(groups);
-			}, function(err){
+            }, function(err){
                 $scope.initError.push(err.data.message);
             });
 
@@ -127,17 +126,20 @@ angular.module('qualitative-analysis-setup').controller('QualitativeAnalysisSetu
 
         // ------------------- CALCULATE WEIGHTS -------------
 
-        var calculateTotalGroupWeights = function(groups){
-            return _.reduce(groups, function(memo, group){
-                return memo + group.weight;
-            }, 0);
+        $scope.getTotalGroupWeights = function(groups){
+            if(groups){
+                return _.reduce(groups, function(memo, group){
+                    return memo + group.weight;
+                }, 0);
+            }
         };
 
-        $scope.totalImpactWeights = {};
-        $scope.calculateTotalImpactWeights = function(group){
-            $scope.totalImpactWeights[group._id] = _.reduce(group.impacts, function(memo, impact){
-                return memo + impact.weight;
-            }, 0);
+        $scope.getTotalImpactWeights = function(group){
+            if(group){
+                return _.reduce(group.impacts, function(memo, impact){
+                    return memo + impact.weight;
+                }, 0);
+            }
         };
 
 		// ------------------- NG-SWITCH ---------------------
@@ -163,7 +165,6 @@ angular.module('qualitative-analysis-setup').controller('QualitativeAnalysisSetu
             $scope.initError = [];
 			QualitativeImpactGroups.query(function(groups){
 				$scope.impactGroups = groups;
-                $scope.totalGroupWeights = calculateTotalGroupWeights(groups);
             }, function(err){
                 $scope.initError.push(err.data.message);
             });
@@ -200,7 +201,6 @@ angular.module('qualitative-analysis-setup').controller('QualitativeAnalysisSetu
 
 		$scope.updateGroup = function(group) {
 			group.$update(function(response) {
-                $scope.totalGroupWeights = calculateTotalGroupWeights($scope.impactGroups);
                 $scope.selectGroupForm(group, 'view');
 			}, function(errorResponse) {
 				$scope.error = errorResponse.data.message;
@@ -241,9 +241,6 @@ angular.module('qualitative-analysis-setup').controller('QualitativeAnalysisSetu
 			impact.$save({groupId: group._id}, function(res) {
 				// Add new priority to the view group
 				group.impacts.push(res);
-				$scope.totalImpactWeights[group._id] = _.reduce(group.impacts, function(memo, impact){
-					return memo + impact.weight;
-				}, 0);
 			}, function(errorResponse) {
 				$scope.error = errorResponse.data.message;
 			});
@@ -260,9 +257,6 @@ angular.module('qualitative-analysis-setup').controller('QualitativeAnalysisSetu
 
 		$scope.updateImpact = function(group, impact) {
 			QualitativeImpacts.update(impact, function(response) {
-                $scope.totalImpactWeights[group._id] = _.reduce(group.impacts, function(memo, impact){
-                    return memo + impact.weight;
-                }, 0);
 				$scope.selectImpactForm(impact, 'view');
 			}, function(errorResponse) {
 				$scope.error = errorResponse.data.message;
@@ -284,9 +278,6 @@ angular.module('qualitative-analysis-setup').controller('QualitativeAnalysisSetu
 
             QualitativeImpacts.remove({groupId: group._id}, impact, function(res){
                 group.impacts = _.without(group.impacts, impact);
-                $scope.totalImpactWeights[group._id] = _.reduce(group.impacts, function(memo, impact){
-                    return memo + impact.weight;
-                }, 0);
             }, function(err){
                 $scope.error = err.data.message;
             });

@@ -15,11 +15,15 @@ var PeopleReviewCopySchema = new Schema({
     person : {type: Schema.Types.ObjectId, ref: 'Person', default:null, $tenant:true},
 
     comment: {type: String, default: '', trim: true},
-    score : {type: Schema.Types.ObjectId, ref: 'ProjectReviewScore', default:null, $tenant:true}
+    score : {type: Schema.Types.ObjectId, ref: 'ProjectReviewScore', default:null, $tenant:true},
+    submitted : {type: Boolean, default:false},
+
+    created: {type: Date, default: Date.now},
+    user: {type: Schema.ObjectId, ref: 'User'}
 });
 
 var ProjectReviewItemCopySchema = new Schema({
-    title: {type: String, default: '', required: 'Please fill Project review item name', trim: true},
+    name: {type: String, default: '', required: 'Please fill Project review item name', trim: true},
     description: {type: String, default: '', trim: true},
     weight: {type: Number, min: 0, max: 100, default: 0, required: 'Please fill review item weight'},
 
@@ -41,15 +45,29 @@ var ProjectReviewGroupCopySchema = new Schema({
     user: {type: Schema.ObjectId, ref: 'User'}
 });
 
+var approvalRecord = {
+    approvalState: {type: String, enum: ['draft', 'submitted', 'completed'], default:'draft', required:'Approval flag is required'},
+    created: { type: Date, default: Date.now },
+    user: { type: Schema.ObjectId, ref: 'User' }
+};
 
 /**
  * Project review Schema
  */
 var ProjectReviewSchema = new Schema({
-	project : {type: Schema.Types.ObjectId, ref: 'Project', $tenant:true},
+	project : {type: Schema.Types.ObjectId, ref: 'Project', required:'Project for project review is required', $tenant:true},
     name: {type: String, default: '', required: 'Please fill Project review name', trim: true},
 
-    templateReference : {type: Schema.Types.ObjectId, ref: 'ProjectReviewTemplate', $tenant:true},
+    startDate : {type: Date, default: null},
+    endDate : {type: Date, default: null},
+
+    approval : {
+        currentRecord : approvalRecord,
+        history : [approvalRecord]
+    },
+
+    template : {type: Schema.Types.ObjectId, ref: 'ProjectReviewTemplate', required:'Template for project review is required', $tenant:true},
+    type : {type: Schema.Types.ObjectId, ref: 'ProjectReviewType', default:null, required: 'Type for project review is required', $tenant:true},
     // copy of 'project-review-template' model
     groups : [ProjectReviewGroupCopySchema],
 

@@ -22,17 +22,62 @@
         <div class="col-md-4">
             <div class="panel panel-default">
                 <div class="panel-heading">
-                    <h6 class="panel-title text-center">Review templates</h6>
+                    <h6 class="panel-title text-center">Project review templates</h6>
                 </div>
                 <div class="panel-body">
                     <div class="row" data-ng-show="userHasAuthorization">
                         <div class="col-md-12">
                             <br>
-                            <button class="btn btn-primary btn-sm" ng-click="createTemplate()">
+                            <button class="btn btn-primary btn-sm" data-ng-click="showNewTemplateForm = true">
                                 New review template
                             </button>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
                             <div data-ng-show="error" class="text-danger">
                                 <strong data-ng-bind="error"></strong>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row" data-ng-show="showNewTemplateForm">
+                        <div class="col-md-12">
+                            <div class="panel panel-default" style="margin-bottom: 0.1%; margin-top: 5%">
+                                <div class="panel-body">
+                                    <form name="newTemplateForm" novalidate>
+                                        <div class="row">
+                                            <div class="form-group-sm col-md-12">
+                                                <label for="templateNameNew">Name</label>
+                                                <input id="templateNameNew" type="text" class="form-control" placeholder="Enter name"
+                                                       ng-model="newTemplate.name" required>
+                                            </div>
+                                        </div>
+                                        <br>
+                                        <div class="row">
+                                            <div class="form-group-sm col-md-12">
+                                                <label for="templateTypeNew">Type</label>
+                                                <select id="templateTypeNew" class="form-control" data-ng-model = "newTemplate.type"
+                                                        data-ng-options="type._id as type.name for type in templateTypes" required>
+                                                    <option value="">--choose type</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <br>
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                <div class="pull-right">
+                                                    <button type="button" class="btn btn-xs btn-success" data-ng-click="saveNewTemplate(newTemplate)"
+                                                            data-ng-disabled="newTemplateForm.$invalid">
+                                                        Save
+                                                    </button>
+                                                    <button type="button" class="btn btn-xs btn-info" data-ng-click="cancelNewTemplate()">
+                                                        Cancel
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -156,6 +201,12 @@
                             <strong data-ng-bind="error"></strong>
                         </div>
                     </div>
+                    <div class="col-md-9">
+                        <br>
+                        <span><b>Total group weights: </b></span>
+                        <span data-ng-bind="getTotalTemplateWeights(selectedTemplate)+' %'"></span>
+                        <span data-ng-show="getTotalTemplateWeights(selectedTemplate) < 99 || getTotalTemplateWeights(selectedTemplate) > 100" class="alert alert-warning text-center">Warning: total should add up to 100%</span>
+                    </div>
                 </div>
                 <hr>
                 <div class="row">
@@ -214,7 +265,7 @@
                                                                                 <label for="groupWeightEdit" class="control-label">Group weight</label>
                                                                                 <div class="input-group">
                                                                                     <input type="number" id="groupWeightEdit" name="groupWeightEdit" class="form-control" min="0" step="1" max="100" onkeyup="this.value=this.value.replace(/[^0-9]/g,'');"
-                                                                                           data-ng-model="group.weight" placeholder="Enter integer between 0 and 100" required>
+                                                                                           data-ng-model="group.weight" placeholder="0-100 integer" required>
                                                                                     <span class="input-group-addon" id="basic-addon1">%</span>
                                                                                 </div>
                                                                                     <span data-ng-show="editGroupForm.groupWeightEdit.$error.min || editGroupForm.groupWeightEdit.$error.max">
@@ -260,16 +311,20 @@
                                             <div class="panel panel-default">
                                                 <div class="panel-body">
                                                     <div class="row" data-ng-show="userHasAuthorization">
-                                                        <div class="col-md-4">
-                                                            <select id="" class="form-control input-sm" data-ng-model = "selectedStakeholderGroup"
-                                                                    data-ng-options="group as group.name for group in stakeholderGroups">
+                                                        <div class="col-md-4" data-ng-show="getAllowedStakeholderGroups(group).length">
+                                                            <select id="" class="form-control input-sm" data-ng-model = "selectedStakeholderGroup[group._id]"
+                                                                    data-ng-options="sGroup as sGroup.name for sGroup in getAllowedStakeholderGroups(group)">
                                                                 <option value="">--select stakeholder group</option>
                                                             </select>
                                                         </div>
-                                                        <div class="col-md-3">
+                                                        <div class="col-md-4" data-ng-show="!getAllowedStakeholderGroups(group).length">
+                                                            <input class="form-control input-sm" data-ng-model="stringForAllowedStakeholderGroups" disabled>
+                                                        </div>
+                                                        <div class="col-md-4">
                                                             <div class="">
-                                                                <button type="button" class="btn btn-primary btn-sm" data-ng-click="addStakeholderGroup(selectedTemplate, group, selectedStakeholderGroup)">
-                                                                    Add stakeholder group
+                                                                <button type="button" class="btn btn-primary btn-sm" data-ng-click="addStakeholderGroup(selectedTemplate, group, selectedStakeholderGroup[group._id])"
+                                                                        data-ng-disabled="!selectedStakeholderGroup[group._id]">
+                                                                    Add selected stakeholder group
                                                                 </button>
                                                             </div>
                                                             <div data-ng-show="error" class="text-danger">
@@ -307,6 +362,13 @@
                                                             </div>
                                                             <div data-ng-show="error" class="text-danger">
                                                                 <strong data-ng-bind="error"></strong>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-9">
+                                                            <div class="form-group panel">
+                                                                <span><b>Total item weights: </b></span>
+                                                                <span data-ng-bind="getTotalItemWeights(group)+' %'"></span>
+                                                                <span data-ng-show="getTotalItemWeights(group) < 99 || getTotalItemWeights(group) > 100" class="alert alert-warning text-center">Warning: total should add up to 100%</span>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -369,7 +431,7 @@
                                                                                                 <label for="itemWeightEdit" class="control-label">Item weight</label>
                                                                                                 <div class="input-group">
                                                                                                     <input type="number" id="itemWeightEdit" name="itemWeightEdit" class="form-control" min="0" step="1" max="100" onkeyup="this.value=this.value.replace(/[^0-9]/g,'');"
-                                                                                                           data-ng-model="item.weight" placeholder="Enter integer between 0 and 100" required>
+                                                                                                           data-ng-model="item.weight" placeholder="0-100 integer" required>
                                                                                                     <span class="input-group-addon" id="basic-addon1">%</span>
                                                                                                 </div>
                                                                                                 <span data-ng-show="editItemForm.itemWeightEdit.$error.min || editItemForm.itemWeightEdit.$error.max">
