@@ -1,8 +1,8 @@
 'use strict';
 
 angular.module('dependency-setup').controller('DependencySetupController', ['$scope','$stateParams', '$location', 'Authentication',
-	'DependencyImpacts', 'DependencyTypes', '$q', '_',
-	function($scope, $stateParams, $location, Authentication, DependencyImpacts, DependencyTypes, $q, _) {
+	'DependencyImpacts', 'DependencyTypes', 'DependencyStates', '$q', '_',
+	function($scope, $stateParams, $location, Authentication, DependencyImpacts, DependencyTypes, DependencyStates, $q, _) {
 
 		// ------------- INIT -------------
 
@@ -19,6 +19,11 @@ angular.module('dependency-setup').controller('DependencySetupController', ['$sc
             }, function(err){
                 $scope.initError.push(err.data.message);
             });
+			DependencyStates.query(function(res){
+				$scope.dependencyStates = res;
+			}, function(err){
+				$scope.initError.push(err.data.message);
+			});
 		};
 
 		// ------- ROLES FOR BUTTONS ------
@@ -155,11 +160,7 @@ angular.module('dependency-setup').controller('DependencySetupController', ['$sc
 
 
 
-
 // ----------------------------------------------- TYPES ---------------------------------------
-
-
-
 
 
 
@@ -237,9 +238,86 @@ angular.module('dependency-setup').controller('DependencySetupController', ['$sc
 		};
 
 
+// ----------------------------------------------- STATES ---------------------------------------
+
+
+
+        // ------------------- NG-SWITCH ---------------------
+
+        $scope.switchStateForm = {};
+
+        $scope.selectStateForm = function(state, string){
+            if(string === 'view'){ $scope.switchStateForm[state._id] = 'view';}
+            if(string === 'new'){$scope.switchStateForm[state._id] = 'new';}
+            if(string === 'edit'){$scope.switchStateForm[state._id] = 'edit';}
+        };
+
+        // ------------------- LIST OF TYPES -----------------
+
+        $scope.findStates = function() {
+            $scope.initError = [];
+            DependencyStates.query(function(states){
+                $scope.dependencyStates = states;
+            }, function(err){
+                $scope.initError.push(err.data.message);
+            });
+        };
+
+        // ------------------- EDIT -----------------
+
+        var originalState = {};
+        $scope.selectState = function(state){
+            $scope.error = null;
+            originalState[state._id] = _.clone(state);
+            $scope.selectStateForm(state, 'edit');
+        };
+
+        $scope.updateState = function(state) {
+            $scope.error = null;
+            state.$update(function(response) {
+                $scope.findStates();
+                $scope.selectStateForm(state, 'view');
+            }, function(errorResponse) {
+                $scope.error = errorResponse.data.message;
+            });
+        };
+
+        $scope.cancelEditState = function(state){
+            state.name = originalState[state._id].name;
+            state.description = originalState[state._id].description;
+            $scope.selectStateForm(state, 'view');
+        };
+
+        // ------------------- DELETE -----------------
+
+        $scope.removeState = function(state) {
+            $scope.error = null;
+            state.$remove(function(response) {
+                $scope.findStates();
+            }, function(errorResponse) {
+                $scope.error = errorResponse.data.message;
+            });
+        };
+
+        // ------------------- NEW -----------------
+
+        $scope.createState = function() {
+            $scope.error = null;
+            var state = new DependencyStates ({
+                name: 'New dependency state'
+            });
+            state.$save(function(response) {
+                $scope.findStates();
+                $scope.selectStateForm(response._id, 'view');
+
+            }, function(errorResponse) {
+                $scope.error = errorResponse.data.message;
+            });
+        };
 
 
 
 
-	}
+
+    }
 ]);

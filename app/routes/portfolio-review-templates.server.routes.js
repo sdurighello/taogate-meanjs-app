@@ -14,6 +14,38 @@ module.exports = function(app) {
 		.put(users.requiresLogin, portfolioReviewTemplates.hasAuthorization, portfolioReviewTemplates.update)
 		.delete(users.requiresLogin, portfolioReviewTemplates.hasAuthorization, portfolioReviewTemplates.delete);
 
+
+	// -- Review Group --
+
+	app.route('/portfolio-review-templates/:portfolioReviewTemplateId/groups')
+		.put(users.requiresLogin, portfolioReviewTemplates.hasAuthorization, portfolioReviewTemplates.createGroup);
+
+	app.route('/portfolio-review-templates/:portfolioReviewTemplateId/groups/:groupId/update')
+		.put(users.requiresLogin, portfolioReviewTemplates.hasAuthorization, portfolioReviewTemplates.updateGroup);
+
+	app.route('/portfolio-review-templates/:portfolioReviewTemplateId/groups/:groupId/delete')
+		.put(users.requiresLogin, portfolioReviewTemplates.hasAuthorization, portfolioReviewTemplates.deleteGroup);
+
+	// -- Add/Remove Stakeholder Groups --
+
+	app.route('/portfolio-review-templates/:portfolioReviewTemplateId/groups/:groupId/peopleGroups/:peopleGroupId/add')
+		.put(users.requiresLogin, portfolioReviewTemplates.hasAuthorization, portfolioReviewTemplates.addPeopleGroup);
+
+	app.route('/portfolio-review-templates/:portfolioReviewTemplateId/groups/:groupId/peopleGroups/:peopleGroupId/remove')
+		.put(users.requiresLogin, portfolioReviewTemplates.hasAuthorization, portfolioReviewTemplates.removePeopleGroup);
+
+	// -- Review Item --
+
+	app.route('/portfolio-review-templates/:portfolioReviewTemplateId/groups/:groupId/items')
+		.put(users.requiresLogin, portfolioReviewTemplates.hasAuthorization, portfolioReviewTemplates.createItem);
+
+	app.route('/portfolio-review-templates/:portfolioReviewTemplateId/groups/:groupId/items/:itemId/update')
+		.put(users.requiresLogin, portfolioReviewTemplates.hasAuthorization, portfolioReviewTemplates.updateItem);
+
+	app.route('/portfolio-review-templates/:portfolioReviewTemplateId/groups/:groupId/items/:itemId/delete')
+		.put(users.requiresLogin, portfolioReviewTemplates.hasAuthorization, portfolioReviewTemplates.deleteItem);
+
+
 	// Finish by binding the Portfolio review template middleware
 	app.param('portfolioReviewTemplateId', portfolioReviewTemplates.portfolioReviewTemplateByID);
 };

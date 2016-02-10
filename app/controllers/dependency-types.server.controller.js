@@ -76,7 +76,7 @@ exports.delete = function(req, res) {
  */
 exports.list = function(req, res) {
     var DependencyType = mongoose.mtModel(req.user.tenantId + '.' + 'DependencyType');
-	DependencyType.find().sort('-created').populate('user', 'displayName').exec(function(err, dependencyTypes) {
+	DependencyType.find().populate('user', 'displayName').exec(function(err, dependencyTypes) {
 		if (err) {
 			return res.status(400).send({
 				message: errorHandler.getErrorMessage(err)

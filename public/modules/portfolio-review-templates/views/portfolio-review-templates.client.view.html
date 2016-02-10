@@ -1,3 +1,493 @@
-<section data-ng-controller="PortfolioReviewTemplatesController">
-	This is the Portfolio review templates view
+<section data-ng-controller="PortfolioReviewTemplatesController" data-ng-init="init()">
+	<br>
+	<div class="row">
+		<div class="col-sm-12">
+			<div class="panel-heading">
+				<ol class="breadcrumb">
+					<li>Setup</li>
+					<li>Portfolio evaluation</li>
+					<li class="active">Portfolio review templates</li>
+				</ol>
+			</div>
+		</div>
+	</div>
+	<div class="row">
+		<div class="col-md-12">
+			<div data-ng-show="initError" class="text-danger">
+				<strong data-ng-repeat="err in initError" data-ng-bind="err.data.message"></strong><br>
+			</div>
+		</div>
+	</div>
+	<div class="row">
+		<div class="col-md-4">
+			<div class="panel panel-default">
+				<div class="panel-heading">
+					<h6 class="panel-title text-center">Portfolio review templates</h6>
+				</div>
+				<div class="panel-body">
+					<div class="row" data-ng-show="userHasAuthorization">
+						<div class="col-md-12">
+							<br>
+							<button class="btn btn-primary btn-sm" data-ng-click="showNewTemplateForm = true">
+								New review template
+							</button>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col-md-12">
+							<div data-ng-show="error" class="text-danger">
+								<strong data-ng-bind="error"></strong>
+							</div>
+						</div>
+					</div>
+					<div class="row" data-ng-show="showNewTemplateForm">
+						<div class="col-md-12">
+							<div class="panel panel-default" style="margin-bottom: 0.1%; margin-top: 5%">
+								<div class="panel-body">
+									<form name="newTemplateForm" novalidate>
+										<div class="row">
+											<div class="form-group-sm col-md-12">
+												<label for="templateNameNew">Name</label>
+												<input id="templateNameNew" type="text" class="form-control" placeholder="Enter name"
+													   ng-model="newTemplate.name" required>
+											</div>
+										</div>
+										<br>
+										<div class="row">
+											<div class="form-group-sm col-md-12">
+												<label for="templateTypeNew">Type</label>
+												<select id="templateTypeNew" class="form-control" data-ng-model = "newTemplate.type"
+														data-ng-options="type._id as type.name for type in templateTypes" required>
+													<option value="">--choose type</option>
+												</select>
+											</div>
+										</div>
+										<br>
+										<div class="row">
+											<div class="col-md-12">
+												<div class="pull-right">
+													<button type="button" class="btn btn-xs btn-success" data-ng-click="saveNewTemplate(newTemplate)"
+															data-ng-disabled="newTemplateForm.$invalid">
+														Save
+													</button>
+													<button type="button" class="btn btn-xs btn-info" data-ng-click="cancelNewTemplate()">
+														Cancel
+													</button>
+												</div>
+											</div>
+										</div>
+									</form>
+								</div>
+							</div>
+						</div>
+					</div>
+					<hr>
+					<div class="alert alert-warning text-center" data-ng-show="templates.length === 0">
+						There are no review templates created yet
+					</div>
+					<div class="row" style="min-height: 400px; max-height: 400px; overflow-y: scroll">
+						<div class="col-md-12 form-group" data-ng-repeat="template in templates track by $index">
+							<button class="btn btn-default btn-block" data-ng-click="selectTemplate(template)"
+									data-ng-bind="template.name">
+							</button>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="col-md-8">
+			<div class="alert alert-warning text-center" data-ng-hide="selectedTemplate">
+				Please select a template to see the details
+			</div>
+			<div data-ng-show="selectedTemplate">
+				<div class="row">
+					<div class="col-md-12">
+						<div class="panel panel-default">
+							<h5> &nbsp; Selected template:
+								<button class="btn-link" data-ng-click="viewTemplateDetails = !viewTemplateDetails" style="overflow: hidden;">
+									<i data-ng-bind="selectedTemplate.name"></i>
+								</button>
+							</h5>
+							<div class="panel-body" data-ng-show="viewTemplateDetails" data-ng-switch="switchTemplateForm[selectedTemplate._id]">
+								<div ng-switch-default="view">
+									<form>
+										<fieldset>
+											<div class="row">
+												<div class="col-md-8 form-group">
+													<label for="templateName" class="control-label">Template name</label>
+													<input disabled id="templateName" type="text" class="form-control" data-ng-model="selectedTemplate.name">
+												</div>
+												<div class="col-md-4 form-group">
+													<label for="">Template type</label>
+													<select id="" class="form-control" data-ng-model = "selectedTemplate.type"
+															data-ng-options="type._id as type.name for type in templateTypes" disabled>
+														<option value="">No type assigned</option>
+													</select>
+												</div>
+											</div>
+											<div class="row">
+												<div class="col-md-12 form-group">
+													<label for="templateDescription" class="control-label">Template description</label>
+													<textarea disabled id="templateDescription" data-ng-model="selectedTemplate.description" class="form-control" placeholder="No description yet"></textarea>
+												</div>
+											</div>
+											<div class="row" data-ng-show="userHasAuthorization">
+												<div class="col-md-12">
+													<div class="form-group pull-right">
+														<button class="btn btn-sm btn-success" data-ng-click="selectTemplateForm(selectedTemplate, 'edit')">Edit</button>
+													</div>
+												</div>
+											</div>
+										</fieldset>
+									</form>
+								</div>
+								<div ng-switch-when="edit">
+									<form name="editTemplateForm" novalidate>
+										<fieldset>
+											<div class="row">
+												<div class="col-md-8 form-group">
+													<label for="templateNameEdit" class="control-label">Template name</label>
+													<input id="templateNameEdit" name="templateNameEdit" type="text" class="form-control" data-ng-model="selectedTemplate.name" required>
+													<span data-ng-show="editTemplateForm.templateNameEdit.$error.required">
+														<em style="color: red">Name is required</em>
+													</span>
+												</div>
+												<div class="col-md-4 form-group">
+													<label for="">Template type</label>
+													<select id="" class="form-control" data-ng-model = "selectedTemplate.type"
+															data-ng-options="type._id as type.name for type in templateTypes">
+														<option value="">--choose type</option>
+													</select>
+												</div>
+											</div>
+											<div class="row">
+												<div class="col-md-12 form-group">
+													<label for="templateDescription" class="control-label">Template description</label>
+													<textarea id="templateDescription" data-ng-model="selectedTemplate.description" class="form-control" placeholder="No description yet"></textarea>
+												</div>
+											</div>
+											<div class="row">
+												<div class="col-md-12">
+													<div class="form-group pull-right">
+														<button type="button" class="btn btn-sm btn-success" data-ng-click="updateTemplate(selectedTemplate)" data-ng-disabled="editTemplateForm.$invalid">
+															Save
+														</button>
+														<button type="button" class="btn btn-sm btn-danger" data-ng-click="removeTemplate(selectedTemplate)">
+															Delete template
+														</button>
+														<button type="button" class="btn btn-sm btn-info" data-ng-click="cancelEditTemplate(selectedTemplate)">
+															Cancel
+														</button>
+														<div data-ng-show="error" class="text-danger">
+															<strong data-ng-bind="error"></strong>
+														</div>
+													</div>
+												</div>
+											</div>
+										</fieldset>
+									</form>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="row" data-ng-show="userHasAuthorization">
+					<div class="col-md-3">
+						<br>
+						<button class="btn btn-primary btn-sm" ng-click="createGroup(selectedTemplate)">
+							New review group
+						</button>
+						<div data-ng-show="error" class="text-danger">
+							<strong data-ng-bind="error"></strong>
+						</div>
+					</div>
+					<div class="col-md-9">
+						<br>
+						<span><b>Total group weights: </b></span>
+						<span data-ng-bind="getTotalTemplateWeights(selectedTemplate)+' %'"></span>
+						<span data-ng-show="getTotalTemplateWeights(selectedTemplate) < 99 || getTotalTemplateWeights(selectedTemplate) > 100" class="alert alert-warning text-center">Warning: total should add up to 100%</span>
+					</div>
+				</div>
+				<hr>
+				<div class="row">
+					<div class="col-md-12 form-group" data-ng-repeat="group in selectedTemplate.groups track by $index">
+						<button class="btn btn-default btn-block" data-ng-bind="group.name" data-ng-click="viewGroupDetails = !viewGroupDetails"
+								title="Last updated on {{group.created | date:'medium'}} by {{group.user.displayName}}" style="overflow: hidden;"></button>
+						<div data-ng-show="viewGroupDetails">
+							<div class="panel panel-default" >
+								<div class="panel-body">
+									<div class="row">
+										<div class="col-md-12">
+											<div class="panel panel-default" data-ng-switch="switchGroupForm[group._id]">
+												<div class="panel-body" ng-switch-default="view">
+													<div class="row">
+														<div class="col-md-8 form-group">
+															<label for="groupName" class="control-label">Group name</label>
+															<input disabled id="groupName" type="text" class="form-control" data-ng-model="group.name">
+														</div>
+														<div class="col-md-4 form-group">
+															<label for="groupWeight" class="control-label">Group weight</label>
+															<div class="input-group">
+																<input disabled id="groupWeight" type="number" class="form-control" data-ng-model="group.weight">
+																<span class="input-group-addon" id="basic-addon1">%</span>
+															</div>
+														</div>
+													</div>
+													<div class="row">
+														<div class="col-md-12 form-group">
+															<label for="groupDescription" class="control-label">Group description</label>
+															<textarea disabled id="groupDescription" data-ng-model="group.description" class="form-control" placeholder="No description yet"></textarea>
+														</div>
+													</div>
+													<div class="row" data-ng-show="userHasAuthorization">
+														<div class="col-md-12">
+															<div class="form-group pull-right">
+																<button class="btn btn-success btn-sm" data-ng-click="selectGroup(group)">Edit</button>
+															</div>
+														</div>
+													</div>
+												</div>
+												<div class="panel-body" ng-switch-when="edit">
+													<form name="editGroupForm" novalidate>
+														<fieldset>
+															<div class="row">
+																<div class="col-md-12">
+																	<div class="panel-body">
+																		<div class="row">
+																			<div class="col-md-8 form-group">
+																				<label for="groupNameEdit" class="control-label">Group name</label>
+																				<input id="groupNameEdit" name="groupNameEdit" type="text" class="form-control" data-ng-model="group.name" required>
+																				<span data-ng-show="editGroupForm.groupNameEdit.$error.required">
+																					<em style="color: red">Name is required</em>
+																				</span>
+																			</div>
+																			<div class="col-md-4 form-group">
+																				<label for="groupWeightEdit" class="control-label">Group weight</label>
+																				<div class="input-group">
+																					<input type="number" id="groupWeightEdit" name="groupWeightEdit" class="form-control" min="0" step="1" max="100" onkeyup="this.value=this.value.replace(/[^0-9]/g,'');"
+																						   data-ng-model="group.weight" placeholder="0-100 integer" required>
+																					<span class="input-group-addon" id="basic-addon1">%</span>
+																				</div>
+                                                                                    <span data-ng-show="editGroupForm.groupWeightEdit.$error.min || editGroupForm.groupWeightEdit.$error.max">
+                                                                                        <em style="color: red">Enter integer between 0 and 100</em>
+                                                                                    </span>
+																			</div>
+																		</div>
+																		<div class="row">
+																			<div class="col-md-12 form-group">
+																				<label for="groupDescription" class="control-label">Group description</label>
+																				<textarea id="groupDescription" data-ng-model="group.description" class="form-control" placeholder="No description yet"></textarea>
+																			</div>
+																		</div>
+																	</div>
+																</div>
+															</div>
+															<div class="row">
+																<div class="col-md-12">
+																	<div class="form-group pull-right">
+																		<button type="button" class="btn btn-sm btn-success" data-ng-click="updateGroup(selectedTemplate, group)" data-ng-disabled="editGroupForm.$invalid">
+																			Save
+																		</button>
+																		<button type="button" class="btn btn-sm btn-danger" data-ng-click="removeGroup(selectedTemplate, group)">
+																			Delete group
+																		</button>
+																		<button type="button" class="btn btn-sm btn-info" data-ng-click="cancelEditGroup(group)">
+																			Cancel
+																		</button>
+																		<div data-ng-show="error" class="text-danger">
+																			<strong data-ng-bind="error"></strong>
+																		</div>
+																	</div>
+																</div>
+															</div>
+														</fieldset>
+													</form>
+												</div>
+											</div>
+										</div>
+									</div>
+									<div class="row">
+										<div class="col-md-12">
+											<div class="panel panel-default">
+												<div class="panel-body">
+													<div class="row" data-ng-show="userHasAuthorization">
+														<div class="col-md-4" data-ng-show="getAllowedStakeholderGroups(group).length">
+															<select id="" class="form-control input-sm" data-ng-model = "selectedStakeholderGroup[group._id]"
+																	data-ng-options="sGroup as sGroup.name for sGroup in getAllowedStakeholderGroups(group)">
+																<option value="">--select stakeholder group</option>
+															</select>
+														</div>
+														<div class="col-md-4" data-ng-show="!getAllowedStakeholderGroups(group).length">
+															<input class="form-control input-sm" data-ng-model="stringForAllowedStakeholderGroups" disabled>
+														</div>
+														<div class="col-md-4">
+															<div class="">
+																<button type="button" class="btn btn-primary btn-sm" data-ng-click="addStakeholderGroup(selectedTemplate, group, selectedStakeholderGroup[group._id])"
+																		data-ng-disabled="!selectedStakeholderGroup[group._id]">
+																	Add selected stakeholder group
+																</button>
+															</div>
+															<div data-ng-show="error" class="text-danger">
+																<strong data-ng-bind="error"></strong>
+															</div>
+														</div>
+													</div>
+													<hr>
+													<div class="row">
+														<div class="col-md-4 form-group" data-ng-repeat="stakeholderGroup in group.peopleGroups track by $index">
+															<div class="input-group input-group-sm">
+																<input type="text" class="form-control" data-ng-model = "stakeholderGroup.name" disabled>
+                                                                <span class="input-group-btn">
+                                                                    <button class="btn btn-danger" type="button" data-ng-click="removeStakeholderGroup(selectedTemplate, group, stakeholderGroup)">
+																		<span class="glyphicon glyphicon-remove"></span>
+																	</button>
+                                                                </span>
+															</div>
+														</div>
+													</div>
+												</div>
+											</div>
+										</div>
+									</div>
+									<div class="row">
+										<div class="col-md-12">
+											<div class="panel panel-default">
+												<div class="panel-body">
+													<div class="row" data-ng-show="userHasAuthorization">
+														<div class="col-md-3">
+															<div class="">
+																<button type="button" class="btn btn-primary btn-sm" ng-click="createItem(selectedTemplate, group)">
+																	New review item
+																</button>
+															</div>
+															<div data-ng-show="error" class="text-danger">
+																<strong data-ng-bind="error"></strong>
+															</div>
+														</div>
+														<div class="col-md-9">
+															<div class="form-group panel">
+																<span><b>Total item weights: </b></span>
+																<span data-ng-bind="getTotalItemWeights(group)+' %'"></span>
+																<span data-ng-show="getTotalItemWeights(group) < 99 || getTotalItemWeights(group) > 100" class="alert alert-warning text-center">Warning: total should add up to 100%</span>
+															</div>
+														</div>
+													</div>
+													<hr>
+													<div class="row">
+														<div class="col-md-12 form-group" data-ng-repeat="item in group.items track by $index" data-ng-switch="switchItemForm[item._id]">
+															<button class="btn btn-sm btn-default btn-block" data-ng-bind="item.name" data-ng-click="viewItemDetails = !viewItemDetails"
+																	title="Last updated on {{item.created | date:'medium'}} by {{item.user.displayName}}" style="overflow: hidden;"></button>
+															<div data-ng-show="viewItemDetails">
+																<div class="panel panel-default">
+																	<div class="panel-body">
+																		<div class="row" ng-switch-default="view">
+																			<div class="col-md-12">
+																				<form>
+																					<fieldset>
+																						<div class="row">
+																							<div class="form-group col-md-8">
+																								<label for="itemName" class="control-label">Item name</label>
+																								<input disabled id="itemName" type="text" class="form-control" data-ng-model="item.name">
+																							</div>
+																							<div class="col-md-4 form-group">
+																								<label for="itemWeight" class="control-label">Item weight</label>
+																								<div class="input-group">
+																									<input disabled id="itemWeight" type="number" class="form-control" data-ng-model="item.weight">
+																									<span class="input-group-addon" id="basic-addon1">%</span>
+																								</div>
+																							</div>
+																						</div>
+																						<div class="row">
+																							<div class="form-group col-md-12">
+																								<label for="itemDescription" class="control-label">Item description</label>
+																								<textarea disabled id="itemDescription" data-ng-model="item.description" class="form-control" placeholder="No description yet"></textarea>
+																							</div>
+																						</div>
+																					</fieldset>
+																				</form>
+																				<div class="row" data-ng-show="userHasAuthorization">
+																					<div class="form-group col-md-12 pull-right">
+																						<button type="button" class="btn btn-success btn-xs pull-right"
+																								data-ng-click="selectEditItem(group, item)">
+																							Edit
+																						</button>
+																					</div>
+																				</div>
+																			</div>
+																		</div>
+																		<div class="row" ng-switch-when="edit">
+																			<div class="col-md-12">
+																				<form name="editItemForm" novalidate>
+																					<fieldset>
+																						<div class="row">
+																							<div class="form-group col-md-8">
+																								<label for="itemNameEdit" class="control-label">Item name</label>
+																								<input id="itemNameEdit" name="itemNameEdit" type="text" class="form-control" data-ng-model="item.name" required>
+																								<span data-ng-show="editItemForm.itemNameEdit.$error.required">
+																									<em style="color: red">Name is required</em>
+																								</span>
+																							</div>
+																							<div class="col-md-4 form-group">
+																								<label for="itemWeightEdit" class="control-label">Item weight</label>
+																								<div class="input-group">
+																									<input type="number" id="itemWeightEdit" name="itemWeightEdit" class="form-control" min="0" step="1" max="100" onkeyup="this.value=this.value.replace(/[^0-9]/g,'');"
+																										   data-ng-model="item.weight" placeholder="0-100 integer" required>
+																									<span class="input-group-addon" id="basic-addon1">%</span>
+																								</div>
+                                                                                                <span data-ng-show="editItemForm.itemWeightEdit.$error.min || editItemForm.itemWeightEdit.$error.max">
+                                                                                                    <em style="color: red">Enter integer between 0 and 100</em>
+                                                                                                </span>
+																							</div>
+																						</div>
+																						<div class="row">
+																							<div class="form-group col-md-12">
+																								<label for="itemDescription" class="control-label">Item description</label>
+																								<textarea id="itemDescription" data-ng-model="item.description" class="form-control" placeholder="No description yet"></textarea>
+																							</div>
+																						</div>
+																						<div class="row">
+																							<div class="col-md-12">
+																								<div class="form-group pull-right btn-group-xs">
+																									<button type="button" class="btn btn-success" ng-click="updateItem(selectedTemplate, group, item)" data-ng-disabled="editItemForm.$invalid">
+																										Save
+																									</button>
+																									<a class="btn btn-danger" data-ng-click="removeItem(selectedTemplate, group, item)">
+																										<i class="glyphicon glyphicon-trash"></i>
+																									</a>
+																									<button type="button" class="btn btn-info" ng-click="cancelEditItem(item)">
+																										Cancel
+																									</button>
+																								</div>
+																							</div>
+																						</div>
+																						<div data-ng-show="error" class="text-danger">
+																							<strong data-ng-bind="error"></strong>
+																						</div>
+																					</fieldset>
+																				</form>
+																			</div>
+																		</div>
+																	</div>
+																</div>
+															</div>
+														</div>
+													</div>
+													<div class="alert alert-warning text-center" data-ng-show="group.items.length === 0">
+														No review items added to this group yet
+													</div>
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="alert alert-warning text-center" data-ng-hide="!categories.$resolved || categories.length">
+					No categories yet
+				</div>
+			</div>
+		</div>
+	</div>
 </section>

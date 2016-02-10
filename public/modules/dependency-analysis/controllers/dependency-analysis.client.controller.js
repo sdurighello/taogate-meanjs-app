@@ -1,8 +1,8 @@
 'use strict';
 
 angular.module('dependency-analysis').controller('DependencyAnalysisController', ['$scope', '$stateParams', '$location', 'Authentication',
-	'Projects','Portfolios', 'DependencyTypes', 'DependencyImpacts', 'Dependencies', '_','$q',
-	function($scope, $stateParams, $location, Authentication, Projects, Portfolios, DependencyTypes, DependencyImpacts, Dependencies, _ , $q) {
+	'Projects','Portfolios', 'DependencyTypes', 'DependencyStates', 'DependencyImpacts', 'Dependencies', '_','$q',
+	function($scope, $stateParams, $location, Authentication, Projects, Portfolios, DependencyTypes, DependencyStates, DependencyImpacts, Dependencies, _ , $q) {
 
 		// ----------- INIT ---------------
 
@@ -25,6 +25,11 @@ angular.module('dependency-analysis').controller('DependencyAnalysisController',
             }, function(err){
                 $scope.initError.push(err.data.message);
             });
+			DependencyStates.query(function(res){
+				$scope.dependencyStates = res;
+			}, function(err){
+				$scope.initError.push(err.data.message);
+			});
             DependencyImpacts.query(function(dependencyImpacts){
                 $scope.dependencyImpacts = dependencyImpacts;
             }, function(err){
@@ -70,19 +75,25 @@ angular.module('dependency-analysis').controller('DependencyAnalysisController',
 
 		// ------------------- NG-SWITCH ---------------------
 
-		$scope.switchDependencyForm = {};
+        $scope.switchHeaderForm = {};
+        $scope.selectHeaderForm = function(string, dependency){
+            if(string === 'view'){ $scope.switchHeaderForm[dependency._id] = 'view';}
+            if(string === 'edit'){$scope.switchHeaderForm[dependency._id] = 'edit';}
+        };
 
-		$scope.selectDependencyForm = function(string){
-			if(string === 'default'){ $scope.switchDependencyForm = 'default';}
-			if(string === 'new'){$scope.switchDependencyForm = 'new';}
-			if(string === 'view'){ $scope.switchDependencyForm = 'view';}
-			if(string === 'edit'){$scope.switchDependencyForm = 'edit';}
-		};
+        $scope.switchStatusForm = {};
+        $scope.selectStatusForm = function(string, dependency){
+            if(string === 'view'){ $scope.switchStatusForm[dependency._id] = 'view';}
+            if(string === 'edit'){$scope.switchStatusForm[dependency._id] = 'edit';}
+        };
 
 		var allowNull = function(obj){
 			if(obj){return obj._id;} else {return null;}
 		};
 
+        // ------------------- OTHER VARIABLES ---------------------
+
+        $scope.projectDependencyDetails = 'header';
 
 		// ------------- CREATE NEW DEPENDENCY -----------
 
@@ -93,17 +104,18 @@ angular.module('dependency-analysis').controller('DependencyAnalysisController',
                 name: $scope.newDependency.name,
                 description: $scope.newDependency.description,
                 type: $scope.newDependency.type,
+                state: $scope.newDependency.state,
                 impact: $scope.newDependency.impact,
                 source: $scope.newDependency.source,
-                target: $scope.newDependency.target,
-                requiredByDate: $scope.newDependency.requiredByDate
+                target: $scope.newDependency.target
 			});
-			newDependency.$save(function(response) {
+			newDependency.$save(function(res) {
 				// Add new dependency to view after saving to server
-				$scope.dependencies.unshift(newDependency);
+				$scope.dependencies.push(res);
 				// Clear form fields
 				$scope.newDependency = {};
-				$scope.selectDependencyForm('default');
+                // Open the new dependency in the view panel
+                $scope.selectDependency(res);
 			}, function(errorResponse) {
 				$scope.error = errorResponse.data.message;
 			});
@@ -111,77 +123,123 @@ angular.module('dependency-analysis').controller('DependencyAnalysisController',
 
 		$scope.cancelNewDependency = function(){
 			$scope.newDependency = {};
-			$scope.selectDependencyForm('default');
 		};
 
 
 		// ------------- SELECT VIEW DEPENDENCY ------------
 
-		var originalDependency;
-		var clickedDependency;
+		var originalDependency = {};
+
 		$scope.selectDependency = function(dependency){
-			// Save the clicked dependency to update its text if changes to name happen
-			clickedDependency = dependency;
-			// Get the full dependency fat object from the "dependencyById" server function that populates everything
-			Dependencies.get({
-                dependencyId:dependency._id,
-				retPropertiesString : 'user created name description type impact source target requiredByDate',
-				deepPopulateArray : []
-			}, function(res){
-				$scope.selectedDependency = res;
-				originalDependency = _.cloneDeep(res);
-				$scope.selectDependencyForm('view');
-			},function(errorResponse){
-				$scope.error = errorResponse.data.message;
-			});
+            $scope.selectedDependency = dependency;
+            originalDependency[dependency._id] = _.cloneDeep(dependency);
 		};
 
-
-		$scope.cancelViewDependency = function(){
-			$scope.selectedDependency = null;
-			clickedDependency = null;
-			$scope.selectDependencyForm('default');
-		};
+        // -------------------------------------------------------- HEADER -------------------------------------------------
 
 
-		// ------------- EDIT DEPENDENCY ------------
+        $scope.editHeader = function(dependency){
+            $scope.selectHeaderForm('edit', dependency);
+        };
 
-		$scope.editDependency = function(){
-			// Clean up the deep populate
-			var dependencyCopy = _.cloneDeep($scope.selectedDependency);
+        $scope.saveEditHeader = function(dependency){
 
-			// Save the dependency to the server
-			Dependencies.update(dependencyCopy, function(res) {
-				// Update the text on the dependency list (dependency from $scope.dependencies)
-				clickedDependency.name = res.name;
-				$scope.selectDependency($scope.selectedDependency);
-			}, function(errorResponse) {
-				$scope.error = errorResponse.data.message;
-			});
-		};
+            Dependencies.updateHeader(
+                {
+                    dependencyId : dependency._id
+                }, dependency,
+                function(res){
+                    // Update details pane view with new saved details
+                    originalDependency[dependency._id].name = dependency.name;
+                    originalDependency[dependency._id].description = dependency.description;
+                    originalDependency[dependency._id].source = dependency.source;
+                    originalDependency[dependency._id].target = dependency.target;
+                    originalDependency[dependency._id].state = dependency.state;
+                    originalDependency[dependency._id].type = dependency.type;
+                    originalDependency[dependency._id].impact = dependency.impact;
 
-		$scope.cancelEditDependency = function(){
-			$scope.selectedDependency = _.cloneDeep(originalDependency);
-			$scope.selectDependency($scope.selectedDependency);
-		};
+                    // Close edit header form and back to view
+                    $scope.selectHeaderForm('view', dependency);
+                },
+                function(err){$scope.error = err.data.message;}
+            );
+        };
 
-
-
-		// ------------- DELETE DEPENDENCY ------------
-
-		$scope.deleteDependency = function(){
-			Dependencies.remove({},{_id: $scope.selectedDependency._id}, function(dependencyRes){
-				// Remove dependency from the "dependencies" collection
-				$scope.dependencies = _.without($scope.dependencies, clickedDependency);
-				$scope.selectedDependency = null;
-				clickedDependency = null;
-				$scope.selectDependencyForm('default');
-			}, function(err){
-				$scope.error = err.data.message;
-			});
-		};
+        $scope.cancelEditHeader = function(dependency){
+            dependency.name = originalDependency[dependency._id].name;
+            dependency.description = originalDependency[dependency._id].description;
+            dependency.state = originalDependency[dependency._id].state;
+            dependency.type = originalDependency[dependency._id].type;
+            $scope.selectHeaderForm('view', dependency);
+        };
 
 
+        $scope.deleteDependency = function(dependency){
+            Dependencies.remove({dependencyId: dependency._id}, dependency, function(res){
+                $scope.dependencies = _.without($scope.dependencies, dependency);
+                $scope.cancelNewDependency();
+                $scope.selectedDependency = null;
+                originalDependency = {};
+            }, function(err){
+                $scope.error = err.data.message;
+            });
+        };
+
+
+        // -------------------------------------------------------- STATUS -------------------------------------------------
+
+        $scope.baselineDeliveryDateOpened = {};
+        $scope.openBaselineDeliveryDate = function(dependency, $event){
+            $event.preventDefault();
+            $event.stopPropagation();
+            $scope.baselineDeliveryDateOpened[dependency._id] = true;
+        };
+
+        $scope.estimateDeliveryDateOpened = {};
+        $scope.openEstimateDeliveryDate = function(dependency, $event){
+            $event.preventDefault();
+            $event.stopPropagation();
+            $scope.estimateDeliveryDateOpened[dependency._id] = true;
+        };
+
+        $scope.actualDeliveryDateOpened = {};
+        $scope.openActualDeliveryDate = function(dependency, $event){
+            $event.preventDefault();
+            $event.stopPropagation();
+            $scope.actualDeliveryDateOpened[dependency._id] = true;
+        };
+
+        $scope.editStatus = function(dependency){
+            $scope.selectStatusForm('edit', dependency);
+        };
+
+        $scope.saveEditStatus = function(dependency){
+            Dependencies.updateStatus( { dependencyId : dependency._id }, dependency,
+                function(res){
+                    // Change the selected CR
+                    originalDependency[dependency._id].statusReview.currentRecord.baselineDeliveryDate = dependency.statusReview.currentRecord.baselineDeliveryDate;
+                    originalDependency[dependency._id].statusReview.currentRecord.estimateDeliveryDate = dependency.statusReview.currentRecord.estimateDeliveryDate;
+                    originalDependency[dependency._id].statusReview.currentRecord.actualDeliveryDate = dependency.statusReview.currentRecord.actualDeliveryDate;
+                    originalDependency[dependency._id].statusReview.currentRecord.status = dependency.statusReview.currentRecord.status;
+                    originalDependency[dependency._id].statusReview.currentRecord.completed = dependency.statusReview.currentRecord.completed;
+                    originalDependency[dependency._id].statusReview.currentRecord.statusComment = dependency.statusReview.currentRecord.statusComment;
+                    $scope.selectStatusForm('view', dependency);
+                },
+                function(err){
+                    $scope.error = err.data.message;
+                }
+            );
+        };
+
+        $scope.cancelEditStatus = function(dependency){
+            dependency.statusReview.currentRecord.baselineDeliveryDate = originalDependency[dependency._id].statusReview.currentRecord.baselineDeliveryDate;
+            dependency.statusReview.currentRecord.estimateDeliveryDate = originalDependency[dependency._id].statusReview.currentRecord.estimateDeliveryDate;
+            dependency.statusReview.currentRecord.actualDeliveryDate = originalDependency[dependency._id].statusReview.currentRecord.actualDeliveryDate;
+            dependency.statusReview.currentRecord.status = originalDependency[dependency._id].statusReview.currentRecord.status;
+            dependency.statusReview.currentRecord.completed = originalDependency[dependency._id].statusReview.currentRecord.completed;
+            dependency.statusReview.currentRecord.statusComment = originalDependency[dependency._id].statusReview.currentRecord.statusComment;
+            $scope.selectStatusForm('view', dependency);
+        };
 
 
 	}

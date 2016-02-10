@@ -1,4 +1,4 @@
-<section data-ng-controller="ProjectReviewsController"  data-ng-init="init()">
+<section data-ng-controller="PortfolioReviewsController"  data-ng-init="init()">
     <br>
     <div class="row">
         <div class="col-sm-12">
@@ -6,7 +6,7 @@
                 <ol class="breadcrumb">
                     <li>Portfolio evaluation</li>
                     <li>Reviews</li>
-                    <li class="active">Project reviews</li>
+                    <li class="active">Portfolio reviews</li>
                 </ol>
             </div>
         </div>
@@ -15,55 +15,44 @@
         <strong data-ng-repeat="err in initError" data-ng-bind="err.message"></strong>
     </div>
     <div class="row">
-        <div class="col-sm-3"><!-- PROJECTS LIST -->
+        <div class="col-sm-3"><!-- PORTFOLIO LIST -->
             <div class="panel panel-default">
                 <div class="panel-heading">
-                    <h6 class="panel-title text-center">Projects</h6>
+                    <h6 class="panel-title text-center">Portfolio tree</h6>
                 </div>
-                <div class="panel-body">
-                    <div class="row">
-                        <div class=" form-group col-md-12">
-                            <select id="" class="form-control input-sm" data-ng-model="filterProfilePortfolio"
-                                    ng-options="portfolio.name for portfolio in portfolios">
-                                <option value="">--filter by portfolio</option>
-                            </select>
-                        </div>
-                        <div class="col-md-12 form-group-sm">
-                            <input id="" type="text" class="form-control input-sm"
-                                   data-ng-model="filterProfileProject.name" placeholder="Filter by project name">
-                        </div>
+                <div class="panel-body" style="min-height: 500px;  max-height: 500px; overflow-y: auto;">
+                    <div class="alert alert-warning text-center" data-ng-hide="!portfolios.$resolved || portfolios.length">
+                        No portfolios yet
                     </div>
-                    <hr>
-                    <div class="row" style="min-height: 350px; max-height: 350px; overflow-y: auto">
-                        <div class="col-md-12">
-                            <div data-ng-show="projects.length === 0" class="alert alert-warning text-center">
-                                There are no projects in evaluation
-                            </div>
-                            <button type="button"
-                                    data-ng-repeat="project in projects | filter:{identification: filterProfileProject, portfolio: filterProfilePortfolio._id} "
-                                    data-ng-click="selectProject(project)"
-                                    class="btn btn-default btn-sm center-block btn-block" style="overflow: hidden;">
-                                {{project.identification.idNumber}} - {{project.identification.name}}
-                            </button>
-                        </div>
-                    </div>
+                    <script type="text/ng-template" id="portfolioTree">
+                        <button class="btn btn-default btn-sm" data-ng-click="selectPortfolio(tree.node);"
+                                style="overflow: hidden; margin: 1%;">
+                            <span data-ng-bind="tree.node.name"></span>
+                        </button>
+                        <ul data-ng-if="tree.nodeTrees" class="">
+                            <li data-ng-repeat="tree in tree.nodeTrees track by $index" data-ng-include="'portfolioTree'"></li>
+                        </ul>
+                    </script>
+                    <ul class="">
+                        <li data-ng-repeat="tree in portfolioTrees track by $index" data-ng-include="'portfolioTree'"></li>
+                    </ul>
                 </div>
             </div>
         </div>
         <div class="col-md-9">
             <div class="row">
                 <div class="col-md-12">
-                    <div data-ng-hide="selectedProject || projects.length === 0" class="alert alert-warning text-center">
-                        Select a project to see its details
+                    <div data-ng-hide="selectedPortfolio || portfolios.length === 0" class="alert alert-warning text-center">
+                        Select a portfolio to see its details
                     </div>
                 </div>
             </div>
-            <div class="row" data-ng-show="selectedProject">
+            <div class="row" data-ng-show="selectedPortfolio">
                 <div class="col-md-12">
                     <div class="row">
                         <div class="col-sm-12">
                             <div class="panel panel-default">
-                                <div><h5>&nbsp;Project: <i>{{selectedProject.identification.name}}</i></h5></div>
+                                <div><h5>&nbsp;Portfolio: <i>{{selectedPortfolio.name}}</i></h5></div>
                             </div>
                         </div>
                     </div>
@@ -71,34 +60,34 @@
             </div>
             <div class="row">
                 <div class="col-md-12">
-                    <div data-ng-show="selectedProject">
-                        <div class="row" data-ng-show="showNewProjectReviewForm">
+                    <div data-ng-show="selectedPortfolio">
+                        <div class="row" data-ng-show="showNewPortfolioReviewForm">
                             <div class="col-md-12">
                                 <div class="panel panel-default">
                                     <div class="panel-heading">
                                         <h6 class="panel-title">
-                                            New project review
+                                            New portfolio review
                                         </h6>
                                     </div>
                                     <div class="panel-body">
-                                        <form class="form" name="newProjectReviewForm">
+                                        <form class="form" name="newPortfolioReviewForm">
                                             <div class="row">
                                                 <div class="form-group-sm col-md-4">
                                                     <label for="reviewTitleNew">Name</label>
                                                     <input id="reviewTitleNew" name="reviewTitleNew" class="form-control" type="text" placeholder="Enter review name"
-                                                           data-ng-model="newProjectReview.name" required>
+                                                           data-ng-model="newPortfolioReview.name" required>
                                                 </div>
                                                 <div class="form-group-sm col-md-4">
                                                     <label for="reviewTypeNew">Type</label>
-                                                    <select id="reviewTypeNew" class="form-control" data-ng-model = "newProjectReview.type"
-                                                            ng-options="type._id as type.name for type in projectReviewTypes" required>
+                                                    <select id="reviewTypeNew" class="form-control" data-ng-model = "newPortfolioReview.type"
+                                                            ng-options="type._id as type.name for type in portfolioReviewTypes" required>
                                                         <option value="">--choose type</option>
                                                     </select>
                                                 </div>
                                                 <div class="form-group-sm col-md-4">
                                                     <label for="reviewTemplateNew">Template</label>
-                                                    <select id="reviewTemplateNew" class="form-control" data-ng-model = "newProjectReview.template"
-                                                            data-ng-options="template._id as template.name for template in allowedProjectReviewTemplates()" required>
+                                                    <select id="reviewTemplateNew" class="form-control" data-ng-model = "newPortfolioReview.template"
+                                                            data-ng-options="template._id as template.name for template in allowedPortfolioReviewTemplates()" required>
                                                         <option value="">--choose template</option>
                                                     </select>
                                                 </div>
@@ -108,20 +97,20 @@
                                                 <div class="form-group-sm col-md-4">
                                                     <label for="">Start date</label>
                                                     <div class="input-group">
-                                                        <input type="text" id="" class="form-control" datepicker-popup="dd-MMMM-yyyy" data-ng-model="newProjectReview.startDate"
-                                                               is-open="newStartDateOpened[selectedProject._id]" >
+                                                        <input type="text" id="" class="form-control" datepicker-popup="dd-MMMM-yyyy" data-ng-model="newPortfolioReview.startDate"
+                                                               is-open="newStartDateOpened[selectedPortfolio._id]" >
                                                                 <span class="input-group-btn">
-                                                                    <button type="button" class="btn btn-default btn-sm" ng-click="openNewStartDate(selectedProject, $event)"><i class="glyphicon glyphicon-calendar"></i></button>
+                                                                    <button type="button" class="btn btn-default btn-sm" ng-click="openNewStartDate(selectedPortfolio, $event)"><i class="glyphicon glyphicon-calendar"></i></button>
                                                                 </span>
                                                     </div>
                                                 </div>
                                                 <div class="form-group-sm col-md-4">
                                                     <label for="">End date</label>
                                                     <div class="input-group">
-                                                        <input type="text" id="" class="form-control" datepicker-popup="dd-MMMM-yyyy" data-ng-model="newProjectReview.endDate"
-                                                               is-open="newEndDateOpened[selectedProject._id]" >
+                                                        <input type="text" id="" class="form-control" datepicker-popup="dd-MMMM-yyyy" data-ng-model="newPortfolioReview.endDate"
+                                                               is-open="newEndDateOpened[selectedPortfolio._id]" >
                                                                 <span class="input-group-btn">
-                                                                    <button type="button" class="btn btn-default btn-sm" ng-click="openNewEndDate(selectedProject, $event)"><i class="glyphicon glyphicon-calendar"></i></button>
+                                                                    <button type="button" class="btn btn-default btn-sm" ng-click="openNewEndDate(selectedPortfolio, $event)"><i class="glyphicon glyphicon-calendar"></i></button>
                                                                 </span>
                                                     </div>
                                                 </div>
@@ -129,11 +118,11 @@
                                             <hr>
                                             <div class="form-group-sm pull-right">
                                                 <button class="btn btn-success btn-xs"
-                                                        data-ng-click="createNewProjectReview(selectedProject, projectReview.gate); showNewProjectReviewForm = false;"
-                                                        data-ng-disabled="newProjectReviewForm.$invalid">
+                                                        data-ng-click="createNewPortfolioReview(selectedPortfolio, portfolioReview.gate); showNewPortfolioReviewForm = false;"
+                                                        data-ng-disabled="newPortfolioReviewForm.$invalid">
                                                     Save
                                                 </button>
-                                                <button class="btn btn-info btn-xs" data-ng-click="cancelNewProjectReview(); showNewProjectReviewForm = false;">
+                                                <button class="btn btn-info btn-xs" data-ng-click="cancelNewPortfolioReview(); showNewPortfolioReviewForm = false;">
                                                     Cancel
                                                 </button>
                                             </div>
@@ -142,12 +131,12 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="row" data-ng-show="!showNewProjectReviewForm">
+                        <div class="row" data-ng-show="!showNewPortfolioReviewForm">
                             <div class="col-md-3">
-                                <div class="row" data-ng-show="!showNewProjectReviewForm">
+                                <div class="row" data-ng-show="!showNewPortfolioReviewForm">
                                     <div class="col-md-12 form-group-sm center-block">
-                                        <button class="btn btn-warning btn-sm" ng-click="showNewProjectReviewForm = true">
-                                            New project review
+                                        <button class="btn btn-warning btn-sm" ng-click="showNewPortfolioReviewForm = true">
+                                            New portfolio review
                                         </button>
                                     </div>
                                 </div>
@@ -163,25 +152,25 @@
                                     <div class="col-md-12">
                                         <div class="panel panel-default">
                                             <div class="panel-heading">
-                                                <h6 class="panel-title text-center">Project reviews</h6>
+                                                <h6 class="panel-title text-center">Portfolio reviews</h6>
                                             </div>
                                             <div class="panel-body" style="min-height: 385px; max-height: 385px; overflow-y: auto">
-                                                <div data-ng-show="projectReviews.length === 0" class="alert alert-warning text-center">
-                                                    There are no reviews for this project
+                                                <div data-ng-show="portfolioReviews.length === 0" class="alert alert-warning text-center">
+                                                    There are no reviews for this portfolio
                                                 </div>
                                                 <div class="row">
                                                     <div class="col-md-12">
-                                                        <div data-ng-show="error.projectReviews" class="text-danger">
-                                                            <strong data-ng-bind="error.projectReviews"></strong>
+                                                        <div data-ng-show="error.portfolioReviews" class="text-danger">
+                                                            <strong data-ng-bind="error.portfolioReviews"></strong>
                                                         </div>
                                                     </div>
                                                 </div>
                                                 <button type="button"
-                                                        data-ng-repeat="projectReview in projectReviews"
-                                                        data-ng-click="selectProjectReview(projectReview)"
+                                                        data-ng-repeat="portfolioReview in portfolioReviews"
+                                                        data-ng-click="selectPortfolioReview(portfolioReview)"
                                                         class="btn btn-sm center-block btn-block" style="overflow: hidden;"
-                                                        data-ng-class="{'btn-default' : projectReview.approval.currentRecord.approvalState === 'completed', 'btn-info' : !(projectReview.approval.currentRecord.approvalState === 'completed')}">
-                                                    <span class="small">{{projectReview.name}}</span>
+                                                        data-ng-class="{'btn-default' : portfolioReview.approval.currentRecord.approvalState === 'completed', 'btn-info' : !(portfolioReview.approval.currentRecord.approvalState === 'completed')}">
+                                                    <span class="small">{{portfolioReview.name}}</span>
                                                 </button>
                                             </div>
                                         </div>
@@ -189,52 +178,52 @@
                                 </div>
                             </div>
                             <div class="col-md-9">
-                                <div data-ng-hide="selectedProjectReview || projectReviews.length === 0" class="alert alert-warning text-center">
-                                    Select a project review to see its details
+                                <div data-ng-hide="selectedPortfolioReview || portfolioReviews.length === 0" class="alert alert-warning text-center">
+                                    Select a portfolio review to see its details
                                 </div>
-                                <div class="row" data-ng-show="selectedProjectReview">
+                                <div class="row" data-ng-show="selectedPortfolioReview">
                                     <div class="col-md-12">
                                         <div class="panel panel-default">
                                             <div class="panel-heading">
                                                 <div class="row">
                                                     <div class="col-md-9 text-center">
-                                                        <b><em>{{selectedProjectReview.name}}</em></b>
+                                                        <b><em>{{selectedPortfolioReview.name}}</em></b>
                                                     </div>
                                                 </div>
                                             </div>
                                             <div class="row">
                                                 <div class="col-md-6 btn-group btn-group-xs btn-group-justified">
-                                                    <label class="btn btn-info btn-xs" data-ng-model="projectReviewDetails" btn-radio="'header'">
+                                                    <label class="btn btn-info btn-xs" data-ng-model="portfolioReviewDetails" btn-radio="'header'">
                                                         Header
                                                     </label>
-                                                    <label class="btn btn-info btn-xs" data-ng-model="projectReviewDetails" btn-radio="'reviewItems'">
+                                                    <label class="btn btn-info btn-xs" data-ng-model="portfolioReviewDetails" btn-radio="'reviewItems'">
                                                         Review items
                                                     </label>
-                                                    <label class="btn btn-info btn-xs" data-ng-model="projectReviewDetails" btn-radio="'workflow'">
+                                                    <label class="btn btn-info btn-xs" data-ng-model="portfolioReviewDetails" btn-radio="'workflow'">
                                                         Workflow
                                                     </label>
                                                 </div>
                                             </div>
                                             <div class="panel-body" style="min-height: 410px; max-height: 410px; overflow-y: auto">
-                                                <div data-ng-show="projectReviewDetails === 'header'">
-                                                    <div data-ng-switch="switchHeaderForm[selectedProjectReview._id]">
+                                                <div data-ng-show="portfolioReviewDetails === 'header'">
+                                                    <div data-ng-switch="switchHeaderForm[selectedPortfolioReview._id]">
                                                         <form data-ng-switch-default="view">
                                                             <div class="row">
                                                                 <div class="form-group-sm col-md-4">
                                                                     <label for="reviewName">Name</label>
                                                                     <input id="reviewName" class="form-control" type="text"
-                                                                           data-ng-model="selectedProjectReview.name" disabled>
+                                                                           data-ng-model="selectedPortfolioReview.name" disabled>
                                                                 </div>
                                                                 <div class="form-group-sm col-md-4">
                                                                     <label for="reviewType">Type</label>
-                                                                    <select id="reviewType" class="form-control" data-ng-model = "selectedProjectReview.type"
-                                                                            ng-options="type._id as type.name for type in projectReviewTypes" disabled>
+                                                                    <select id="reviewType" class="form-control" data-ng-model = "selectedPortfolioReview.type"
+                                                                            ng-options="type._id as type.name for type in portfolioReviewTypes" disabled>
                                                                     </select>
                                                                 </div>
                                                                 <div class="form-group-sm col-md-4">
                                                                     <label for="reviewTemplate">Template</label>
-                                                                    <select id="reviewTemplate" class="form-control" data-ng-model = "selectedProjectReview.template"
-                                                                            data-ng-options="template._id as template.name for template in projectReviewTemplates" disabled>
+                                                                    <select id="reviewTemplate" class="form-control" data-ng-model = "selectedPortfolioReview.template"
+                                                                            data-ng-options="template._id as template.name for template in portfolioReviewTemplates" disabled>
                                                                     </select>
                                                                 </div>
                                                             </div>
@@ -243,13 +232,13 @@
                                                                 <div class="form-group-sm col-md-4">
                                                                     <label for="">Start date</label>
                                                                     <div class="input-group">
-                                                                        <input type="text" id="" class="form-control" datepicker-popup="dd-MMMM-yyyy" data-ng-model="selectedProjectReview.startDate" disabled>
+                                                                        <input type="text" id="" class="form-control" datepicker-popup="dd-MMMM-yyyy" data-ng-model="selectedPortfolioReview.startDate" disabled>
                                                                     </div>
                                                                 </div>
                                                                 <div class="form-group-sm col-md-4">
                                                                     <label for="">End date</label>
                                                                     <div class="input-group">
-                                                                        <input type="text" id="" class="form-control" datepicker-popup="dd-MMMM-yyyy" data-ng-model="selectedProjectReview.endDate" disabled>
+                                                                        <input type="text" id="" class="form-control" datepicker-popup="dd-MMMM-yyyy" data-ng-model="selectedPortfolioReview.endDate" disabled>
                                                                     </div>
                                                                 </div>
                                                             </div>
@@ -258,34 +247,34 @@
                                                                 <div class="form-group-sm col-md-12">
                                                                     <label for="reviewDesc">Description</label>
                                                                     <textarea id="reviewDesc" class="form-control" placeholder="No description yet"
-                                                                              data-ng-model="selectedProjectReview.description" disabled>
+                                                                              data-ng-model="selectedPortfolioReview.description" disabled>
                                                                     </textarea>
                                                                 </div>
                                                             </div>
                                                             <hr>
-                                                            <div class="form-group-sm pull-right" data-ng-show="userHasAuthorization && !(selectedProjectReview.approval.currentRecord.approvalState === 'completed')">
-                                                                <button class="btn btn-success btn-xs" data-ng-click="editHeader(selectedProjectReview)">
+                                                            <div class="form-group-sm pull-right" data-ng-show="userHasAuthorization && !(selectedPortfolioReview.approval.currentRecord.approvalState === 'completed')">
+                                                                <button class="btn btn-success btn-xs" data-ng-click="editHeader(selectedPortfolioReview)">
                                                                     Edit
                                                                 </button>
                                                             </div>
                                                         </form>
-                                                        <form data-ng-switch-when="edit" name="editHeaderProjectReviewForm">
+                                                        <form data-ng-switch-when="edit" name="editHeaderPortfolioReviewForm">
                                                             <div class="row">
                                                                 <div class="form-group-sm col-md-4">
                                                                     <label for="reviewNameEdit">Name</label>
                                                                     <input id="reviewNameEdit" class="form-control" type="text"
-                                                                           data-ng-model="selectedProjectReview.name" required>
+                                                                           data-ng-model="selectedPortfolioReview.name" required>
                                                                 </div>
                                                                 <div class="form-group-sm col-md-4">
                                                                     <label for="reviewTypeEdit">Type</label>
-                                                                    <select id="reviewTypeEdit" class="form-control" data-ng-model = "selectedProjectReview.type"
-                                                                            ng-options="type._id as type.name for type in projectReviewTypes" disabled>
+                                                                    <select id="reviewTypeEdit" class="form-control" data-ng-model = "selectedPortfolioReview.type"
+                                                                            ng-options="type._id as type.name for type in portfolioReviewTypes" disabled>
                                                                     </select>
                                                                 </div>
                                                                 <div class="form-group-sm col-md-4">
                                                                     <label for="reviewTemplateEdit">Template</label>
-                                                                    <select id="reviewTemplateEdit" class="form-control" data-ng-model = "selectedProjectReview.template"
-                                                                            data-ng-options="template._id as template.name for template in projectReviewTemplates" disabled>
+                                                                    <select id="reviewTemplateEdit" class="form-control" data-ng-model = "selectedPortfolioReview.template"
+                                                                            data-ng-options="template._id as template.name for template in portfolioReviewTemplates" disabled>
                                                                     </select>
                                                                 </div>
                                                             </div>
@@ -294,20 +283,20 @@
                                                                 <div class="form-group-sm col-md-4">
                                                                     <label for="">Start date</label>
                                                                     <div class="input-group">
-                                                                        <input type="text" id="" class="form-control" datepicker-popup="dd-MMMM-yyyy" data-ng-model="selectedProjectReview.startDate"
-                                                                               is-open="editStartDateOpened[selectedProjectReview._id]" >
+                                                                        <input type="text" id="" class="form-control" datepicker-popup="dd-MMMM-yyyy" data-ng-model="selectedPortfolioReview.startDate"
+                                                                               is-open="editStartDateOpened[selectedPortfolioReview._id]" >
                                                                 <span class="input-group-btn">
-                                                                    <button type="button" class="btn btn-default btn-sm" ng-click="openEditStartDate(selectedProjectReview, $event)"><i class="glyphicon glyphicon-calendar"></i></button>
+                                                                    <button type="button" class="btn btn-default btn-sm" ng-click="openEditStartDate(selectedPortfolioReview, $event)"><i class="glyphicon glyphicon-calendar"></i></button>
                                                                 </span>
                                                                     </div>
                                                                 </div>
                                                                 <div class="form-group-sm col-md-4">
                                                                     <label for="">End date</label>
                                                                     <div class="input-group">
-                                                                        <input type="text" id="" class="form-control" datepicker-popup="dd-MMMM-yyyy" data-ng-model="selectedProjectReview.endDate"
-                                                                               is-open="editEndDateOpened[selectedProjectReview._id]" >
+                                                                        <input type="text" id="" class="form-control" datepicker-popup="dd-MMMM-yyyy" data-ng-model="selectedPortfolioReview.endDate"
+                                                                               is-open="editEndDateOpened[selectedPortfolioReview._id]" >
                                                                 <span class="input-group-btn">
-                                                                    <button type="button" class="btn btn-default btn-sm" ng-click="openEditEndDate(selectedProjectReview, $event)"><i class="glyphicon glyphicon-calendar"></i></button>
+                                                                    <button type="button" class="btn btn-default btn-sm" ng-click="openEditEndDate(selectedPortfolioReview, $event)"><i class="glyphicon glyphicon-calendar"></i></button>
                                                                 </span>
                                                                     </div>
                                                                 </div>
@@ -316,7 +305,7 @@
                                                             <div class="row">
                                                                 <div class="form-group-sm col-md-12">
                                                                     <label for="reviewDescEdit">Description</label>
-                                                                    <textarea id="reviewDescEdit" class="form-control" placeholder="Enter description" data-ng-model="selectedProjectReview.description"></textarea>
+                                                                    <textarea id="reviewDescEdit" class="form-control" placeholder="Enter description" data-ng-model="selectedPortfolioReview.description"></textarea>
                                                                 </div>
                                                             </div>
                                                             <div class="row">
@@ -328,24 +317,24 @@
                                                             </div>
                                                             <hr>
                                                             <div class="form-group-sm pull-right">
-                                                                <button class="btn btn-success btn-xs" data-ng-click="saveEditHeader(selectedProjectReview)" data-ng-disabled="editHeaderProjectReviewForm.$invalid">
+                                                                <button class="btn btn-success btn-xs" data-ng-click="saveEditHeader(selectedPortfolioReview)" data-ng-disabled="editHeaderPortfolioReviewForm.$invalid">
                                                                     Save
                                                                 </button>
-                                                                <button class="btn btn-danger btn-xs" data-ng-click="deleteProjectReview(selectedProjectReview)">
-                                                                    Delete project review
+                                                                <button class="btn btn-danger btn-xs" data-ng-click="deletePortfolioReview(selectedPortfolioReview)">
+                                                                    Delete portfolio review
                                                                 </button>
-                                                                <button class="btn btn-info btn-xs" data-ng-click="cancelEditHeader(selectedProjectReview)">
+                                                                <button class="btn btn-info btn-xs" data-ng-click="cancelEditHeader(selectedPortfolioReview)">
                                                                     Cancel
                                                                 </button>
                                                             </div>
                                                         </form>
                                                     </div>
                                                 </div>
-                                                <div data-ng-show="projectReviewDetails === 'reviewItems'">
+                                                <div data-ng-show="portfolioReviewDetails === 'reviewItems'">
                                                     <div class="row">
                                                         <div class="col-md-12">
                                                             <accordion close-others="oneAtATime">
-                                                                <accordion-group data-ng-repeat="reviewGroup in selectedProjectReview.groups" heading="{{reviewGroup.name}}">
+                                                                <accordion-group data-ng-repeat="reviewGroup in selectedPortfolioReview.groups" heading="{{reviewGroup.name}}">
                                                                     <div class="row">
                                                                         <div class="form-group col-md-12">
                                                                             <textarea class="form-control" data-ng-model="reviewGroup.description" placeholder="No description" disabled></textarea>
@@ -371,13 +360,13 @@
                                                                                             <div class="form-group-sm col-md-6">
                                                                                                 <label for="sGroup">Stakeholder group</label>
                                                                                                 <select id="sGroup" class="form-control" data-ng-model = "peopleReview.peopleGroup"
-                                                                                                        data-ng-options="item._id as item.name for item in peopleProjectGroups" disabled>
+                                                                                                        data-ng-options="item._id as item.name for item in peoplePortfolioGroups" disabled>
                                                                                                 </select>
                                                                                             </div>
                                                                                             <div class="form-group-sm col-md-6">
                                                                                                 <label for="sRole">Role</label>
                                                                                                 <select id="sRole" class="form-control" data-ng-model = "peopleReview.peopleRole"
-                                                                                                        data-ng-options="item._id as item.name for item in peopleProjectRoles" disabled>
+                                                                                                        data-ng-options="item._id as item.name for item in peoplePortfolioRoles" disabled>
                                                                                                 </select>
                                                                                             </div>
                                                                                         </div>
@@ -399,10 +388,10 @@
                                                                                             </div>
                                                                                         </div>
                                                                                         <hr>
-                                                                                        <div class="row" data-ng-show="!(selectedProjectReview.approval.currentRecord.approvalState === 'completed') && !peopleReview.submitted">
+                                                                                        <div class="row" data-ng-show="!(selectedPortfolioReview.approval.currentRecord.approvalState === 'completed') && !peopleReview.submitted">
                                                                                             <div class="col-md-12">
                                                                                                 <div class=" pull-right">
-                                                                                                    <button class="btn btn-warning btn-xs" data-ng-click="submitPeopleReview(selectedProjectReview, reviewGroup, reviewItem, peopleReview)"
+                                                                                                    <button class="btn btn-warning btn-xs" data-ng-click="submitPeopleReview(selectedPortfolioReview, reviewGroup, reviewItem, peopleReview)"
                                                                                                             data-ng-disabled="viewPeopleReviewForm.$invalid">
                                                                                                         Submit
                                                                                                     </button>
@@ -418,13 +407,13 @@
                                                                                             <div class="form-group-sm col-md-6">
                                                                                                 <label for="sGroup">Stakeholder group</label>
                                                                                                 <select id="sGroup" class="form-control" data-ng-model = "peopleReview.peopleGroup"
-                                                                                                        data-ng-options="item._id as item.name for item in peopleProjectGroups" disabled>
+                                                                                                        data-ng-options="item._id as item.name for item in peoplePortfolioGroups" disabled>
                                                                                                 </select>
                                                                                             </div>
                                                                                             <div class="form-group-sm col-md-6">
                                                                                                 <label for="sRole">Role</label>
                                                                                                 <select id="sRole" class="form-control" data-ng-model = "peopleReview.peopleRole"
-                                                                                                        data-ng-options="item._id as item.name for item in peopleProjectRoles" disabled>
+                                                                                                        data-ng-options="item._id as item.name for item in peoplePortfolioRoles" disabled>
                                                                                                 </select>
                                                                                             </div>
                                                                                         </div>
@@ -450,7 +439,7 @@
                                                                                             <div class="col-md-12">
                                                                                                 <div class=" pull-right">
                                                                                                     <button type="button" class="btn btn-xs btn-success" data-ng-disabled="editPeopleReviewForm.$invalid"
-                                                                                                            data-ng-click="saveEditPeopleReview(selectedProjectReview, reviewGroup, reviewItem, peopleReview)">
+                                                                                                            data-ng-click="saveEditPeopleReview(selectedPortfolioReview, reviewGroup, reviewItem, peopleReview)">
                                                                                                         Save
                                                                                                     </button>
                                                                                                     <button type="button" class="btn btn-xs btn-info" data-ng-click="cancelEditPeopleReview(peopleReview)">
@@ -472,33 +461,33 @@
                                                         </div>
                                                     </div>
                                                 </div>
-                                                <div data-ng-show="projectReviewDetails === 'workflow'">
+                                                <div data-ng-show="portfolioReviewDetails === 'workflow'">
                                                     <div class="row">
                                                         <div class="col-md-12">
                                                             <label>Current state</label>
                                                             <br>
-                                                            <span data-ng-show="selectedProjectReview.approval.currentRecord.approvalState === 'draft'">Drafted on </span>
-                                                            <span data-ng-show="selectedProjectReview.approval.currentRecord.approvalState === 'submitted'">Submitted on </span>
-                                                            <span data-ng-show="selectedProjectReview.approval.currentRecord.approvalState === 'completed'">Completed on </span>
-                                                            <span><em data-ng-bind="selectedProjectReview.approval.currentRecord.created | date:'EEE d, MMM yyyy'"></em></span>
+                                                            <span data-ng-show="selectedPortfolioReview.approval.currentRecord.approvalState === 'draft'">Drafted on </span>
+                                                            <span data-ng-show="selectedPortfolioReview.approval.currentRecord.approvalState === 'submitted'">Submitted on </span>
+                                                            <span data-ng-show="selectedPortfolioReview.approval.currentRecord.approvalState === 'completed'">Completed on </span>
+                                                            <span><em data-ng-bind="selectedPortfolioReview.approval.currentRecord.created | date:'EEE d, MMM yyyy'"></em></span>
                                                             <span> by </span>
-                                                            <span><em data-ng-bind="selectedProjectReview.approval.currentRecord.user.displayName"></em></span>
+                                                            <span><em data-ng-bind="selectedPortfolioReview.approval.currentRecord.user.displayName"></em></span>
                                                         </div>
                                                     </div>
                                                     <br>
                                                     <div class="row">
-                                                        <div class="col-md-4" data-ng-show="userHasAuthorization && selectedProjectReview.approval.currentRecord.approvalState === 'draft' ">
-                                                            <button class="form-control btn btn-success" data-ng-click="submit(selectedProjectReview)">
+                                                        <div class="col-md-4" data-ng-show="userHasAuthorization && selectedPortfolioReview.approval.currentRecord.approvalState === 'draft' ">
+                                                            <button class="form-control btn btn-success" data-ng-click="submit(selectedPortfolioReview)">
                                                                 Submit review
                                                             </button>
                                                         </div>
-                                                        <div class="col-md-4" data-ng-show="userHasAuthorization && selectedProjectReview.approval.currentRecord.approvalState === 'submitted'">
-                                                            <button class="form-control btn btn-danger" data-ng-click="complete(selectedProjectReview)">
+                                                        <div class="col-md-4" data-ng-show="userHasAuthorization && selectedPortfolioReview.approval.currentRecord.approvalState === 'submitted'">
+                                                            <button class="form-control btn btn-danger" data-ng-click="complete(selectedPortfolioReview)">
                                                                 Complete review
                                                             </button>
                                                         </div>
-                                                        <div class="col-md-4" data-ng-show="userHasAuthorization && selectedProjectReview.approval.currentRecord.approvalState === 'completed'">
-                                                            <button class="form-control btn btn-warning" data-ng-click="draft(selectedProjectReview)">
+                                                        <div class="col-md-4" data-ng-show="userHasAuthorization && selectedPortfolioReview.approval.currentRecord.approvalState === 'completed'">
+                                                            <button class="form-control btn btn-warning" data-ng-click="draft(selectedPortfolioReview)">
                                                                 Draft review
                                                             </button>
                                                         </div>
@@ -508,10 +497,10 @@
                                                     </div>
                                                     <hr>
                                                     <div class="row">
-                                                        <div class="col-md-12" data-ng-show="selectedProjectReview.approval.history.length !== 0">
+                                                        <div class="col-md-12" data-ng-show="selectedPortfolioReview.approval.history.length !== 0">
                                                             <label>History</label>
                                                             <br>
-                                                            <div data-ng-repeat="historyRecord in selectedProjectReview.approval.history | orderBy: sortAppliedChanges : true">
+                                                            <div data-ng-repeat="historyRecord in selectedPortfolioReview.approval.history | orderBy: sortAppliedChanges : true">
                                                                 <span data-ng-show="historyRecord.approvalState === 'draft'">Drafted on </span>
                                                                 <span data-ng-show="historyRecord.approvalState === 'submitted'">Submitted on </span>
                                                                 <span data-ng-show="historyRecord.approvalState === 'completed'">Completed on </span>

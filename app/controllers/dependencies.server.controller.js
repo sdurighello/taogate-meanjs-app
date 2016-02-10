@@ -90,20 +90,10 @@ exports.list = function(req, res) {
  * Dependency middleware
  */
 exports.dependencyByID = function(req, res, next, id) {
+
     var Dependency = mongoose.mtModel(req.user.tenantId + '.' + 'Dependency');
 
-    var retPropertiesString = '';
-    var deepPopulateArray = [];
-
-    if(req.query.retPropertiesString){
-        retPropertiesString = req.query.retPropertiesString;
-    }
-    if(req.query.deepPopulateArray){
-        deepPopulateArray = req.query.deepPopulateArray;
-    }
-
-	Dependency.findById(id, retPropertiesString).populate('user', 'displayName').deepPopulate(deepPopulateArray)
-        .exec(function(err, dependency) {
+	Dependency.findById().populate('user', 'displayName').exec(function(err, dependency) {
 		if (err) return next(err);
 		if (! dependency) return next(new Error('Failed to load Dependency ' + id));
 		req.dependency = dependency ;

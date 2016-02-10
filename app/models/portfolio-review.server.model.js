@@ -49,6 +49,11 @@ var PortfolioReviewGroupCopySchema = new Schema({
     user: {type: Schema.ObjectId, ref: 'User'}
 });
 
+var approvalRecord = {
+    approvalState: {type: String, enum: ['draft', 'submitted', 'completed'], default:'draft', required:'Approval flag is required'},
+    created: { type: Date, default: Date.now },
+    user: { type: Schema.ObjectId, ref: 'User' }
+};
 
 /**
  * Portfolio review Schema
@@ -58,7 +63,17 @@ var PortfolioReviewSchema = new Schema({
     portfolio : {type: Schema.Types.ObjectId, ref: 'Portfolio', required:'Portfolio for portfolio review is required', $tenant:true},
     name: {type: String, default: '', required: 'Please fill Portfolio review name', trim: true},
 
+    startDate : {type: Date, default: null},
+    endDate : {type: Date, default: null},
+
+    approval : {
+        currentRecord : approvalRecord,
+        history : [approvalRecord]
+    },
+
+
     template : {type: Schema.Types.ObjectId, ref: 'PortfolioReviewTemplate', required:'Template for portfolio review is required', $tenant:true},
+    type : {type: Schema.Types.ObjectId, ref: 'PortfolioReviewType', default:null, required: 'Type for portfolio review is required', $tenant:true},
     // copy of 'portfolio-review-template' model
     groups : [PortfolioReviewGroupCopySchema],
 

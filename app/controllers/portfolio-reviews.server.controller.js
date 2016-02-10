@@ -13,16 +13,91 @@ var mongoose = require('mongoose'),
  */
 exports.create = function(req, res) {
 	var PortfolioReview = mongoose.mtModel(req.user.tenantId + '.' + 'PortfolioReview');
+	var PortfolioReviewTemplate = mongoose.mtModel(req.user.tenantId + '.' + 'PortfolioReviewTemplate');
+
+	var Portfolio = mongoose.mtModel(req.user.tenantId + '.' + 'Portfolio');
+	var Person = mongoose.mtModel(req.user.tenantId + '.' + 'Person');
+
+
 	var portfolioReview = new PortfolioReview(req.body);
 	portfolioReview.user = req.user;
+	portfolioReview.approval.currentRecord.user = req.user;
 
-	portfolioReview.save(function(err) {
+	async.waterfall([
+		// Get template for new review
+		function(callback) {
+			PortfolioReviewTemplate.findById(req.body.template).exec(function(err, template){
+				if(err){
+					return callback(err);
+				}
+				callback(null, template);
+			});
+		},
+		// Create peopleReviews array
+		function(template, callback) {
+			Portfolio.findById(req.body.portfolio).exec(function(err, portfolio){
+				if(err){
+					return callback(err);
+				}
+				callback(null, template, portfolio);
+			});
+		},
+		// Create new review from template
+		function(template, portfolio, callback) {
+			portfolioReview.type = template.type;
+			portfolioReview.groups = template.groups;
+			_.each(portfolioReview.groups, function(reviewGroup){
+				_.each(reviewGroup.peopleGroups, function(peopleGroup){
+					if(_.find(portfolio.stakeholders, function(stakeholderGroup){
+							return stakeholderGroup.group.equals(peopleGroup);
+						})){
+						var foundGroup = _.find(portfolio.stakeholders, function(stakeholderGroup){
+							return stakeholderGroup.group.equals(peopleGroup);
+						});
+						var foundPeople = _.map(foundGroup.roles, function(stakeholderRole){
+							return {
+								peopleGroup : peopleGroup,
+								peopleRole : stakeholderRole.role,
+								person : stakeholderRole.person,
+								comment : '',
+								score : null
+							};
+						});
+						_.each(reviewGroup.items, function(item){
+							item.peopleReviews = foundPeople;
+						});
+
+					}
+				});
+			});
+			callback(null);
+		},
+		// Save the new portfolio review
+		function(callback){
+			portfolioReview.save(function(err, result) {
+				if (err) {
+					return callback(err);
+				} else {
+					callback(null, result);
+				}
+			});
+		},
+		// Populate names of person
+		function(result, callback) {
+			Person.populate(result, {path: 'groups.items.peopleReviews.person', select: 'name'}, function(err, populatedResult){
+				if(err){
+					return callback(err);
+				}
+				callback(null, populatedResult);
+			});
+		}
+	], function (err, populatedResult) {
 		if (err) {
 			return res.status(400).send({
 				message: errorHandler.getErrorMessage(err)
 			});
 		} else {
-			res.jsonp(portfolioReview);
+			res.jsonp(populatedResult);
 		}
 	});
 };
@@ -76,7 +151,12 @@ exports.delete = function(req, res) {
  */
 exports.list = function(req, res) {
 	var PortfolioReview = mongoose.mtModel(req.user.tenantId + '.' + 'PortfolioReview');
-	PortfolioReview.find().populate('user', 'displayName').exec(function(err, portfolioReviews) {
+	PortfolioReview.find(req.query)
+        .populate('user', 'displayName')
+        .populate('groups.items.peopleReviews.person', 'name')
+        .populate('approval.currentRecord.user', 'displayName')
+        .populate('approval.history.user', 'displayName')
+		.exec(function(err, portfolioReviews) {
 		if (err) {
 			return res.status(400).send({
 				message: errorHandler.getErrorMessage(err)
@@ -92,13 +172,168 @@ exports.list = function(req, res) {
  */
 exports.portfolioReviewByID = function(req, res, next, id) {
 	var PortfolioReview = mongoose.mtModel(req.user.tenantId + '.' + 'PortfolioReview');
-	PortfolioReview.findById(id).populate('user', 'displayName').exec(function(err, portfolioReview) {
+	PortfolioReview.findById(id)
+        .populate('user', 'displayName')
+        .populate('approval.currentRecord.user', 'displayName')
+        .populate('approval.history.user', 'displayName')
+        .exec(function(err, portfolioReview) {
 		if (err) return next(err);
 		if (! portfolioReview) return next(new Error('Failed to load Portfolio review ' + id));
 		req.portfolioReview = portfolioReview ;
 		next();
 	});
 };
+
+
+exports.updateHeader = function(req, res){
+    var portfolioReview = req.portfolioReview ;
+
+    portfolioReview.user = req.user;
+    portfolioReview.created = Date.now();
+    portfolioReview.name = req.body.name;
+    portfolioReview.startDate = req.body.startDate;
+    portfolioReview.endDate = req.body.endDate;
+    portfolioReview.description = req.body.description;
+
+    portfolioReview.save(function(err){
+        if (err) {
+            return res.status(400).send({
+                message: errorHandler.getErrorMessage(err)
+            });
+        } else {
+            res.jsonp(portfolioReview);
+        }
+    });
+};
+
+
+
+// ---------------- PEOPLE REVIEW --------------------
+
+exports.updatePeopleReview = function(req, res){
+
+    var portfolioReview = req.portfolioReview ;
+
+    var peopleReview = portfolioReview.groups.id(req.params.groupId).items.id(req.params.itemId).peopleReviews.id(req.params.peopleReviewId);
+    peopleReview.score = req.body.score;
+    peopleReview.comment = req.body.comment;
+    peopleReview.user = req.user;
+    peopleReview.created = Date.now();
+
+    portfolioReview.save(function(err){
+        if (err) {
+            return res.status(400).send({
+                message: errorHandler.getErrorMessage(err)
+            });
+        } else {
+            res.jsonp(peopleReview);
+        }
+    });
+};
+
+
+
+exports.submitPeopleReview = function(req, res){
+
+    var portfolioReview = req.portfolioReview ;
+
+    var peopleReview = portfolioReview.groups.id(req.params.groupId).items.id(req.params.itemId).peopleReviews.id(req.params.peopleReviewId);
+    peopleReview.submitted = true;
+    peopleReview.user = req.user;
+    peopleReview.created = Date.now();
+
+    portfolioReview.save(function(err){
+        if (err) {
+            return res.status(400).send({
+                message: errorHandler.getErrorMessage(err)
+            });
+        } else {
+            res.jsonp(peopleReview);
+        }
+    });
+};
+
+
+// ----------------------- APPROVAL ----------------------
+
+
+exports.draft = function(req, res){
+    var portfolioReview = req.portfolioReview;
+
+    portfolioReview.approval.history.push({
+        approvalState : portfolioReview.approval.currentRecord.approvalState,
+        user : portfolioReview.approval.currentRecord.user,
+        created : portfolioReview.approval.currentRecord.created
+    });
+
+    portfolioReview.approval.currentRecord.approvalState = 'draft';
+    portfolioReview.approval.currentRecord.user = req.user;
+    portfolioReview.approval.currentRecord.created = Date.now();
+
+    portfolioReview.save(function(err){
+        if (err) {
+            console.log(err);
+            return res.status(400).send({
+                message: errorHandler.getErrorMessage(err)
+            });
+        } else {
+            res.jsonp(portfolioReview);
+        }
+    });
+
+};
+
+exports.submit = function(req, res){
+    var portfolioReview = req.portfolioReview;
+
+    portfolioReview.approval.history.push({
+        approvalState : portfolioReview.approval.currentRecord.approvalState,
+        user : portfolioReview.approval.currentRecord.user,
+        created : portfolioReview.approval.currentRecord.created
+    });
+
+    portfolioReview.approval.currentRecord.approvalState = 'submitted';
+    portfolioReview.approval.currentRecord.user = req.user;
+    portfolioReview.approval.currentRecord.created = Date.now();
+
+    portfolioReview.save(function(err){
+        if (err) {
+            console.log(err);
+            return res.status(400).send({
+                message: errorHandler.getErrorMessage(err)
+            });
+        } else {
+            res.jsonp(portfolioReview);
+        }
+    });
+};
+
+exports.complete = function(req, res){
+    var portfolioReview = req.portfolioReview;
+
+    portfolioReview.approval.history.push({
+        approvalState : portfolioReview.approval.currentRecord.approvalState,
+        user : portfolioReview.approval.currentRecord.user,
+        created : portfolioReview.approval.currentRecord.created
+    });
+
+    portfolioReview.approval.currentRecord.approvalState = 'completed';
+    portfolioReview.approval.currentRecord.user = req.user;
+    portfolioReview.approval.currentRecord.created = Date.now();
+
+    portfolioReview.save(function(err){
+        if (err) {
+            console.log(err);
+            return res.status(400).send({
+                message: errorHandler.getErrorMessage(err)
+            });
+        } else {
+            res.jsonp(portfolioReview);
+        }
+    });
+};
+
+
 
 /**
  * Portfolio review authorization middleware

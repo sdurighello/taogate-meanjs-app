@@ -11,6 +11,19 @@ require('mongoose-multitenant');
 /**
  * Dependency Schema
  */
+
+var statusReviewRecord = {
+    baselineDeliveryDate : {type: Date, default: null},
+    estimateDeliveryDate : {type: Date, default: null},
+    actualDeliveryDate : {type: Date, default: null},
+    completed : {type: Boolean, default: false, required:'Milestone completed flag is required'},
+    status: {type: Schema.Types.ObjectId, default: null, ref: 'LogStatusIndicator', $tenant:true},
+    statusComment : {type: String, default:'', trim: true},
+    created: { type: Date, default: Date.now },
+    user: { type: Schema.ObjectId, ref: 'User' }
+};
+    
+
 var DependencySchema = new Schema({
 	name: {
 		type: String,
@@ -23,10 +36,15 @@ var DependencySchema = new Schema({
     type : {type: Schema.Types.ObjectId, ref: 'DependencyType', $tenant:true},
     impact : {type: Schema.Types.ObjectId, ref: 'DependencyImpact', $tenant:true},
 
+    state : {type: Schema.Types.ObjectId, default: null, ref: 'DependencyState', $tenant:true},
+
+    statusReview : {
+        currentRecord : statusReviewRecord,
+        history : [statusReviewRecord]
+    },
+
     source : {type: Schema.Types.ObjectId, ref: 'Project', $tenant:true, required:'Source project missing'},
     target : {type: Schema.Types.ObjectId, ref: 'Project', $tenant:true, required:'Target project missing'},
-
-    requiredByDate:{type: Date, default:null},
 
 	created: {type: Date, default: Date.now},
 	user: {type: Schema.ObjectId, ref: 'User'}
