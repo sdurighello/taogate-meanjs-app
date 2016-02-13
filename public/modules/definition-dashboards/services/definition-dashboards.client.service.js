@@ -12,6 +12,13 @@ angular.module('definition-dashboards').factory('DefinitionDashboards', ['$resou
 				// req.query: { project: project._id }
 				// Returns: [{gate: ... , projectChangeRequests: ... }]
 			},
+			projectCategorization2: {
+				method: 'GET',
+				isArray: true,
+				url: 'definition-dashboards/projectCategorization2'
+				// req.query: { project: project._id }
+				// Returns: [{gate: ... , projectChangeRequests: ... }]
+			},
 			projectPrioritization: {
 				method: 'GET',
 				isArray: true,

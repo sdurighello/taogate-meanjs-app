@@ -1,8 +1,9 @@
 'use strict';
 
 angular.module('dependency-analysis').controller('DependencyAnalysisController', ['$scope', '$stateParams', '$location', 'Authentication',
-	'Projects','Portfolios', 'DependencyTypes', 'DependencyStates', 'DependencyImpacts', 'Dependencies', '_','$q',
-	function($scope, $stateParams, $location, Authentication, Projects, Portfolios, DependencyTypes, DependencyStates, DependencyImpacts, Dependencies, _ , $q) {
+	'Projects','Portfolios', 'DependencyTypes', 'DependencyStates', 'DependencyImpacts', 'Dependencies', 'LogStatusIndicators', '_','$q',
+	function($scope, $stateParams, $location, Authentication, Projects, Portfolios, DependencyTypes, DependencyStates, DependencyImpacts,
+             Dependencies, LogStatusIndicators, _ , $q) {
 
 		// ----------- INIT ---------------
 
@@ -10,7 +11,7 @@ angular.module('dependency-analysis').controller('DependencyAnalysisController',
 
 		$scope.init = function(){
 
-			Projects.query(function(projects){
+			Projects.query({'selection.selectedForEvaluation': true}, function(projects){
 				$scope.projects = projects;
 			}, function(err){
 				$scope.initError.push(err.data.message);
@@ -20,6 +21,7 @@ angular.module('dependency-analysis').controller('DependencyAnalysisController',
 			}, function(err){
 				$scope.initError.push(err.data.message);
 			});
+
             DependencyTypes.query(function(dependencyTypes){
                 $scope.dependencyTypes = dependencyTypes;
             }, function(err){
@@ -37,6 +39,12 @@ angular.module('dependency-analysis').controller('DependencyAnalysisController',
             });
             Dependencies.query(function(dependencies){
                 $scope.dependencies = dependencies;
+            }, function(err){
+                $scope.initError.push(err.data.message);
+            });
+
+            LogStatusIndicators.query(function(res){
+                $scope.logStatuses = res;
             }, function(err){
                 $scope.initError.push(err.data.message);
             });
@@ -168,8 +176,11 @@ angular.module('dependency-analysis').controller('DependencyAnalysisController',
         $scope.cancelEditHeader = function(dependency){
             dependency.name = originalDependency[dependency._id].name;
             dependency.description = originalDependency[dependency._id].description;
+            dependency.source = originalDependency[dependency._id].source;
+            dependency.target = originalDependency[dependency._id].target;
             dependency.state = originalDependency[dependency._id].state;
             dependency.type = originalDependency[dependency._id].type;
+            dependency.impact = originalDependency[dependency._id].impact;
             $scope.selectHeaderForm('view', dependency);
         };
 

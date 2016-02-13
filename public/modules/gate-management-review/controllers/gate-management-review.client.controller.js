@@ -177,6 +177,8 @@ angular.module('gate-management-review').controller('GateManagementReviewControl
 
         $scope.gateReviewDetails = 'header';
 
+        $scope.activeTab = {};
+
         // ------------- SELECT VIEW PROJECT ------------
 
         var originalGateReview = {};

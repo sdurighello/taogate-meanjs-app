@@ -164,6 +164,8 @@ angular.module('project-change-requests').controller('ProjectChangeRequestContro
 
 		$scope.projectChangeRequestDetails = 'header';
 
+        $scope.activeTab = {};
+
 		// ------------- SELECT VIEW PROJECT ------------
 
 		var originalProjectChangeRequest = {};

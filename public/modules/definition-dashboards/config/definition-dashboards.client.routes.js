@@ -12,6 +12,10 @@ angular.module('definition-dashboards').config(['$stateProvider',
 		state('dashboard-categorization', {
 			url: '/dashboard-categorization',
 			templateUrl: 'modules/definition-dashboards/views/dashboard-categorization.client.view.html'
-		});
+		}).
+			state('dashboard-categorization2', {
+				url: '/dashboard-categorization2',
+				templateUrl: 'modules/definition-dashboards/views/dashboard-categorization2.client.view.html'
+			});
 	}
 ]);

@@ -14,6 +14,14 @@ module.exports = function(app) {
 		.put(users.requiresLogin, dependencies.hasAuthorization, dependencies.update)
 		.delete(users.requiresLogin, dependencies.hasAuthorization, dependencies.delete);
 
+	// Header
+	app.route('/dependencies/:dependencyId/header')
+		.put(users.requiresLogin, dependencies.hasAuthorization, dependencies.updateHeader);
+
+	// Status
+	app.route('/dependencies/:dependencyId/status')
+		.put(users.requiresLogin, dependencies.hasAuthorization, dependencies.updateStatus);
+
 	// Finish by binding the Dependency middleware
 	app.param('dependencyId', dependencies.dependencyByID);
 };

@@ -25,6 +25,7 @@ angular.module('definition-dashboards').controller('DashboardCategorizationContr
 
             DefinitionDashboards.projectCategorization(function(res){
                 projectCategorization = res;
+                console.log(res);
             }, function(err){
                 $scope.initError.push(err.data.message);
             });
@@ -94,7 +95,7 @@ angular.module('definition-dashboards').controller('DashboardCategorizationContr
                         };
                         _.forEach(categoryObj.categoryValues, function (valueObj) {
                             seriesObj.data.push({
-                                name: valueObj.categoryValue.name,
+                                name: allowNullCatValue(valueObj.categoryValue),
                                 y: valueObj[property]
                             });
                         });
@@ -106,6 +107,12 @@ angular.module('definition-dashboards').controller('DashboardCategorizationContr
             return retArray;
         };
 
+        var allowNullCatValue = function(catValueObj){
+            if(catValueObj){
+                return catValueObj.name;
+            }
+            return 'Unassigned';
+        };
 
 
         //var getChartSeriesData = function(projectCategorization){

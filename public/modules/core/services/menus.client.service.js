@@ -409,6 +409,9 @@ angular.module('core').service('Menus', [
 		        // Categorization
 		this.addSubMenuItem('topbar', 'dashboards', 'Categorization', 'dashboard-categorization','dashboard-categorization',false,
 			['superAdmin','admin','PMO','projectManager','portfolioManager','executive'],1);
+                // Categorization2
+        this.addSubMenuItem('topbar', 'dashboards', 'Categorization2', 'dashboard-categorization2','dashboard-categorization2',false,
+            ['superAdmin','admin','PMO','projectManager','portfolioManager','executive'],1);
 		        // Prioritization
 		this.addSubMenuItem('topbar', 'dashboards', 'Prioritization', 'dashboard-prioritization','dashboard-prioritization',false,
 			['superAdmin','admin','PMO','projectManager','portfolioManager','executive'],2);

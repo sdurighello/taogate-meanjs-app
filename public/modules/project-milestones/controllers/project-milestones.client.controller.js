@@ -104,6 +104,8 @@ angular.module('project-milestones').controller('ProjectMilestoneController', ['
 
 		$scope.projectMilestoneDetails = 'header';
 
+		$scope.activeTab = {};
+
 		// ------------- SELECT VIEW PROJECT ------------
 
 		var originalProjectMilestone = {};

@@ -7,6 +7,22 @@ angular.module('dependency-analysis').factory('Dependencies', ['$resource',
 		}, {
 			update: {
 				method: 'PUT'
+			},
+
+			// --- Header --
+
+			updateHeader: {
+				method: 'PUT',
+				url: 'dependencies/:dependencyId/header'
+				// req.body: {whole milestone object}
+			},
+
+			// --- Status --
+
+			updateStatus: {
+				method: 'PUT',
+				url: 'dependencies/:dependencyId/status'
+				// req.body: {whole milestone object}
 			}
 		});
 	}

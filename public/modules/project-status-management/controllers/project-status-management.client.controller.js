@@ -145,6 +145,8 @@ angular.module('project-status-management').controller('ProjectStatusManagementC
 
 		$scope.projectStatusUpdateDetails = 'header';
 
+		$scope.activeTab = {};
+
 		// ------------- SELECT VIEW PROJECT ------------
 
 		var originalProjectStatusUpdate = {};
