@@ -195,7 +195,7 @@ exports.projectCategorization2 = function(req, res){
     var CategoryValue = mongoose.mtModel(req.user.tenantId + '.' + 'CategoryValue');
 
     async.waterfall([
-        // Aggregate
+        // Aggregate all
         function(callback) {
             Project.aggregate([
                 {'$unwind': '$categorization'},
@@ -219,8 +219,10 @@ exports.projectCategorization2 = function(req, res){
                     var totalFunds = _.reduce(_.pluck(aggregateArray, 'fundsCategoryValue'), function(sum, v){
                         return sum + v;
                     }, 0);
-                    var result = _.map(aggregateArray, function(obj){
+                    var resultAll = _.map(aggregateArray, function(obj){
                         return {
+                            all : true,
+                            portfolio : null,
                             group : obj._id.group,
                             category : obj._id.category,
                             categoryValue : obj._id.categoryValue,
@@ -230,9 +232,56 @@ exports.projectCategorization2 = function(req, res){
                             fundsCategoryValueRatio : obj.fundsCategoryValue/totalFunds
                         };
                     });
-                    callback(null, result);
+                    callback(null, resultAll);
                 }
             });
+        },
+        // Aggregate by portfolio
+        function(resultAll, callback) {
+            Project.aggregate([
+                {'$unwind': '$categorization'},
+                {'$unwind' : '$categorization.categories'},
+                {'$group' : {
+                    _id : {
+                        portfolio : '$portfolio',
+                        categoryValue : '$categorization.categories.categoryValue',
+                        category :'$categorization.categories.category',
+                        group : '$categorization.group'
+                    },
+                    countCategoryValue : {'$sum': 1},
+                    fundsCategoryValue : {'$sum' : '$identification.earmarkedFunds'}
+                }}
+            ], function (err, aggregateArray) {
+                if (err) {
+                    return callback(err);
+                } else {
+                    var totalNumberOfProjects = _.reduce(_.pluck(aggregateArray, 'countCategoryValue'), function(sum, v){
+                        return sum + v;
+                    }, 0);
+                    var totalFunds = _.reduce(_.pluck(aggregateArray, 'fundsCategoryValue'), function(sum, v){
+                        return sum + v;
+                    }, 0);
+                    var resultPortfolio = _.map(aggregateArray, function(obj){
+                        return {
+                            all : false,
+                            portfolio : obj._id.portfolio,
+                            group : obj._id.group,
+                            category : obj._id.category,
+                            categoryValue : obj._id.categoryValue,
+                            countCategoryValue : obj.countCategoryValue,
+                            countCategoryValueRatio : obj.countCategoryValue/totalNumberOfProjects,
+                            fundsCategoryValue : obj.fundsCategoryValue,
+                            fundsCategoryValueRatio : obj.fundsCategoryValue/totalFunds
+                        };
+                    });
+                    callback(null, resultAll, resultPortfolio);
+                }
+            });
+        },
+        // Combine All + By Portfolio
+        function(resultAll, resultPortfolio, callback) {
+            var result = resultAll.concat(resultPortfolio);
+            callback(null, result);
         },
         // Populate groups
         function(result, callback) {

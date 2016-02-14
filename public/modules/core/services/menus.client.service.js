@@ -267,6 +267,9 @@ angular.module('core').service('Menus', [
                 // Category assignment
         this.addSubMenuItem('topbar', 'definition', 'Category assignment', 'category-assignment','category-assignment',false,
             ['superAdmin','admin','PMO','projectManager','portfolioManager','executive'],6);
+				// Categorization overview
+		this.addSubMenuItem('topbar', 'definition', 'Categorization overview', 'categorization-overview','categorization-overview',false,
+			['superAdmin','admin','PMO','projectManager','portfolioManager','executive'],6);
             // Prioritization
         this.addSubMenuItem('topbar', 'definition', '', 'divider','divider',false,
             ['superAdmin','admin','PMO','projectManager','portfolioManager','executive'],7);
@@ -275,6 +278,9 @@ angular.module('core').service('Menus', [
                 // Priorities assignment
         this.addSubMenuItem('topbar', 'definition', 'Priority assignment', 'priority-assignment','priority-assignment',false,
             ['superAdmin','admin','PMO','projectManager','portfolioManager','executive'],9);
+				// Prioritization overview
+		this.addSubMenuItem('topbar', 'definition', 'Prioritization overview', 'prioritization-overview','prioritization-overview',false,
+			['superAdmin','admin','PMO','projectManager','portfolioManager','executive'],9);
                 // Portfolio rankings
         this.addSubMenuItem('topbar', 'definition', 'Portfolio rankings', 'portfolio-ranking-assignment','portfolio-ranking-assignment',false,
             ['superAdmin','admin','PMO','projectManager','portfolioManager','executive'],10);
