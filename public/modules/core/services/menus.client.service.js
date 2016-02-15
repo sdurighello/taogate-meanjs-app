@@ -270,6 +270,14 @@ angular.module('core').service('Menus', [
 				// Categorization overview
 		this.addSubMenuItem('topbar', 'definition', 'Categorization overview', 'categorization-overview','categorization-overview',false,
 			['superAdmin','admin','PMO','projectManager','portfolioManager','executive'],6);
+            // Selection
+        this.addSubMenuItem('topbar', 'definition', '', 'divider','divider',false,
+            ['superAdmin','admin','PMO','projectManager','portfolioManager','executive'],11);
+        this.addSubMenuItem('topbar', 'definition', 'Selection', 'menuTitle','menuTitle',false,
+            ['superAdmin','admin','PMO','projectManager','portfolioManager','executive'],12);
+                // Projects selection
+        this.addSubMenuItem('topbar', 'definition', 'Projects selection', 'project-selection','project-selection',false,
+            ['superAdmin','admin','PMO','projectManager','portfolioManager','executive'],13);
             // Prioritization
         this.addSubMenuItem('topbar', 'definition', '', 'divider','divider',false,
             ['superAdmin','admin','PMO','projectManager','portfolioManager','executive'],7);
@@ -284,14 +292,6 @@ angular.module('core').service('Menus', [
                 // Portfolio rankings
         this.addSubMenuItem('topbar', 'definition', 'Portfolio rankings', 'portfolio-ranking-assignment','portfolio-ranking-assignment',false,
             ['superAdmin','admin','PMO','projectManager','portfolioManager','executive'],10);
-            // Selection
-        this.addSubMenuItem('topbar', 'definition', '', 'divider','divider',false,
-            ['superAdmin','admin','PMO','projectManager','portfolioManager','executive'],11);
-        this.addSubMenuItem('topbar', 'definition', 'Selection', 'menuTitle','menuTitle',false,
-            ['superAdmin','admin','PMO','projectManager','portfolioManager','executive'],12);
-                // Projects selection
-        this.addSubMenuItem('topbar', 'definition', 'Projects selection', 'project-selection','project-selection',false,
-            ['superAdmin','admin','PMO','projectManager','portfolioManager','executive'],13);
 
 
 

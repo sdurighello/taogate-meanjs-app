@@ -6,11 +6,11 @@ module.exports = function(app) {
 
 	// Overall rankings Routes
 	app.route('/overall-rankings')
-		.get(overallRankings.list)
-		.post(users.requiresLogin, overallRankings.create);
+		.get(users.requiresLogin, overallRankings.checkExistenceAndCreate, overallRankings.list)
+		.post(users.requiresLogin, overallRankings.hasAuthorization, overallRankings.create);
 
 	app.route('/overall-rankings/:overallRankingId')
-		.get(overallRankings.read)
+		.get(users.requiresLogin, overallRankings.read)
 		.put(users.requiresLogin, overallRankings.hasAuthorization, overallRankings.update)
 		.delete(users.requiresLogin, overallRankings.hasAuthorization, overallRankings.delete);
 

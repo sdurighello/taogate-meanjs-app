@@ -1,8 +1,8 @@
 'use strict';
 
 angular.module('portfolio-ranking-assignment').controller('PortfolioRankingAssignmentController', ['$scope','$stateParams', '$location', 'Authentication',
-	'Portfolios','Projects', 'PortfolioRankings', '_','$q',
-	function($scope, $stateParams, $location, Authentication, Portfolios, Projects, PortfolioRankings, _ , $q) {
+	'Portfolios','Projects', 'PortfolioRankings', 'OverallRankings', '_','$q',
+	function($scope, $stateParams, $location, Authentication, Portfolios, Projects, PortfolioRankings, OverallRankings, _ , $q) {
 
 		// ----------- INIT ---------------
 
@@ -25,6 +25,12 @@ angular.module('portfolio-ranking-assignment').controller('PortfolioRankingAssig
 
             PortfolioRankings.query(function(portfolioRankings){
                 $scope.portfolioRankings = portfolioRankings;
+            }, function(err){
+                $scope.initError.push(err.data.message);
+            });
+
+            OverallRankings.query(function(res){
+                $scope.overallRankings = res;
             }, function(err){
                 $scope.initError.push(err.data.message);
             });
@@ -81,41 +87,70 @@ angular.module('portfolio-ranking-assignment').controller('PortfolioRankingAssig
 
         var selectedPortfolioRanking = {};
         $scope.selectedAssignment = {};
+        var overallSelected = false; // Required for the drag and drop listeners
 		$scope.selectNode = function(node){
-            $scope.error = null;
-			$scope.selectedNode = node;
-            PortfolioRankings.get({
-				portfolioId: node._id,
-                retPropertiesString : 'user created selection identification portfolio',
-                deepPopulateArray : [
-                    'portfolio',
-                    'identification.projectManager','identification.backupProjectManager'
-                ]
-            }, function(res){
-                selectedPortfolioRanking = res;
-                $scope.selectedAssignment.assignedProjects = _.map(res.projects, function(project){
-                    return {
-                        _id: project._id,
-                        idNumber: project.identification.idNumber,
-                        name: project.identification.name
-                    };
-                });
-                $scope.selectedAssignment.unassignedProjects = [];
-                _.forEach($scope.projects, function(project){
-                    //Check if project belongs to ranking portfolio
-                    if(project.portfolio === node._id){
+            if(node === 'overall'){
+                $scope.error = null;
+                $scope.selectedNode = {name : 'Overall'};
+                overallSelected = true;
+                OverallRankings.query(function(res){
+                    selectedPortfolioRanking = res[0]; // Returns an array with one object
+                    $scope.selectedAssignment.assignedProjects = _.map(res[0].projects, function(project){
+                        return {
+                            _id: project._id,
+                            idNumber: project.identification.idNumber,
+                            name: project.identification.name
+                        };
+                    });
+                    $scope.selectedAssignment.unassignedProjects = [];
+                    _.forEach($scope.projects, function(project){
                         // Check if the project has been already added to the ranking, if not then push it in the unassigned
-                        if(!_.find(res.projects,'_id', project._id)){
+                        if(!_.find(res[0].projects,'_id', project._id)){
                             $scope.selectedAssignment.unassignedProjects.push({
                                 _id: project._id,
                                 idNumber : project.identification.idNumber,
                                 name: project.identification.name
                             });
                         }
-                    }
-
+                    });
                 });
-            });
+            } else {
+                $scope.error = null;
+                $scope.selectedNode = node;
+                overallSelected = false;
+                PortfolioRankings.get({
+                    portfolioId: node._id,
+                    retPropertiesString : 'user created selection identification portfolio',
+                    deepPopulateArray : [
+                        'portfolio',
+                        'identification.projectManager','identification.backupProjectManager'
+                    ]
+                }, function(res){
+                    selectedPortfolioRanking = res;
+                    $scope.selectedAssignment.assignedProjects = _.map(res.projects, function(project){
+                        return {
+                            _id: project._id,
+                            idNumber: project.identification.idNumber,
+                            name: project.identification.name
+                        };
+                    });
+                    $scope.selectedAssignment.unassignedProjects = [];
+                    _.forEach($scope.projects, function(project){
+                        //Check if project belongs to ranking portfolio
+                        if(project.portfolio === node._id){
+                            // Check if the project has been already added to the ranking, if not then push it in the unassigned
+                            if(!_.find(res.projects,'_id', project._id)){
+                                $scope.selectedAssignment.unassignedProjects.push({
+                                    _id: project._id,
+                                    idNumber : project.identification.idNumber,
+                                    name: project.identification.name
+                                });
+                            }
+                        }
+
+                    });
+                });
+            }
 		};
 
 
@@ -134,11 +169,19 @@ angular.module('portfolio-ranking-assignment').controller('PortfolioRankingAssig
                         return project._id;
                     });
                     // Save the new "projects" array to the server
-                    PortfolioRankings.update({portfolioRankingId: selectedPortfolioRanking._id},{projects: cleanProjectsArray}, function(res){
+                    if(overallSelected){
+                        OverallRankings.update({overallRankingId: selectedPortfolioRanking._id},{projects: cleanProjectsArray}, function(res){
 
-                    }, function(err){
-                        $scope.error = err.data.message;
-                    });
+                        }, function(err){
+                            $scope.error = err.data.message;
+                        });
+                    } else {
+                        PortfolioRankings.update({portfolioRankingId: selectedPortfolioRanking._id},{projects: cleanProjectsArray}, function(res){
+
+                        }, function(err){
+                            $scope.error = err.data.message;
+                        });
+                    }
                 }
 			},
             orderChanged: function(eventObj) {
@@ -148,11 +191,19 @@ angular.module('portfolio-ranking-assignment').controller('PortfolioRankingAssig
                         return project._id;
                     });
                     // Save the new "projects" array to the server
-                    PortfolioRankings.update({portfolioRankingId: selectedPortfolioRanking._id},{projects: cleanProjectsArray}, function(res){
+                    if(overallSelected){
+                        OverallRankings.update({overallRankingId: selectedPortfolioRanking._id},{projects: cleanProjectsArray}, function(res){
 
-                    }, function(err){
-                        $scope.error = err.data.message;
-                    });
+                        }, function(err){
+                            $scope.error = err.data.message;
+                        });
+                    } else {
+                        PortfolioRankings.update({portfolioRankingId: selectedPortfolioRanking._id},{projects: cleanProjectsArray}, function(res){
+
+                        }, function(err){
+                            $scope.error = err.data.message;
+                        });
+                    }
                 }
             }
 		};

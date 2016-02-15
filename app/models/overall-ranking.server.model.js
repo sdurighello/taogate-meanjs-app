@@ -4,18 +4,16 @@
  * Module dependencies.
  */
 var mongoose = require('mongoose'),
-	Schema = mongoose.Schema;
+	Schema = mongoose.Schema,
+	deepPopulate = require('mongoose-deep-populate');
+require('mongoose-multitenant');
+
 
 /**
  * Overall ranking Schema
  */
 var OverallRankingSchema = new Schema({
-	name: {
-		type: String,
-		default: '',
-		required: 'Please fill Overall ranking name',
-		trim: true
-	},
+	projects: [{type: Schema.Types.ObjectId, ref: 'Project', default:null, $tenant:true}],
 	created: {
 		type: Date,
 		default: Date.now
@@ -26,4 +24,4 @@ var OverallRankingSchema = new Schema({
 	}
 });
 
-mongoose.model('OverallRanking', OverallRankingSchema);
+mongoose.mtModel('OverallRanking', OverallRankingSchema);

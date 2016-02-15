@@ -24,18 +24,34 @@
 					<div class="alert alert-warning text-center" data-ng-hide="!portfolios.$resolved || portfolios.length">
 						No portfolios yet
 					</div>
-					<script type="text/ng-template" id="portfolioTree">
-						<button class="btn btn-default btn-sm" data-ng-click="selectNode(tree.node);"
-								style="overflow: hidden; margin: 2%;">
-							<span data-ng-bind="tree.node.name"></span> &nbsp;
-						</button>
-						<ul data-ng-if="tree.nodeTrees" class="">
-							<li data-ng-repeat="tree in tree.nodeTrees track by $index" data-ng-include="'portfolioTree'"></li>
-						</ul>
-					</script>
-					<ul class="">
-						<li data-ng-repeat="tree in portfolioTrees track by $index" data-ng-include="'portfolioTree'"></li>
-					</ul>
+					<div class="row">
+						<div class="col-md-12">
+							<ul>
+								<li>
+									<button class="btn btn-default btn-sm btn-warning" style="overflow: hidden; margin: 1%;"
+											data-ng-click="selectNode('overall')">
+										Overall
+									</button>
+								</li>
+							</ul>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col-md-12">
+							<script type="text/ng-template" id="portfolioTree">
+								<button class="btn btn-default btn-sm" data-ng-click="selectNode(tree.node);"
+										style="overflow: hidden; margin: 2%;">
+									<span data-ng-bind="tree.node.name"></span> &nbsp;
+								</button>
+								<ul data-ng-if="tree.nodeTrees" class="">
+									<li data-ng-repeat="tree in tree.nodeTrees track by $index" data-ng-include="'portfolioTree'"></li>
+								</ul>
+							</script>
+							<ul class="">
+								<li data-ng-repeat="tree in portfolioTrees track by $index" data-ng-include="'portfolioTree'"></li>
+							</ul>
+						</div>
+					</div>
 				</div>
 			</div>
 		</div>
