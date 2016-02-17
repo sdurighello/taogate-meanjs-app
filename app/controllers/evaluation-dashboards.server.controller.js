@@ -293,7 +293,7 @@ exports.qualitativeProfiles = function(req, res){
                         return sum + item.qualitativeScore;
                     }, 0);
                     return {
-                        portfolio : v[0].portfolio,
+                        portfolio : v[0].portfolio, // since they all the projectProfiles have the same 'portfolio' , I just pick the first
                         portfolioScore : portfolioScore
                     };
                 })
@@ -333,6 +333,150 @@ exports.qualitativeProfiles = function(req, res){
             });
         } else {
             res.jsonp(result);
+            /* Result = { projectProfiles : [ ], portfolioProfiles : [ ], strategyProfiles : [ ] }
+             * projectProfile = { projectId, projectName, parent, portfolio, earmarkedFunds, score, qualitativeAnalysis : [ ] }
+             *                  qualitativeAnalysisObj = { groupId, groupName, groupWeight, sumImpactScores, weightedScore, impacts : [ ] }
+             * portfolioProfile = { portfolio : { }, portfolioScore }
+             * strategyProfile = { parent : { }, parentScore }
+             */
+        }
+    });
+
+};
+
+exports.qualitativeSummary = function(req, res){
+
+    var Project = mongoose.mtModel(req.user.tenantId + '.' + 'Project');
+    var PortfolioRanking = mongoose.mtModel(req.user.tenantId + '.' + 'PortfolioRanking');
+    var OverallRanking = mongoose.mtModel(req.user.tenantId + '.' + 'OverallRanking');
+
+    async.waterfall([
+        // Get all the projects
+        function(callback) {
+            Project.find({'selection.selectedForEvaluation':true}, {'portfolio':1, 'parent':1, 'identification.name':1, 'identification.earmarkedFunds':1, 'qualitativeAnalysis':1}).deepPopulate([
+                'qualitativeAnalysis.group', 'qualitativeAnalysis.impacts.impact', 'qualitativeAnalysis.impacts.score', 'portfolio','parent'
+            ]).exec(function (err, projects) {
+                if (err) {
+                    return callback(err);
+                }
+                callback(null, projects);
+            });
+        },
+        // For each project, get its ranking (portfolio and overall)
+        function(projects, callback){
+            var projectsWithRankings = [];
+            async.eachSeries(projects, function(project, callbackEach) {
+                async.series([
+                    // Add portfolio ranking
+                    function(callback) {
+                        if(project.portfolio){
+                            PortfolioRanking.findOne({portfolio : project.portfolio._id}).exec(function (err, rankingObj) {
+                                if (err) {
+                                    return callback(err);
+                                }
+                                var projectRanking = _.findIndex(rankingObj.projects, function(p){
+                                        return p.equals(project._id);
+                                    }) + 1;
+                                if(projectRanking){
+                                    project.portfolioRanking = projectRanking;
+                                } else {
+                                    project.portfolioRanking = null;
+                                }
+                                callback(null);
+                            });
+                        } else {
+                            project.portfolioRanking = null;
+                            callback(null);
+                        }
+                    },
+                    // Add overall ranking
+                    function(callback) {
+                        OverallRanking.find().exec(function (err, rankingArray) {
+                            var rankingObj = rankingArray[0];
+                            if (err) {
+                                return callback(err);
+                            }
+                            var projectRanking = _.findIndex(rankingObj.projects, function(p){
+                                    return p.equals(project._id);
+                                }) + 1;
+                            if(projectRanking){
+                                project.overallRanking = projectRanking;
+                            } else {
+                                project.overallRanking = null;
+                            }
+                            callback(null);
+                        });
+                    }
+                ], function (err, result) {
+                    if(err){
+                        return callbackEach(err);
+                    }
+                    projectsWithRankings.push(project);
+                    callbackEach();
+                });
+            }, function(err){
+                if( err ) {
+                    callback(err);
+                } else {
+                    callback(null, projectsWithRankings);
+                }
+            });
+        },
+        function(projects, callback) {
+            var projectProfiles = [];
+            _.each(projects, function(project){
+                var profile = {
+                    projectId : project._id,
+                    projectName : project.identification.name,
+                    earmarkedFunds : project.identification.earmarkedFunds,
+                    portfolio : project.portfolio,
+                    parent : project.parent,
+                    qualitativeScore : 0,
+                    qualitativeAnalysis : [],
+                    portfolioRanking : project.portfolioRanking,
+                    overallRanking : project.overallRanking
+                };
+                _.each(project.qualitativeAnalysis, function(groupObj){
+                    var profileGroupObj = {
+                        groupId : groupObj.group._id,
+                        groupName : groupObj.group.name,
+                        groupWeight : groupObj.group.weight,
+                        sumImpactScores : 0,
+                        weightedScore : 0,
+                        impacts : []
+                    };
+                    _.each(groupObj.impacts, function(impactObj){
+                        var profileImpactObj = {
+                            impactId : impactObj.impact._id,
+                            impactName : impactObj.impact.name,
+                            impactWeight : impactObj.impact.weight,
+                            score : impactObj.score,
+                            weightedScore : impactObj.score.numericalValue * (impactObj.impact.weight/100)
+                        };
+                        profileGroupObj.impacts.push(profileImpactObj);
+                        profileGroupObj.sumImpactScores = profileGroupObj.sumImpactScores + profileImpactObj.weightedScore;
+                    });
+                    profileGroupObj.weightedScore = profileGroupObj.sumImpactScores * (profileGroupObj.groupWeight/100);
+                    profile.qualitativeAnalysis.push(profileGroupObj);
+                    profile.qualitativeScore = profile.qualitativeScore + profileGroupObj.weightedScore;
+                });
+                projectProfiles.push(profile);
+            });
+
+            callback(null, projectProfiles);
+        }
+    ], function (err, result) {
+        if (err) {
+            console.log(err);
+            return res.status(400).send({
+                message: errorHandler.getErrorMessage(err)
+            });
+        } else {
+            res.jsonp(result);
+            /*
+             * projectProfile = { projectId, projectName, parent, portfolio, earmarkedFunds, score, qualitativeAnalysis : [ ] }
+             *                  qualitativeAnalysisObj = { groupId, groupName, groupWeight, sumImpactScores, weightedScore, impacts : [ ] }
+             */
         }
     });
 

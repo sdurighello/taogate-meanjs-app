@@ -10,4 +10,7 @@ module.exports = function(app) {
 
 	app.route('/evaluation-dashboards/qualitativeProfiles')
 		.get(users.requiresLogin, evaluationDashboards.hasAuthorization, evaluationDashboards.qualitativeProfiles);
+
+	app.route('/evaluation-dashboards/qualitativeSummary')
+		.get(users.requiresLogin, evaluationDashboards.hasAuthorization, evaluationDashboards.qualitativeSummary);
 };

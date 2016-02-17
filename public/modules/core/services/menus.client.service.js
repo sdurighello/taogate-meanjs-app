@@ -436,6 +436,9 @@ angular.module('core').service('Menus', [
                 // Stakeholders
         this.addSubMenuItem('topbar', 'dashboards', 'Stakeholders analysis', 'dashboard-stakeholders','dashboard-stakeholders',false,
             ['superAdmin','admin','PMO','projectManager','portfolioManager','executive'],7);
+                // Evaluation summary
+        this.addSubMenuItem('topbar', 'dashboards', 'Evaluation summary', 'evaluation-summary','evaluation-summary',false,
+            ['superAdmin','admin','PMO','projectManager','portfolioManager','executive'],7);
 
 			// Delivery
 		this.addSubMenuItem('topbar', 'dashboards', '', 'divider','divider',false,

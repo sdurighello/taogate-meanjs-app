@@ -13,6 +13,10 @@ angular.module('evaluation-dashboards').config(['$stateProvider',
 				url: '/dashboard-financial',
 				templateUrl: 'modules/evaluation-dashboards/views/dashboard-financial.client.view.html'
 			})
+			.state('evaluation-summary', {
+				url: '/evaluation-summary',
+				templateUrl: 'modules/evaluation-dashboards/views/evaluation-summary.client.view.html'
+			})
             .state('dashboard-stakeholders', {
                 url: '/dashboard-stakeholders',
                 templateUrl: 'modules/evaluation-dashboards/views/dashboard-stakeholders.client.view.html'

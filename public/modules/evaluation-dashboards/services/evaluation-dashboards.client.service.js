@@ -14,6 +14,11 @@ angular.module('evaluation-dashboards').factory('EvaluationDashboards', ['$resou
 				method: 'GET',
 				isArray: false,
 				url: 'evaluation-dashboards/qualitativeProfiles'
+			},
+			qualitativeSummary: {
+				method: 'GET',
+				isArray: true,
+				url: 'evaluation-dashboards/qualitativeSummary'
 			}
 		});
 	}
