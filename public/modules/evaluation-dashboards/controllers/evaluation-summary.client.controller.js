@@ -1,8 +1,8 @@
 'use strict';
 
 angular.module('evaluation-dashboards').controller('EvaluationSummaryController', ['$scope', '$stateParams', '$location', 'Authentication',
-	'EvaluationDashboards','Projects','Portfolios', 'GateProcesses', '_','$q',
-	function($scope, $stateParams, $location, Authentication, EvaluationDashboards, Projects, Portfolios, GateProcesses, _, $q) {
+	'EvaluationDashboards','Projects','Portfolios', 'GateProcesses', '_','$q','$modal',
+	function($scope, $stateParams, $location, Authentication, EvaluationDashboards, Projects, Portfolios, GateProcesses, _, $q, $modal) {
 
         var vm = this;
 
@@ -114,11 +114,46 @@ angular.module('evaluation-dashboards').controller('EvaluationSummaryController'
 
         };
 
+        // ------ FILTER RANKING -----------
+
+        vm.orderByProperty = 'qualitativeScore';
+        vm.orderByDirection = true; // From highest to lowest
+        vm.orderByRanking = function(property, direction){
+            vm.orderByProperty = property;
+            vm.orderByDirection = direction;
+        };
+
         // ------ PROJECT SELECTION -----------
 
-		vm.selectProjectProfile = function(profile){
-			vm.selectedProjectProfile = profile;
-		};
+        vm.projectProfileDetails = 'financial';
+
+        var modalProjectProfile = function (size, profile) {
+
+            var modalInstance = $modal.open({
+                templateUrl: 'modules/evaluation-dashboards/views/project-profile.client.view.html',
+                controller: function ($scope, $modalInstance, profile) {
+
+                    $scope.profile = profile;
+
+                    $scope.cancelModal = function () {
+                        $modalInstance.dismiss();
+                    };
+                },
+                size: size,
+                resolve: {
+                    profile: function () {
+                        return profile;
+                    }
+                },
+                backdrop: 'static',
+                keyboard: false
+            });
+
+        };
+
+        vm.selectProjectProfile = function(profile){
+            modalProjectProfile('lg', profile);
+        };
 
 
 
