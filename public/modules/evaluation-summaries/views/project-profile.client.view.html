@@ -1,0 +1,141 @@
+<section data-ng-controller="EvaluationSummaryController as parentCtrl" data-ng-init="parentCtrl.init()">
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <h6 class="panel-title text-center"
+                style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: normal; width: 100%;">
+                {{profile.projectName}}
+            </h6>
+        </div>
+        <div class="panel-body">
+            <div class="row">
+                <div class="col-xs-4">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <h6 class="panel-title text-center">Qualitative profile</h6>
+                        </div>
+                        <div class="panel-body">
+                            <div class="row" data-ng-show="!profile.qualitativeAnalysis.length">
+                                <div class="col-md-12">
+                                    <div class="alert alert-warning text-center">
+                                        No data to show
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row" style="min-height: 325px; max-height: 325px; overflow-y: auto" data-ng-show="profile.qualitativeAnalysis.length">
+                                <div class="col-md-12">
+                                    <div class="list-group" data-ng-repeat="groupObj in profile.qualitativeAnalysis | orderBy : 'weightedScore' : true">
+                                        <div class="list-group-item" style="background-color: lightgrey">
+                                            <h5 class="list-group-item-heading">
+                                                <span>{{groupObj.groupName}}</span>
+                                                <span class="badge" data-ng-bind="groupObj.weightedScore | number : 1"></span>
+                                            </h5>
+                                        </div>
+                                        <div>
+                                            <div class="list-group-item" style="overflow: hidden;" data-ng-repeat="impactObj in groupObj.impacts | orderBy : 'weightedScore' : true">
+                                                <span>{{impactObj.impactName}}</span>
+                                                <span class="badge" data-ng-bind="impactObj.weightedScore | number : 1"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xs-4">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <h6 class="panel-title text-center">Risk profile</h6>
+                        </div>
+                        <div class="panel-body">
+                            <div class="row" data-ng-show="!profile.riskAnalysis.length">
+                                <div class="col-md-12">
+                                    <div class="alert alert-warning text-center">
+                                        No data to show
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row" style="min-height: 325px; max-height: 325px; overflow-y: auto" data-ng-show="profile.riskAnalysis.length">
+                                <div class="col-md-12">
+                                    <div class="list-group" data-ng-repeat="categoryObj in profile.riskAnalysis | orderBy : 'sumSeverityValues' : true">
+                                        <div class="list-group-item" style="background-color: lightgrey">
+                                            <h5 class="list-group-item-heading">
+                                                <span>{{categoryObj.categoryName}}</span>
+                                                <span class="badge" data-ng-bind="categoryObj.sumSeverityValues | number : 1"></span>
+                                            </h5>
+                                        </div>
+                                        <div>
+                                            <div class="list-group-item" style="overflow: hidden;" data-ng-repeat="riskObj in categoryObj.risks | orderBy : 'severityValue' : true">
+                                                <span>{{riskObj.riskName}}</span>
+                                                <span class="badge" data-ng-bind="riskObj.severityValue | number : 1"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xs-4">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <h6 class="panel-title text-center">Financial profile</h6>
+                        </div>
+                        <div class="panel-body">
+                            <div class="row" data-ng-show="!profile.financialYearlyData.length">
+                                <div class="col-md-12">
+                                    <div class="alert alert-warning text-center">
+                                        No data to show
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row" style="min-height: 325px; max-height: 325px; overflow-y: auto" data-ng-show="profile.financialYearlyData.length">
+                                <div class="col-xs-12">
+                                    <div class="table-responsive">
+                                        <table class="table table-bordered table-hover table-condensed small">
+                                            <thead>
+                                            <tr>
+                                                <th class="text-center">Year</th>
+                                                <th class="text-center" colspan="3">Discounted</th>
+                                            </tr>
+                                            <tr>
+                                                <td> </td>
+                                                <th class="text-center">Benefits</th>
+                                                <th class="text-center">Costs</th>
+                                                <th class="text-center">Net</th>
+                                            </tr>
+                                            </thead>
+                                            <tbody>
+                                            <tr data-ng-repeat="yearlyItem in profile.financialYearlyData">
+                                                <td class="text-center">{{yearlyItem.year}}</td>
+                                                <td class="text-center">{{yearlyItem.yearlyBenefitDiscounted | number : 0}}</td>
+                                                <td class="text-center">{{yearlyItem.yearlyCostDiscounted | number : 0}}</td>
+                                                <td class="text-center">{{yearlyItem.yearlyNetDiscounted | number : 0}}</td>
+                                            </tr>
+                                            <tr>
+                                                <td> </td>
+                                                <td class="text-center"><b>{{profile.financialRatios.totalBenefitDiscounted | number : 0}}</b></td>
+                                                <td class="text-center"><b>{{profile.financialRatios.totalCostDiscounted | number : 0}}</b></td>
+                                                <td class="text-center"><b>{{profile.financialRatios.totalNetDiscounted | number : 0}}</b></td>
+                                            </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="center-block text-center">
+            <button class="btn btn-primary btn-sm" data-ng-click="cancelModal()">
+                Close
+            </button>
+        </div>
+    </div>
+    <br>
+    <div class="row"></div>
+</section>

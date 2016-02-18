@@ -1,10 +1,10 @@
 'use strict';
 
 angular.module('financial-analysis').controller('FinancialAnalysisController', ['$scope','$stateParams', '$location',
-	'Authentication','FinancialBenefitGroups','FinancialBenefitTypes','FinancialCostGroups','FinancialCostTypes','EvaluationDashboards',
+	'Authentication','FinancialBenefitGroups','FinancialBenefitTypes','FinancialCostGroups','FinancialCostTypes','FinancialAnalysis',
     'FinancialCosts', 'FinancialBenefits', 'Projects', 'Portfolios', '$q', '_',
 	function($scope, $stateParams, $location, Authentication, FinancialBenefitGroups, FinancialBenefitTypes, FinancialCostGroups,
-			 FinancialCostTypes, EvaluationDashboards, FinancialCosts, FinancialBenefits, Projects, Portfolios, $q, _) {
+			 FinancialCostTypes, FinancialAnalysis, FinancialCosts, FinancialBenefits, Projects, Portfolios, $q, _) {
 
 		// ------------- INIT -------------
 
@@ -104,7 +104,7 @@ angular.module('financial-analysis').controller('FinancialAnalysisController', [
         $scope.selectFinancialOverview = function(project){
             $scope.error = null;
             if(project){
-                EvaluationDashboards.financialProfile(
+                FinancialAnalysis.financialProfile(
                     {
                         projectId : project._id
                     }, project,

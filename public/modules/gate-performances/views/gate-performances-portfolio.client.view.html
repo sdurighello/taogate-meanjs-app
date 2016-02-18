@@ -1,0 +1,241 @@
+<section data-ng-controller="GatePerformancesPortfolioController as parentCtrl" data-ng-init="parentCtrl.init()">
+	<br>
+	<div class="row">
+		<div class="col-sm-12">
+			<div class="panel-heading">
+				<ol class="breadcrumb">
+					<li>Portfolio delivery</li>
+					<li>Gate management</li>
+					<li class="active">Delivery performances</li>
+				</ol>
+			</div>
+		</div>
+	</div>
+	<div class="row">
+		<div class="col-md-3"><!-- PORTFOLIO LIST -->
+			<div class="panel panel-default">
+				<div class="panel-heading">
+					<h6 class="panel-title text-center">Portfolio tree</h6>
+				</div>
+				<div class="panel-body" style="min-height: 500px;  max-height: 500px; overflow-y: auto;">
+					<div class="alert alert-warning text-center" data-ng-hide="!parentCtrl.portfolios.$resolved || parentCtrl.portfolios.length">
+						No portfolios yet
+					</div>
+					<div class="row">
+						<div class="col-md-12">
+							<ul>
+								<li>
+									<button class="btn btn-default btn-sm btn-warning" style="overflow: hidden; margin: 1%;"
+											data-ng-click="parentCtrl.selectPortfolio('all')">
+										All
+									</button>
+								</li>
+							</ul>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col-md-12">
+							<ul>
+								<li>
+									<button class="btn btn-default btn-sm btn-warning" style="overflow: hidden; margin: 1%;"
+											data-ng-click="parentCtrl.selectPortfolio('unassigned')">
+										Unassigned
+									</button>
+								</li>
+							</ul>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col-md-12">
+							<script type="text/ng-template" id="portfolioTree">
+								<button class="btn btn-default btn-sm" data-ng-click="parentCtrl.selectPortfolio(tree.node);"
+										style="overflow: hidden; margin: 2%;">
+									<span data-ng-bind="tree.node.name"></span>
+								</button>
+								<ul data-ng-if="tree.nodeTrees" class="">
+									<li data-ng-repeat="tree in tree.nodeTrees track by $index" data-ng-include="'portfolioTree'"></li>
+								</ul>
+							</script>
+							<ul class="">
+								<li data-ng-repeat="tree in parentCtrl.portfolioTrees track by $index" data-ng-include="'portfolioTree'"></li>
+							</ul>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="col-md-9">
+			<div class="row">
+				<div class="col-md-12">
+					<div data-ng-hide="parentCtrl.selectedPortfolio || parentCtrl.portfolios.length === 0" class="alert alert-warning text-center">
+						Select a portfolio to see its details
+					</div>
+				</div>
+			</div>
+			<div class="row" data-ng-show="parentCtrl.selectedPortfolio">
+				<div class="col-md-12">
+					<div data-ng-show="error" class="text-danger">
+						<strong data-ng-bind="error"></strong>
+					</div>
+					<div data-ng-hide="parentCtrl.selectedPortfolio" class="alert alert-warning text-center">
+						Select a portfolio to see its details
+					</div>
+					<div class="row">
+						<div class="col-md-6">
+							<div class="panel panel-default" style="margin: 0.1%">
+								<div><h5>&nbsp;Portfolio: <i>{{parentCtrl.selectedPortfolio.name}}</i></h5></div>
+							</div>
+						</div>
+					</div>
+					<hr>
+					<div data-ng-show="parentCtrl.selectedPortfolio">
+						<div class="row" data-ng-show="!parentCtrl.projectProfilesView.length">
+							<div class="col-md-12">
+								<div class="alert alert-warning text-center">
+									No delivery data to show
+								</div>
+							</div>
+						</div>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="panel panel-default">
+                                    <div class="panel-body">
+                                        <div class="col-md-3 form-group-sm">
+                                            <label>N. of projects</label>
+                                            <span class="form-control">{{parentCtrl.numberOfProjects | number : 0}}</span>
+                                        </div>
+                                        <div class="col-md-3 form-group-sm">
+                                            <label>Total projects budget</label>
+                                            <span class="form-control">{{parentCtrl.totalBudget | number : 0}}</span>
+                                        </div>
+                                        <div class="col-md-3 form-group-sm">
+                                            <label>Total earmarked funds</label>
+                                            <span class="form-control">{{parentCtrl.totalEarmarkedFunds | number : 0}}</span>
+                                        </div>
+                                        <div class="col-md-3 form-group-sm">
+                                            <label>Portfolio funds</label>
+                                            <span class="form-control">{{parentCtrl.selectedPortfolio.funds | number : 0}}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+						<div class="row" style="min-height: 325px; max-height: 325px; overflow-y: auto" data-ng-show="parentCtrl.projectProfilesView.length">
+							<div class="col-md-12">
+								<div class="table-responsive">
+									<table class="table table-bordered table-hover table-condensed small">
+										<thead>
+										<tr>
+                                            <th rowspan="2" data-ng-show="parentCtrl.treeSelectionFlag === 'all' || parentCtrl.treeSelectionFlag === 'unassigned'" class="text-center">
+                                                <span>Overall rank</span>
+                                                <button class="btn btn-xs" data-ng-click="parentCtrl.orderByRanking('project.overallRanking', false)">
+                                                    <span class="glyphicon glyphicon-sort-by-attributes"></span>
+                                                </button>
+                                            </th>
+                                            <th rowspan="2" data-ng-show="parentCtrl.treeSelectionFlag === 'portfolio'" class="text-center">
+                                                <span>Portfolio rank</span>
+                                                <button class="btn btn-xs" data-ng-click="parentCtrl.orderByRanking('project.portfolioRanking', false, 'Portfolio rank')">
+                                                    <span class="glyphicon glyphicon-sort-by-attributes"></span>
+                                                </button>
+                                            </th>
+											<th colspan="2" class="text-center">Project</th>
+                                            <th rowspan="2" class="text-center">
+                                                <span>Budget</span>
+                                                <button class="btn btn-xs" data-ng-click="parentCtrl.orderByRanking('cumulativeData.budget.amount', true, 'Budget')">
+                                                    <span class="glyphicon glyphicon-sort-by-attributes-alt"></span>
+                                                </button>
+                                            </th>
+											<th colspan="4" class="text-center">Variances on baseline</th>
+                                            <th colspan="5" class="text-center">Earned value analysis</th>
+										</tr>
+										<tr>
+											<th>Rank by {{parentCtrl.orderByDisplayName}}</th>
+                                            <th>Name</th>
+                                            <!-- variances on baseline -->
+											<th class="text-center">
+												<span>Budget</span>
+												<button class="btn btn-xs" data-ng-click="parentCtrl.orderByRanking('cumulativeData.budget.varianceBaselinePercent', true, 'Budget variance')">
+													<span class="glyphicon glyphicon-sort-by-attributes-alt"></span>
+												</button>
+											</th>
+											<th class="text-center">
+												<span>Duration</span>
+												<button class="btn btn-xs" data-ng-click="parentCtrl.orderByRanking('cumulativeData.duration.varianceBaselinePercent', true, 'Duration variance')">
+													<span class="glyphicon glyphicon-sort-by-attributes-alt"></span>
+												</button>
+											</th>
+											<th class="text-center">
+												<span>Cost</span>
+												<button class="btn btn-xs" data-ng-click="parentCtrl.orderByRanking('cumulativeData.cost.varianceBaselinePercent', true, 'Cost variance')">
+													<span class="glyphicon glyphicon-sort-by-attributes-alt"></span>
+												</button>
+											</th>
+											<th class="text-center">
+												<span>Completion</span>
+												<button class="btn btn-xs" data-ng-click="parentCtrl.orderByRanking('cumulativeData.completion.varianceBaselinePercent', true, 'Completion variance')">
+													<span class="glyphicon glyphicon-sort-by-attributes-alt"></span>
+												</button>
+											</th>
+                                            <!-- earned value -->
+											<th class="text-center">
+												<span>Earned value</span>
+												<button class="btn btn-xs" data-ng-click="parentCtrl.orderByRanking('cumulativeData.earnedValueAnalysis.earnedValue', true, 'Earned value')">
+													<span class="glyphicon glyphicon-sort-by-attributes-alt"></span>
+												</button>
+											</th>
+											<th class="text-center">
+												<span>Cost variance</span>
+												<button class="btn btn-xs" data-ng-click="parentCtrl.orderByRanking('cumulativeData.earnedValueAnalysis.percentCostVariance', false, 'EV Cost variance')">
+													<span class="glyphicon glyphicon-sort-by-attributes"></span>
+												</button>
+											</th>
+                                            <th class="text-center">
+                                                <span>Schedule variance</span>
+                                                <button class="btn btn-xs" data-ng-click="parentCtrl.orderByRanking('cumulativeData.earnedValueAnalysis.percentScheduleVariance', false, 'EV Schedule variance')">
+                                                    <span class="glyphicon glyphicon-sort-by-attributes"></span>
+                                                </button>
+                                            </th>
+                                            <th class="text-center">
+                                                <span>CPI</span>
+                                                <button class="btn btn-xs" data-ng-click="parentCtrl.orderByRanking('cumulativeData.earnedValueAnalysis.costPerformanceIndex', false, 'CPI')">
+                                                    <span class="glyphicon glyphicon-sort-by-attributes"></span>
+                                                </button>
+                                            </th>
+                                            <th class="text-center">
+                                                <span>SPI</span>
+                                                <button class="btn btn-xs" data-ng-click="parentCtrl.orderByRanking('cumulativeData.earnedValueAnalysis.schedulePerformanceIndex', false, 'SPI')">
+                                                    <span class="glyphicon glyphicon-sort-by-attributes"></span>
+                                                </button>
+                                            </th>
+										</tr>
+										</thead>
+										<tbody>
+										<tr data-ng-repeat="profile in parentCtrl.projectProfilesView | orderBy : parentCtrl.orderByProperty : parentCtrl.orderByDirection" data-ng-click="parentCtrl.selectProjectProfile(profile)">
+											<td data-ng-show="parentCtrl.treeSelectionFlag === 'all' || parentCtrl.treeSelectionFlag === 'unassigned'" class="text-center">{{profile.project.overallRanking}}</td>
+											<td data-ng-show="parentCtrl.treeSelectionFlag === 'portfolio'" class="text-center">{{profile.project.portfolioRanking}}</td>
+											<td class="text-center"><b>{{$index + 1}}</b></td>
+											<td class="btn-link">{{profile.project.identification.name}}</td>
+											<td class="text-center">{{profile.cumulativeData.budget.amount | number : 0}}</td>
+                                            <!-- variance on baseline -->
+											<td class="text-center">{{profile.cumulativeData.budget.varianceBaselinePercent * 100 | number : 1}}%</td>
+											<td class="text-center">{{profile.cumulativeData.duration.variancePercent * 100 | number : 1}}%</td>
+											<td class="text-center">{{profile.cumulativeData.cost.variancePercent * 100 | number : 1}}%</td>
+											<td class="text-center">{{profile.cumulativeData.completion.variancePercent * 100 | number : 1}}%</td>
+                                            <!-- earned value -->
+											<td class="text-center">{{profile.cumulativeData.earnedValueAnalysis.earnedValue | number : 0}}</td>
+											<td class="text-center">{{profile.cumulativeData.earnedValueAnalysis.percentCostVariance * 100 | number : 1}}%</td>
+											<td class="text-center">{{profile.cumulativeData.earnedValueAnalysis.percentScheduleVariance * 100 | number : 1}}%</td>
+											<td class="text-center">{{profile.cumulativeData.earnedValueAnalysis.costPerformanceIndex | number : 2}}</td>
+                                            <td class="text-center">{{profile.cumulativeData.earnedValueAnalysis.schedulePerformanceIndex | number : 2}}</td>
+										</tr>
+										</tbody>
+									</table>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</section>
