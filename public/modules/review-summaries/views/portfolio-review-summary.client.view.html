@@ -1,0 +1,169 @@
+<section data-ng-controller="ReviewSummariesController as parentCtrl" data-ng-init="parentCtrl.init()">
+    <br>
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="panel-heading">
+                <ol class="breadcrumb">
+                    <li>Portfolio evaluation</li>
+                    <li>Reviews</li>
+                    <li class="active">Reviews summary</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-3"><!-- PORTFOLIO LIST -->
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h6 class="panel-title text-center">Portfolio tree</h6>
+                </div>
+                <div class="panel-body" style="min-height: 500px;  max-height: 500px; overflow-y: auto;">
+                    <div class="alert alert-warning text-center" data-ng-hide="!parentCtrl.portfolios.$resolved || parentCtrl.portfolios.length">
+                        No portfolios yet
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <ul>
+                                <li>
+                                    <button class="btn btn-default btn-sm btn-warning" style="overflow: hidden; margin: 1%;"
+                                            data-ng-click="parentCtrl.selectPortfolio('all')">
+                                        All
+                                    </button>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <ul>
+                                <li>
+                                    <button class="btn btn-default btn-sm btn-warning" style="overflow: hidden; margin: 1%;"
+                                            data-ng-click="parentCtrl.selectPortfolio('unassigned')">
+                                        Unassigned
+                                    </button>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <script type="text/ng-template" id="portfolioTree">
+                                <button class="btn btn-default btn-sm" data-ng-click="parentCtrl.selectPortfolio(tree.node);"
+                                        style="overflow: hidden; margin: 2%;">
+                                    <span data-ng-bind="tree.node.name"></span>
+                                </button>
+                                <ul data-ng-if="tree.nodeTrees" class="">
+                                    <li data-ng-repeat="tree in tree.nodeTrees track by $index" data-ng-include="'portfolioTree'"></li>
+                                </ul>
+                            </script>
+                            <ul class="">
+                                <li data-ng-repeat="tree in parentCtrl.portfolioTrees track by $index" data-ng-include="'portfolioTree'"></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-9">
+            <div class="row">
+                <div class="col-md-12">
+                    <div data-ng-hide="parentCtrl.selectedPortfolio || parentCtrl.portfolios.length === 0" class="alert alert-warning text-center">
+                        Select a portfolio to see its details
+                    </div>
+                </div>
+            </div>
+            <div class="row" data-ng-show="parentCtrl.selectedPortfolio">
+                <div class="col-md-6">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <h6 class="panel-title">
+                                <span>&nbsp;Portfolio: <em>{{parentCtrl.selectedPortfolio.name}}</em></span>
+                                <span class="badge pull-right">Avg score: 36</span>
+                            </h6>
+                        </div>
+                        <div class="panel-body">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="list-group" >
+                                        <div class="list-group-item" style="background-color: lightgrey">
+                                            <h5 class="list-group-item-heading">
+                                                <span class="btn-link" data-ng-click="parentCtrl.viewPortfolioReviews(parentCtrl.selectedPortfolio)">
+                                                    Portfolio reviews
+                                                </span>
+                                                <span class="badge pull-right">42</span>
+                                            </h5>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="list-group" >
+                                        <div class="list-group-item" style="background-color: lightgrey">
+                                            <h5 class="list-group-item-heading">
+                                                <span>Project reviews</span>
+                                                <span class="badge pull-right" data-ng-bind="parentCtrl.portfolioSummaryView.avgWeightedScore | number : 2"></span>
+                                            </h5>
+                                        </div>
+                                        <div>
+                                            <div class="list-group-item" style="overflow: hidden;"
+                                                 data-ng-repeat="profile in parentCtrl.portfolioSummaryView.projectProfiles | orderBy : 'avgWeightedScore' : true">
+                                                <span class="btn-link" data-ng-click="parentCtrl.selectProjectProfile(profile)">
+                                                    {{profile.project.identification.name}}
+                                                </span>
+                                                <span class="badge" data-ng-bind="profile.avgWeightedScore | number : 2"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6" data-ng-show="parentCtrl.selectedProjectProfile">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <h6 class="panel-title">
+                                <span>&nbsp;Project: <em>{{parentCtrl.selectedProjectProfile.project.identification.name}}</em></span>
+                                <span class="badge pull-right">Avg score: {{parentCtrl.selectedProjectProfile.avgWeightedScore | number : 2}}</span>
+                            </h6>
+                        </div>
+                        <div class="panel-body">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="list-group" data-ng-repeat="typeProfile in parentCtrl.selectedProjectProfile.typeProfiles | orderBy : 'avgWeightedScore' : true">
+                                        <div class="list-group-item" style="background-color: lightgrey">
+                                            <h5 class="list-group-item-heading">
+                                                <span data-ng-bind="typeProfile.type.name"></span>
+                                                <span class="badge" data-ng-bind="typeProfile.avgWeightedScore | number : 2"></span>
+                                            </h5>
+                                        </div>
+                                        <div>
+                                            <div class="list-group-item" style="overflow: hidden;"
+                                                 data-ng-repeat="profile in typeProfile.reviewProfiles | orderBy : 'avgWeightedScore' : true">
+                                                <span class="btn-link" data-ng-click="parentCtrl.selectReviewProfile(profile)">
+                                                    {{profile.reviewName}}
+                                                </span>
+                                                <span class="badge" data-ng-bind="profile.weightedScore | number : 2"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6" data-ng-show="parentCtrl.selectedPortfolioReviews">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <h6 class="panel-title">&nbsp;List of portfolio review</h6>
+                        </div>
+                        <div class="panel-body">
+                            Click on the review and open a pop up
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

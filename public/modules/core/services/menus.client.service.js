@@ -336,7 +336,7 @@ angular.module('core').service('Menus', [
         this.addSubMenuItem('topbar', 'evaluation', 'Portfolio reviews', 'portfolio-reviews','portfolio-reviews',false,
             ['superAdmin','admin','PMO','projectManager','portfolioManager','executive'],12);
                 // Reviews summary
-        this.addSubMenuItem('topbar', 'evaluation', 'Reviews summary', 'review-summary','review-summary',false,
+        this.addSubMenuItem('topbar', 'evaluation', 'Reviews summary', 'review-summaries','review-summaries',false,
             ['superAdmin','admin','PMO','projectManager','portfolioManager','executive'],13);
             // Dependencies
         this.addSubMenuItem('topbar', 'evaluation', '', 'divider','divider',false,
