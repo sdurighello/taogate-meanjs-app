@@ -1,130 +1,68 @@
-<section data-ng-controller="ReviewSummariesController as parentCtrl" data-ng-init="parentCtrl.init()">
+<section data-ng-controller="ReviewSummariesController as parentCtrl" >
     <div class="panel panel-default">
         <div class="panel-heading">
             <h6 class="panel-title text-center"
                 style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: normal; width: 100%;">
-                {{profile.projectName}}
+                {{profile.reviewName}}
             </h6>
         </div>
-        <div class="panel-body">
+        <div class="panel-body" style="min-height: 410px; max-height: 410px; overflow-y: auto">
             <div class="row">
-                <div class="col-xs-4">
-                    <div class="panel panel-default">
-                        <div class="panel-heading">
-                            <h6 class="panel-title text-center">Qualitative profile</h6>
-                        </div>
-                        <div class="panel-body">
-                            <div class="row" data-ng-show="!profile.qualitativeAnalysis.length">
-                                <div class="col-md-12">
-                                    <div class="alert alert-warning text-center">
-                                        No data to show
-                                    </div>
+                <div class="col-md-12">
+                    <accordion close-others="oneAtATime">
+                        <accordion-group data-ng-repeat="reviewGroup in profile.groups" heading="{{reviewGroup.groupName}}">
+                            <div class="row">
+                                <div class="form-group col-md-12">
+                                    <textarea class="form-control" data-ng-model="reviewGroup.groupDescription" placeholder="No description" disabled></textarea>
                                 </div>
                             </div>
-                            <div class="row" style="min-height: 325px; max-height: 325px; overflow-y: auto" data-ng-show="profile.qualitativeAnalysis.length">
-                                <div class="col-md-12">
-                                    <div class="list-group" data-ng-repeat="groupObj in profile.qualitativeAnalysis | orderBy : 'weightedScore' : true">
-                                        <div class="list-group-item" style="background-color: lightgrey">
-                                            <h5 class="list-group-item-heading">
-                                                <span>{{groupObj.groupName}}</span>
-                                                <span class="badge" data-ng-bind="groupObj.weightedScore | number : 1"></span>
-                                            </h5>
-                                        </div>
-                                        <div>
-                                            <div class="list-group-item" style="overflow: hidden;" data-ng-repeat="impactObj in groupObj.impacts | orderBy : 'weightedScore' : true">
-                                                <span>{{impactObj.impactName}}</span>
-                                                <span class="badge" data-ng-bind="impactObj.weightedScore | number : 1"></span>
-                                            </div>
+                            <accordion close-others="oneAtATime">
+                                <accordion-group data-ng-repeat="reviewItem in reviewGroup.items" heading="{{reviewItem.itemName}}">
+                                    <div class="row">
+                                        <div class="col-md-12 form-group">
+                                            <textarea class="form-control" data-ng-model="reviewItem.itemDescription" placeholder="No description" disabled></textarea>
                                         </div>
                                     </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-xs-4">
-                    <div class="panel panel-default">
-                        <div class="panel-heading">
-                            <h6 class="panel-title text-center">Risk profile</h6>
-                        </div>
-                        <div class="panel-body">
-                            <div class="row" data-ng-show="!profile.riskAnalysis.length">
-                                <div class="col-md-12">
-                                    <div class="alert alert-warning text-center">
-                                        No data to show
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="row" style="min-height: 325px; max-height: 325px; overflow-y: auto" data-ng-show="profile.riskAnalysis.length">
-                                <div class="col-md-12">
-                                    <div class="list-group" data-ng-repeat="categoryObj in profile.riskAnalysis | orderBy : 'sumSeverityValues' : true">
-                                        <div class="list-group-item" style="background-color: lightgrey">
-                                            <h5 class="list-group-item-heading">
-                                                <span>{{categoryObj.categoryName}}</span>
-                                                <span class="badge" data-ng-bind="categoryObj.sumSeverityValues | number : 1"></span>
-                                            </h5>
-                                        </div>
-                                        <div>
-                                            <div class="list-group-item" style="overflow: hidden;" data-ng-repeat="riskObj in categoryObj.risks | orderBy : 'severityValue' : true">
-                                                <span>{{riskObj.riskName}}</span>
-                                                <span class="badge" data-ng-bind="riskObj.severityValue | number : 1"></span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-xs-4">
-                    <div class="panel panel-default">
-                        <div class="panel-heading">
-                            <h6 class="panel-title text-center">Financial profile</h6>
-                        </div>
-                        <div class="panel-body">
-                            <div class="row" data-ng-show="!profile.financialYearlyData.length">
-                                <div class="col-md-12">
-                                    <div class="alert alert-warning text-center">
-                                        No data to show
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="row" style="min-height: 325px; max-height: 325px; overflow-y: auto" data-ng-show="profile.financialYearlyData.length">
-                                <div class="col-xs-12">
-                                    <div class="table-responsive">
-                                        <table class="table table-bordered table-hover table-condensed small">
-                                            <thead>
-                                            <tr>
-                                                <th class="text-center">Year</th>
-                                                <th class="text-center" colspan="3">Discounted</th>
-                                            </tr>
-                                            <tr>
-                                                <td> </td>
-                                                <th class="text-center">Benefits</th>
-                                                <th class="text-center">Costs</th>
-                                                <th class="text-center">Net</th>
-                                            </tr>
-                                            </thead>
-                                            <tbody>
-                                            <tr data-ng-repeat="yearlyItem in profile.financialYearlyData">
-                                                <td class="text-center">{{yearlyItem.year}}</td>
-                                                <td class="text-center">{{yearlyItem.yearlyBenefitDiscounted | number : 0}}</td>
-                                                <td class="text-center">{{yearlyItem.yearlyCostDiscounted | number : 0}}</td>
-                                                <td class="text-center">{{yearlyItem.yearlyNetDiscounted | number : 0}}</td>
-                                            </tr>
-                                            <tr>
-                                                <td> </td>
-                                                <td class="text-center"><b>{{profile.financialRatios.totalBenefitDiscounted | number : 0}}</b></td>
-                                                <td class="text-center"><b>{{profile.financialRatios.totalCostDiscounted | number : 0}}</b></td>
-                                                <td class="text-center"><b>{{profile.financialRatios.totalNetDiscounted | number : 0}}</b></td>
-                                            </tr>
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                                    <accordion close-others="oneAtATime">
+                                        <accordion-group data-ng-repeat="peopleReview in reviewItem.peopleReviews">
+                                            <accordion-heading>
+                                                <div class="row">
+                                                    <div class="col-md-10"><b>{{peopleReview.personName}}</b></div>
+                                                    <div class="col-md-2"><span data-ng-show="peopleReview.submitted" class="glyphicon glyphicon-ok"></span></div>
+                                                </div>
+                                            </accordion-heading>
+                                            <form>
+                                                <div class="row">
+                                                    <div class="form-group-sm col-md-6">
+                                                        <label>Stakeholder group</label>
+                                                        <span class="form-control">{{peopleReview.personGroupName}}</span>
+                                                    </div>
+                                                    <div class="form-group-sm col-md-6">
+                                                        <label>Role</label>
+                                                        <span class="form-control">{{peopleReview.personRoleName}}</span>
+                                                    </div>
+                                                </div>
+                                                <br>
+                                                <div class="row">
+                                                    <div class="form-group-sm col-md-6">
+                                                        <label>Score</label>
+                                                        <span class="form-control">{{peopleReview.score.name}}: {{peopleReview.score.numericalValue}}</span>
+                                                    </div>
+                                                </div>
+                                                <br>
+                                                <div class="row">
+                                                    <div class="form-group-sm col-md-12">
+                                                        <label for="sCommentView">Comment</label>
+                                                        <textarea id="sCommentView" class="form-control" data-ng-model="peopleReview.comment" placeholder="No comment" disabled required></textarea>
+                                                    </div>
+                                                </div>
+                                            </form>
+                                        </accordion-group>
+                                    </accordion>
+                                </accordion-group>
+                            </accordion>
+                        </accordion-group>
+                    </accordion>
                 </div>
             </div>
         </div>

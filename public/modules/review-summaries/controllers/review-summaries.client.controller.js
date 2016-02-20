@@ -10,7 +10,8 @@ angular.module('review-summaries').controller('ReviewSummariesController', ['$sc
 
 		vm.initError = [];
 
-		var reviewProfiles = [];
+		var portfolioProfiles = [];
+        var projectProfiles = [];
 
 		vm.init = function(){
 
@@ -33,12 +34,17 @@ angular.module('review-summaries').controller('ReviewSummariesController', ['$sc
 				vm.initError.push(err.data.message);
 			});
 
-			ReviewSummaries.portfolioSummary(function(res){
-				console.log(res);
-				reviewProfiles = res;
+			ReviewSummaries.portfolioReviews(function(res){
+				portfolioProfiles = res;
 			}, function(err){
 				vm.initError.push(err.data.message);
 			});
+
+            ReviewSummaries.projectReviews(function(res){
+                projectProfiles = res;
+            }, function(err){
+                vm.initError.push(err.data.message);
+            });
 
 
 		};
@@ -93,17 +99,23 @@ angular.module('review-summaries').controller('ReviewSummariesController', ['$sc
 				vm.treeSelectionFlag = 'unassigned';
 				vm.selectedReviewProfile = null;
 				vm.selectedPortfolio = {name : 'Unassigned'};
-				vm.portfolioSummaryView = _.find(reviewProfiles, function(profile){
+				vm.projectProfilesView = _.find(projectProfiles, function(profile){
 					return _.isNull(profile.portfolioId);
 				});
+                vm.portfolioProfilesView = null;
+                vm.selectedProjectProfile = null;
 				return;
 			}
 			vm.selectedReviewProfile = null;
 			vm.treeSelectionFlag = 'portfolio';
 			vm.selectedPortfolio = portfolio;
-			vm.portfolioSummaryView = _.find(reviewProfiles, function(profile){
+            vm.selectedProjectProfile = null;
+			vm.projectProfilesView = _.find(projectProfiles, function(profile){
 				return (profile.portfolioId) && (profile.portfolioId === portfolio._id);
 			});
+            vm.portfolioProfilesView = _.find(portfolioProfiles, function(profile){
+                return (profile.portfolio) && (profile.portfolio._id === portfolio._id);
+            });
 
 		};
 
@@ -117,6 +129,8 @@ angular.module('review-summaries').controller('ReviewSummariesController', ['$sc
 		};
 
         // ------ PROJECT SELECTION -----------
+
+        vm.filterProjectName = '';
 
         vm.selectProjectProfile = function(profile){
             vm.selectedProjectProfile = profile;
@@ -140,6 +154,7 @@ angular.module('review-summaries').controller('ReviewSummariesController', ['$sc
 				controller: function ($scope, $modalInstance, profile) {
 
 					$scope.profile = profile;
+                    $scope.oneAtATime = true;
 
 					$scope.cancelModal = function () {
 						$modalInstance.dismiss();

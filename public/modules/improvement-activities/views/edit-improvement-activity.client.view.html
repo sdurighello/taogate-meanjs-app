@@ -1,0 +1,781 @@
+<section data-ng-controller="PortfolioIssuesController as parentCtrl" data-ng-init="parentCtrl.init()">
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <h6 class="panel-title text-center"
+                style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: normal; width: 100%;">
+                #{{selectedPortfolioIssue.idNumber}} - {{selectedPortfolioIssue.title}}
+            </h6>
+        </div>
+        <div class="row">
+            <div class="col-md-12 btn-group btn-group-xs btn-group-justified">
+                <label class="btn btn-info btn-xs" data-ng-model="parentCtrl.portfolioIssueDetails" btn-radio="'header'">
+                    Header
+                </label>
+                <label class="btn btn-info btn-xs" data-ng-model="parentCtrl.portfolioIssueDetails" btn-radio="'status'">
+                    Status
+                </label>
+                <label class="btn btn-info btn-xs" data-ng-model="parentCtrl.portfolioIssueDetails" btn-radio="'escalations'">
+                    Escalations
+                </label>
+                <label class="btn btn-info btn-xs" data-ng-model="parentCtrl.portfolioIssueDetails" btn-radio="'associatedProjectIssues'">
+                    Associated project issues
+                </label>
+            </div>
+        </div>
+        <div class="panel-body">
+            <div data-ng-show="parentCtrl.portfolioIssueDetails === 'header'">
+                <div data-ng-switch="parentCtrl.switchHeaderForm">
+                    <form data-ng-switch-default="view">
+                        <div class="row">
+                            <div class="form-group-sm col-md-3">
+                                <label for="">Raised on date</label>
+                                <input type="text" id="" class="form-control" datepicker-popup="dd-MMMM-yyyy" data-ng-model="selectedPortfolioIssue.raisedOnDate" disabled />
+                            </div>
+                            <div class="form-group-sm col-md-6">
+                                <label for="reviewTitleEdit">Review title</label>
+                                <input id="reviewTitleEdit" name="reviewTitleNew" class="form-control" type="text" placeholder="Enter review title"
+                                       data-ng-model="selectedPortfolioIssue.title" disabled>
+                            </div>
+                        </div>
+                        <br>
+                        <div class="row">
+                            <div class="form-group-sm col-md-4">
+                                <label for="">Reason</label>
+                                <select id="" class="form-control" data-ng-model = "selectedPortfolioIssue.reason"
+                                        ng-options="reason as reason.name for reason in parentCtrl.logReasons track by reason._id" disabled>
+                                </select>
+                            </div>
+                            <div class="form-group-sm col-md-4">
+                                <label for="">Priority</label>
+                                <select id="" class="form-control" data-ng-model = "selectedPortfolioIssue.priority"
+                                        ng-options="priority as priority.name for priority in parentCtrl.logPriorities track by priority._id" disabled>
+                                </select>
+                            </div>
+                            <div class="form-group-sm col-md-4">
+                                <label for="">State</label>
+                                <select id="" class="form-control" data-ng-model = "selectedPortfolioIssue.state"
+                                        ng-options="state as state.name for state in parentCtrl.issueStates track by state._id" disabled>
+                                </select>
+                            </div>
+                        </div>
+                        <br>
+                        <div class="row">
+                            <div class="form-group-sm col-md-12">
+                                <label for="">Description</label>
+                                <textarea id="" class="form-control" data-ng-model="selectedPortfolioIssue.description" disabled></textarea>
+                            </div>
+                        </div>
+                        <hr>
+                        <div class="form-group-sm pull-right" data-ng-show="parentCtrl.userHasAuthorization">
+                            <button class="btn btn-success btn-xs" data-ng-click="parentCtrl.editHeader()">
+                                Edit
+                            </button>
+                        </div>
+                    </form>
+                    <form data-ng-switch-when="edit" name="editPortfolioIssueForm">
+                        <div class="row">
+                            <div class="form-group-sm col-md-3">
+                                <label for="">Raised on date</label>
+                                <div class="input-group">
+                                    <input type="text" id="" class="form-control" datepicker-popup="dd-MMMM-yyyy" data-ng-model="selectedPortfolioIssue.raisedOnDate"
+                                           is-open="parentCtrl.headerDateOpened" required>
+                                        <span class="input-group-btn">
+                                            <button type="button" class="btn btn-default btn-sm" ng-click="parentCtrl.openHeaderDate($event)"><i class="glyphicon glyphicon-calendar"></i></button>
+                                        </span>
+                                </div>
+                            </div>
+                            <div class="form-group-sm col-md-6">
+                                <label for="">Title</label>
+                                <input id="" class="form-control" type="text" placeholder="Enter title"
+                                       data-ng-model="selectedPortfolioIssue.title" required>
+                            </div>
+                        </div>
+                        <br>
+                        <div class="row">
+                            <div class="form-group-sm col-md-4">
+                                <label for="">Reason</label>
+                                <select id="" class="form-control" data-ng-model = "selectedPortfolioIssue.reason"
+                                        ng-options="reason as reason.name for reason in parentCtrl.logReasons track by reason._id" >
+                                    <option value="">--choose reason</option>
+                                </select>
+                            </div>
+                            <div class="form-group-sm col-md-4">
+                                <label for="">Priority</label>
+                                <select id="" class="form-control" data-ng-model = "selectedPortfolioIssue.priority"
+                                        ng-options="priority as priority.name for priority in parentCtrl.logPriorities track by priority._id" >
+                                    <option value="">--choose priority</option>
+                                </select>
+                            </div>
+                            <div class="form-group-sm col-md-4">
+                                <label for="">State</label>
+                                <select id="" class="form-control" data-ng-model = "selectedPortfolioIssue.state"
+                                        ng-options="state as state.name for state in parentCtrl.issueStates track by state._id" >
+                                    <option value="">--choose state</option>
+                                </select>
+                            </div>
+                        </div>
+                        <br>
+                        <div class="row">
+                            <div class="form-group-sm col-md-12">
+                                <label for="">Description</label>
+                                <textarea id="" class="form-control" placeholder="Enter description" data-ng-model="selectedPortfolioIssue.description"></textarea>
+                            </div>
+                        </div>
+                        <hr>
+                        <div class="form-group-sm pull-right">
+                            <button class="btn btn-success btn-xs" data-ng-click="parentCtrl.saveEditHeader(selectedPortfolioIssue, originalPortfolioIssue)"
+                                    data-ng-disabled="editPortfolioIssueForm.$invalid">
+                                Save
+                            </button>
+                            <button class="btn btn-info btn-xs" data-ng-click="parentCtrl.cancelEditHeader(selectedPortfolioIssue, originalPortfolioIssue)">
+                                Cancel
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <div data-ng-show="parentCtrl.portfolioIssueDetails === 'status'">
+                <div data-ng-switch="parentCtrl.switchStatusForm">
+                    <form data-ng-switch-default="view">
+                        <div class="row">
+                            <div class="form-group-sm col-md-4">
+                                <label for="">Baseline delivery date</label>
+                                <input type="text" id="" class="form-control" datepicker-popup="dd-MMMM-yyyy" data-ng-model="selectedPortfolioIssue.statusReview.currentRecord.baselineDeliveryDate" disabled />
+                            </div>
+                            <div class="form-group-sm col-md-4">
+                                <label for="">Estimate delivery date</label>
+                                <input type="text" id="" class="form-control" datepicker-popup="dd-MMMM-yyyy" data-ng-model="selectedPortfolioIssue.statusReview.currentRecord.estimateDeliveryDate" disabled />
+                            </div>
+                            <div class="form-group-sm col-md-4">
+                                <label for="">Actual delivery date</label>
+                                <input type="text" id="" class="form-control" datepicker-popup="dd-MMMM-yyyy" data-ng-model="selectedPortfolioIssue.statusReview.currentRecord.actualDeliveryDate" disabled />
+                            </div>
+                        </div>
+                        <br>
+                        <div class="row">
+                            <div class="form-group-sm col-md-4">
+                                <label for="">Status</label>
+                                <select id="" class="form-control" data-ng-model = "selectedPortfolioIssue.statusReview.currentRecord.status"
+                                        ng-options="status as status.name for status in parentCtrl.logStatuses track by status._id" disabled>
+                                </select>
+                            </div>
+                            <div class="form-group-sm col-md-4">
+                                <label for="prjCrEditCompleted">Completed</label>
+                                <input id="prjCrEditCompleted" class="" type="checkbox"
+                                       data-ng-model="selectedPortfolioIssue.statusReview.currentRecord.completed" disabled>
+                            </div>
+                        </div>
+                        <br>
+                        <div class="row">
+                            <div class="form-group-sm col-md-12">
+                                <label for="">Status comment</label>
+                                <textarea id="" class="form-control" data-ng-model="selectedPortfolioIssue.statusReview.currentRecord.statusComment" disabled></textarea>
+                            </div>
+                        </div>
+                        <hr>
+                        <div class="pull-right" data-ng-show="parentCtrl.userHasAuthorization">
+                            <button class="btn btn-success btn-xs" data-ng-click="parentCtrl.editStatus()">
+                                Edit
+                            </button>
+                        </div>
+                    </form>
+                    <form data-ng-switch-when="edit">
+                        <div class="row">
+                            <div class="form-group-sm col-md-4">
+                                <label for="">Baseline delivery date</label>
+                                <div class="input-group">
+                                    <input type="text" id="" class="form-control" datepicker-popup="dd-MMMM-yyyy" data-ng-model="selectedPortfolioIssue.statusReview.currentRecord.baselineDeliveryDate"
+                                           is-open="parentCtrl.baselineDeliveryDateOpened" >
+                                                                            <span class="input-group-btn">
+                                                                                <button type="button" class="btn btn-default btn-sm" ng-click="parentCtrl.openBaselineDeliveryDate($event)"><i class="glyphicon glyphicon-calendar"></i></button>
+                                                                            </span>
+                                </div>
+                            </div>
+                            <div class="form-group-sm col-md-4">
+                                <label for="">Estimate delivery date</label>
+                                <div class="input-group">
+                                    <input type="text" id="" class="form-control" datepicker-popup="dd-MMMM-yyyy" data-ng-model="selectedPortfolioIssue.statusReview.currentRecord.estimateDeliveryDate"
+                                           is-open="parentCtrl.estimateDeliveryDateOpened" >
+                                                                            <span class="input-group-btn">
+                                                                                <button type="button" class="btn btn-default btn-sm" ng-click="parentCtrl.openEstimateDeliveryDate($event)"><i class="glyphicon glyphicon-calendar"></i></button>
+                                                                            </span>
+                                </div>
+                            </div>
+                            <div class="form-group-sm col-md-4">
+                                <label for="">Actual delivery date</label>
+                                <div class="input-group">
+                                    <input type="text" id="" class="form-control" datepicker-popup="dd-MMMM-yyyy" data-ng-model="selectedPortfolioIssue.statusReview.currentRecord.actualDeliveryDate"
+                                           is-open="parentCtrl.actualDeliveryDateOpened" >
+                                                                            <span class="input-group-btn">
+                                                                                <button type="button" class="btn btn-default btn-sm" ng-click="parentCtrl.openActualDeliveryDate($event)"><i class="glyphicon glyphicon-calendar"></i></button>
+                                                                            </span>
+                                </div>
+                            </div>
+                        </div>
+                        <br>
+                        <div class="row">
+                            <div class="form-group-sm col-md-4">
+                                <label for="">Status</label>
+                                <select id="" class="form-control" data-ng-model = "selectedPortfolioIssue.statusReview.currentRecord.status"
+                                        data-ng-options="status as status.name for status in parentCtrl.logStatuses track by status._id" >
+                                    <option value="">--choose status</option>
+                                </select>
+                            </div>
+                            <br>
+                            <div class="form-group-sm col-md-4">
+                                <label for="prjCrEditCompleted">Completed</label>
+                                <input id="prjCrEditCompleted" class="" type="checkbox"
+                                       data-ng-model="selectedPortfolioIssue.statusReview.currentRecord.completed" >
+                            </div>
+                        </div>
+                        <br>
+                        <div class="row">
+                            <div class="form-group-sm col-md-12">
+                                <label for="">Status comment</label>
+                                <textarea id="" class="form-control" placeholder="Enter status comment" data-ng-model="selectedPortfolioIssue.statusReview.currentRecord.statusComment" ></textarea>
+                            </div>
+                        </div>
+                        <hr>
+                        <div class="pull-right">
+                            <button class="btn btn-success btn-xs" data-ng-click="parentCtrl.saveEditStatus(selectedPortfolioIssue, originalPortfolioIssue)">
+                                Save
+                            </button>
+                            <button class="btn btn-info btn-xs" data-ng-click="parentCtrl.cancelEditStatus(selectedPortfolioIssue, originalPortfolioIssue)">
+                                Cancel
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <div data-ng-show="parentCtrl.portfolioIssueDetails === 'escalations'">
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="list-group">
+                            <div class="list-group-item" style="background-color: lightgrey">
+                                <h5 class="list-group-item-heading">
+                                    Escalation actions
+                                    <button class="btn btn-xs btn-primary pull-right" data-ng-click="parentCtrl.addNewAction(selectedPortfolioIssue)"
+                                            data-ng-show="parentCtrl.userHasAuthorization">
+                                        Add new action
+                                    </button>
+                                </h5>
+                            </div>
+                            <div style="max-height: 340px; min-height: 340px; overflow-y: auto;">
+                                <div class="alert alert-warning text-center" data-ng-hide="selectedPortfolioIssue.escalationActions.length">
+                                    There are no escalation actions
+                                </div>
+                                <button type="button" class="list-group-item" style="overflow: hidden;" data-ng-repeat="action in selectedPortfolioIssue.escalationActions"
+                                        data-ng-click="parentCtrl.selectAction(action)">
+                                    {{action.idNumber}} - {{action.title}}
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-8">
+                        <div class="alert alert-warning text-center" data-ng-hide="parentCtrl.selectedAction || !selectedPortfolioIssue.escalationActions.length">
+                            Select an action to see its details
+                        </div>
+                        <div class="panel panel-default" data-ng-show="parentCtrl.selectedAction">
+                            <div class="panel-heading">
+                                <h6 class="panel-title text-center"
+                                    style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: normal; width: 100%;">
+                                    {{parentCtrl.selectedAction.idNumber}} - {{parentCtrl.selectedAction.title}}
+                                </h6>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12 btn-group btn-group-xs btn-group-justified">
+                                    <label class="btn btn-info btn-xs" data-ng-model="parentCtrl.actionDetails" btn-radio="'header'">
+                                        Header
+                                    </label>
+                                    <label class="btn btn-info btn-xs" data-ng-model="parentCtrl.actionDetails" btn-radio="'status'">
+                                        Status
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="panel-body">
+                                <div data-ng-show="parentCtrl.actionDetails === 'header'">
+                                    <div data-ng-switch="parentCtrl.switchActionHeaderForm[parentCtrl.selectedAction._id]">
+                                        <form data-ng-switch-default="view">
+                                            <div class="row">
+                                                <div class="form-group-sm col-md-4">
+                                                    <label for="">Raised on date</label>
+                                                    <input type="text" id="" class="form-control" datepicker-popup="dd-MMMM-yyyy" data-ng-model="parentCtrl.selectedAction.raisedOnDate" disabled />
+                                                </div>
+                                                <div class="form-group-sm col-md-8">
+                                                    <label for="">Title</label>
+                                                    <input id="" name="" class="form-control" type="text" placeholder="Enter action title"
+                                                           data-ng-model="parentCtrl.selectedAction.title" disabled>
+                                                </div>
+                                            </div>
+                                            <br>
+                                            <div class="row">
+                                                <div class="form-group-sm col-md-4">
+                                                    <label for="">Escalated to</label>
+                                                    <select id="" class="form-control" data-ng-model = "parentCtrl.selectedAction.escalatedTo"
+                                                            ng-options="person as person.name for person in parentCtrl.people track by person._id" disabled>
+                                                    </select>
+                                                </div>
+                                                <div class="form-group-sm col-md-4">
+                                                    <label for="">Priority</label>
+                                                    <select id="" class="form-control" data-ng-model = "parentCtrl.selectedAction.priority"
+                                                            ng-options="priority as priority.name for priority in parentCtrl.logPriorities track by priority._id" disabled>
+                                                    </select>
+                                                </div>
+                                                <div class="form-group-sm col-md-4">
+                                                    <label for="">State</label>
+                                                    <select id="" class="form-control" data-ng-model = "parentCtrl.selectedAction.state"
+                                                            ng-options="state as state.name for state in parentCtrl.issueActionStates track by state._id" disabled>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <br>
+                                            <div class="row">
+                                                <div class="form-group-sm col-md-12">
+                                                    <label for="">Description</label>
+                                                    <textarea id="" class="form-control" data-ng-model="parentCtrl.selectedAction.description" disabled></textarea>
+                                                </div>
+                                            </div>
+                                            <hr>
+                                            <div class="form-group-sm pull-right" data-ng-show="parentCtrl.userHasAuthorization">
+                                                <button class="btn btn-success btn-xs" data-ng-click="parentCtrl.editActionHeader(parentCtrl.selectedAction)">
+                                                    Edit
+                                                </button>
+                                            </div>
+                                        </form>
+                                        <form data-ng-switch-when="edit" name="editActionHeaderForm">
+                                            <div class="row">
+                                                <div class="form-group-sm col-md-4">
+                                                    <label for="">Raised on date</label>
+                                                    <div class="input-group">
+                                                        <input type="text" id="" class="form-control" datepicker-popup="dd-MMMM-yyyy" data-ng-model="parentCtrl.selectedAction.raisedOnDate"
+                                                               is-open="parentCtrl.actionHeaderDateOpened[parentCtrl.selectedAction._id]" required>
+                                                        <span class="input-group-btn">
+                                                            <button type="button" class="btn btn-default btn-sm" ng-click="parentCtrl.openActionHeaderDate($event, parentCtrl.selectedAction)"><i class="glyphicon glyphicon-calendar"></i></button>
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group-sm col-md-8">
+                                                    <label for="">Title</label>
+                                                    <input id="" class="form-control" type="text" placeholder="Enter title"
+                                                           data-ng-model="parentCtrl.selectedAction.title" required>
+                                                </div>
+                                            </div>
+                                            <br>
+                                            <div class="row">
+                                                <div class="form-group-sm col-md-4">
+                                                    <label for="">Escalated to</label>
+                                                    <select id="" class="form-control" data-ng-model = "parentCtrl.selectedAction.escalatedTo"
+                                                            data-ng-options="person as person.name for person in parentCtrl.people track by person._id">
+                                                        <option value="">--choose person</option>
+                                                    </select>
+                                                </div>
+                                                <div class="form-group-sm col-md-4">
+                                                    <label for="">Priority</label>
+                                                    <select id="" class="form-control" data-ng-model = "parentCtrl.selectedAction.priority"
+                                                            ng-options="priority as priority.name for priority in parentCtrl.logPriorities track by priority._id" >
+                                                        <option value="">--choose priority</option>
+                                                    </select>
+                                                </div>
+                                                <div class="form-group-sm col-md-4">
+                                                    <label for="">State</label>
+                                                    <select id="" class="form-control" data-ng-model = "parentCtrl.selectedAction.state"
+                                                            ng-options="state as state.name for state in parentCtrl.issueActionStates track by state._id" >
+                                                        <option value="">--choose state</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <br>
+                                            <div class="row">
+                                                <div class="form-group-sm col-md-12">
+                                                    <label for="">Description</label>
+                                                    <textarea id="" class="form-control" placeholder="Enter description" data-ng-model="parentCtrl.selectedAction.description"></textarea>
+                                                </div>
+                                            </div>
+                                            <hr>
+                                            <div class="form-group-sm pull-right">
+                                                <button class="btn btn-success btn-xs" data-ng-click="parentCtrl.saveEditActionHeader(selectedPortfolioIssue, parentCtrl.selectedAction, parentCtrl.originalAction)"
+                                                        data-ng-disabled="editActionHeaderForm.$invalid">
+                                                    Save
+                                                </button>
+                                                <button class="btn btn-danger btn-xs" data-ng-click="parentCtrl.deleteAction(selectedPortfolioIssue, parentCtrl.selectedAction)">
+                                                    Delete action
+                                                </button>
+                                                <button class="btn btn-info btn-xs" data-ng-click="parentCtrl.cancelEditActionHeader(parentCtrl.selectedAction, parentCtrl.originalAction)">
+                                                    Cancel
+                                                </button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                                <div data-ng-show="parentCtrl.actionDetails === 'status'">
+                                    <div data-ng-switch="parentCtrl.switchActionStatusForm[parentCtrl.selectedAction._id]">
+                                        <form data-ng-switch-default="view">
+                                            <div class="row">
+                                                <div class="form-group-sm col-md-4">
+                                                    <label for="">Baseline delivery date</label>
+                                                    <input type="text" id="" class="form-control" datepicker-popup="dd-MMMM-yyyy" data-ng-model="parentCtrl.selectedAction.statusReview.currentRecord.baselineDeliveryDate" disabled />
+                                                </div>
+                                                <div class="form-group-sm col-md-4">
+                                                    <label for="">Estimate delivery date</label>
+                                                    <input type="text" id="" class="form-control" datepicker-popup="dd-MMMM-yyyy" data-ng-model="parentCtrl.selectedAction.statusReview.currentRecord.estimateDeliveryDate" disabled />
+                                                </div>
+                                                <div class="form-group-sm col-md-4">
+                                                    <label for="">Actual delivery date</label>
+                                                    <input type="text" id="" class="form-control" datepicker-popup="dd-MMMM-yyyy" data-ng-model="parentCtrl.selectedAction.statusReview.currentRecord.actualDeliveryDate" disabled />
+                                                </div>
+                                            </div>
+                                            <br>
+                                            <div class="row">
+                                                <div class="form-group-sm col-md-4">
+                                                    <label for="">Status</label>
+                                                    <select id="" class="form-control" data-ng-model = "parentCtrl.selectedAction.statusReview.currentRecord.status"
+                                                            ng-options="status as status.name for status in parentCtrl.logStatuses track by status._id" disabled>
+                                                    </select>
+                                                </div>
+                                                <div class="form-group-sm col-md-4">
+                                                    <label for="prjCrEditCompleted">Completed</label>
+                                                    <input id="prjCrEditCompleted" class="" type="checkbox"
+                                                           data-ng-model="parentCtrl.selectedAction.statusReview.currentRecord.completed" disabled>
+                                                </div>
+                                            </div>
+                                            <br>
+                                            <div class="row">
+                                                <div class="form-group-sm col-md-12">
+                                                    <label for="">Status comment</label>
+                                                    <textarea id="" class="form-control" data-ng-model="parentCtrl.selectedAction.statusReview.currentRecord.statusComment" disabled></textarea>
+                                                </div>
+                                            </div>
+                                            <hr>
+                                            <div class="pull-right" data-ng-show="parentCtrl.userHasAuthorization">
+                                                <button class="btn btn-success btn-xs" data-ng-click="parentCtrl.editActionStatus(parentCtrl.selectedAction)">
+                                                    Edit
+                                                </button>
+                                            </div>
+                                        </form>
+                                        <form data-ng-switch-when="edit">
+                                            <div class="row">
+                                                <div class="form-group-sm col-md-4">
+                                                    <label for="">Baseline delivery date</label>
+                                                    <div class="input-group">
+                                                        <input type="text" id="" class="form-control" datepicker-popup="dd-MMMM-yyyy" data-ng-model="parentCtrl.selectedAction.statusReview.currentRecord.baselineDeliveryDate"
+                                                               is-open="parentCtrl.actionBaselineDeliveryDateOpened[parentCtrl.selectedAction._id]" >
+                                                                            <span class="input-group-btn">
+                                                                                <button type="button" class="btn btn-default btn-sm" ng-click="parentCtrl.openActionBaselineDeliveryDate($event, parentCtrl.selectedAction)"><i class="glyphicon glyphicon-calendar"></i></button>
+                                                                            </span>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group-sm col-md-4">
+                                                    <label for="">Estimate delivery date</label>
+                                                    <div class="input-group">
+                                                        <input type="text" id="" class="form-control" datepicker-popup="dd-MMMM-yyyy" data-ng-model="parentCtrl.selectedAction.statusReview.currentRecord.estimateDeliveryDate"
+                                                               is-open="parentCtrl.actionEstimateDeliveryDateOpened[parentCtrl.selectedAction._id]" >
+                                                                            <span class="input-group-btn">
+                                                                                <button type="button" class="btn btn-default btn-sm" ng-click="parentCtrl.openActionEstimateDeliveryDate($event, parentCtrl.selectedAction)"><i class="glyphicon glyphicon-calendar"></i></button>
+                                                                            </span>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group-sm col-md-4">
+                                                    <label for="">Actual delivery date</label>
+                                                    <div class="input-group">
+                                                        <input type="text" id="" class="form-control" datepicker-popup="dd-MMMM-yyyy" data-ng-model="parentCtrl.selectedAction.statusReview.currentRecord.actualDeliveryDate"
+                                                               is-open="parentCtrl.actionActualDeliveryDateOpened[parentCtrl.selectedAction._id]" >
+                                                                            <span class="input-group-btn">
+                                                                                <button type="button" class="btn btn-default btn-sm" ng-click="parentCtrl.openActionActualDeliveryDate($event, parentCtrl.selectedAction)"><i class="glyphicon glyphicon-calendar"></i></button>
+                                                                            </span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <br>
+                                            <div class="row">
+                                                <div class="form-group-sm col-md-4">
+                                                    <label for="">Status</label>
+                                                    <select id="" class="form-control" data-ng-model = "parentCtrl.selectedAction.statusReview.currentRecord.status"
+                                                            data-ng-options="status as status.name for status in parentCtrl.logStatuses track by status._id" >
+                                                        <option value="">--choose status</option>
+                                                    </select>
+                                                </div>
+                                                <br>
+                                                <div class="form-group-sm col-md-4">
+                                                    <label for="prjCrEditCompleted">Completed</label>
+                                                    <input id="prjCrEditCompleted" class="" type="checkbox"
+                                                           data-ng-model="parentCtrl.selectedAction.statusReview.currentRecord.completed" >
+                                                </div>
+                                            </div>
+                                            <br>
+                                            <div class="row">
+                                                <div class="form-group-sm col-md-12">
+                                                    <label for="">Status comment</label>
+                                                    <textarea id="" class="form-control" placeholder="Enter status comment" data-ng-model="parentCtrl.selectedAction.statusReview.currentRecord.statusComment" ></textarea>
+                                                </div>
+                                            </div>
+                                            <hr>
+                                            <div class="pull-right">
+                                                <button class="btn btn-success btn-xs" data-ng-click="parentCtrl.saveEditActionStatus(selectedPortfolioIssue, parentCtrl.selectedAction, parentCtrl.originalAction)">
+                                                    Save
+                                                </button>
+                                                <button class="btn btn-info btn-xs" data-ng-click="parentCtrl.cancelEditActionStatus(parentCtrl.selectedAction, parentCtrl.originalAction)">
+                                                    Cancel
+                                                </button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div data-ng-show="parentCtrl.portfolioIssueDetails === 'associatedProjectIssues'">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="panel panel-default">
+                            <div class="panel-heading text-center">
+                                <em>Project issues not associated</em>
+                            </div>
+                            <div class="panel-body">
+                                <div class="row" data-ng-hide="availableProjectIssues.length !== 0">
+                                    <div class="col-md-12">
+                                        <div class="alert alert-warning text-center">
+                                            There are no project issues available for association
+                                        </div>
+                                    </div>
+                                </div>
+                                <div data-ng-show="availableProjectIssues.length !== 0">
+                                    <div class="row" data-ng-show="!showIssueFilters">
+                                        <div class="col-md-12 small">
+                                            <a data-ng-click="showIssueFilters = true"><b>Filters</b></a><br>
+
+                                            <span data-ng-show="projectIssueFilter.project"><b>Project: </b><i>"{{projectIssueFilter.project.identification.name}}" | </i></span>
+
+                                            <span data-ng-show="projectIssueFilter.title"><b>Title: </b><i>"{{projectIssueFilter.title}}" | </i></span>
+
+                                            <span data-ng-show="projectIssueFilter.priority"><b>Priority: </b><i>"{{projectIssueFilter.priority.name}}" | </i></span>
+
+                                            <span data-ng-show="projectIssueFilter.state"><b>State: </b><i>"{{projectIssueFilter.state.name}}" | </i></span>
+
+                                            <span data-ng-show="projectIssueFilter.statusReview.currentRecord.status"><b>Status: </b><i>"{{projectIssueFilter.statusReview.currentRecord.status.name}}" | </i></span>
+
+                                            <span data-ng-show="projectIssueFilter.reason"><b>Reason: </b><i>"{{projectIssueFilter.reason.name}}" | </i></span>
+                                        </div>
+                                    </div>
+                                    <div class="row" data-ng-show="showIssueFilters">
+                                        <div class="col-md-12">
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <a data-ng-click="showIssueFilters = false"><b>Hide filters</b></a>
+                                                </div>
+                                            </div>
+                                            <br>
+                                            <div class="row">
+                                                <div class="col-md-4 form-group-sm">
+                                                    <select class="form-control" data-ng-model = "projectIssueFilter.project"
+                                                            data-ng-options="project as project.identification.name for project in availableProjects">
+                                                        <option value="">--filter by project</option>
+                                                    </select>
+                                                </div>
+                                                <div class="col-md-4 form-group-sm">
+                                                    <input class="form-control" type="text" placeholder="filter by title" data-ng-model="projectIssueFilter.title">
+                                                </div>
+                                                <div class="col-md-4 form-group-sm">
+                                                    <select class="form-control" data-ng-model = "projectIssueFilter.priority"
+                                                            data-ng-options="priority as priority.name for priority in parentCtrl.logPriorities">
+                                                        <option value="">--filter by priority</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <br>
+                                            <div class="row">
+                                                <div class="col-md-4 form-group-sm">
+                                                    <select class="form-control" data-ng-model = "projectIssueFilter.state"
+                                                            data-ng-options="state as state.name for state in parentCtrl.issueStates">
+                                                        <option value="">--filter by state</option>
+                                                    </select>
+                                                </div>
+                                                <div class="col-md-4 form-group-sm">
+                                                    <select class="form-control" data-ng-model = "projectIssueFilter.statusReview.currentRecord.status"
+                                                            data-ng-options="status as status.name for status in parentCtrl.logStatuses">
+                                                        <option value="">--filter by status</option>
+                                                    </select>
+                                                </div>
+                                                <div class="col-md-4 form-group-sm">
+                                                    <select class="form-control" data-ng-model = "projectIssueFilter.reason"
+                                                            data-ng-options="reason as reason.name for reason in parentCtrl.logReasons">
+                                                        <option value="">--filter by reason</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <br>
+                                        </div>
+                                    </div>
+                                    <br>
+                                    <div class="row" style="max-height: 350px; min-height: 350px; overflow-y: auto">
+                                        <div class="col-xs-12">
+                                            <div class="table-responsive">
+                                                <table class="table table-bordered table-hover table-condensed small">
+                                                    <tbody>
+                                                    <tr data-ng-repeat="projectIssue in availableProjectIssues track by projectIssue._id | orderBy: 'idNumber'">
+                                                        <td>
+                                                            {{projectIssue.idNumber}}
+                                                        </td>
+                                                        <td>{{projectIssue.title}}</td>
+                                                        <td>
+                                                            <span data-ng-show="projectIssue.priority">{{projectIssue.priority.name}}</span>
+                                                            <span data-ng-show="!projectIssue.priority">No priority</span>
+                                                        </td>
+                                                        <td>
+                                                            <span data-ng-show="projectIssue.state">{{projectIssue.state.name}}</span>
+                                                            <span data-ng-show="!projectIssue.state">No state</span>
+                                                        </td>
+                                                        <td>
+                                                            <span data-ng-show="projectIssue.statusReview.currentRecord.status">{{projectIssue.statusReview.currentRecord.status.name}}</span>
+                                                            <span data-ng-show="!projectIssue.statusReview.currentRecord.status">No status</span>
+                                                        </td>
+                                                        <td class="text-center">
+                                                            <button class="btn btn-success btn-xs" data-ng-click="associateProjectIssue(selectedPortfolioIssue, projectIssue)"
+                                                                    data-ng-show="parentCtrl.userHasAuthorization">
+                                                                <span class="glyphicon glyphicon-plus"></span>
+                                                            </button>
+                                                        </td>
+                                                    </tr>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="panel panel-default">
+                            <div class="panel-heading text-center">
+                                <em>Associated project issues</em>
+                            </div>
+                            <div class="panel-body">
+                                <div class="row" data-ng-hide="selectedPortfolioIssue.associatedProjectIssues.length !== 0">
+                                    <div class="col-md-12">
+                                        <div class="alert alert-warning text-center">
+                                            There are no associated project issues
+                                        </div>
+                                    </div>
+                                </div>
+                                <div data-ng-show="selectedPortfolioIssue.associatedProjectIssues.length !== 0">
+                                    <div class="row" data-ng-show="!showIssueFilters">
+                                        <div class="col-md-12 small">
+                                            <a data-ng-click="showIssueFilters = true"><b>Filters</b></a><br>
+
+                                            <span data-ng-show="projectIssueFilter.project"><b>Project: </b><i>"{{projectIssueFilter.project.identification.name}}" | </i></span>
+
+                                            <span data-ng-show="projectIssueFilter.title"><b>Title: </b><i>"{{projectIssueFilter.title}}" | </i></span>
+
+                                            <span data-ng-show="projectIssueFilter.priority"><b>Priority: </b><i>"{{projectIssueFilter.priority.name}}" | </i></span>
+
+                                            <span data-ng-show="projectIssueFilter.state"><b>State: </b><i>"{{projectIssueFilter.state.name}}" | </i></span>
+
+                                            <span data-ng-show="projectIssueFilter.statusReview.currentRecord.status"><b>Status: </b><i>"{{projectIssueFilter.statusReview.currentRecord.status.name}}" | </i></span>
+
+                                            <span data-ng-show="projectIssueFilter.reason"><b>Reason: </b><i>"{{projectIssueFilter.reason.name}}" | </i></span>
+                                        </div>
+                                    </div>
+                                    <div class="row" data-ng-show="showIssueFilters">
+                                        <div class="col-md-12">
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <a data-ng-click="showIssueFilters = false"><b>Hide filters</b></a>
+                                                </div>
+                                            </div>
+                                            <br>
+                                            <div class="row">
+                                                <div class="col-md-4 form-group-sm">
+                                                    <select class="form-control" data-ng-model = "projectIssueFilter.project"
+                                                            data-ng-options="project as project.identification.name for project in availableProjects">
+                                                        <option value="">--filter by project</option>
+                                                    </select>
+                                                </div>
+                                                <div class="col-md-4 form-group-sm">
+                                                    <input class="form-control" type="text" placeholder="filter by title" data-ng-model="projectIssueFilter.title">
+                                                </div>
+                                                <div class="col-md-4 form-group-sm">
+                                                    <select class="form-control" data-ng-model = "projectIssueFilter.priority"
+                                                            data-ng-options="priority as priority.name for priority in parentCtrl.logPriorities">
+                                                        <option value="">--filter by priority</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <br>
+                                            <div class="row">
+                                                <div class="col-md-4 form-group-sm">
+                                                    <select class="form-control" data-ng-model = "projectIssueFilter.state"
+                                                            data-ng-options="state as state.name for state in parentCtrl.issueStates">
+                                                        <option value="">--filter by state</option>
+                                                    </select>
+                                                </div>
+                                                <div class="col-md-4 form-group-sm">
+                                                    <select class="form-control" data-ng-model = "projectIssueFilter.statusReview.currentRecord.status"
+                                                            data-ng-options="status as status.name for status in parentCtrl.logStatuses">
+                                                        <option value="">--filter by status</option>
+                                                    </select>
+                                                </div>
+                                                <div class="col-md-4 form-group-sm">
+                                                    <select class="form-control" data-ng-model = "projectIssueFilter.reason"
+                                                            data-ng-options="reason as reason.name for reason in parentCtrl.logReasons">
+                                                        <option value="">--filter by reason</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <br>
+                                        </div>
+                                    </div>
+                                    <br>
+                                    <div class="row" style="max-height: 350px; min-height: 350px; overflow-y: auto">
+                                        <div class="col-xs-12">
+                                            <div class="table-responsive">
+                                                <table class="table table-bordered table-hover table-condensed small">
+                                                    <tbody>
+                                                    <tr data-ng-repeat="associatedProjectIssue in selectedPortfolioIssue.associatedProjectIssues track by associatedProjectIssue._id | orderBy: 'idNumber' ">
+                                                        <td>
+                                                            {{associatedProjectIssue.idNumber}}
+                                                        </td>
+                                                        <td>{{associatedProjectIssue.title}}</td>
+                                                        <td>
+                                                            <span data-ng-show="associatedProjectIssue.priority">{{associatedProjectIssue.priority.name}}</span>
+                                                            <span data-ng-show="!associatedProjectIssue.priority">No priority</span>
+                                                        </td>
+                                                        <td>
+                                                            <span data-ng-show="associatedProjectIssue.state">{{associatedProjectIssue.state.name}}</span>
+                                                            <span data-ng-show="!associatedProjectIssue.state">No state</span>
+                                                        </td>
+                                                        <td>
+                                                            <span data-ng-show="associatedProjectIssue.statusReview.currentRecord.status">{{associatedProjectIssue.statusReview.currentRecord.status.name}}</span>
+                                                            <span data-ng-show="!associatedProjectIssue.statusReview.currentRecord.status">No status</span>
+                                                        </td>
+                                                        <td class="text-center">
+                                                            <button class="btn btn-danger btn-xs" data-ng-click="disassociateProjectIssue(selectedPortfolioIssue, associatedProjectIssue)"
+                                                                    data-ng-show="parentCtrl.userHasAuthorization">
+                                                                <span class="glyphicon glyphicon-remove"></span>
+                                                            </button>
+                                                        </td>
+                                                    </tr>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="center-block text-center">
+            <button class="btn btn-primary btn-sm" data-ng-click="parentCtrl.cancelEditStatus(selectedPortfolioIssue, originalPortfolioIssue); parentCtrl.cancelEditHeader(selectedPortfolioIssue, originalPortfolioIssue); cancelModal()">
+                Close
+            </button>
+        </div>
+    </div>
+    <br>
+    <div class="row"></div>
+</section>

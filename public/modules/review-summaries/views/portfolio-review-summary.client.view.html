@@ -5,7 +5,7 @@
             <div class="panel-heading">
                 <ol class="breadcrumb">
                     <li>Portfolio evaluation</li>
-                    <li>Reviews</li>
+                    <li>Review and improvement</li>
                     <li class="active">Reviews summary</li>
                 </ol>
             </div>
@@ -20,18 +20,6 @@
                 <div class="panel-body" style="min-height: 500px;  max-height: 500px; overflow-y: auto;">
                     <div class="alert alert-warning text-center" data-ng-hide="!parentCtrl.portfolios.$resolved || parentCtrl.portfolios.length">
                         No portfolios yet
-                    </div>
-                    <div class="row">
-                        <div class="col-md-12">
-                            <ul>
-                                <li>
-                                    <button class="btn btn-default btn-sm btn-warning" style="overflow: hidden; margin: 1%;"
-                                            data-ng-click="parentCtrl.selectPortfolio('all')">
-                                        All
-                                    </button>
-                                </li>
-                            </ul>
-                        </div>
                     </div>
                     <div class="row">
                         <div class="col-md-12">
@@ -78,42 +66,45 @@
                         <div class="panel-heading">
                             <h6 class="panel-title">
                                 <span>&nbsp;Portfolio: <em>{{parentCtrl.selectedPortfolio.name}}</em></span>
-                                <span class="badge pull-right">Avg score: 36</span>
+                                <span class="badge pull-right" data-ng-show="parentCtrl.portfolioProfilesView && parentCtrl.portfolioProfilesView.typeProfiles.length !== 0">
+                                    Avg score: {{(parentCtrl.portfolioProfilesView.avgWeightedScore + parentCtrl.projectProfilesView.avgWeightedScore)/2 | number : 2}}
+                                </span>
                             </h6>
                         </div>
-                        <div class="panel-body">
-                            <div class="row">
-                                <div class="col-md-12">
-                                    <div class="list-group" >
-                                        <div class="list-group-item" style="background-color: lightgrey">
-                                            <h5 class="list-group-item-heading">
+                        <div class="panel-body" style="min-height: 500px;  max-height: 500px;">
+                            <div data-ng-show="!parentCtrl.portfolioProfilesView" class="alert alert-warning text-center">
+                                No portfolio reviews
+                            </div>
+                            <div class="list-group" data-ng-show="parentCtrl.portfolioProfilesView">
+                                <div class="list-group-item" style="background-color: lightgrey">
+                                    <h5 class="list-group-item-heading">
                                                 <span class="btn-link" data-ng-click="parentCtrl.viewPortfolioReviews(parentCtrl.selectedPortfolio)">
                                                     Portfolio reviews
                                                 </span>
-                                                <span class="badge pull-right">42</span>
-                                            </h5>
-                                        </div>
-                                    </div>
+                                        <span class="badge pull-right" data-ng-bind="parentCtrl.portfolioProfilesView.avgWeightedScore | number : 2"></span>
+                                    </h5>
                                 </div>
                             </div>
-                            <div class="row">
-                                <div class="col-md-12">
-                                    <div class="list-group" >
-                                        <div class="list-group-item" style="background-color: lightgrey">
-                                            <h5 class="list-group-item-heading">
-                                                <span>Project reviews</span>
-                                                <span class="badge pull-right" data-ng-bind="parentCtrl.portfolioSummaryView.avgWeightedScore | number : 2"></span>
-                                            </h5>
-                                        </div>
-                                        <div>
-                                            <div class="list-group-item" style="overflow: hidden;"
-                                                 data-ng-repeat="profile in parentCtrl.portfolioSummaryView.projectProfiles | orderBy : 'avgWeightedScore' : true">
+                            <div data-ng-show="!parentCtrl.projectProfilesView || parentCtrl.projectProfilesView.projectProfiles.length ===0" class="alert alert-warning text-center">
+                                No project reviews
+                            </div>
+                            <div class="list-group" data-ng-show="parentCtrl.projectProfilesView && parentCtrl.projectProfilesView.projectProfiles.length !==0">
+                                <div class="list-group-item" style="background-color: lightgrey">
+                                    <h5 class="list-group-item-heading">
+                                        <span>Project reviews</span>
+                                        <span class="badge pull-right" data-ng-bind="parentCtrl.projectProfilesView.avgWeightedScore | number : 2"></span>
+                                    </h5>
+                                </div>
+                                <div class="list-group-item">
+                                    <input class="form-control" data-ng-model="parentCtrl.filterProjectName" placeholder="--filter projects by name">
+                                </div>
+                                <div style="min-height: 310px;  max-height: 310px; overflow-y: auto;">
+                                    <div class="list-group-item" style="overflow: hidden;"
+                                         data-ng-repeat="profile in parentCtrl.projectProfilesView.projectProfiles | orderBy : 'avgWeightedScore' : true | filter:{project : {identification : {name: parentCtrl.filterProjectName}}}">
                                                 <span class="btn-link" data-ng-click="parentCtrl.selectProjectProfile(profile)">
                                                     {{profile.project.identification.name}}
                                                 </span>
-                                                <span class="badge" data-ng-bind="profile.avgWeightedScore | number : 2"></span>
-                                            </div>
-                                        </div>
+                                        <span class="badge" data-ng-bind="profile.avgWeightedScore | number : 2"></span>
                                     </div>
                                 </div>
                             </div>
@@ -128,25 +119,25 @@
                                 <span class="badge pull-right">Avg score: {{parentCtrl.selectedProjectProfile.avgWeightedScore | number : 2}}</span>
                             </h6>
                         </div>
-                        <div class="panel-body">
-                            <div class="row">
-                                <div class="col-md-12">
-                                    <div class="list-group" data-ng-repeat="typeProfile in parentCtrl.selectedProjectProfile.typeProfiles | orderBy : 'avgWeightedScore' : true">
-                                        <div class="list-group-item" style="background-color: lightgrey">
-                                            <h5 class="list-group-item-heading">
-                                                <span data-ng-bind="typeProfile.type.name"></span>
-                                                <span class="badge" data-ng-bind="typeProfile.avgWeightedScore | number : 2"></span>
-                                            </h5>
-                                        </div>
-                                        <div>
-                                            <div class="list-group-item" style="overflow: hidden;"
-                                                 data-ng-repeat="profile in typeProfile.reviewProfiles | orderBy : 'avgWeightedScore' : true">
+                        <div class="panel-body" style="min-height: 500px;  max-height: 500px; overflow-y: auto;">
+                            <div data-ng-show="parentCtrl.selectedProjectProfile.typeProfiles.length === 0" class="alert alert-warning text-center">
+                                No project reviews
+                            </div>
+                            <div class="list-group" data-ng-show="parentCtrl.selectedProjectProfile.typeProfiles.length !== 0"
+                                 data-ng-repeat="typeProfile in parentCtrl.selectedProjectProfile.typeProfiles | orderBy : 'avgWeightedScore' : true">
+                                <div class="list-group-item" style="background-color: lightgrey">
+                                    <h5 class="list-group-item-heading">
+                                        <span data-ng-bind="typeProfile.type.name"></span>
+                                        <span class="badge pull-right" data-ng-bind="typeProfile.avgWeightedScore | number : 2"></span>
+                                    </h5>
+                                </div>
+                                <div>
+                                    <div class="list-group-item" style="overflow: hidden;"
+                                         data-ng-repeat="profile in typeProfile.reviewProfiles | orderBy : 'avgWeightedScore' : true">
                                                 <span class="btn-link" data-ng-click="parentCtrl.selectReviewProfile(profile)">
                                                     {{profile.reviewName}}
                                                 </span>
-                                                <span class="badge" data-ng-bind="profile.weightedScore | number : 2"></span>
-                                            </div>
-                                        </div>
+                                        <span class="badge pull-right" data-ng-bind="profile.weightedScore | number : 2"></span>
                                     </div>
                                 </div>
                             </div>
@@ -156,10 +147,33 @@
                 <div class="col-md-6" data-ng-show="parentCtrl.selectedPortfolioReviews">
                     <div class="panel panel-default">
                         <div class="panel-heading">
-                            <h6 class="panel-title">&nbsp;List of portfolio review</h6>
+                            <h6 class="panel-title">
+                                <span>&nbsp;Portfolio reviews</span>
+                                <span class="badge pull-right">Avg score: {{parentCtrl.portfolioProfilesView.avgWeightedScore | number : 2}}</span>
+                            </h6>
                         </div>
-                        <div class="panel-body">
-                            Click on the review and open a pop up
+                        <div class="panel-body" style="min-height: 500px;  max-height: 500px; overflow-y: auto;">
+                            <div data-ng-show="parentCtrl.portfolioProfilesView.typeProfiles.length === 0" class="alert alert-warning text-center">
+                                No project reviews
+                            </div>
+                            <div class="list-group" data-ng-show="parentCtrl.portfolioProfilesView.typeProfiles.length === 0"
+                                 data-ng-repeat="typeProfile in parentCtrl.portfolioProfilesView.typeProfiles | orderBy : 'avgWeightedScore' : true">
+                                <div class="list-group-item" style="background-color: lightgrey">
+                                    <h5 class="list-group-item-heading">
+                                        <span data-ng-bind="typeProfile.type.name"></span>
+                                        <span class="badge pull-right" data-ng-bind="typeProfile.avgWeightedScore | number : 2"></span>
+                                    </h5>
+                                </div>
+                                <div>
+                                    <div class="list-group-item" style="overflow: hidden;"
+                                         data-ng-repeat="profile in typeProfile.reviewProfiles | orderBy : 'avgWeightedScore' : true">
+                                                <span class="btn-link" data-ng-click="parentCtrl.selectReviewProfile(profile)">
+                                                    {{profile.reviewName}}
+                                                </span>
+                                        <span class="badge pull-right" data-ng-bind="profile.weightedScore | number : 2"></span>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>

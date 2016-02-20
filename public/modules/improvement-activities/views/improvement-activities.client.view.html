@@ -1,0 +1,249 @@
+<section data-ng-controller="ImprovementActivitiesController as parentCtrl"  data-ng-init="parentCtrl.init()">
+	<br>
+	<div class="row">
+		<div class="col-sm-12">
+			<div class="panel-heading">
+				<ol class="breadcrumb">
+					<li>Portfolio evaluation</li>
+					<li>Review and improvement</li>
+					<li class="active">Improvement activities</li>
+				</ol>
+			</div>
+		</div>
+	</div>
+	<div data-ng-show="initError" class="text-danger">
+		<strong data-ng-bind="initError"></strong>
+	</div>
+	<div class="row">
+		<div class="col-sm-4"><!-- PORTFOLIO LIST -->
+			<div class="panel panel-default">
+				<div class="panel-heading">
+					<h6 class="panel-title text-center">Portfolio tree</h6>
+				</div>
+				<div class="panel-body" style="min-height: 500px;  max-height: 500px; overflow-y: auto;">
+					<div class="alert alert-warning text-center" data-ng-hide="!parentCtrl.portfolios.$resolved || parentCtrl.portfolios.length">
+						No portfolios yet
+					</div>
+					<script type="text/ng-template" id="portfolioTree">
+						<button class="btn btn-default btn-sm" data-ng-click="parentCtrl.selectPortfolio(tree.node);"
+								style="overflow: hidden; margin: 1%;">
+							<span data-ng-bind="tree.node.name"></span>
+						</button>
+						<ul data-ng-if="tree.nodeTrees" class="">
+							<li data-ng-repeat="tree in tree.nodeTrees track by $index" data-ng-include="'portfolioTree'"></li>
+						</ul>
+					</script>
+					<ul class="">
+						<li data-ng-repeat="tree in parentCtrl.portfolioTrees track by $index" data-ng-include="'portfolioTree'"></li>
+					</ul>
+				</div>
+			</div>
+		</div>
+		<div class="col-md-8">
+			<div class="row" data-ng-hide="parentCtrl.selectedPortfolio || parentCtrl.portfolios.length === 0">
+				<div class="col-md-12">
+					<div class="alert alert-warning text-center">
+						Select a portfolio to see its details
+					</div>
+				</div>
+			</div>
+			<div class="row" data-ng-show="parentCtrl.selectedPortfolio">
+				<div class="col-md-12">
+					<div class="row">
+						<div class="col-sm-12">
+							<div class="panel panel-default">
+								<div><h5>&nbsp;Portfolio: <i>{{parentCtrl.selectedPortfolio.name}}</i></h5></div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="row" data-ng-show="parentCtrl.selectedPortfolio">
+				<div class="col-md-12">
+					<div class="row" data-ng-show="showNewPortfolioIssueForm">
+						<div class="col-md-12">
+							<div class="panel panel-default">
+								<div class="panel-heading">
+									<h6 class="panel-title">
+										New portfolio issue
+									</h6>
+								</div>
+								<div class="panel-body">
+									<form class="form" name="newPortfolioIssueForm">
+										<div class="row">
+											<div class="form-group-sm col-md-3">
+												<label for="issueRaisedOnDateNew">Raised on date</label>
+												<div class="input-group">
+													<input type="text" id="issueRaisedOnDateNew" class="form-control" datepicker-popup="dd-MMMM-yyyy" data-ng-model="parentCtrl.newPortfolioIssue.raisedOnDate"
+														   is-open="parentCtrl.newPortfolioIssueRaisedOnDateOpened[parentCtrl.selectedPortfolio._id]" required>
+                                                                <span class="input-group-btn">
+                                                                    <button type="button" class="btn btn-default btn-sm" ng-click="parentCtrl.openNewPortfolioIssueRaisedOnDate(parentCtrl.selectedPortfolio, $event)"><i class="glyphicon glyphicon-calendar"></i></button>
+                                                                </span>
+												</div>
+											</div>
+											<div class="form-group-sm col-md-6">
+												<label for="issueTitleNew">Title</label>
+												<input id="issueTitleNew" class="form-control" type="text" placeholder="Enter issue title"
+													   data-ng-model="parentCtrl.newPortfolioIssue.title" required>
+											</div>
+										</div>
+										<hr>
+										<div class="form-group-sm pull-right">
+											<button class="btn btn-success btn-xs" data-ng-click="parentCtrl.createNewPortfolioIssue(parentCtrl.selectedPortfolio); showNewPortfolioIssueForm = false;"
+													data-ng-disabled="newPortfolioIssueForm.$invalid">
+												Save
+											</button>
+											<button class="btn btn-info btn-xs" data-ng-click="parentCtrl.cancelNewPortfolioIssue(); showNewPortfolioIssueForm = false;">
+												Cancel
+											</button>
+										</div>
+									</form>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div data-ng-show="!showNewPortfolioIssueForm">
+						<div class="row">
+							<div class="col-md-5 form-group-sm center-block">
+								<button class="btn btn-warning btn-sm" data-ng-click="showNewPortfolioIssueForm = true">
+									New portfolio issue
+								</button>
+							</div>
+						</div>
+						<br>
+						<div data-ng-hide="parentCtrl.portfolioIssues.length !== 0" class="alert alert-warning text-center">
+							There are no issues for this portfolio
+						</div>
+						<div class="row" data-ng-show="parentCtrl.portfolioIssues.length !== 0">
+							<div class="col-xs-12">
+								<div class="table-responsive">
+									<table class="table table-bordered table-hover table-condensed small">
+										<thead>
+										<tr>
+											<td colspan="7" class="text-center">
+												<span><h5>Issue log</h5></span>
+											</td>
+										</tr>
+										<tr>
+											<td colspan="7">
+												<div class="row" data-ng-show="!showIssueFilters">
+													<div class="col-md-12">
+														<a data-ng-click="showIssueFilters = true"><b>Filters</b></a><br>
+
+														<span data-ng-show="portfolioIssueFilter.idNumber"><b>#: </b><i>"{{portfolioIssueFilter.idNumber}}" | </i></span>
+
+														<span data-ng-show="portfolioIssueFilter.title"><b>Title: </b><i>"{{portfolioIssueFilter.title}}" | </i></span>
+
+														<span data-ng-show="portfolioIssueFilter.priority"><b>Priority: </b><i>"{{portfolioIssueFilter.priority.name}}" | </i></span>
+
+														<span data-ng-show="portfolioIssueFilter.state"><b>State: </b><i>"{{portfolioIssueFilter.state.name}}" | </i></span>
+
+														<span data-ng-show="portfolioIssueFilter.statusReview.currentRecord.status"><b>Status: </b><i>"{{portfolioIssueFilter.statusReview.currentRecord.status.name}}" | </i></span>
+
+														<span data-ng-show="portfolioIssueFilter.reason"><b>Reason: </b><i>"{{portfolioIssueFilter.reason.name}}" | </i></span>
+
+														<span data-ng-show="portfolioIssueFilter.statusReview.currentRecord.completed === false"><b>Completion: </b><i>"Not completed"</i></span>
+														<span data-ng-show="portfolioIssueFilter.statusReview.currentRecord.completed === true"><b>Completion: </b><i>"Completed"</i></span>
+													</div>
+												</div>
+												<div class="row" data-ng-show="showIssueFilters">
+													<div class="col-md-12">
+														<div class="row">
+															<div class="col-md-12">
+																<a data-ng-click="showIssueFilters = false"><b>Hide filters</b></a>
+															</div>
+														</div>
+														<br>
+														<div class="row">
+															<div class="col-md-2 form-group-sm">
+																<input class="form-control" type="number" placeholder="id" data-ng-model="portfolioIssueFilter.idNumber">
+															</div>
+															<div class="col-md-4 form-group-sm">
+																<input class="form-control" type="text" placeholder="filter by title" data-ng-model="portfolioIssueFilter.title">
+															</div>
+															<div class="col-md-3 form-group-sm">
+																<select class="form-control" data-ng-model = "portfolioIssueFilter.priority"
+																		data-ng-options="priority as priority.name for priority in parentCtrl.logPriorities">
+																	<option value="">--filter by priority</option>
+																</select>
+															</div>
+														</div>
+														<br>
+														<div class="row">
+															<div class="col-md-3 form-group-sm">
+																<select class="form-control" data-ng-model = "portfolioIssueFilter.state"
+																		data-ng-options="state as state.name for state in parentCtrl.issueStates">
+																	<option value="">--filter by state</option>
+																</select>
+															</div>
+															<div class="col-md-3 form-group-sm">
+																<select class="form-control" data-ng-model = "portfolioIssueFilter.statusReview.currentRecord.status"
+																		data-ng-options="status as status.name for status in parentCtrl.logStatuses">
+																	<option value="">--filter by status</option>
+																</select>
+															</div>
+															<div class="col-md-3 form-group-sm">
+																<select class="form-control" data-ng-model = "portfolioIssueFilter.reason"
+																		data-ng-options="reason as reason.name for reason in parentCtrl.logReasons">
+																	<option value="">--filter by reason</option>
+																</select>
+															</div>
+															<div class="col-md-3 form-group-sm">
+																<select class="form-control" data-ng-model = "portfolioIssueFilter.statusReview.currentRecord.completed"
+																		data-ng-options="completion.flag as completion.name for completion in parentCtrl.completionFilterArray">
+																	<option value="">--filter by completion</option>
+																</select>
+															</div>
+														</div>
+														<br>
+													</div>
+												</div>
+											</td>
+										</tr>
+										<tr>
+											<th>#</th>
+											<th>Title</th>
+											<th>Priority</th>
+											<th>State</th>
+											<th>Status</th>
+											<th></th>
+										</tr>
+										</thead>
+										<tbody>
+										<tr data-ng-repeat="portfolioIssue in parentCtrl.portfolioIssues | orderBy: 'idNumber'">
+											<td data-ng-class="{'btn-default' : portfolioIssue.statusReview.currentRecord.completed}">
+												{{portfolioIssue.idNumber}}
+											</td>
+											<td>{{portfolioIssue.title}}</td>
+											<td>
+												<span data-ng-show="portfolioIssue.priority">{{portfolioIssue.priority.name}}</span>
+												<span data-ng-show="!portfolioIssue.priority">No priority</span>
+											</td>
+											<td>
+												<span data-ng-show="portfolioIssue.state">{{portfolioIssue.state.name}}</span>
+												<span data-ng-show="!portfolioIssue.state">No state</span>
+											</td>
+											<td>
+												<span data-ng-show="portfolioIssue.statusReview.currentRecord.status">{{portfolioIssue.statusReview.currentRecord.status.name}}</span>
+												<span data-ng-show="!portfolioIssue.statusReview.currentRecord.status">No status</span>
+											</td>
+											<td class="text-center">
+												<button class="btn btn-success btn-xs" data-ng-click="parentCtrl.selectPortfolioIssue(portfolioIssue, parentCtrl.selectedPortfolio)">
+													<span class="glyphicon glyphicon-pencil"></span>
+												</button>
+												<button class="btn btn-danger btn-xs" data-ng-click="parentCtrl.deletePortfolioIssue(portfolioIssue)">
+													<span class="glyphicon glyphicon-trash"></span>
+												</button>
+											</td>
+										</tr>
+										</tbody>
+									</table>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</section>

@@ -5,10 +5,15 @@ angular.module('review-summaries').factory('ReviewSummaries', ['$resource',
 	function($resource) {
 		return $resource('review-summaries', {
 		}, {
-			portfolioSummary: {
+			projectReviews: {
 				method: 'GET',
 				isArray: true,
-				url: 'review-summaries/portfolioSummary'
+				url: 'review-summaries/projectReviews'
+			},
+			portfolioReviews: {
+				method: 'GET',
+				isArray: true,
+				url: 'review-summaries/portfolioReviews'
 			}
 		});
 	}

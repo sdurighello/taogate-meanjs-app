@@ -1,0 +1,287 @@
+<section data-ng-controller="ImprovementSetupController" data-ng-init="init()">
+	<br>
+	<div class="row">
+		<div class="col-sm-12">
+			<div class="panel-heading">
+				<ol class="breadcrumb">
+					<li>Setup</li>
+					<li>Portfolio evaluation</li>
+					<li class="active">Improvement activity</li>
+				</ol>
+			</div>
+		</div>
+	</div>
+	<div data-ng-show="initError" class="text-danger">
+		<strong data-ng-bind="initError"></strong>
+	</div>
+	<div class="row">
+		<div class="col-md-12">
+			<tabset>
+				<tab heading="Reasons for improvement">
+					<br>
+					<div class="row" ng-show="userHasAuthorization">
+						<div class="col-md-3">
+							<br>
+							<button class="btn btn-primary"
+									ng-click="createReason()">
+								New reason for change
+							</button>
+						</div>
+					</div>
+					<hr>
+					<div class="row">
+						<div class="alert alert-warning text-center" data-ng-hide="improvementReasons.length">
+							No improvement reasons yet
+						</div>
+						<div class="col-md-4" data-ng-repeat="reason in improvementReasons" data-ng-switch="switchReasonForm[reason._id]" >
+							<div class="panel panel-default" title="Last updated on {{reason.created | date:'medium'}} by {{reason.user.displayName}}">
+								<div class="panel-heading">
+									<h6 class="panel-title text-center" data-ng-bind="reason.name"></h6>
+								</div>
+								<div class="panel-body">
+									<div ng-switch-default="view">
+										<form class="form">
+											<fieldset>
+												<div class="row">
+													<div class="col-md-12">
+														<div class="form-group">
+															<label for="name" class="control-label">Name</label>
+															<input id="name" disabled type="text" class="form-control" data-ng-model="reason.name">
+														</div>
+														<div class="form-group">
+															<label for="description" class="control-label">Description</label>
+															<textarea id="description" disabled class="form-control" data-ng-model="reason.description"></textarea>
+														</div>
+														<button type="button" class="btn btn-success pull-right" data-ng-show="userHasAuthorization"
+																data-ng-click="selectReason(reason)">
+															Edit
+														</button>
+														<div data-ng-show="error" class="text-danger">
+															<strong data-ng-bind="error"></strong>
+														</div>
+													</div>
+												</div>
+											</fieldset>
+										</form>
+									</div>
+									<div data-ng-switch-when="edit">
+										<form class="form" name="editReasonForm" data-ng-submit="updateReason(reason)" novalidate>
+											<fieldset>
+												<div class="row">
+													<div class="col-md-12">
+														<div class="form-group">
+															<label for="reasonNameEdit" class="control-label">Name</label>
+															<input type="text" id="reasonNameEdit" class="form-control" name="reasonNameEdit"
+																   data-ng-model="reason.name" placeholder="Name" required>
+                                                            <span data-ng-show="editReasonForm.reasonNameEdit.$error.required">
+                                                                <em style="color: red">Name is required</em>
+                                                            </span>
+														</div>
+														<div class="form-group">
+															<label for="descriptionEdit" class="control-label">Description</label>
+                                                            <textarea id="descriptionEdit" class="form-control"
+																	  data-ng-model="reason.description" placeholder="Description">
+                                                            </textarea>
+														</div>
+														<div class="pull-right">
+															<input type="submit" value="Save" class="btn btn-success" data-ng-disabled="editReasonForm.$invalid">
+															<a class="btn btn-danger" data-ng-click="removeReason(reason)" data-ng-show="userHasAuthorization">
+																<i class="glyphicon glyphicon-trash"></i>
+															</a>
+															<button type="button" class="btn btn-info" data-ng-click="cancelEditReason(reason)">
+																Cancel
+															</button>
+														</div>
+														<div data-ng-show="error" class="text-danger">
+															<strong data-ng-bind="error"></strong>
+														</div>
+													</div>
+												</div>
+											</fieldset>
+										</form>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</tab>
+				<tab heading="Activity states">
+					<br>
+					<div class="row" ng-show="userHasAuthorization">
+						<div class="col-md-3">
+							<br>
+							<button class="btn btn-primary"
+									ng-click="createImprovementState()">
+								New improvement activity state
+							</button>
+						</div>
+					</div>
+					<hr>
+					<div class="row">
+						<div class="alert alert-warning text-center" data-ng-hide="improvementStates.length">
+							No improvement states yet
+						</div>
+						<div class="col-md-4" data-ng-repeat="state in improvementStates" data-ng-switch="switchImprovementStateForm[state._id]" >
+							<div class="panel panel-default" title="Last updated on {{state.created | date:'medium'}} by {{state.user.displayName}}">
+								<div class="panel-heading">
+									<h6 class="panel-title text-center" data-ng-bind="state.name"></h6>
+								</div>
+								<div class="panel-body">
+									<div ng-switch-default="view">
+										<form class="form">
+											<fieldset>
+												<div class="row">
+													<div class="col-md-12">
+														<div class="form-group">
+															<label for="name" class="control-label">Name</label>
+															<input id="name" disabled type="text" class="form-control" data-ng-model="state.name">
+														</div>
+														<div class="form-group">
+															<label for="description" class="control-label">Description</label>
+															<textarea id="description" disabled class="form-control" data-ng-model="state.description"></textarea>
+														</div>
+														<button type="button" class="btn btn-success pull-right" data-ng-show="userHasAuthorization"
+																data-ng-click="selectImprovementState(state)">
+															Edit
+														</button>
+														<div data-ng-show="error" class="text-danger">
+															<strong data-ng-bind="error"></strong>
+														</div>
+													</div>
+												</div>
+											</fieldset>
+										</form>
+									</div>
+									<div data-ng-switch-when="edit">
+										<form class="form" name="editImprovementStateForm" data-ng-submit="updateImprovementState(state)" novalidate>
+											<fieldset>
+												<div class="row">
+													<div class="col-md-12">
+														<div class="form-group">
+															<label for="stateNameEdit" class="control-label">Name</label>
+															<input type="text" id="stateNameEdit" class="form-control" name="stateNameEdit"
+																   data-ng-model="state.name" placeholder="Name" required>
+                                                            <span data-ng-show="editImprovementStateForm.stateNameEdit.$error.required">
+                                                                <em style="color: red">Name is required</em>
+                                                            </span>
+														</div>
+														<div class="form-group">
+															<label for="descriptionEdit" class="control-label">Description</label>
+                                                            <textarea id="descriptionEdit" class="form-control"
+																	  data-ng-model="state.description" placeholder="Description">
+                                                            </textarea>
+														</div>
+														<div class="pull-right">
+															<input type="submit" value="Save" class="btn btn-success" data-ng-disabled="editImprovementStateForm.$invalid">
+															<a class="btn btn-danger" data-ng-click="removeImprovementState(state)" data-ng-show="userHasAuthorization">
+																<i class="glyphicon glyphicon-trash"></i>
+															</a>
+															<button type="button" class="btn btn-info" data-ng-click="cancelEditImprovementState(state)">
+																Cancel
+															</button>
+														</div>
+														<div data-ng-show="error" class="text-danger">
+															<strong data-ng-bind="error"></strong>
+														</div>
+													</div>
+												</div>
+											</fieldset>
+										</form>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</tab>
+				<tab heading="Activity types">
+					<br>
+					<div class="row" ng-show="userHasAuthorization">
+						<div class="col-md-3">
+							<br>
+							<button class="btn btn-primary"
+									ng-click="createType()">
+								New activity type
+							</button>
+						</div>
+					</div>
+					<hr>
+					<div class="row">
+						<div class="alert alert-warning text-center" data-ng-hide="improvementTypes.length">
+							No activity types yet
+						</div>
+						<div class="col-md-4" data-ng-repeat="type in improvementTypes" data-ng-switch="switchTypeForm[type._id]" >
+							<div class="panel panel-default" title="Last updated on {{type.created | date:'medium'}} by {{type.user.displayName}}">
+								<div class="panel-heading">
+									<h6 class="panel-title text-center" data-ng-bind="type.name"></h6>
+								</div>
+								<div class="panel-body">
+									<div ng-switch-default="view">
+										<form class="form">
+											<fieldset>
+												<div class="row">
+													<div class="col-md-12">
+														<div class="form-group">
+															<label for="name" class="control-label">Name</label>
+															<input id="name" disabled type="text" class="form-control" data-ng-model="type.name">
+														</div>
+														<div class="form-group">
+															<label for="description" class="control-label">Description</label>
+															<textarea id="description" disabled class="form-control" data-ng-model="type.description"></textarea>
+														</div>
+														<button type="button" class="btn btn-success pull-right" data-ng-show="userHasAuthorization"
+																data-ng-click="selectType(type)">
+															Edit
+														</button>
+														<div data-ng-show="error" class="text-danger">
+															<strong data-ng-bind="error"></strong>
+														</div>
+													</div>
+												</div>
+											</fieldset>
+										</form>
+									</div>
+									<div data-ng-switch-when="edit">
+										<form class="form" name="editTypeForm" data-ng-submit="updateType(type)" novalidate>
+											<fieldset>
+												<div class="row">
+													<div class="col-md-12">
+														<div class="form-group">
+															<label for="typeNameEdit" class="control-label">Name</label>
+															<input type="text" id="typeNameEdit" class="form-control" name="typeNameEdit"
+																   data-ng-model="type.name" placeholder="Name" required>
+                                                            <span data-ng-show="editTypeForm.typeNameEdit.$error.required">
+                                                                <em style="color: red">Name is required</em>
+                                                            </span>
+														</div>
+														<div class="form-group">
+															<label for="descriptionEdit" class="control-label">Description</label>
+                                                            <textarea id="descriptionEdit" class="form-control"
+																	  data-ng-model="type.description" placeholder="Description">
+                                                            </textarea>
+														</div>
+														<div class="pull-right">
+															<input type="submit" value="Save" class="btn btn-success" data-ng-disabled="editTypeForm.$invalid">
+															<a class="btn btn-danger" data-ng-click="removeType(type)" data-ng-show="userHasAuthorization">
+																<i class="glyphicon glyphicon-trash"></i>
+															</a>
+															<button type="button" class="btn btn-info" data-ng-click="cancelEditType(type)">
+																Cancel
+															</button>
+														</div>
+														<div data-ng-show="error" class="text-danger">
+															<strong data-ng-bind="error"></strong>
+														</div>
+													</div>
+												</div>
+											</fieldset>
+										</form>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</tab>
+			</tabset>
+		</div>
+	</div>
+</section>
