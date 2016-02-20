@@ -25,8 +25,8 @@ var statusReviewRecord = {
 
 var ImprovementActivitySchema = new Schema({
 
-	portfolio: {type: Schema.Types.ObjectId, ref: 'Portfolio', $tenant:true, required:'Portfolio is required'},
-
+	portfolio: {type: Schema.Types.ObjectId, ref: 'Portfolio', $tenant:true},
+    assignedTo: {type: Schema.Types.ObjectId, ref: 'Person', $tenant:true},
 	raisedOnDate : {type: Date, default: Date.now, required:'Raised on date required'},
 
 	idNumber: {type: Number, required:'Sequential idNumber for improvementActivity is required'},

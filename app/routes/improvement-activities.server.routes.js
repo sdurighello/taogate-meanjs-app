@@ -14,6 +14,14 @@ module.exports = function(app) {
 		.put(users.requiresLogin, improvementActivities.hasAuthorization, improvementActivities.update)
 		.delete(users.requiresLogin, improvementActivities.hasAuthorization, improvementActivities.delete);
 
+	// Header
+	app.route('/improvement-activities/:improvementActivityId/header')
+		.put(users.requiresLogin, improvementActivities.hasAuthorization, improvementActivities.updateHeader);
+
+	// Status
+	app.route('/improvement-activities/:improvementActivityId/status')
+		.put(users.requiresLogin, improvementActivities.hasAuthorization, improvementActivities.updateStatus);
+
 	// Finish by binding the Improvement activity middleware
 	app.param('improvementActivityId', improvementActivities.improvementActivityByID);
 };

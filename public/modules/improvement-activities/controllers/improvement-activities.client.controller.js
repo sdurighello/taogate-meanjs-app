@@ -2,10 +2,10 @@
 
 // IMPROVEMENT ACTIVITIES controller
 angular.module('improvement-activities').controller('ImprovementActivitiesController', ['$scope', '$stateParams', '$location', '$q', '_', 'Authentication',
-	'Portfolios', 'Projects', 'ProjectIssues', 'PortfolioIssues', 'GateProcesses', 'LogReasons', 'IssueStates', 'IssueActionStates', 'LogPriorities', 'LogStatusIndicators',
+	'Portfolios', 'ImprovementActivities', 'ImprovementTypes', 'ImprovementReasons', 'ImprovementStates', 'LogPriorities', 'LogStatusIndicators',
 	'People', '$modal', '$log',
 	function($scope, $stateParams, $location, $q, _, Authentication,
-			 Portfolios, Projects, ProjectIssues, PortfolioIssues, GateProcesses, LogReasons, IssueStates, IssueActionStates, LogPriorities, LogStatusIndicators, People, $modal, $log) {
+			 Portfolios, ImprovementActivities, ImprovementTypes, ImprovementReasons, ImprovementStates, LogPriorities, LogStatusIndicators, People, $modal, $log) {
 
 		var vm = this;
 
@@ -15,14 +15,6 @@ angular.module('improvement-activities').controller('ImprovementActivitiesContro
 
 		vm.init = function () {
 
-			Projects.query({'selection.selectedForDelivery': true}, function (projects) {
-				vm.projects = _.filter(projects, function (project) {
-					return project.process !== null;
-				});
-			}, function (err) {
-				vm.initError.push(err.data.message);
-			});
-
 			Portfolios.query(function(portfolios){
 				vm.portfolios = portfolios;
 				vm.portfolioTrees = createNodeTrees(portfolios);
@@ -30,26 +22,26 @@ angular.module('improvement-activities').controller('ImprovementActivitiesContro
 				vm.initError.push(err.data.message);
 			});
 
-			GateProcesses.query(function (gateProcesses) {
-				vm.gateProcesses = gateProcesses;
+			ImprovementActivities.query(function (res) {
+				vm.improvementActivities = res;
 			}, function (err) {
 				vm.initError.push(err.data.message);
 			});
 
-			LogReasons.query(function (res) {
-				vm.logReasons = res;
+			ImprovementTypes.query(function (res) {
+				vm.improvementTypes = res;
 			}, function (err) {
 				vm.initError.push(err.data.message);
 			});
 
-			IssueStates.query(function (res) {
-				vm.issueStates = res;
+			ImprovementReasons.query(function (res) {
+				vm.improvementReasons = res;
 			}, function (err) {
 				vm.initError.push(err.data.message);
 			});
 
-			IssueActionStates.query(function (res) {
-				vm.issueActionStates = res;
+			ImprovementStates.query(function (res) {
+				vm.improvementStates = res;
 			}, function (err) {
 				vm.initError.push(err.data.message);
 			});
@@ -126,8 +118,8 @@ angular.module('improvement-activities').controller('ImprovementActivitiesContro
 			}
 		};
 
-		vm.sortProjectIssues = function (projectIssue) {
-			return new Date(projectIssue.raisedOnDate);
+		vm.sortImprovementActivities = function (activity) {
+			return new Date(activity.raisedOnDate);
 		};
 
 		vm.completionFilterArray = [
@@ -136,112 +128,56 @@ angular.module('improvement-activities').controller('ImprovementActivitiesContro
 		];
 
 
-		// ------------- SELECT VIEW PORTFOLIO ------------
-
-		vm.selectPortfolio = function (portfolio) {
-			vm.error = {};
-			vm.selectedPortfolio = null;
-			vm.portfolioIssues = null;
-			vm.selectedPortfolioIssue = null;
-
-			vm.selectedPortfolio = portfolio;
-
-			PortfolioIssues.query({
-				portfolio: portfolio._id
-			}, function (res) {
-				vm.portfolioIssues = res;
-			}, function (err) {
-				vm.error = err.data.message;
-			});
-		};
-
-		vm.cancelViewPortfolio = function () {
-			vm.error = null;
-			vm.selectedPortfolio = null;
-			vm.portfolioIssues = null;
-
-		};
-
-
-// ******************************************************* ISSUE *******************************************************
+// ******************************************************* IMPROVEMENT ACTIVITY *******************************************************
 
 
 
-		// ------------- NEW ISSUE ------------
+		// ------------- NEW ACTIVITY ------------
 
-		vm.newPortfolioIssueRaisedOnDateOpened = {};
 
-		vm.openNewPortfolioIssueRaisedOnDate = function (portfolio, $event) {
+		vm.openNewActivityRaisedOnDate = function ($event) {
 			$event.preventDefault();
 			$event.stopPropagation();
-			vm.newPortfolioIssueRaisedOnDateOpened[portfolio._id] = true;
+			vm.newImprovementActivityRaisedOnDateOpened = true;
 		};
 
-		vm.newPortfolioIssue = {};
+		vm.newImprovementActivity = {};
 
-		vm.createNewPortfolioIssue = function (portfolio) {
-			var newPortfolioIssue = new PortfolioIssues({
-				portfolio: portfolio._id,
-				raisedOnDate: vm.newPortfolioIssue.raisedOnDate,
-				title: vm.newPortfolioIssue.title
+		vm.createNewImprovementActivity = function () {
+			var newImprovementActivity = new ImprovementActivities({
+				raisedOnDate: vm.newImprovementActivity.raisedOnDate,
+				title: vm.newImprovementActivity.title
 			});
-			newPortfolioIssue.$save(function (res) {
+			newImprovementActivity.$save(function (res) {
 				// Refresh the list of gate reviews after populating portfolio
-				res.portfolio = _.cloneDeep(portfolio);
-				vm.portfolioIssues.push(res);
+				vm.improvementActivities.push(res);
 				// Clear new form
-				vm.newPortfolioIssue = {};
+				vm.newImprovementActivity = {};
 				// Select in view mode the new review
-				vm.selectPortfolioIssue(_.find(vm.portfolioIssues, _.matchesProperty('_id', res._id)), portfolio);
+				vm.selectImprovementActivity(_.find(vm.improvementActivities, _.matchesProperty('_id', res._id)));
 				// Close new review form done directly in the view's html
 			}, function (err) {
 				vm.error = err.data.message;
 			});
 		};
 
-		vm.cancelNewPortfolioIssue = function () {
-			vm.newPortfolioIssue = {};
+		vm.cancelNewImprovementActivity = function () {
+			vm.newImprovementActivity = {};
 		};
 
 
 
-		// ------------- EDIT ISSUE ------------
+		// ------------- EDIT ACTIVITY ------------
 
 
-		var modalUpdateIssue = function (size, issue, portfolio) {
+		var modalUpdateActivity = function (size, activity) {
 
 			var modalInstance = $modal.open({
 				templateUrl: 'modules/improvement-activities/views/edit-improvement-activity.client.view.html',
-				controller: function ($scope, $modalInstance, issue, availableProjectIssues, availableProjects) {
+				controller: function ($scope, $modalInstance, activity) {
 
-					$scope.originalPortfolioIssue = _.cloneDeep(issue);
-					$scope.selectedPortfolioIssue = issue;
-					$scope.availableProjectIssues = availableProjectIssues;
-					$scope.availableProjects = availableProjects;
-
-					$scope.associateProjectIssue = function(portfolioIssue, projectIssue){
-						PortfolioIssues.addProjectIssue({
-							portfolioIssueId : portfolioIssue._id,
-							projectIssueId : projectIssue._id
-						}, portfolioIssue, function(res){
-							portfolioIssue.associatedProjectIssues.push(projectIssue);
-							$scope.availableProjectIssues = _.without($scope.availableProjectIssues, projectIssue);
-						}, function(err){
-							$scope.error = err.data.message;
-						});
-					};
-
-					$scope.disassociateProjectIssue = function(portfolioIssue, projectIssue){
-						PortfolioIssues.removeProjectIssue({
-							portfolioIssueId : portfolioIssue._id,
-							projectIssueId : projectIssue._id
-						}, portfolioIssue, function(res){
-							portfolioIssue.associatedProjectIssues = _.without(portfolioIssue.associatedProjectIssues, projectIssue);
-							$scope.availableProjectIssues.push(projectIssue);
-						}, function(err){
-							$scope.error = err.data.message;
-						});
-					};
+					$scope.originalImprovementActivity = _.cloneDeep(activity);
+					$scope.selectedImprovementActivity = activity;
 
 					$scope.cancelModal = function () {
 						$modalInstance.dismiss();
@@ -249,22 +185,8 @@ angular.module('improvement-activities').controller('ImprovementActivitiesContro
 				},
 				size: size,
 				resolve: {
-					issue: function () {
-						return issue;
-					},
-					availableProjectIssues: function(PortfolioIssues){
-						return PortfolioIssues.getAvailableProjectIssues(
-							{ portfolioId : portfolio._id, portfolioIssueId: issue._id},
-							function (res) { return res; },
-							function (err) { vm.error = err.data.message; }
-						);
-					},
-					availableProjects: function(Projects){
-						return Projects.query(
-							{ portfolio : portfolio._id},
-							function (res) { return res; },
-							function (err) { vm.error = err.data.message; }
-						);
+					activity: function () {
+						return activity;
 					}
 				},
 				backdrop: 'static',
@@ -273,13 +195,13 @@ angular.module('improvement-activities').controller('ImprovementActivitiesContro
 
 		};
 
-		vm.selectPortfolioIssue = function(issue, portfolio){
-			modalUpdateIssue('lg', issue, portfolio);
+		vm.selectImprovementActivity = function(activity){
+			modalUpdateActivity('lg', activity);
 		};
 
 		// ------------------- NG-SWITCH ---------------------
 
-		vm.portfolioIssueDetails = 'header';
+		vm.improvementActivityDetails = 'header';
 
 		vm.selectHeaderForm = function (string) {
 			if (string === 'view') {
@@ -311,27 +233,32 @@ angular.module('improvement-activities').controller('ImprovementActivitiesContro
 			vm.selectHeaderForm('edit');
 		};
 
-		vm.saveEditHeader = function (portfolioIssue, originalPortfolioIssue) {
+		vm.saveEditHeader = function (improvementActivity, originalImprovementActivity) {
 			// Clean-up deepPopulate
-			var copyPortfolioIssue = _.cloneDeep(portfolioIssue);
-			copyPortfolioIssue.portfolio = _.get(copyPortfolioIssue.portfolio, '_id');
-			copyPortfolioIssue.reason = allowNull(copyPortfolioIssue.reason);
-			copyPortfolioIssue.priority = allowNull(copyPortfolioIssue.priority);
-			copyPortfolioIssue.state = allowNull(copyPortfolioIssue.state);
-			copyPortfolioIssue.statusReview.currentRecord.status = allowNull(copyPortfolioIssue.statusReview.currentRecord.status);
+			var copyImprovementActivity = _.cloneDeep(improvementActivity);
+			copyImprovementActivity.portfolio = allowNull(copyImprovementActivity.portfolio);
+			copyImprovementActivity.type = allowNull(copyImprovementActivity.type);
+            copyImprovementActivity.assignedTo = allowNull(copyImprovementActivity.assignedTo);
+			copyImprovementActivity.reason = allowNull(copyImprovementActivity.reason);
+			copyImprovementActivity.priority = allowNull(copyImprovementActivity.priority);
+			copyImprovementActivity.state = allowNull(copyImprovementActivity.state);
+			copyImprovementActivity.statusReview.currentRecord.status = allowNull(copyImprovementActivity.statusReview.currentRecord.status);
 			// Update server header
-			PortfolioIssues.updateHeader(
+			ImprovementActivities.updateHeader(
 				{
-					portfolioIssueId: copyPortfolioIssue._id
-				}, copyPortfolioIssue,
+					improvementActivityId: copyImprovementActivity._id
+				}, copyImprovementActivity,
 				function (res) {
 					// Update details pane view with new saved details
-					originalPortfolioIssue.raisedOnDate = portfolioIssue.raisedOnDate;
-					originalPortfolioIssue.title = portfolioIssue.title;
-					originalPortfolioIssue.description = portfolioIssue.description;
-					originalPortfolioIssue.state = portfolioIssue.state;
-					originalPortfolioIssue.reason = portfolioIssue.reason;
-					originalPortfolioIssue.priority = portfolioIssue.priority;
+					originalImprovementActivity.raisedOnDate = improvementActivity.raisedOnDate;
+					originalImprovementActivity.title = improvementActivity.title;
+					originalImprovementActivity.description = improvementActivity.description;
+                    originalImprovementActivity.type = improvementActivity.type;
+                    originalImprovementActivity.portfolio = improvementActivity.portfolio;
+                    originalImprovementActivity.assignedTo = improvementActivity.assignedTo;
+					originalImprovementActivity.state = improvementActivity.state;
+					originalImprovementActivity.reason = improvementActivity.reason;
+					originalImprovementActivity.priority = improvementActivity.priority;
 					// Close edit header form and back to view
 					vm.selectHeaderForm('view');
 				},
@@ -341,21 +268,23 @@ angular.module('improvement-activities').controller('ImprovementActivitiesContro
 			);
 		};
 
-		vm.cancelEditHeader = function (portfolioIssue, originalPortfolioIssue) {
-			portfolioIssue.gate = originalPortfolioIssue.gate;
-			portfolioIssue.raisedOnDate = originalPortfolioIssue.raisedOnDate;
-			portfolioIssue.title = originalPortfolioIssue.title;
-			portfolioIssue.description = originalPortfolioIssue.description;
-			portfolioIssue.state = originalPortfolioIssue.state;
-			portfolioIssue.reason = originalPortfolioIssue.reason;
-			portfolioIssue.priority = originalPortfolioIssue.priority;
+		vm.cancelEditHeader = function (improvementActivity, originalImprovementActivity) {
+			improvementActivity.raisedOnDate = originalImprovementActivity.raisedOnDate;
+			improvementActivity.title = originalImprovementActivity.title;
+			improvementActivity.description = originalImprovementActivity.description;
+            improvementActivity.type = originalImprovementActivity.type;
+            improvementActivity.portfolio = originalImprovementActivity.portfolio;
+            improvementActivity.assignedTo = originalImprovementActivity.assignedTo;
+			improvementActivity.state = originalImprovementActivity.state;
+			improvementActivity.reason = originalImprovementActivity.reason;
+			improvementActivity.priority = originalImprovementActivity.priority;
 			vm.selectHeaderForm('view');
 		};
 
 
-		vm.deletePortfolioIssue = function (portfolioIssue) {
-			PortfolioIssues.remove({portfolioIssueId: portfolioIssue._id}, portfolioIssue, function (res) {
-				vm.portfolioIssues = _.without(vm.portfolioIssues, portfolioIssue);
+		vm.deleteImprovementActivity = function (improvementActivity) {
+			ImprovementActivities.remove({improvementActivityId: improvementActivity._id}, improvementActivity, function (res) {
+				vm.improvementActivities = _.without(vm.improvementActivities, improvementActivity);
 			}, function (err) {
 				vm.error = err.data.message;
 			});
@@ -386,24 +315,26 @@ angular.module('improvement-activities').controller('ImprovementActivitiesContro
 			vm.selectStatusForm('edit');
 		};
 
-		vm.saveEditStatus = function (portfolioIssue, originalPortfolioIssue) {
+		vm.saveEditStatus = function (improvementActivity, originalImprovementActivity) {
 			// Clean-up deepPopulate
-			var copyPortfolioIssue = _.cloneDeep(portfolioIssue);
-			copyPortfolioIssue.portfolio = _.get(copyPortfolioIssue.portfolio, '_id');
-			copyPortfolioIssue.reason = allowNull(copyPortfolioIssue.reason);
-			copyPortfolioIssue.priority = allowNull(copyPortfolioIssue.priority);
-			copyPortfolioIssue.state = allowNull(copyPortfolioIssue.state);
-			copyPortfolioIssue.statusReview.currentRecord.status = allowNull(copyPortfolioIssue.statusReview.currentRecord.status);
+			var copyImprovementActivity = _.cloneDeep(improvementActivity);
+			copyImprovementActivity.portfolio = allowNull(copyImprovementActivity.portfolio);
+            copyImprovementActivity.type = allowNull(copyImprovementActivity.type);
+            copyImprovementActivity.assignedTo = allowNull(copyImprovementActivity.assignedTo);
+			copyImprovementActivity.reason = allowNull(copyImprovementActivity.reason);
+			copyImprovementActivity.priority = allowNull(copyImprovementActivity.priority);
+			copyImprovementActivity.state = allowNull(copyImprovementActivity.state);
+			copyImprovementActivity.statusReview.currentRecord.status = allowNull(copyImprovementActivity.statusReview.currentRecord.status);
 			// Update server header
-			PortfolioIssues.updateStatus({portfolioIssueId: copyPortfolioIssue._id}, copyPortfolioIssue,
+			ImprovementActivities.updateStatus({improvementActivityId: copyImprovementActivity._id}, copyImprovementActivity,
 				function (res) {
 					// Change the selected CR
-					originalPortfolioIssue.statusReview.currentRecord.baselineDeliveryDate = portfolioIssue.statusReview.currentRecord.baselineDeliveryDate;
-					originalPortfolioIssue.statusReview.currentRecord.estimateDeliveryDate = portfolioIssue.statusReview.currentRecord.estimateDeliveryDate;
-					originalPortfolioIssue.statusReview.currentRecord.actualDeliveryDate = portfolioIssue.statusReview.currentRecord.actualDeliveryDate;
-					originalPortfolioIssue.statusReview.currentRecord.status = portfolioIssue.statusReview.currentRecord.status;
-					originalPortfolioIssue.statusReview.currentRecord.completed = portfolioIssue.statusReview.currentRecord.completed;
-					originalPortfolioIssue.statusReview.currentRecord.statusComment = portfolioIssue.statusReview.currentRecord.statusComment;
+					originalImprovementActivity.statusReview.currentRecord.baselineDeliveryDate = improvementActivity.statusReview.currentRecord.baselineDeliveryDate;
+					originalImprovementActivity.statusReview.currentRecord.estimateDeliveryDate = improvementActivity.statusReview.currentRecord.estimateDeliveryDate;
+					originalImprovementActivity.statusReview.currentRecord.actualDeliveryDate = improvementActivity.statusReview.currentRecord.actualDeliveryDate;
+					originalImprovementActivity.statusReview.currentRecord.status = improvementActivity.statusReview.currentRecord.status;
+					originalImprovementActivity.statusReview.currentRecord.completed = improvementActivity.statusReview.currentRecord.completed;
+					originalImprovementActivity.statusReview.currentRecord.statusComment = improvementActivity.statusReview.currentRecord.statusComment;
 					vm.selectStatusForm('view');
 				},
 				function (err) {
@@ -412,214 +343,15 @@ angular.module('improvement-activities').controller('ImprovementActivitiesContro
 			);
 		};
 
-		vm.cancelEditStatus = function (portfolioIssue, originalPortfolioIssue) {
-			portfolioIssue.statusReview.currentRecord.baselineDeliveryDate = originalPortfolioIssue.statusReview.currentRecord.baselineDeliveryDate;
-			portfolioIssue.statusReview.currentRecord.estimateDeliveryDate = originalPortfolioIssue.statusReview.currentRecord.estimateDeliveryDate;
-			portfolioIssue.statusReview.currentRecord.actualDeliveryDate = originalPortfolioIssue.statusReview.currentRecord.actualDeliveryDate;
-			portfolioIssue.statusReview.currentRecord.status = originalPortfolioIssue.statusReview.currentRecord.status;
-			portfolioIssue.statusReview.currentRecord.completed = originalPortfolioIssue.statusReview.currentRecord.completed;
-			portfolioIssue.statusReview.currentRecord.statusComment = originalPortfolioIssue.statusReview.currentRecord.statusComment;
+		vm.cancelEditStatus = function (improvementActivity, originalImprovementActivity) {
+			improvementActivity.statusReview.currentRecord.baselineDeliveryDate = originalImprovementActivity.statusReview.currentRecord.baselineDeliveryDate;
+			improvementActivity.statusReview.currentRecord.estimateDeliveryDate = originalImprovementActivity.statusReview.currentRecord.estimateDeliveryDate;
+			improvementActivity.statusReview.currentRecord.actualDeliveryDate = originalImprovementActivity.statusReview.currentRecord.actualDeliveryDate;
+			improvementActivity.statusReview.currentRecord.status = originalImprovementActivity.statusReview.currentRecord.status;
+			improvementActivity.statusReview.currentRecord.completed = originalImprovementActivity.statusReview.currentRecord.completed;
+			improvementActivity.statusReview.currentRecord.statusComment = originalImprovementActivity.statusReview.currentRecord.statusComment;
 			vm.selectStatusForm('view');
 		};
-
-
-
-// ******************************************************* ACTION *****************************************************
-
-
-
-		// --------------------- NEW ACTION -----------------------
-
-
-		vm.addNewAction = function (portfolioIssue) {
-			var newAction = {
-				raisedOnDate: Date.now(),
-				title: 'New action title'
-			};
-			PortfolioIssues.createAction(
-				{ portfolioIssueId : portfolioIssue._id}, newAction,
-				function(res){
-					portfolioIssue.escalationActions.push(res);
-					vm.selectAction(_.find(portfolioIssue.escalationActions, _.matchesProperty('_id', res._id)));
-				},
-				function(err){
-					vm.error = err.data.message;
-				}
-			);
-		};
-
-
-		// --------------------- EDIT ACTION -----------------------
-
-
-		vm.selectAction = function(action){
-			vm.originalAction = _.cloneDeep(action);
-			vm.selectedAction = action;
-		};
-
-
-		// ------------------- NG-SWITCH ---------------------
-
-		vm.actionDetails = 'header';
-
-		vm.switchActionHeaderForm = {};
-		vm.selectActionHeaderForm = function (string, action) {
-			if (string === 'view') {
-				vm.switchActionHeaderForm[action._id] = 'view';
-			}
-			if (string === 'edit') {
-				vm.switchActionHeaderForm[action._id] = 'edit';
-			}
-		};
-
-		vm.switchActionStatusForm = {};
-		vm.selectActionStatusForm = function (string, action) {
-			if (string === 'view') {
-				vm.switchActionStatusForm[action._id] = 'view';
-			}
-			if (string === 'edit') {
-				vm.switchActionStatusForm[action._id] = 'edit';
-			}
-		};
-
-		// ------------------- HEADER --------------------------
-
-		vm.actionHeaderDateOpened = {};
-		vm.openActionHeaderDate = function ($event, action) {
-			$event.preventDefault();
-			$event.stopPropagation();
-			vm.actionHeaderDateOpened[action._id] = true;
-		};
-
-		vm.editActionHeader = function (action) {
-			vm.selectActionHeaderForm('edit', action);
-		};
-
-		vm.saveEditActionHeader = function (issue, action, originalAction) {
-			// Clean-up deepPopulate
-			var copyAction = _.cloneDeep(action);
-			copyAction.portfolio = _.get(copyAction.portfolio, '_id');
-			copyAction.escalatedTo = allowNull(copyAction.escalatedTo);
-			copyAction.priority = allowNull(copyAction.priority);
-			copyAction.state = allowNull(copyAction.state);
-			copyAction.statusReview.currentRecord.status = allowNull(copyAction.statusReview.currentRecord.status);
-			// Update server header
-			PortfolioIssues.updateActionHeader(
-				{
-					portfolioIssueId: issue._id,
-					escalationActionId: action._id
-				}, copyAction,
-				function (res) {
-					// Update details pane view with new saved details
-					originalAction.raisedOnDate = action.raisedOnDate;
-					originalAction.title = action.title;
-					originalAction.description = action.description;
-					originalAction.state = action.state;
-					originalAction.escalatedTo = action.escalatedTo;
-					originalAction.priority = action.priority;
-					// Close edit header form and back to view
-					vm.selectActionHeaderForm('view', action);
-				},
-				function (err) {
-					vm.error = err.data.message;
-				}
-			);
-		};
-
-		vm.cancelEditActionHeader = function (action, originalAction) {
-			action.raisedOnDate = originalAction.raisedOnDate;
-			action.title = originalAction.title;
-			action.description = originalAction.description;
-			action.state = originalAction.state;
-			action.escalatedTo = originalAction.escalatedTo;
-			action.priority = originalAction.priority;
-			vm.selectActionHeaderForm('view', action);
-		};
-
-
-		vm.deleteAction = function (issue, action) {
-			PortfolioIssues.deleteAction({
-				portfolioIssueId: issue._id,
-				escalationActionId: action._id
-			}, action, function (res) {
-				issue.escalationActions = _.without(issue.escalationActions, action);
-				vm.originalAction = null;
-				vm.selectedAction = null;
-			}, function (err) {
-				vm.error = err.data.message;
-			});
-		};
-
-
-		// --------------------- STATUS -----------------------
-
-		vm.actionBaselineDeliveryDateOpened = {};
-		vm.openActionBaselineDeliveryDate = function ($event, action) {
-			$event.preventDefault();
-			$event.stopPropagation();
-			vm.actionBaselineDeliveryDateOpened[action._id] = true;
-		};
-
-		vm.actionEstimateDeliveryDateOpened = {};
-		vm.openActionEstimateDeliveryDate = function ($event, action) {
-			$event.preventDefault();
-			$event.stopPropagation();
-			vm.actionEstimateDeliveryDateOpened[action._id] = true;
-		};
-
-		vm.actionActualDeliveryDateOpened = {};
-		vm.openActionActualDeliveryDate = function ($event, action) {
-			$event.preventDefault();
-			$event.stopPropagation();
-			vm.actionActualDeliveryDateOpened[action._id] = true;
-		};
-
-		vm.editActionStatus = function (action) {
-			vm.selectActionStatusForm('edit', action);
-		};
-
-		vm.saveEditActionStatus = function (issue, action, originalAction) {
-			// Clean-up deepPopulate
-			var copyAction = _.cloneDeep(action);
-			copyAction.portfolio = _.get(copyAction.portfolio, '_id');
-			copyAction.escalatedTo = allowNull(copyAction.escalatedTo);
-			copyAction.priority = allowNull(copyAction.priority);
-			copyAction.state = allowNull(copyAction.state);
-			copyAction.statusReview.currentRecord.status = allowNull(copyAction.statusReview.currentRecord.status);
-			// Update server header
-			PortfolioIssues.updateActionStatus({
-					portfolioIssueId: issue._id,
-					escalationActionId: action._id
-				}, copyAction,
-				function (res) {
-					// Change the selected action
-					originalAction.statusReview.currentRecord.baselineDeliveryDate = issue.statusReview.currentRecord.baselineDeliveryDate;
-					originalAction.statusReview.currentRecord.estimateDeliveryDate = issue.statusReview.currentRecord.estimateDeliveryDate;
-					originalAction.statusReview.currentRecord.actualDeliveryDate = issue.statusReview.currentRecord.actualDeliveryDate;
-					originalAction.statusReview.currentRecord.status = issue.statusReview.currentRecord.status;
-					originalAction.statusReview.currentRecord.completed = issue.statusReview.currentRecord.completed;
-					originalAction.statusReview.currentRecord.statusComment = issue.statusReview.currentRecord.statusComment;
-					vm.selectActionStatusForm('view', action);
-				},
-				function (err) {
-					vm.error = err.data.message;
-				}
-			);
-		};
-
-		vm.cancelEditActionStatus = function (action, originalAction) {
-			action.statusReview.currentRecord.baselineDeliveryDate = originalAction.statusReview.currentRecord.baselineDeliveryDate;
-			action.statusReview.currentRecord.estimateDeliveryDate = originalAction.statusReview.currentRecord.estimateDeliveryDate;
-			action.statusReview.currentRecord.actualDeliveryDate = originalAction.statusReview.currentRecord.actualDeliveryDate;
-			action.statusReview.currentRecord.status = originalAction.statusReview.currentRecord.status;
-			action.statusReview.currentRecord.completed = originalAction.statusReview.currentRecord.completed;
-			action.statusReview.currentRecord.statusComment = originalAction.statusReview.currentRecord.statusComment;
-			vm.selectActionStatusForm('view', action);
-		};
-
-
-// ******************************************************* ASSOCIATE PROJECT ISSUES *****************************************************
-
 
 
 

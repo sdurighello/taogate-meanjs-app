@@ -7,6 +7,18 @@ angular.module('improvement-activities').factory('ImprovementActivities', ['$res
 		}, {
 			update: {
 				method: 'PUT'
+			},
+
+			updateHeader: {
+				method: 'PUT',
+				url: 'improvement-activities/:improvementActivityId/header'
+				// req.body: {whole issue object}
+			},
+
+			updateStatus: {
+				method: 'PUT',
+				url: 'improvement-activities/:improvementActivityId/status'
+				// req.body: {whole issue object}
 			}
 		});
 	}
