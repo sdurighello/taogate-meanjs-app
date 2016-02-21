@@ -14,6 +14,7 @@ require('mongoose-multitenant');
 
 var GateStatusAssignmentRecord = {
     completed: {type: Boolean, default: false},
+    currentGate : {type: Boolean, default: false},
     status : {type: Schema.Types.ObjectId, ref: 'GateStatus', default:null, $tenant:true},
     overallScore : {type: Schema.Types.ObjectId, ref: 'GateOutcomeScore', default:null, $tenant:true},
     sourceGateReview: {type: Schema.Types.ObjectId, ref: 'GateReview', default:null, $tenant:true},

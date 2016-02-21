@@ -285,28 +285,33 @@ exports.updateProcessAssignment = function(req, res) {
         },
         // GATE-PROCESS: Make sure the "isAssigned" flag on the process is set to true
         function(callback){
-            async.waterfall([
-                function(callback) {
-                    GateProcess.findById(req.body.processId).exec(function(err, process){
-                        if(err){
-                            return callback(err);
-                        }
-                        if(!process){
-                            return callback(new Error({message:'Cannot find process '+req.body.processId}));
-                        }
-                        process.isAssigned = true;
-                        callback(null, process);
-                    });
-                },
-                function(process, callback) {
-                    process.save(function(err){
-                        if(err){ return callback(err); }
-                        callback(null);
-                    });
-                }
-            ], function (err) {
-                callback(err);
-            });
+            if(req.body.processId){
+                async.waterfall([
+                    function(callback) {
+                        GateProcess.findById(req.body.processId).exec(function(err, process){
+                            if(err){
+                                return callback(err);
+                            }
+                            if(!process){
+                                return callback(new Error({message:'Cannot find process '+req.body.processId}));
+                            }
+                            process.isAssigned = true;
+                            callback(null, process);
+                        });
+                    },
+                    function(process, callback) {
+                        process.save(function(err){
+                            if(err){ return callback(err); }
+                            callback(null);
+                        });
+                    }
+                ], function (err) {
+                    if(err){
+                        return callback(err);
+                    }
+                });
+            }
+            callback(null);
         },
         // NEW PERFORMANCES: Create an expected performance record for each gate
         function(callback){
@@ -319,8 +324,12 @@ exports.updateProcessAssignment = function(req, res) {
                             async.series([
                                 function(callback){
                                     var gateStatusAssignment = new GateStatusAssignment({
-                                        project: project._id, gate: sourceGate,
-                                        currentRecord: {user: req.user},
+                                        project: project._id,
+                                        gate: sourceGate,
+                                        currentRecord: {
+                                            currentGate : !!sourceGate.equals(process.startupGate),
+                                            user: req.user
+                                        },
                                         history: [],
                                         overallStatus : {
                                             currentRecord: {user: req.user},
@@ -385,15 +394,27 @@ exports.updateProcessAssignment = function(req, res) {
                                     });
                                 },
                                 function(callback){
-                                    var actualDuration = new ActualDuration({project: project._id, sourceGate: sourceGate, targetGate: sourceGate, currentRecord: {user: req.user}, history: []});
+                                    var actualDuration = new ActualDuration({project: project._id, sourceGate: sourceGate, targetGate: sourceGate,
+                                        currentRecord: {
+                                            currentGate : !!sourceGate.equals(process.startupGate),
+                                            user: req.user
+                                        }, history: []});
                                     actualDuration.save(function(err){ callback(err); });
                                 },
                                 function(callback){
-                                    var actualCost = new ActualCost({project: project._id, sourceGate: sourceGate, targetGate: sourceGate, currentRecord: {user: req.user}, history: []});
+                                    var actualCost = new ActualCost({project: project._id, sourceGate: sourceGate, targetGate: sourceGate,
+                                        currentRecord: {
+                                            currentGate : !!sourceGate.equals(process.startupGate),
+                                            user: req.user
+                                        }, history: []});
                                     actualCost.save(function(err){ callback(err); });
                                 },
                                 function(callback){
-                                    var actualCompletion = new ActualCompletion({project: project._id, sourceGate: sourceGate, targetGate: sourceGate, currentRecord: {user: req.user}, history: []});
+                                    var actualCompletion = new ActualCompletion({project: project._id, sourceGate: sourceGate, targetGate: sourceGate,
+                                        currentRecord: {
+                                            currentGate : !!sourceGate.equals(process.startupGate),
+                                            user: req.user
+                                        }, history: []});
                                     actualCompletion.save(function(err){ callback(err); });
                                 },
                                 function(callback){
@@ -423,27 +444,58 @@ exports.updateProcessAssignment = function(req, res) {
                                                         if(sourceGatePosition <= targetGatePosition){
                                                             async.series([
                                                                 function(callback){
-                                                                    var baselineDuration = new BaselineDuration({project: project._id, sourceGate: sourceGate, targetGate: targetGate, currentRecord: {user: req.user}, history: []});
+                                                                    var baselineDuration = new BaselineDuration({
+                                                                        project: project._id, sourceGate: sourceGate, targetGate: targetGate,
+                                                                        currentRecord: {
+                                                                            currentGate : !!sourceGate.equals(process.startupGate),
+                                                                            user: req.user
+                                                                        },
+                                                                        history: []
+                                                                    });
                                                                     baselineDuration.save(function(err){ callback(err); });
                                                                 },
                                                                 function(callback){
-                                                                    var baselineCost = new BaselineCost({project: project._id, sourceGate: sourceGate, targetGate: targetGate, currentRecord: {user: req.user}, history: []});
+                                                                    var baselineCost = new BaselineCost({
+                                                                        project: project._id, sourceGate: sourceGate, targetGate: targetGate,
+                                                                        currentRecord: {
+                                                                            currentGate : !!sourceGate.equals(process.startupGate),
+                                                                            user: req.user
+                                                                        },
+                                                                        history: []});
                                                                     baselineCost.save(function(err){ callback(err); });
                                                                 },
                                                                 function(callback){
-                                                                    var baselineCompletion = new BaselineCompletion({project: project._id, sourceGate: sourceGate, targetGate: targetGate, currentRecord: {user: req.user}, history: []});
+                                                                    var baselineCompletion = new BaselineCompletion({project: project._id, sourceGate: sourceGate, targetGate: targetGate,
+                                                                        currentRecord: {
+                                                                            currentGate : !!sourceGate.equals(process.startupGate),
+                                                                            user: req.user
+                                                                        },
+                                                                        history: []});
                                                                     baselineCompletion.save(function(err){ callback(err); });
                                                                 },
                                                                 function(callback){
-                                                                    var estimateDuration = new EstimateDuration({project: project._id, sourceGate: sourceGate, targetGate: targetGate, currentRecord: {user: req.user}, history: []});
+                                                                    var estimateDuration = new EstimateDuration({project: project._id, sourceGate: sourceGate, targetGate: targetGate,
+                                                                        currentRecord: {
+                                                                            currentGate : !!sourceGate.equals(process.startupGate),
+                                                                            user: req.user
+                                                                        },
+                                                                        history: []});
                                                                     estimateDuration.save(function(err){ callback(err); });
                                                                 },
                                                                 function(callback){
-                                                                    var estimateCost = new EstimateCost({project: project._id, sourceGate: sourceGate, targetGate: targetGate, currentRecord: {user: req.user}, history: []});
+                                                                    var estimateCost = new EstimateCost({project: project._id, sourceGate: sourceGate, targetGate: targetGate,
+                                                                        currentRecord: {
+                                                                            currentGate : !!sourceGate.equals(process.startupGate),
+                                                                            user: req.user
+                                                                        }, history: []});
                                                                     estimateCost.save(function(err){ callback(err); });
                                                                 },
                                                                 function(callback){
-                                                                    var estimateCompletion = new EstimateCompletion({project: project._id, sourceGate: sourceGate, targetGate: targetGate, currentRecord: {user: req.user}, history: []});
+                                                                    var estimateCompletion = new EstimateCompletion({project: project._id, sourceGate: sourceGate, targetGate: targetGate,
+                                                                        currentRecord: {
+                                                                            currentGate : !!sourceGate.equals(process.startupGate),
+                                                                            user: req.user
+                                                                        }, history: []});
                                                                     estimateCompletion.save(function(err){ callback(err); });
                                                                 }
                                                             ], function(err){
@@ -479,6 +531,7 @@ exports.updateProcessAssignment = function(req, res) {
         }
     ],function(err){
         if (err) {
+            console.log(err);
             return res.status(400).send({
                 message: errorHandler.getErrorMessage(err)
             });

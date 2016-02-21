@@ -156,7 +156,7 @@
                             <div data-ng-show="parentCtrl.portfolioProfilesView.typeProfiles.length === 0" class="alert alert-warning text-center">
                                 No project reviews
                             </div>
-                            <div class="list-group" data-ng-show="parentCtrl.portfolioProfilesView.typeProfiles.length === 0"
+                            <div class="list-group" data-ng-show="parentCtrl.portfolioProfilesView.typeProfiles.length !== 0"
                                  data-ng-repeat="typeProfile in parentCtrl.portfolioProfilesView.typeProfiles | orderBy : 'avgWeightedScore' : true">
                                 <div class="list-group-item" style="background-color: lightgrey">
                                     <h5 class="list-group-item-heading">

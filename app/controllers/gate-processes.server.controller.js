@@ -111,9 +111,23 @@ exports.delete = function(req, res) {
     var GateProcess = mongoose.mtModel(req.user.tenantId + '.' + 'GateProcess');
     var Gate = mongoose.mtModel(req.user.tenantId + '.' + 'Gate');
     var GateOutcome = mongoose.mtModel(req.user.tenantId + '.' + 'GateOutcome');
+    var Project = mongoose.mtModel(req.user.tenantId + '.' + 'Project');
+
     var gateProcess = req.gateProcess ;
 
     async.series([
+        // Check that process hasn't been assigned yet
+        function(callback){
+            Project.find({process : gateProcess._id}).exec(function(err, projects){
+                if(err){
+                    return callback(err);
+                }
+                if(projects.length !== 0){
+                    return callback(new Error('Cannot delete process assigned to projects'));
+                }
+                callback(null);
+            });
+        },
         // GATE-PROCESS: Delete process from its collection
         function(callback){
             gateProcess.remove(function(err){
@@ -122,33 +136,51 @@ exports.delete = function(req, res) {
         },
         // OUTCOMES: Delete all outcomes of the gates in the process
         function(callback){
-            async.each(gateProcess.gates, function(item, callback){
+            async.each(gateProcess.gates, function(item, callbackEach){
                 Gate.findById(item._id).exec(function(err, gate){
                     if (err) {
-                        callback(err);
-                    } else {
-                        async.each(gate.gateOutcomes, function(item2, callback){
-                            GateOutcome.findByIdAndRemove(item2, function(err){
-                                if(err){callback(err);} else {callback();}
-                            });
-                        });
+                        return callbackEach(err);
                     }
+                    async.each(gate.gateOutcomes, function(item2, callbackEach2){
+                        GateOutcome.findByIdAndRemove(item2, function(err){
+                            if(err){
+                                return callbackEach2(err);
+                            }
+                            callbackEach2();
+                        });
+                    }, function(err){
+                        if(err){
+                            return callbackEach(err);
+                        }
+                        callbackEach();
+                    });
                 });
-                callback();
+            }, function(err){
+                if(err){
+                    return callback(err);
+                }
+                callback(null);
             });
-            callback(null);
         },
         // GATES: Delete all gates (from "gates" collection) belonging to this process
         function(callback){
-            async.each(gateProcess.gates, function(item, callback){
+            async.each(gateProcess.gates, function(item, callbackEach){
                 Gate.findByIdAndRemove(item._id, function(err){
-                    if(err){callback(err);} else {callback();}
+                    if(err){
+                        return callbackEach(err);
+                    }
+                    callbackEach();
                 });
+            }, function(err){
+                if(err){
+                    return callback(err);
+                }
+                callback(null);
             });
-            callback(null);
         }
     ],function(err){
         if (err) {
+            console.log(err);
             return res.status(400).send({
                 message: errorHandler.getErrorMessage(err)
             });
