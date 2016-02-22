@@ -115,7 +115,8 @@
 														<button type="button" class="btn btn-sm btn-success" data-ng-click="updateGateProcess(selectedGateProcess)" data-ng-disabled="editImpactForm.$invalid">
 															Save
 														</button>
-														<button type="button" class="btn btn-sm btn-danger" data-ng-click="removeGateProcess(selectedGateProcess)">
+														<button type="button" class="btn btn-sm btn-danger" data-ng-click="removeGateProcess(selectedGateProcess)"
+																data-ng-disabled="selectedGateProcess.isAssigned">
 															Delete Process
 														</button>
 														<button type="button" class="btn btn-sm btn-info" data-ng-click="cancelEditGateProcess(selectedGateProcess)">
@@ -136,7 +137,7 @@
 				</div>
 				<div class="row" data-ng-show="userHasAuthorization">
 					<div class="col-md-3">
-						<button class="btn btn-primary btn-sm" ng-click="createGate(selectedGateProcess)">
+						<button class="btn btn-primary btn-sm" data-ng-click="createGate(selectedGateProcess)" data-ng-disabled="selectedGateProcess.isAssigned">
 							New gate
 						</button>
 						<div data-ng-show="error" class="text-danger">
@@ -209,7 +210,8 @@
 																			<div class="col-md-3 form-group">
 																				<label for="gatePosition" class="control-label">Gate position</label>
 																				<select id="gatePosition" class="form-control" data-ng-model = "gate.position"
-																						data-ng-options="position for position in allowedGatePositions">
+																						data-ng-options="position for position in allowedGatePositions"
+                                                                                        data-ng-disabled="selectedGateProcess.isAssigned">
 																				</select>
 																			</div>
 																		</div>
@@ -223,7 +225,8 @@
 																			Save
 																		</button>
 																		<button type="button" class="btn btn-sm btn-danger" data-ng-click="removeGate(selectedGateProcess, gate)"
-																				data-ng-hide="gate.position === selectedGateProcess.gates.length || gate.position === 1">
+																				data-ng-hide="gate.position === selectedGateProcess.gates.length || gate.position === 1"
+                                                                                data-ng-disabled="selectedGateProcess.isAssigned">
 																			Delete Gate
 																		</button>
 																		<button type="button" class="btn btn-sm btn-info" data-ng-click="cancelEditGate(gate)">
@@ -247,7 +250,7 @@
 												<div class="panel-body">
 													<div class="row" data-ng-show="userHasAuthorization">
 														<div class="col-md-3">
-															<button type="button" class="btn btn-primary btn-sm" ng-click="createGateOutcome(gate)">
+															<button type="button" class="btn btn-primary btn-sm" data-ng-click="createGateOutcome(gate)" data-ng-disabled="selectedGateProcess.isAssigned">
 																New outcome
 															</button>
 															<div data-ng-show="error" class="text-danger">
@@ -318,7 +321,7 @@
 																									<button type="button" class="btn btn-success" ng-click="updateGateOutcome(gate, gateOutcome)" data-ng-disabled="editGateOutcomeForm.$invalid">
 																										Save
 																									</button>
-																									<a class="btn btn-danger" data-ng-click="removeGateOutcome(gate, gateOutcome)">
+																									<a class="btn btn-danger" data-ng-click="removeGateOutcome(gate, gateOutcome)" data-ng-disabled="selectedGateProcess.isAssigned">
 																										<i class="glyphicon glyphicon-trash"></i>
 																									</a>
 																									<button type="button" class="btn btn-info" ng-click="cancelEditGateOutcome(gateOutcome)">

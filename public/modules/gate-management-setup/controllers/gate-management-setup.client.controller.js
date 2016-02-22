@@ -86,45 +86,56 @@ angular.module('gate-management-setup').controller('GateManagementSetupControlle
 		$scope.createGate = function(process) {
 			$scope.error = null;
 
-                var gate = new Gates ({
-                    name: 'New gate',
-                    position: process.gates.length, // Same as existing closure gate
-                    gateOutcomes: []
-                });
+            var gate = new Gates ({
+                name: 'New gate',
+                position: process.gates.length, // Same as existing closure gate
+                gateOutcomes: []
+            });
 
-                gate.$save(function(res) {
-                    // Add new gate to the view process (client)
-                    process.gates.push(res);
-                    // Clean the array from deep populate and get only _ids
-                    var copyProcess = _.clone(process);
-                    copyProcess.gates = _.map(_.get(copyProcess, 'gates'), function(gate){
-                        return gate._id;
-                    });
-                    // Add the created gate to the Process's gates array (server)
-                    GateProcesses.update({
-                        _id: copyProcess._id,
-                        gates:copyProcess.gates
-                    }, function(processResp){
-                        // Add +1 to "closure" gate position (server)
-                        Gates.update({
-                            _id: process.closureGate._id,
-                            position: process.closureGate.position + 1
-                        }, function(gateRes){
-                            // Update the closure gate on the view (client)
-                            _.find(process.gates, '_id', process.closureGate._id).position = process.closureGate.position + 1;
-                            process.closureGate.position = process.closureGate.position + 1;
-                            $scope.allowedGatePositions = getAllowedGatePositions(process);
-                        },function(errorResponse){
-                            console.log(errorResponse.data.message);
-                            $scope.error = errorResponse.data.message;
-                        });
-                    },function(errorResponse){
-                        $scope.error = errorResponse.data.message;
-                    });
+            gate.$save({processId: process._id}, function(res) {
+                // Add values to the view
+                process.gates.push(res);
+                // Update the closure gate on the view (client)
+                _.find(process.gates, '_id', process.closureGate._id).position = process.closureGate.position + 1;
+                process.closureGate.position = process.closureGate.position + 1;
+                $scope.allowedGatePositions = getAllowedGatePositions(process);
+            }, function(err) {
+                $scope.error = err.data.message;
+            });
 
-                }, function(errorResponse) {
-                    $scope.error = errorResponse.data.message;
-                });
+            //gate.$save(function(res) {
+            //    // Add new gate to the view process (client)
+            //    process.gates.push(res);
+            //    // Clean the array from deep populate and get only _ids
+            //    var copyProcess = _.clone(process);
+            //    copyProcess.gates = _.map(_.get(copyProcess, 'gates'), function(gate){
+            //        return gate._id;
+            //    });
+            //    // Add the created gate to the Process's gates array (server)
+            //    GateProcesses.update({
+            //        _id: copyProcess._id,
+            //        gates:copyProcess.gates
+            //    }, function(processResp){
+            //        // Add +1 to "closure" gate position (server)
+            //        Gates.update({
+            //            _id: process.closureGate._id,
+            //            position: process.closureGate.position + 1
+            //        }, function(gateRes){
+            //            // Update the closure gate on the view (client)
+            //            _.find(process.gates, '_id', process.closureGate._id).position = process.closureGate.position + 1;
+            //            process.closureGate.position = process.closureGate.position + 1;
+            //            $scope.allowedGatePositions = getAllowedGatePositions(process);
+            //        },function(errorResponse){
+            //            console.log(errorResponse.data.message);
+            //            $scope.error = errorResponse.data.message;
+            //        });
+            //    },function(errorResponse){
+            //        $scope.error = errorResponse.data.message;
+            //    });
+            //
+            //}, function(errorResponse) {
+            //    $scope.error = errorResponse.data.message;
+            //});
 		};
 
 		// ------------------- EDIT GATE PROCESS (HEADER ONLY) -----------------
@@ -280,27 +291,12 @@ angular.module('gate-management-setup').controller('GateManagementSetupControlle
 				description: 'New gate outcome description'
 			});
 
-			gateOutcome.$save(function(gateOutcomeRes) {
-				// Add outcomes to the view gate
-				gate.gateOutcomes.push(gateOutcomeRes);
-				// Clean the array from deep populate and get only _ids
-				var copyGate = _.clone(gate);
-				copyGate.gateOutcomes = _.map(_.get(copyGate, 'gateOutcomes'), function(outcome){
-					return outcome._id;
-				});
-				// Add the created outcome to the gate's gateOutcomes array
-				Gates.update({
-					_id: copyGate._id,
-					gateOutcomes:copyGate.gateOutcomes
-				}, function(gate){
-					// do something on success response
-				},function(errorResponse){
-					$scope.error = errorResponse.data.message;
-				});
-
-			}, function(errorResponse) {
-				$scope.error = errorResponse.data.message;
-			});
+            gateOutcome.$save({gateId: gate._id}, function(res) {
+                // Add values to the view category
+                gate.gateOutcomes.push(res);
+            }, function(err) {
+                $scope.error = err.data.message;
+            });
 		};
 
 		// ------------------- EDIT GATE OUTCOME -----------------

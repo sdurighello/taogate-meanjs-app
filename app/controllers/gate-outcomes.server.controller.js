@@ -11,12 +11,34 @@ var mongoose = require('mongoose'),
 /**
  * Create a Gate outcome
  */
+
 exports.create = function(req, res) {
 	var GateOutcome = mongoose.mtModel(req.user.tenantId + '.' + 'GateOutcome');
-	var gateOutcome = new GateOutcome(req.body);
+    var Gate = mongoose.mtModel(req.user.tenantId + '.' + 'Gate');
+    var gateOutcome = new GateOutcome(req.body);
 	gateOutcome.user = req.user;
 
-	gateOutcome.save(function(err) {
+	async.series([
+		function(callback){
+			// Save the new value to its collection
+			gateOutcome.save(function(err){
+				callback(err);
+			});
+		},
+		function(callback){
+			// Add the value to the gate's "gateOutcomes" array
+			Gate.findById(req.query.gateId).exec(function(err, gate){
+				if(err){
+					callback(err);
+				} else {
+					gate.gateOutcomes.push(gateOutcome._id);
+					gate.save(function(err){
+						callback(err);
+					});
+				}
+			});
+		}
+	],function(err){
 		if (err) {
 			return res.status(400).send({
 				message: errorHandler.getErrorMessage(err)
@@ -71,14 +93,25 @@ exports.delete = function(req, res) {
         // GATES.GATE-OUTCOMES: Delete outcome from gates where assigned
         function(callback){
             Gate.find({gateOutcomes: {$in: [gateOutcome._id]}}).exec(function(err, gates){
-                async.each(gates, function(item, callback){
+                if(err){
+                    return callback(err);
+                }
+                async.each(gates, function(item, callbackEach){
                     item.gateOutcomes.splice(item.gateOutcomes.indexOf(gateOutcome._id), 1);
                     item.save(function(err){
-                        if(err){callback(err);} else {callback();}
+                        if(err){
+                            callbackEach(err);
+                        } else {
+                            callbackEach();
+                        }
                     });
+                }, function(err){
+                    if(err){
+                        return callback(err);
+                    }
+                    callback(null);
                 });
             });
-            callback(null);
         }
     ],function(err){
         if (err) {

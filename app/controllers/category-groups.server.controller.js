@@ -166,7 +166,7 @@ exports.delete = function(req, res) {
  */
 exports.list = function(req, res) {
 	var CategoryGroup = mongoose.mtModel(req.user.tenantId + '.' + 'CategoryGroup');
-	CategoryGroup.find().deepPopulate(['categories.categoryValues']).sort('-created').populate('user', 'displayName').exec(function(err, categoryGroups) {
+	CategoryGroup.find().deepPopulate(['categories.categoryValues']).populate('user', 'displayName').exec(function(err, categoryGroups) {
 		if (err) {
 			return res.status(400).send({
 				message: errorHandler.getErrorMessage(err)

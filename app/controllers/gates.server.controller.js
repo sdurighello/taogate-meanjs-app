@@ -13,18 +13,75 @@ var mongoose = require('mongoose'),
  */
 exports.create = function(req, res) {
 	var Gate = mongoose.mtModel(req.user.tenantId + '.' + 'Gate');
-	var gate = new Gate(req.body);
-	gate.user = req.user;
+    var GateProcess = mongoose.mtModel(req.user.tenantId + '.' + 'GateProcess');
 
-	gate.save(function(err) {
-		if (err) {
-			return res.status(400).send({
-				message: errorHandler.getErrorMessage(err)
-			});
-		} else {
-			res.jsonp(gate);
-		}
-	});
+    var gate = new Gate(req.body);
+    gate.user = req.user;
+
+    async.waterfall([
+        // Get process
+        function(callback){
+            GateProcess.findById(req.query.processId).deepPopulate([
+                'startupGate', 'closureGate', 'gates'
+            ]).exec(function(err, process){
+                if(err){
+                    callback(err);
+                } else {
+                    callback(null, process);
+                }
+            });
+        },
+        // Create the new gate and make sure the position is same as closure
+        function(process, callback){
+            if(!process.closureGate){
+                return callback(new Error('process is missing closure gate'));
+            }
+            gate.position = process.closureGate.position;
+            gate.save(function(err){
+                if(err){
+                    return callback(err);
+                }
+                callback(null, process);
+            });
+        },
+        // Add + 1 to the Closure position
+        function(process, callback){
+            Gate.findById(process.closureGate._id).exec(function(err, closureGate){
+                if(err){
+                    return callback(err);
+                }
+                closureGate.position = closureGate.position + 1;
+                closureGate.save(function(err){
+                    if(err){
+                        return callback(err);
+                    }
+                    callback(null);
+                });
+
+            });
+        },
+        // Add the value to the process's "gates" array
+        function(callback){
+            GateProcess.findById(req.query.processId).exec(function(err, process){
+                if(err){
+                    callback(err);
+                } else {
+                    process.gates.push(gate._id);
+                    process.save(function(err){
+                        callback(err);
+                    });
+                }
+            });
+        }
+    ],function(err){
+        if (err) {
+            return res.status(400).send({
+                message: errorHandler.getErrorMessage(err)
+            });
+        } else {
+            res.jsonp(gate);
+        }
+    });
 
 };
 
@@ -146,7 +203,7 @@ exports.delete = function(req, res) {
  */
 exports.list = function(req, res) {
     var Gate = mongoose.mtModel(req.user.tenantId + '.' + 'Gate');
-	Gate.find().populate('user', 'displayName').exec(function(err, gates) {
+	Gate.find().populate('gateOutcomes').populate('user', 'displayName').exec(function(err, gates) {
 		if (err) {
 			return res.status(400).send({
 				message: errorHandler.getErrorMessage(err)
@@ -162,7 +219,7 @@ exports.list = function(req, res) {
  */
 exports.gateByID = function(req, res, next, id) {
     var Gate = mongoose.mtModel(req.user.tenantId + '.' + 'Gate');
-	Gate.findById(id).populate('user', 'displayName').exec(function(err, gate) {
+	Gate.findById(id).populate('gateOutcomes').populate('user', 'displayName').exec(function(err, gate) {
 		if (err) return next(err);
 		if (! gate) return next(new Error('Failed to load Gate ' + id));
 		req.gate = gate ;

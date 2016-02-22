@@ -253,7 +253,9 @@ exports.gateProcessByID = function(req, res, next, id) {
     async.waterfall([
         // Get the gate process object by Id
         function(callback) {
-            GateProcess.findById(id).deepPopulate(['gates.gateOutcomes']).populate('user', 'displayName').exec(function(err, gateProcess) {
+            GateProcess.findById(id).deepPopulate([
+                'startupGate','closureGate','gates.gateOutcomes'
+            ]).populate('user', 'displayName').exec(function(err, gateProcess) {
                 if (err){
                     return callback(err);
                 }
