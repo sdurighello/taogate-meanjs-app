@@ -166,7 +166,15 @@ angular.module('project-change-requests').controller('ProjectChangeRequestContro
 
         $scope.activeTab = {};
 
-		// ------------- SELECT VIEW PROJECT ------------
+        // -------------- SELECT GATE ---------------------
+
+        $scope.setReviewObject = function(reviewObj){
+            $scope.selectedGateReview = null;
+            $scope.reviewObject = reviewObj;
+        };
+
+
+        // ------------- SELECT VIEW PROJECT ------------
 
 		var originalProjectChangeRequest = {};
 
@@ -174,6 +182,7 @@ angular.module('project-change-requests').controller('ProjectChangeRequestContro
 			$scope.error = {};
 			$scope.selectedProject = null;
 			$scope.projectChangeRequestList = null;
+            $scope.reviewObject = null;
 
 			$scope.selectedProjectChangeRequest = null;
 			originalProjectChangeRequest = {};

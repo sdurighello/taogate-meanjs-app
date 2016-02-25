@@ -44,6 +44,7 @@ angular.module('gate-management-review').controller('GateManagementReviewControl
 
         };
 
+
         // ------- ROLES FOR BUTTONS ------
 
         var d = $q.defer();
@@ -173,11 +174,20 @@ angular.module('gate-management-review').controller('GateManagementReviewControl
         };
 
 
-        // ------------------- OTHER VARIABLES ---------------------
+        // -------------- OTHER VARIABLES -----------------
 
         $scope.gateReviewDetails = 'header';
 
         $scope.activeTab = {};
+
+
+        // -------------- SELECT GATE ---------------------
+
+        $scope.setReviewObject = function(reviewObj){
+            $scope.selectedGateReview = null;
+            $scope.reviewObject = reviewObj;
+        };
+
 
         // ------------- SELECT VIEW PROJECT ------------
 
@@ -187,6 +197,7 @@ angular.module('gate-management-review').controller('GateManagementReviewControl
             $scope.error = {};
             $scope.selectedProject = null;
             $scope.gateReviewList = null;
+            $scope.reviewObject = null;
 
             $scope.selectedGateReview = null;
             originalGateReview = {};
@@ -200,22 +211,6 @@ angular.module('gate-management-review').controller('GateManagementReviewControl
             }, function (err) {
                 $scope.error.gateReviews = err.data.message;
             });
-
-            // Old client-side transformation now move server-side, is it faster to load the reviews?
-            //GateReviews.query({
-            //    project: project._id
-            //}, function (reviews) {
-            //    $scope.gateReviewList = _.chain(_.get(project, 'process.gates'))
-            //        .map(function (gate) {
-            //            return {
-            //                gate: gate,
-            //                gateReviews: _.filter(reviews, _.matchesProperty('gate', gate._id))};
-            //        })
-            //        .sortBy('gate.position')
-            //        .value();
-            //}, function (err) {
-            //    $scope.error.gateReviews = err.data.message;
-            //});
         };
 
         $scope.cancelViewProject = function(){
