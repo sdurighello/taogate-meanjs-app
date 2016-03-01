@@ -131,12 +131,18 @@ exports.portfolioSummary = function(req, res){
 						impacts : []
 					};
 					_.each(groupObj.impacts, function(impactObj){
+						var allowNullScore = function(obj){
+							if(!obj){
+								return 0;
+							}
+							return obj.numericalValue;
+						};
 						var profileImpactObj = {
 							impactId : impactObj.impact._id,
 							impactName : impactObj.impact.name,
 							impactWeight : impactObj.impact.weight,
 							score : impactObj.score,
-							weightedScore : impactObj.score.numericalValue * (impactObj.impact.weight/100)
+							weightedScore : allowNullScore(impactObj.score) * (impactObj.impact.weight/100)
 						};
 						profileGroupObj.impacts.push(profileImpactObj);
 						profileGroupObj.sumImpactScores = profileGroupObj.sumImpactScores + profileImpactObj.weightedScore;

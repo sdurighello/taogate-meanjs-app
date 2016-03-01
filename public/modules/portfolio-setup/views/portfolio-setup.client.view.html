@@ -36,7 +36,7 @@
 						<div class="col-md-4" data-ng-repeat="type in portfolioTypes" data-ng-switch="switchTypeForm[type._id]" >
 							<div class="panel panel-default" title="Last updated on {{type.created | date:'medium'}} by {{type.user.displayName}}">
 								<div class="panel-heading">
-									<h6 class="panel-title text-center" data-ng-bind="type.name"></h6>
+									<h6 class="panel-title text-center" data-ng-bind="type.name" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: normal; width: 100%;"></h6>
 								</div>
 								<div class="panel-body">
 									<div ng-switch-default="view">
@@ -112,7 +112,7 @@
 								<div class="panel-heading">
 									<h6 class="panel-title text-center">Portfolio tree</h6>
 								</div>
-								<div class="panel-body" style="min-height: 560px;  max-height: 610px; overflow-y: auto;">
+								<div class="panel-body" style="min-height: 525px;  max-height: 525px; overflow-y: auto;">
 									<div class="alert alert-warning text-center" data-ng-hide="!portfolios.$resolved || portfolios.length">
 										No Portfolios yet, why don't you create a new one?
 									</div>
@@ -156,7 +156,7 @@
 												<div class="col-md-12">
 													<form class="form-horizontal" data-ng-submit="create()" novalidate name="newPortfolioForm">
 														<fieldset>
-															<div class="form-group">
+															<div class="form-group form-group-sm">
 																<label class="control-label" for="newPortfolioName">Portfolio name</label>
 																<div class="controls">
 																	<input type="text" data-ng-model="newPortfolio.name" id="newPortfolioName" name="newPortfolioName"
@@ -166,43 +166,43 @@
 																	<em style="color: red">Name is required</em>
 																</span>
 															</div>
-															<div class="form-group">
+															<div class="form-group form-group-sm">
 																<label class="control-label" for="type">Portfolio type</label>
 																<select id="type" class="form-control" data-ng-model = "newPortfolio.type"
 																		ng-options="portfolioType.name for portfolioType in portfolioTypes">
 																	<option value="">--choose type</option>
 																</select>
 															</div>
-															<div class="form-group">
+															<div class="form-group form-group-sm">
 																<label class="control-label" for="parent">Parent portfolio</label>
 																<select id="parent" class="form-control" data-ng-model = "newPortfolio.parent"
 																		ng-options="newParent.name for newParent in newParents">
 																	<option value="">--choose parent</option>
 																</select>
 															</div>
-															<div class="form-group">
+															<div class="form-group form-group-sm">
 																<label class="control-label" for="primaryPM">Portfolio manager</label>
 																<select id="primaryPM" class="form-control" data-ng-model = "newPortfolio.portfolioManager"
 																		ng-options="portfolioManager.displayName for portfolioManager in portfolioManagers">
 																	<option value="">--choose person</option>
 																</select>
 															</div>
-															<div class="form-group">
+															<div class="form-group form-group-sm">
 																<label class="control-label" for="secondaryPM">Backup portfolio manager</label>
 																<select id="secondaryPM" class="form-control" data-ng-model = "newPortfolio.backupPortfolioManager"
 																		ng-options="portfolioManager.displayName for portfolioManager in portfolioManagers">
 																	<option value="">--choose person</option>
 																</select>
 															</div>
-															<div class="form-group">
+															<div class="form-group form-group-sm">
 																<label class="control-label" for="funds">Portfolio funds</label>
 																<div class="controls">
 																	<input type="number" data-ng-model="newPortfolio.funds" id="funds" class="form-control" placeholder="Enter amount">
 																</div>
 															</div>
-															<div class="form-group pull-right">
-																<input type="submit" class="btn btn-success" data-ng-disabled="newPortfolioForm.$invalid">
-																<button type="reset" class="btn btn-info" ng-click="selectPortfolioForm('view')">
+															<div class="pull-right">
+																<input type="submit" class="btn btn-sm btn-success" data-ng-disabled="newPortfolioForm.$invalid">
+																<button type="reset" class="btn btn-sm btn-info" ng-click="selectPortfolioForm('view')">
 																	Cancel
 																</button>
 															</div>
@@ -220,7 +220,7 @@
 									<div class="col-sm-12">
 										<div class="panel panel-default">
 											<div class="panel-heading">
-												<h6 class="panel-title text-center"><em data-ng-bind="editPortfolio.name"></em></h6>
+												<h6 class="panel-title text-center" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: normal; width: 100%;"><em data-ng-bind="editPortfolio.name"></em></h6>
 												<div class="text-center" data-ng-hide="editPortfolio">
 													<em>Please select a portfolio from the tree to see the details</em>
 												</div>
@@ -231,27 +231,27 @@
 														<form>
 															<fieldset ng-disabled = true>
 																<div class="col-md-12">
-																	<div class="form-group">
+																	<div class="form-group form-group-sm">
 																		<label for="portfolioName">Portfolio Name</label>
 																		<input id="portfolioName" class="form-control" ng-model="viewPortfolio.name">
 																	</div>
-																	<div class="form-group">
+																	<div class="form-group form-group-sm">
 																		<label for="portfolioType">Portfolio type</label>
 																		<input id="portfolioType" class="form-control"  ng-model="viewPortfolio.type.name">
 																	</div>
-																	<div class="form-group">
+																	<div class="form-group form-group-sm">
 																		<label for="parent">Parent portfolio</label>
 																		<input id="parent" class="form-control"  ng-model="viewPortfolio.parent.name">
 																	</div>
-																	<div class="form-group">
+																	<div class="form-group form-group-sm">
 																		<label for="portfolioMgr">Portfolio Manager</label>
 																		<input id="portfolioMgr" class="form-control"  ng-model="viewPortfolio.portfolioManager.displayName">
 																	</div>
-																	<div class="form-group">
+																	<div class="form-group form-group-sm">
 																		<label for="backupPM">Backup Portfolio Manager</label>
 																		<input id="backupPM" class="form-control"  ng-model="viewPortfolio.backupPortfolioManager.displayName">
 																	</div>
-																	<div class="form-group">
+																	<div class="form-group form-group-sm">
 																		<label for="funds">Portfolio funds</label>
 																		<input id="funds" class="form-control"  ng-model="viewPortfolio.funds">
 																	</div>
@@ -283,7 +283,7 @@
 									<div class="col-sm-12">
 										<div class="panel panel-default">
 											<div class="panel-heading">
-												<h6 class="panel-title text-center"><em data-ng-bind="editPortfolio.name"></em></h6>
+												<h6 class="panel-title text-center" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: normal; width: 100%;"><em data-ng-bind="editPortfolio.name"></em></h6>
 												<div class="alert alert-warning text-center" data-ng-hide="editPortfolio">
 													Please select a portfolio to see the details
 												</div>
@@ -294,7 +294,7 @@
 														<form class="form" data-ng-submit="update()" novalidate name="editPortfolioForm">
 															<fieldset>
 																<div class="col-md-12">
-																	<div class="form-group">
+																	<div class="form-group form-group-sm">
 																		<label class="control-label" for="editPortfolioName">Portfolio name</label>
 																		<div class="controls">
 																			<input type="text" data-ng-model="editPortfolio.name" id="editPortfolioName" name="editPortfolioName"
@@ -304,46 +304,46 @@
 																			<em style="color: red">Name is required</em>
 																		</span>
 																	</div>
-																	<div class="form-group">
+																	<div class="form-group form-group-sm">
 																		<label class="control-label" for="type">Portfolio type</label>
 																		<select id="type" class="form-control" data-ng-model = "editPortfolio.type"
 																				ng-options="portfolioType as portfolioType.name for portfolioType in portfolioTypes track by portfolioType._id">
 																			<option value="">--choose type</option>
 																		</select>
 																	</div>
-																	<div class="form-group">
+																	<div class="form-group form-group-sm">
 																		<label class="control-label" for="parent">Parent portfolio</label>
 																		<select id="parent" class="form-control" data-ng-model = "editPortfolio.parent"
 																				ng-options="editParent as editParent.name for editParent in editParents track by editParent._id">
 																			<option value="">--choose parent</option>
 																		</select>
 																	</div>
-																	<div class="form-group">
+																	<div class="form-group form-group-sm">
 																		<label class="control-label" for="primaryPM">Portfolio manager</label>
 																		<select id="primaryPM" class="form-control" data-ng-model = "editPortfolio.portfolioManager"
 																				ng-options="portfolioManager as portfolioManager.displayName for portfolioManager in portfolioManagers track by portfolioManager._id">
 																			<option value="">--choose person</option>
 																		</select>
 																	</div>
-																	<div class="form-group">
+																	<div class="form-group form-group-sm">
 																		<label class="control-label" for="backupPM">Backup portfolio manager</label>
 																		<select id="backupPM" class="form-control" data-ng-model = "editPortfolio.backupPortfolioManager"
 																				ng-options="portfolioManager as portfolioManager.displayName for portfolioManager in portfolioManagers track by portfolioManager._id">
 																			<option value="">--choose person</option>
 																		</select>
 																	</div>
-																	<div class="form-group">
+																	<div class="form-group form-group-sm">
 																		<label class="control-label" for="funds">Portfolio funds</label>
 																		<div class="controls">
 																			<input type="number" data-ng-model="editPortfolio.funds" id="funds" class="form-control" placeholder="Enter amount">
 																		</div>
 																	</div>
-																	<div class="form-group pull-right">
-																		<input type="submit" value="Save" class="btn btn-success" data-ng-disabled="editPortfolioForm.$invalid">
-																		<a class="btn btn-danger" data-ng-click="remove()">
+																	<div class="pull-right">
+																		<input type="submit" value="Save" class="btn btn-sm btn-success" data-ng-disabled="editPortfolioForm.$invalid">
+																		<a class="btn btn-sm btn-danger" data-ng-click="remove()">
 																			<i class="glyphicon glyphicon-trash"></i>
 																		</a>
-																		<button type="button" class="btn btn-primary" ng-click="selectPortfolio(editPortfolio._id)">
+																		<button type="button" class="btn btn-sm btn-primary" ng-click="selectPortfolio(editPortfolio._id)">
 																			Cancel
 																		</button>
 																	</div>

@@ -1,10 +1,10 @@
 'use strict';
 
 angular.module('portfolio-change-requests').controller('PortfolioChangeRequestsController', ['$scope', '$stateParams', '$location', '$q', '_', 'Authentication',
-	'Portfolios', 'Projects', 'ProjectChangeRequests', 'PortfolioChangeRequests', 'GateProcesses', 'LogReasons', 'ChangeRequestStates', 'LogPriorities', 'LogStatusIndicators',
+	'Portfolios', 'PortfolioTypes', 'Projects', 'ProjectChangeRequests', 'PortfolioChangeRequests', 'GateProcesses', 'LogReasons', 'ChangeRequestStates', 'LogPriorities', 'LogStatusIndicators',
 	'People', '$modal', '$log',
 	function($scope, $stateParams, $location, $q, _, Authentication,
-			 Portfolios, Projects, ProjectChangeRequests, PortfolioChangeRequests, GateProcesses, LogReasons, ChangeRequestStates, LogPriorities, LogStatusIndicators, People, $modal, $log) {
+			 Portfolios, PortfolioTypes, Projects, ProjectChangeRequests, PortfolioChangeRequests, GateProcesses, LogReasons, ChangeRequestStates, LogPriorities, LogStatusIndicators, People, $modal, $log) {
 
 		var vm = this;
 
@@ -23,6 +23,12 @@ angular.module('portfolio-change-requests').controller('PortfolioChangeRequestsC
             Portfolios.query(function(portfolios){
                 vm.portfolios = portfolios;
                 vm.portfolioTrees = createNodeTrees(portfolios);
+            }, function(err){
+                vm.initError.push(err.data.message);
+            });
+
+            PortfolioTypes.query(function(res){
+                vm.portfolioTypes = res;
             }, function(err){
                 vm.initError.push(err.data.message);
             });
@@ -406,13 +412,20 @@ angular.module('portfolio-change-requests').controller('PortfolioChangeRequestsC
 
 
         // Used only to show the details of the change (adding/removing all done on main ctrl/view)
-        var modalProjectChangeRequest = function (size, change) {
+        var modalProjectChangeRequest = function (size, change, logReasons, changeRequestStates, logPriorities, logStatuses) {
 
             var modalInstance = $modal.open({
                 templateUrl: 'modules/portfolio-change-requests/views/associated-project-change.client.view.html',
-                controller: function ($scope, $modalInstance, change) {
+                controller: function ($scope, $modalInstance, change, logReasons, changeRequestStates, logPriorities, logStatuses) {
                     $scope.selectedProjectChangeRequest = change;
+
+                    $scope.logReasons = logReasons;
+                    $scope.changeRequestStates = changeRequestStates;
+                    $scope.logPriorities = logPriorities;
+                    $scope.logStatuses = logStatuses;
+
                     $scope.projectChangeRequestDetails = 'header';
+
                     $scope.cancelModal = function () {
                         $modalInstance.dismiss();
                     };
@@ -425,6 +438,18 @@ angular.module('portfolio-change-requests').controller('PortfolioChangeRequestsC
                             function(res){ return res; },
                             function(err){ return err; }
                         );
+                    },
+                    logReasons: function () {
+                        return logReasons;
+                    },
+                    changeRequestStates: function () {
+                        return changeRequestStates;
+                    },
+                    logPriorities: function () {
+                        return logPriorities;
+                    },
+                    logStatuses: function () {
+                        return logStatuses;
                     }
                 },
                 backdrop: 'static',
@@ -433,7 +458,7 @@ angular.module('portfolio-change-requests').controller('PortfolioChangeRequestsC
         };
 
         vm.viewProjectChangeRequest = function(change){
-            modalProjectChangeRequest('lg', change);
+            modalProjectChangeRequest('lg', change, vm.logReasons, vm.changeRequestStates, vm.logPriorities, vm.logStatuses);
         };
 
         vm.addProjectChangeRequest = function(portfolioChange, projectChange){

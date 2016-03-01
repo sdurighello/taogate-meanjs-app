@@ -1,8 +1,9 @@
 'use strict';
 
-angular.module('mytao').controller('MytaoController', ['$scope',
-	function($scope) {
-		// Mytao controller logic
-		// ...
+angular.module('mytao').controller('MytaoController', ['$scope','$rootScope',
+	function($scope, $rootScope) {
+
+		$rootScope.staticMenu = false;
+
 	}
 ]);

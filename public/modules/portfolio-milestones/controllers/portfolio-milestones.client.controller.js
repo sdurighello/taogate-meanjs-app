@@ -363,13 +363,20 @@ angular.module('portfolio-milestones').controller('PortfolioMilestonesController
 
 
 		// Used only to show the details of the milestone (adding/removing all done on main ctrl/view)
-		var modalProjectMilestone = function (size, milestone) {
+		var modalProjectMilestone = function (size, milestone, milestoneStates, portfolioMilestoneTypes, projectMilestoneTypes, logStatuses) {
 
 			var modalInstance = $modal.open({
 				templateUrl: 'modules/portfolio-milestones/views/associated-project-milestone.client.view.html',
 				controller: function ($scope, $modalInstance, milestone) {
 					$scope.selectedProjectMilestone = milestone;
+
+                    $scope.milestoneStates = milestoneStates;
+                    $scope.portfolioMilestoneTypes = portfolioMilestoneTypes;
+                    $scope.projectMilestoneTypes = projectMilestoneTypes;
+                    $scope.logStatuses = logStatuses;
+
 					$scope.projectMilestoneDetails = 'header';
+
 					$scope.cancelModal = function () {
 						$modalInstance.dismiss();
 					};
@@ -382,7 +389,19 @@ angular.module('portfolio-milestones').controller('PortfolioMilestonesController
 							function(res){ return res; },
 							function(err){ return err; }
 						);
-					}
+					},
+                    milestoneStates: function () {
+                        return milestoneStates;
+                    },
+                    portfolioMilestoneTypes: function () {
+                        return portfolioMilestoneTypes;
+                    },
+                    projectMilestoneTypes: function () {
+                        return projectMilestoneTypes;
+                    },
+                    logStatuses: function () {
+                        return logStatuses;
+                    }
 				},
 				backdrop: 'static',
 				keyboard: false
@@ -390,7 +409,7 @@ angular.module('portfolio-milestones').controller('PortfolioMilestonesController
 		};
 
 		vm.viewProjectMilestone = function(milestone){
-			modalProjectMilestone('lg', milestone);
+			modalProjectMilestone('lg', milestone, vm.milestoneStates, vm.portfolioMilestoneTypes, vm.projectMilestoneTypes, vm.logStatuses);
 		};
 
 		vm.addProjectMilestone = function(portfolioMilestone, projectMilestone){

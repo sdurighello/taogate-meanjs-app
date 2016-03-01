@@ -106,6 +106,15 @@ angular.module('project-milestones').controller('ProjectMilestoneController', ['
 
 		$scope.activeTab = {};
 
+		// -------------- SELECT GATE ---------------------
+
+		$scope.setReviewObject = function(reviewObj){
+			$scope.selectedProjectMilestone = null;
+			$scope.reviewObject = reviewObj;
+		};
+
+
+
 		// ------------- SELECT VIEW PROJECT ------------
 
 		var originalProjectMilestone = {};
@@ -114,6 +123,7 @@ angular.module('project-milestones').controller('ProjectMilestoneController', ['
 			$scope.error = {};
 			$scope.selectedProject = null;
 			$scope.projectMilestoneList = null;
+            $scope.reviewObject = null;
 
 			$scope.selectedProjectMilestone = null;
 			originalProjectMilestone = {};

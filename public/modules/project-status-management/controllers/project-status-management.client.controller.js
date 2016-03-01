@@ -147,6 +147,13 @@ angular.module('project-status-management').controller('ProjectStatusManagementC
 
 		$scope.activeTab = {};
 
+		// -------------- SELECT GATE ---------------------
+
+		$scope.setReviewObject = function(reviewObj){
+			$scope.selectedProjectStatusUpdate = null;
+			$scope.reviewObject = reviewObj;
+		};
+
 		// ------------- SELECT VIEW PROJECT ------------
 
 		var originalProjectStatusUpdate = {};
@@ -155,6 +162,7 @@ angular.module('project-status-management').controller('ProjectStatusManagementC
 			$scope.error = {};
 			$scope.selectedProject = null;
 			$scope.projectStatusUpdateList = null;
+            $scope.reviewObject = null;
 
 			$scope.selectedProjectStatusUpdate = null;
 			originalProjectStatusUpdate = {};
@@ -175,13 +183,6 @@ angular.module('project-status-management').controller('ProjectStatusManagementC
 			}, function (err) {
 				$scope.error.projectStatusUpdates = err.data.message;
 			});
-		};
-
-		$scope.cancelViewProject = function(){
-			$scope.error = null;
-			$scope.selectedProject = null;
-			$scope.projectStatusUpdateList = null;
-
 		};
 
 

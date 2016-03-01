@@ -14,16 +14,26 @@
 	border-color: #78FA89;
 }
 
-.jumbotron {
-	/*margin-bottom: 0px;*/
-	/*background-image: url("../img/jumbotron.jpg");*/
+.jumbotron-home {
 	background: linear-gradient( rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5) ), url("../img/brand/jumbotron.jpg");
-	/*background-position: 0% 25%;*/
-	/*background-size: cover;*/
-	/*height: 650px;*/
-	/*background-repeat: no-repeat;*/
+	padding-top: 40px;
+    padding-bottom: 60px;
 	color: white;
 	text-shadow: black 0.5em 0.5em 0.5em;
+}
+
+.jumbotron-band {
+    background-color: cornflowerblue;
+    padding-top: 20px;
+    padding-bottom: 20px;
+    color: white;
+}
+
+.jumbotron-social-icons {
+    background-color: whitesmoke;
+    color: darkgrey;
+    padding: 10px;
+    margin: 0;
 }
 
 .app-form .ng-dirty.ng-invalid{
@@ -34,6 +44,38 @@
 	background: lightgreen;
 }
 
+/* ------------ INPUT FIELDS NEXT TO EACH-OTHER -------- */
+
+.input-group-field {
+	display: table-cell;
+	vertical-align: middle;
+	border-radius:4px;
+}
+.input-group-field .form-control, .input-group-field .form-control {
+	border-radius: inherit !important;
+}
+.input-group-field:not(:first-child):not(:last-child) {
+	border-radius:0;
+}
+.input-group-field:not(:first-child):not(:last-child) .form-control {
+	border-left-width: 0;
+	border-right-width: 0;
+}
+.input-group-field:last-child {
+	border-top-left-radius:0;
+	border-bottom-left-radius:0;
+}
+
+/*<div class='input-group'>*/
+    /*<span class='input-group-addon'>Add On</span>*/
+    /*<input type='text' class='form-control' placeholder="Field 1" />*/
+    /*<div class='input-group-field'>*/
+        /*<input type='text' class='form-control' placeholder="Field 2" />*/
+    /*</div>*/
+    /*<div class='input-group-field'>*/
+        /*<input type='text' class='form-control' placeholder="Field 3" />*/
+    /*</div>*/
+/*</div>*/
 
 /* ------------ PILLS as WIZARD PROCESS --------------- */
 

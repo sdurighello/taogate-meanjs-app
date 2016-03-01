@@ -31,12 +31,12 @@
 					<hr>
 					<div class="row">
 						<div class="alert alert-warning text-center" data-ng-hide="strategyNodeTypes.length">
-							No portfolio types yet
+							No strategy node types yet
 						</div>
 						<div class="col-md-4" data-ng-repeat="type in strategyNodeTypes track by $index" data-ng-switch="switchTypeForm[type._id]" >
 							<div class="panel panel-default" title="Last updated on {{type.created | date:'medium'}} by {{type.user.displayName}}">
 								<div class="panel-heading">
-									<h6 class="panel-title text-center" data-ng-bind="type.name"></h6>
+									<h6 class="panel-title text-center" data-ng-bind="type.name" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: normal; width: 100%;"></h6>
 								</div>
 								<div class="panel-body">
 									<div ng-switch-default="view">
@@ -112,7 +112,7 @@
 								<div class="panel-heading">
 									<h6 class="panel-title text-center">Strategy tree</h6>
 								</div>
-								<div class="panel-body" style="min-height: 560px;  max-height: 610px; overflow-y: auto;">
+								<div class="panel-body" style="min-height: 480px;  max-height: 480px; overflow-y: auto;">
 									<div class="alert alert-warning text-center" data-ng-hide="!strategyNodes.$resolved || strategyNodes.length">
 										No strategy nodes yet
 									</div>
@@ -200,7 +200,7 @@
 									<div class="col-sm-12">
 										<div class="panel panel-default">
 											<div class="panel-heading">
-												<h6 class="panel-title text-center"><em data-ng-bind="editStrategyNode.name"></em></h6>
+												<h6 class="panel-title text-center" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: normal; width: 100%;"><em data-ng-bind="editStrategyNode.name"></em></h6>
 												<div class="text-center" data-ng-hide="editStrategyNode">
 													<em>Please select a node from the tree to see the details</em>
 												</div>

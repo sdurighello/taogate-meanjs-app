@@ -13,6 +13,7 @@ angular.module('people-portfolio-analysis').controller('PeoplePortfolioAnalysisC
 
 			Portfolios.query(function(portfolios){
 				$scope.portfolios = portfolios;
+				$scope.portfolioTrees = createNodeTrees(portfolios);
 			}, function(err){
 				$scope.initError.push(err.data.message);
 			});
@@ -65,7 +66,38 @@ angular.module('people-portfolio-analysis').controller('PeoplePortfolioAnalysisC
 		});
 
 
-		// ------------------- NG-SWITCH ---------------------
+        // ------ TREE RECURSIONS -----------
+
+        var createNodeTrees = function(strategicNodes){
+            var nodeTrees = [];
+            strategicNodes.forEach(function(node){
+                if(node.parent === null){
+                    nodeTrees.push(
+                        {node : node, nodeTrees : []}
+                    );
+                }
+            });
+            var recursionOnNodeTrees = function(nodeTrees){
+                nodeTrees.forEach(function(node){
+                    strategicNodes.forEach(function(strategicNode){
+                        if(strategicNode.parent !== null){
+                            if(node.node._id === strategicNode.parent){
+                                node.nodeTrees.push(
+                                    {node : strategicNode, nodeTrees : []}
+                                );
+                            }
+                        }
+                    });
+                    recursionOnNodeTrees(node.nodeTrees);
+                });
+            };
+            recursionOnNodeTrees(nodeTrees);
+            return nodeTrees;
+        };
+
+
+
+        // ------------------- NG-SWITCH ---------------------
 
 		$scope.switchPortfolioForm = {};
 

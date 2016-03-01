@@ -66,217 +66,210 @@
             </div>
             <div class="row" data-ng-show="selectedProject">
                 <div class="col-md-12">
-                    <div class="row">
-                        <div class="col-sm-6">
-                            <div class="panel panel-default">
-                                <div><h5>&nbsp;Project: <i>{{selectedProject.identification.name}}</i></h5></div>
-                            </div>
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <h6 class="panel-title text-center" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: normal; width: 100%;">
+                                {{selectedProject.identification.name}}
+                            </h6>
                         </div>
-                        <div class="col-sm-6">
-                            <div class="panel panel-default">
-                                <div><h5>&nbsp;Process: <i>{{selectedProject.process.name}}</i></h5></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="row" data-ng-show="selectedProject">
-                <div class="col-md-12">
-                    <div class="row" data-ng-show="showNewProjectIssueForm">
-                        <div class="col-md-12">
-                            <div class="panel panel-default">
-                                <div class="panel-heading">
-                                    <h6 class="panel-title">
-                                        New project issue
-                                    </h6>
-                                </div>
-                                <div class="panel-body">
-                                    <form class="form" name="newProjectIssueForm">
-                                        <div class="row">
-                                            <div class="form-group-sm col-md-3">
-                                                <label for="issueRaisedOnDateNew">Raised on date</label>
-                                                <div class="input-group">
-                                                    <input type="text" id="issueRaisedOnDateNew" class="form-control" datepicker-popup="dd-MMMM-yyyy" data-ng-model="newProjectIssue.raisedOnDate"
-                                                           is-open="newProjectIssueRaisedOnDateOpened[selectedProject._id]" required>
+                        <div class="panel-body" style="max-height: 540px; min-height: 540px;">
+                            <div class="row" data-ng-show="showNewProjectIssueForm">
+                                <div class="col-md-12">
+                                    <div class="panel panel-default">
+                                        <div class="panel-heading">
+                                            <h6 class="panel-title">
+                                                New project issue
+                                            </h6>
+                                        </div>
+                                        <div class="panel-body">
+                                            <form class="form" name="newProjectIssueForm">
+                                                <div class="row">
+                                                    <div class="form-group-sm col-md-3">
+                                                        <label for="issueRaisedOnDateNew">Raised on date</label>
+                                                        <div class="input-group">
+                                                            <input type="text" id="issueRaisedOnDateNew" class="form-control" datepicker-popup="dd-MMMM-yyyy" data-ng-model="newProjectIssue.raisedOnDate"
+                                                                   is-open="newProjectIssueRaisedOnDateOpened[selectedProject._id]" required>
                                                                 <span class="input-group-btn">
                                                                     <button type="button" class="btn btn-default btn-sm" ng-click="openNewProjectIssueRaisedOnDate(selectedProject, $event)"><i class="glyphicon glyphicon-calendar"></i></button>
                                                                 </span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="form-group-sm col-md-3">
+                                                        <label for="issueGateNew">Gate</label>
+                                                        <select id="issueGateNew" class="form-control" data-ng-model = "newProjectIssue.gate"
+                                                                ng-options="gate as gate.name for gate in selectedProject.process.gates | orderBy: 'position'" required>
+                                                            <option value="">--choose gate</option>
+                                                        </select>
+                                                    </div>
+                                                    <div class="form-group-sm col-md-6">
+                                                        <label for="issueTitleNew">Title</label>
+                                                        <input id="issueTitleNew" class="form-control" type="text" placeholder="Enter issue title"
+                                                               data-ng-model="newProjectIssue.title" required>
+                                                    </div>
                                                 </div>
-                                            </div>
-                                            <div class="form-group-sm col-md-3">
-                                                <label for="issueGateNew">Gate</label>
-                                                <select id="issueGateNew" class="form-control" data-ng-model = "newProjectIssue.gate"
-                                                        ng-options="gate as gate.name for gate in selectedProject.process.gates | orderBy: 'position'" required>
-                                                    <option value="">--choose gate</option>
-                                                </select>
-                                            </div>
-                                            <div class="form-group-sm col-md-6">
-                                                <label for="issueTitleNew">Title</label>
-                                                <input id="issueTitleNew" class="form-control" type="text" placeholder="Enter issue title"
-                                                       data-ng-model="newProjectIssue.title" required>
-                                            </div>
+                                                <hr>
+                                                <div class="form-group-sm pull-right">
+                                                    <button class="btn btn-success btn-xs" data-ng-click="createNewProjectIssue(selectedProject); showNewProjectIssueForm = false;"
+                                                            data-ng-disabled="newProjectIssueForm.$invalid">
+                                                        Save
+                                                    </button>
+                                                    <button class="btn btn-info btn-xs" data-ng-click="cancelNewProjectIssue(); showNewProjectIssueForm = false;">
+                                                        Cancel
+                                                    </button>
+                                                </div>
+                                            </form>
                                         </div>
-                                        <hr>
-                                        <div class="form-group-sm pull-right">
-                                            <button class="btn btn-success btn-xs" data-ng-click="createNewProjectIssue(selectedProject); showNewProjectIssueForm = false;"
-                                                    data-ng-disabled="newProjectIssueForm.$invalid">
-                                                Save
-                                            </button>
-                                            <button class="btn btn-info btn-xs" data-ng-click="cancelNewProjectIssue(); showNewProjectIssueForm = false;">
-                                                Cancel
-                                            </button>
-                                        </div>
-                                    </form>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                    </div>
-                    <div data-ng-show="!showNewProjectIssueForm">
-                        <div class="row">
-                            <div class="col-md-5 form-group-sm center-block">
-                                <button class="btn btn-warning btn-sm" data-ng-click="showNewProjectIssueForm = true">
-                                    New project issue
-                                </button>
-                            </div>
-                        </div>
-                        <br>
-                        <div data-ng-hide="projectIssues.length !== 0" class="alert alert-warning text-center">
-                            There are no issues for this project
-                        </div>
-                        <div class="row" data-ng-show="projectIssues.length !== 0">
-                            <div class="col-xs-12">
-                                <div class="table-responsive">
-                                    <table class="table table-bordered table-hover table-condensed small">
-                                        <thead>
-                                        <tr>
-                                            <td colspan="7" class="text-center">
-                                                <span><h5>Issue log</h5></span>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td colspan="7">
-                                                <div class="row" data-ng-show="!showIssueFilters">
-                                                    <div class="col-md-12">
-                                                        <a data-ng-click="showIssueFilters = true"><b>Filters</b></a><br>
-
-                                                        <span data-ng-show="projectIssueFilter.idNumber"><b>#: </b><i>"{{projectIssueFilter.idNumber}}" | </i></span>
-
-                                                        <span data-ng-show="projectIssueFilter.title"><b>Title: </b><i>"{{projectIssueFilter.title}}" | </i></span>
-
-                                                        <span data-ng-show="projectIssueFilter.gate"><b>Gate: </b><i>"{{projectIssueFilter.gate.name}}" | </i></span>
-
-                                                        <span data-ng-show="projectIssueFilter.priority"><b>Priority: </b><i>"{{projectIssueFilter.priority.name}}" | </i></span>
-
-                                                        <span data-ng-show="projectIssueFilter.state"><b>State: </b><i>"{{projectIssueFilter.state.name}}" | </i></span>
-
-                                                        <span data-ng-show="projectIssueFilter.statusReview.currentRecord.status"><b>Status: </b><i>"{{projectIssueFilter.statusReview.currentRecord.status.name}}" | </i></span>
-
-                                                        <span data-ng-show="projectIssueFilter.reason"><b>Reason: </b><i>"{{projectIssueFilter.reason.name}}" | </i></span>
-
-                                                        <span data-ng-show="projectIssueFilter.statusReview.currentRecord.completed === false"><b>Completion: </b><i>"Not completed"</i></span>
-                                                        <span data-ng-show="projectIssueFilter.statusReview.currentRecord.completed === true"><b>Completion: </b><i>"Completed"</i></span>
-                                                    </div>
-                                                </div>
-                                                <div class="row" data-ng-show="showIssueFilters">
-                                                    <div class="col-md-12">
-                                                        <div class="row">
+                            <div data-ng-show="!showNewProjectIssueForm">
+                                <div class="row">
+                                    <div class="col-md-5 form-group-sm center-block">
+                                        <button class="btn btn-success btn-sm" data-ng-click="showNewProjectIssueForm = true">
+                                            New project issue
+                                        </button>
+                                    </div>
+                                </div>
+                                <br>
+                                <div data-ng-hide="projectIssues.length !== 0" class="alert alert-warning text-center">
+                                    There are no issues for this project
+                                </div>
+                                <div class="row" data-ng-show="projectIssues.length !== 0">
+                                    <div class="col-xs-12">
+                                        <div class="table-responsive">
+                                            <table class="table table-bordered table-hover table-condensed small">
+                                                <thead>
+                                                <tr>
+                                                    <td colspan="7" class="text-center">
+                                                        <span><h5>Issue log</h5></span>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td colspan="7">
+                                                        <div class="row" data-ng-show="!showIssueFilters">
                                                             <div class="col-md-12">
-                                                                <a data-ng-click="showIssueFilters = false"><b>Hide filters</b></a>
+                                                                <a data-ng-click="showIssueFilters = true"><b>Filters</b></a><br>
+
+                                                                <span data-ng-show="projectIssueFilter.idNumber"><b>#: </b><i>"{{projectIssueFilter.idNumber}}" | </i></span>
+
+                                                                <span data-ng-show="projectIssueFilter.title"><b>Title: </b><i>"{{projectIssueFilter.title}}" | </i></span>
+
+                                                                <span data-ng-show="projectIssueFilter.gate"><b>Gate: </b><i>"{{projectIssueFilter.gate.name}}" | </i></span>
+
+                                                                <span data-ng-show="projectIssueFilter.priority"><b>Priority: </b><i>"{{projectIssueFilter.priority.name}}" | </i></span>
+
+                                                                <span data-ng-show="projectIssueFilter.state"><b>State: </b><i>"{{projectIssueFilter.state.name}}" | </i></span>
+
+                                                                <span data-ng-show="projectIssueFilter.statusReview.currentRecord.status"><b>Status: </b><i>"{{projectIssueFilter.statusReview.currentRecord.status.name}}" | </i></span>
+
+                                                                <span data-ng-show="projectIssueFilter.reason"><b>Reason: </b><i>"{{projectIssueFilter.reason.name}}" | </i></span>
+
+                                                                <span data-ng-show="projectIssueFilter.statusReview.currentRecord.completed === false"><b>Completion: </b><i>"Not completed"</i></span>
+                                                                <span data-ng-show="projectIssueFilter.statusReview.currentRecord.completed === true"><b>Completion: </b><i>"Completed"</i></span>
                                                             </div>
                                                         </div>
-                                                        <br>
-                                                        <div class="row">
-                                                            <div class="col-md-2 form-group-sm">
-                                                                <input class="form-control" type="number" placeholder="id" data-ng-model="projectIssueFilter.idNumber">
-                                                            </div>
-                                                            <div class="col-md-4 form-group-sm">
-                                                                <input class="form-control" type="text" placeholder="filter by title" data-ng-model="projectIssueFilter.title">
-                                                            </div>
-                                                            <div class="col-md-3 form-group-sm">
-                                                                <select class="form-control" data-ng-model = "projectIssueFilter.gate"
-                                                                        data-ng-options="gate as gate.name for gate in selectedProject.process.gates | orderBy: 'position'">
-                                                                    <option value="">--filter by gate</option>
-                                                                </select>
-                                                            </div>
-                                                            <div class="col-md-3 form-group-sm">
-                                                                <select class="form-control" data-ng-model = "projectIssueFilter.priority"
-                                                                        data-ng-options="priority as priority.name for priority in logPriorities">
-                                                                    <option value="">--filter by priority</option>
-                                                                </select>
+                                                        <div class="row" data-ng-show="showIssueFilters">
+                                                            <div class="col-md-12">
+                                                                <div class="row">
+                                                                    <div class="col-md-12">
+                                                                        <a data-ng-click="showIssueFilters = false"><b>Hide filters</b></a>
+                                                                    </div>
+                                                                </div>
+                                                                <br>
+                                                                <div class="row">
+                                                                    <div class="col-md-2 form-group-sm">
+                                                                        <input class="form-control" type="number" placeholder="id" data-ng-model="projectIssueFilter.idNumber">
+                                                                    </div>
+                                                                    <div class="col-md-4 form-group-sm">
+                                                                        <input class="form-control" type="text" placeholder="filter by title" data-ng-model="projectIssueFilter.title">
+                                                                    </div>
+                                                                    <div class="col-md-3 form-group-sm">
+                                                                        <select class="form-control" data-ng-model = "projectIssueFilter.gate"
+                                                                                data-ng-options="gate as gate.name for gate in selectedProject.process.gates | orderBy: 'position'">
+                                                                            <option value="">--filter by gate</option>
+                                                                        </select>
+                                                                    </div>
+                                                                    <div class="col-md-3 form-group-sm">
+                                                                        <select class="form-control" data-ng-model = "projectIssueFilter.priority"
+                                                                                data-ng-options="priority as priority.name for priority in logPriorities">
+                                                                            <option value="">--filter by priority</option>
+                                                                        </select>
+                                                                    </div>
+                                                                </div>
+                                                                <br>
+                                                                <div class="row">
+                                                                    <div class="col-md-3 form-group-sm">
+                                                                        <select class="form-control" data-ng-model = "projectIssueFilter.state"
+                                                                                data-ng-options="state as state.name for state in issueStates">
+                                                                            <option value="">--filter by state</option>
+                                                                        </select>
+                                                                    </div>
+                                                                    <div class="col-md-3 form-group-sm">
+                                                                        <select class="form-control" data-ng-model = "projectIssueFilter.statusReview.currentRecord.status"
+                                                                                data-ng-options="status as status.name for status in logStatuses">
+                                                                            <option value="">--filter by status</option>
+                                                                        </select>
+                                                                    </div>
+                                                                    <div class="col-md-3 form-group-sm">
+                                                                        <select class="form-control" data-ng-model = "projectIssueFilter.reason"
+                                                                                data-ng-options="reason as reason.name for reason in logReasons">
+                                                                            <option value="">--filter by reason</option>
+                                                                        </select>
+                                                                    </div>
+                                                                    <div class="col-md-3 form-group-sm">
+                                                                        <select class="form-control" data-ng-model = "projectIssueFilter.statusReview.currentRecord.completed"
+                                                                                data-ng-options="completion.flag as completion.name for completion in completionFilterArray">
+                                                                            <option value="">--filter by completion</option>
+                                                                        </select>
+                                                                    </div>
+                                                                </div>
+                                                                <br>
                                                             </div>
                                                         </div>
-                                                        <br>
-                                                        <div class="row">
-                                                            <div class="col-md-3 form-group-sm">
-                                                                <select class="form-control" data-ng-model = "projectIssueFilter.state"
-                                                                        data-ng-options="state as state.name for state in issueStates">
-                                                                    <option value="">--filter by state</option>
-                                                                </select>
-                                                            </div>
-                                                            <div class="col-md-3 form-group-sm">
-                                                                <select class="form-control" data-ng-model = "projectIssueFilter.statusReview.currentRecord.status"
-                                                                        data-ng-options="status as status.name for status in logStatuses">
-                                                                    <option value="">--filter by status</option>
-                                                                </select>
-                                                            </div>
-                                                            <div class="col-md-3 form-group-sm">
-                                                                <select class="form-control" data-ng-model = "projectIssueFilter.reason"
-                                                                        data-ng-options="reason as reason.name for reason in logReasons">
-                                                                    <option value="">--filter by reason</option>
-                                                                </select>
-                                                            </div>
-                                                            <div class="col-md-3 form-group-sm">
-                                                                <select class="form-control" data-ng-model = "projectIssueFilter.statusReview.currentRecord.completed"
-                                                                        data-ng-options="completion.flag as completion.name for completion in completionFilterArray">
-                                                                    <option value="">--filter by completion</option>
-                                                                </select>
-                                                            </div>
-                                                        </div>
-                                                        <br>
-                                                    </div>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <th>#</th>
-                                            <th>Title</th>
-                                            <th>Gate</th>
-                                            <th>Priority</th>
-                                            <th>State</th>
-                                            <th>Status</th>
-                                            <th></th>
-                                        </tr>
-                                        </thead>
-                                        <tbody>
-                                        <tr data-ng-repeat="projectIssue in projectIssues | orderBy: 'idNumber'">
-                                            <td data-ng-class="{'btn-default' : projectIssue.statusReview.currentRecord.completed}">
-                                                {{projectIssue.idNumber}}
-                                            </td>
-                                            <td>{{projectIssue.title}}</td>
-                                            <td>{{projectIssue.gate.name}}</td>
-                                            <td>
-                                                <span data-ng-show="projectIssue.priority">{{projectIssue.priority.name}}</span>
-                                                <span data-ng-show="!projectIssue.priority">No priority</span>
-                                            </td>
-                                            <td>
-                                                <span data-ng-show="projectIssue.state">{{projectIssue.state.name}}</span>
-                                                <span data-ng-show="!projectIssue.state">No state</span>
-                                            </td>
-                                            <td>
-                                                <span data-ng-show="projectIssue.statusReview.currentRecord.status">{{projectIssue.statusReview.currentRecord.status.name}}</span>
-                                                <span data-ng-show="!projectIssue.statusReview.currentRecord.status">No status</span>
-                                            </td>
-                                            <td class="text-center">
-                                                <button class="btn btn-success btn-xs" data-ng-click="selectProjectIssue(projectIssue, selectedProject)">
-                                                    <span class="glyphicon glyphicon-pencil"></span>
-                                                </button>
-                                                <button class="btn btn-danger btn-xs" data-ng-click="deleteProjectIssue(projectIssue)">
-                                                    <span class="glyphicon glyphicon-trash"></span>
-                                                </button>
-                                            </td>
-                                        </tr>
-                                        </tbody>
-                                    </table>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <th>#</th>
+                                                    <th>Title</th>
+                                                    <th>Gate</th>
+                                                    <th>Priority</th>
+                                                    <th>State</th>
+                                                    <th>Status</th>
+                                                    <th></th>
+                                                </tr>
+                                                </thead>
+                                                <tbody>
+                                                <tr data-ng-repeat="projectIssue in projectIssues | orderBy: 'idNumber'">
+                                                    <td data-ng-class="{'btn-default' : projectIssue.statusReview.currentRecord.completed}">
+                                                        {{projectIssue.idNumber}}
+                                                    </td>
+                                                    <td>{{projectIssue.title}}</td>
+                                                    <td>{{projectIssue.gate.name}}</td>
+                                                    <td>
+                                                        <span data-ng-show="projectIssue.priority">{{projectIssue.priority.name}}</span>
+                                                        <span data-ng-show="!projectIssue.priority">No priority</span>
+                                                    </td>
+                                                    <td>
+                                                        <span data-ng-show="projectIssue.state">{{projectIssue.state.name}}</span>
+                                                        <span data-ng-show="!projectIssue.state">No state</span>
+                                                    </td>
+                                                    <td>
+                                                        <span data-ng-show="projectIssue.statusReview.currentRecord.status">{{projectIssue.statusReview.currentRecord.status.name}}</span>
+                                                        <span data-ng-show="!projectIssue.statusReview.currentRecord.status">No status</span>
+                                                    </td>
+                                                    <td class="text-center">
+                                                        <button class="btn btn-success btn-xs" data-ng-click="selectProjectIssue(projectIssue, selectedProject)">
+                                                            <span class="glyphicon glyphicon-pencil"></span>
+                                                        </button>
+                                                        <button class="btn btn-danger btn-xs" data-ng-click="deleteProjectIssue(projectIssue)">
+                                                            <span class="glyphicon glyphicon-trash"></span>
+                                                        </button>
+                                                    </td>
+                                                </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>

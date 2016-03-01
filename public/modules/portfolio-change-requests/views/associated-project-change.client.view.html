@@ -1,4 +1,4 @@
-<section data-ng-controller="PortfolioChangeRequestsController as parentCtrl" data-ng-init="parentCtrl.init()">
+<section data-ng-controller="PortfolioChangeRequestsController as parentCtrl">
     <div class="panel panel-default">
         <div class="panel-heading">
             <div class="row">
@@ -48,19 +48,19 @@
                         <div class="form-group-sm col-md-4">
                             <label for="">Reason for change</label>
                             <select id="" class="form-control" data-ng-model = "selectedProjectChangeRequest.reason"
-                                    ng-options="reason._id as reason.name for reason in parentCtrl.logReasons" disabled>
+                                    ng-options="reason._id as reason.name for reason in logReasons" disabled>
                             </select>
                         </div>
                         <div class="form-group-sm col-md-4">
                             <label for="">Priority</label>
                             <select id="" class="form-control" data-ng-model = "selectedProjectChangeRequest.priority"
-                                    ng-options="priority._id as priority.name for priority in parentCtrl.logPriorities" disabled>
+                                    ng-options="priority._id as priority.name for priority in logPriorities" disabled>
                             </select>
                         </div>
                         <div class="form-group-sm col-md-4">
                             <label for="">State</label>
                             <select id="" class="form-control" data-ng-model = "selectedProjectChangeRequest.state"
-                                    ng-options="state._id as state.name for state in parentCtrl.changeRequestStates" disabled>
+                                    ng-options="state._id as state.name for state in changeRequestStates" disabled>
                             </select>
                         </div>
                     </div>
@@ -94,7 +94,7 @@
                         <div class="form-group-sm col-md-5">
                             <label for="">Status</label>
                             <select id="" class="form-control" data-ng-model = "selectedProjectChangeRequest.statusReview.currentRecord.status"
-                                    ng-options="status._id as status.name for status in parentCtrl.logStatuses" disabled>
+                                    ng-options="status._id as status.name for status in logStatuses" disabled>
                             </select>
                         </div>
                         <br>

@@ -44,6 +44,7 @@
 </head>
 
 <body class="ng-cloak">
+
 	<div ng-hide="stateIsLoading">
 		<header data-ng-include="'/modules/core/views/header.client.view.html'" class="navbar navbar-fixed-top navbar-default"></header>
 		<section class="content">
@@ -52,6 +53,7 @@
 			</section>
 		</section>
 	</div>
+
 	<div ng-show="stateIsLoading">
 		<div class="container-fluid">
 			<br>
@@ -82,7 +84,7 @@
 
 	<div class="container-fluid">
 		<footer>
-			<hr>
+			<hr style="margin-top: 5px;">
 			<p class="text-center">&copy; taoPortfolio.com 2015 | <a>Legal Notices</a></p>
 		</footer>
 	</div>

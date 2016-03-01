@@ -1,4 +1,4 @@
-<section data-ng-controller="PortfolioMilestonesController as parentCtrl" data-ng-init="parentCtrl.init()">
+<section data-ng-controller="PortfolioMilestonesController as parentCtrl">
     <div class="panel panel-default">
         <div class="panel-heading">
             <div class="row">
@@ -24,7 +24,7 @@
                         <div class="form-group-sm col-md-8">
                             <label for="">Name</label>
                             <input id="" class="form-control" type="text" placeholder="Enter name"
-                                   data-ng-model="selectedProjectMilestone.title" disabled>
+                                   data-ng-model="selectedProjectMilestone.name" disabled>
                         </div>
                     </div>
                     <br>
@@ -32,13 +32,13 @@
                         <div class="form-group-sm col-md-4">
                             <label for="">Type</label>
                             <select id="" class="form-control" data-ng-model = "selectedProjectMilestone.type"
-                                    ng-options="type._id as type.name for type in parentCtrl.projectMilestoneTypes" disabled>
+                                    ng-options="type._id as type.name for type in projectMilestoneTypes" disabled>
                             </select>
                         </div>
                         <div class="form-group-sm col-md-4">
                             <label for="">State</label>
                             <select id="" class="form-control" data-ng-model = "selectedProjectMilestone.state"
-                                    ng-options="state._id as state.name for state in parentCtrl.milestoneStates" disabled>
+                                    ng-options="state._id as state.name for state in milestoneStates" disabled>
                             </select>
                         </div>
                     </div>
@@ -72,7 +72,7 @@
                         <div class="form-group-sm col-md-5">
                             <label for="">Status</label>
                             <select id="" class="form-control" data-ng-model = "selectedProjectMilestone.statusReview.currentRecord.status"
-                                    ng-options="status._id as status.name for status in parentCtrl.logStatuses" disabled>
+                                    ng-options="status._id as status.name for status in logStatuses" disabled>
                             </select>
                         </div>
                         <br>

@@ -8,9 +8,17 @@ angular.module('core').config(['$stateProvider', '$urlRouterProvider',
 
 		// Home state routing
 		$stateProvider.
-		state('orguser', {
-			url: '/orguser',
-			templateUrl: 'modules/core/views/orguser.client.view.html'
+		state('contact', {
+			url: '/contact',
+			templateUrl: 'modules/core/views/contact.client.view.html'
+		}).
+		state('software', {
+			url: '/software',
+			templateUrl: 'modules/core/views/software.client.view.html'
+		}).
+		state('methodology', {
+			url: '/methodology',
+			templateUrl: 'modules/core/views/methodology.client.view.html'
 		}).
 		state('home', {
 			url: '/',

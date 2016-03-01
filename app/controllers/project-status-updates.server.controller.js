@@ -101,7 +101,7 @@ exports.delete = function(req, res) {
  */
 exports.list = function(req, res) {
 	var ProjectStatusUpdate = mongoose.mtModel(req.user.tenantId + '.' + 'ProjectStatusUpdate');
-	ProjectStatusUpdate.find().populate('user', 'displayName').exec(function(err, projectStatusUpdates) {
+	ProjectStatusUpdate.find(req.query).populate('user', 'displayName').exec(function(err, projectStatusUpdates) {
 		if (err) {
 			return res.status(400).send({
 				message: errorHandler.getErrorMessage(err)

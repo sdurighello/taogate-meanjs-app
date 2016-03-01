@@ -5,8 +5,8 @@
 			<div class="panel-heading">
 				<ol class="breadcrumb">
 					<li>Portfolio evaluation</li>
-                    <li>Evaluation summaries</li>
-					<li class="active">Portfolio evaluation summary</li>
+                    <li>Evaluation profiles</li>
+					<li class="active">Evaluation summary</li>
 				</ol>
 			</div>
 		</div>
@@ -17,31 +17,25 @@
 				<div class="panel-heading">
 					<h6 class="panel-title text-center">Portfolio tree</h6>
 				</div>
-				<div class="panel-body" style="min-height: 500px;  max-height: 500px; overflow-y: auto;">
+				<div class="panel-body" style="min-height: 500px;  max-height: 500px; overflow-y: auto; overflow-x: auto">
 					<div class="alert alert-warning text-center" data-ng-hide="!parentCtrl.portfolios.$resolved || parentCtrl.portfolios.length">
 						No portfolios yet
 					</div>
 					<div class="row">
 						<div class="col-md-12">
-							<ul>
+							<ul style="margin-left: 2%; padding-left: 2%">
 								<li>
-									<button class="btn btn-default btn-sm btn-warning" style="overflow: hidden; margin: 1%;"
+									<button class="btn btn-default btn-sm btn-warning" style="min-width:150px; max-width: 150px; overflow:hidden; margin: 2%;"
 											data-ng-click="parentCtrl.selectPortfolio('all')">
 										All
 									</button>
 								</li>
-							</ul>
-						</div>
-					</div>
-					<div class="row">
-						<div class="col-md-12">
-							<ul>
-								<li>
-									<button class="btn btn-default btn-sm btn-warning" style="overflow: hidden; margin: 1%;"
-											data-ng-click="parentCtrl.selectPortfolio('unassigned')">
-										Unassigned
-									</button>
-								</li>
+                                <li>
+                                    <button class="btn btn-default btn-sm btn-warning" style="min-width:150px; max-width: 150px; overflow:hidden; margin: 2%;"
+                                            data-ng-click="parentCtrl.selectPortfolio('unassigned')">
+                                        Unassigned
+                                    </button>
+                                </li>
 							</ul>
 						</div>
 					</div>
@@ -49,15 +43,19 @@
 						<div class="col-md-12">
 							<script type="text/ng-template" id="portfolioTree">
 								<button class="btn btn-default btn-sm" data-ng-click="parentCtrl.selectPortfolio(tree.node);"
-										style="overflow: hidden; margin: 2%;">
+                                        style="min-width:150px; max-width: 150px; overflow:hidden; margin: 3%;">
 									<span data-ng-bind="tree.node.name"></span>
 								</button>
-								<ul data-ng-if="tree.nodeTrees" class="">
-									<li data-ng-repeat="tree in tree.nodeTrees track by $index" data-ng-include="'portfolioTree'"></li>
+								<ul data-ng-if="tree.nodeTrees">
+									<li data-ng-repeat="tree in tree.nodeTrees track by $index" style="list-style: none">
+                                        <span data-ng-include="'portfolioTree'" style="display:block; margin-left:-0.5em;"></span>
+                                    </li>
 								</ul>
 							</script>
-							<ul class="">
-								<li data-ng-repeat="tree in parentCtrl.portfolioTrees track by $index" data-ng-include="'portfolioTree'"></li>
+							<ul style="margin-left: 2%; padding-left: 2%">
+								<li data-ng-repeat="tree in parentCtrl.portfolioTrees track by $index">
+                                    <span data-ng-include="'portfolioTree'" style="display:block; margin-left:-0.5em;"></span>
+                                </li>
 							</ul>
 						</div>
 					</div>
@@ -77,123 +75,119 @@
                     <div data-ng-show="error" class="text-danger">
                         <strong data-ng-bind="error"></strong>
                     </div>
-                    <div data-ng-hide="parentCtrl.selectedPortfolio" class="alert alert-warning text-center">
-                        Select a portfolio to see its details
-                    </div>
-                    <div class="row">
-                        <div class="col-md-12">
-                            <div class="panel panel-default" style="margin: 0.1%">
-                                <div><h5>&nbsp;Portfolio: <i>{{parentCtrl.selectedPortfolio.name}}</i></h5></div>
-                            </div>
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <h6 class="panel-title text-center" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: normal; width: 100%;">
+                                {{parentCtrl.selectedPortfolio.name}}
+                            </h6>
                         </div>
-                    </div>
-                    <hr>
-                    <div data-ng-show="parentCtrl.selectedPortfolio">
-                        <div class="row" data-ng-show="!parentCtrl.qualitativeSummaryView.length">
-                            <div class="col-md-12">
-                                <div class="alert alert-warning text-center">
-                                    No ranking to show
+                        <div class="panel-body" style="min-height: 500px;  max-height: 500px; overflow-y: auto; overflow-x: auto">
+                            <div class="row" data-ng-show="!parentCtrl.qualitativeSummaryView.length">
+                                <div class="col-md-12">
+                                    <div class="alert alert-warning text-center">
+                                        No ranking to show
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                        <div class="row" style="min-height: 325px; max-height: 325px; overflow-y: auto" data-ng-show="parentCtrl.qualitativeSummaryView.length">
-                            <div class="col-md-12">
-                                <div class="table-responsive">
-                                    <table class="table table-bordered table-hover table-condensed small">
-                                        <thead>
-                                        <tr>
-                                            <th colspan="2" class="text-center">Ranking</th>
-                                            <th rowspan="2" class="text-center">Project</th>
-                                            <th rowspan="2" class="text-center">
-                                                <span>Qualitative score</span>
-                                                <button class="btn btn-xs" data-ng-click="parentCtrl.orderByRanking('qualitativeScore', true)">
-                                                    <span class="glyphicon glyphicon-sort-by-attributes-alt"></span>
-                                                </button>
-                                            </th>
-                                            <th rowspan="2" class="text-center">
-                                                <span>Risk score</span>
-                                                <button class="btn btn-xs" data-ng-click="parentCtrl.orderByRanking('riskScore', false)">
-                                                    <span class="glyphicon glyphicon-sort-by-attributes"></span>
-                                                </button>
-                                            </th>
-                                            <th rowspan="2" class="text-center">
-                                                <span>Earmarked funds</span>
-                                                <button class="btn btn-xs" data-ng-click="parentCtrl.orderByRanking('earmarkedFunds', true)">
-                                                    <span class="glyphicon glyphicon-sort-by-attributes-alt"></span>
-                                                </button>
-                                            </th>
-                                            <th colspan="6" class="text-center">Financial indicators</th>
-                                        </tr>
-                                        <tr>
-                                            <th data-ng-show="parentCtrl.treeSelectionFlag === 'all' || parentCtrl.treeSelectionFlag === 'unassigned'" class="text-center">
-                                                <span>Overall</span>
-                                                <button class="btn btn-xs" data-ng-click="parentCtrl.orderByRanking('overallRanking', false)">
-                                                    <span class="glyphicon glyphicon-sort-by-attributes"></span>
-                                                </button>
-                                            </th>
-                                            <th data-ng-show="parentCtrl.treeSelectionFlag === 'portfolio'" class="text-center">
-                                                <span>Portfolio</span>
-                                                <button class="btn btn-xs" data-ng-click="parentCtrl.orderByRanking('portfolioRanking', false)">
-                                                    <span class="glyphicon glyphicon-sort-by-attributes"></span>
-                                                </button>
-                                            </th>
-                                            <th> </th>
-                                            <th class="text-center">
-                                                <span>Benefits</span>
-                                                <button class="btn btn-xs" data-ng-click="parentCtrl.orderByRanking('financialRatios.totalBenefitDiscounted', true)">
-                                                    <span class="glyphicon glyphicon-sort-by-attributes-alt"></span>
-                                                </button>
-                                            </th>
-                                            <th class="text-center">
-                                                <span>Costs</span>
-                                                <button class="btn btn-xs" data-ng-click="parentCtrl.orderByRanking('financialRatios.totalCostDiscounted', true)">
-                                                    <span class="glyphicon glyphicon-sort-by-attributes-alt"></span>
-                                                </button>
-                                            </th>
-                                            <th class="text-center">
-                                                <span>B/C ratio</span>
-                                                <button class="btn btn-xs" data-ng-click="parentCtrl.orderByRanking('financialRatios.benefitCostRatio', true)">
-                                                    <span class="glyphicon glyphicon-sort-by-attributes-alt"></span>
-                                                </button>
-                                            </th>
-                                            <th class="text-center">
-                                                <span>NPV</span>
-                                                <button class="btn btn-xs" data-ng-click="parentCtrl.orderByRanking('financialRatios.totalNetDiscounted', true)">
-                                                    <span class="glyphicon glyphicon-sort-by-attributes-alt"></span>
-                                                </button>
-                                            </th>
-                                            <th class="text-center">
-                                                <span>IRR</span>
-                                                <button class="btn btn-xs" data-ng-click="parentCtrl.orderByRanking('financialRatios.IRR', true)">
-                                                    <span class="glyphicon glyphicon-sort-by-attributes-alt"></span>
-                                                </button>
-                                            </th>
-                                            <th class="text-center">
-                                                <span>Payback</span>
-                                                <button class="btn btn-xs" data-ng-click="parentCtrl.orderByRanking('financialRatios.IRR', false)">
-                                                    <span class="glyphicon glyphicon-sort-by-attributes"></span>
-                                                </button>
-                                            </th>
-                                        </tr>
-                                        </thead>
-                                        <tbody>
-                                        <tr data-ng-repeat="profile in parentCtrl.qualitativeSummaryView | orderBy : parentCtrl.orderByProperty : parentCtrl.orderByDirection" data-ng-click="parentCtrl.selectProjectProfile(profile)">
-                                            <td data-ng-show="parentCtrl.treeSelectionFlag === 'all' || parentCtrl.treeSelectionFlag === 'unassigned'" class="text-center">{{profile.overallRanking}}</td>
-                                            <td data-ng-show="parentCtrl.treeSelectionFlag === 'portfolio'" class="text-center">{{profile.portfolioRanking}}</td>
-                                            <td class="text-center"><b>{{$index + 1}}</b></td>
-                                            <td class="btn-link">{{profile.projectName}}</td>
-                                            <td class="text-center">{{profile.qualitativeScore | number : 2}}</td>
-                                            <td class="text-center">{{profile.riskScore | number : 2}}</td>
-                                            <td class="text-center">{{profile.earmarkedFunds | number : 0}}</td>
-                                            <td class="text-center">{{profile.financialRatios.totalBenefitDiscounted | number : 0}}</td>
-                                            <td class="text-center">{{profile.financialRatios.totalCostDiscounted | number : 0}}</td>
-                                            <td class="text-center">{{profile.financialRatios.benefitCostRatio * 100 | number : 1}}%</td>
-                                            <td class="text-center">{{profile.financialRatios.totalNetDiscounted | number : 0}}</td>
-                                            <td class="text-center">{{profile.financialRatios.IRR * 100 | number : 1}}%</td>
-                                            <td class="text-center">{{profile.financialRatios.paybackPeriod | number : 1}}</td>
-                                        </tr>
-                                        </tbody>
-                                    </table>
+                            <div class="row" style="min-height: 325px; max-height: 325px; overflow-y: auto" data-ng-show="parentCtrl.qualitativeSummaryView.length">
+                                <div class="col-md-12">
+                                    <div class="table-responsive">
+                                        <table class="table table-bordered table-hover table-condensed small">
+                                            <thead>
+                                            <tr>
+                                                <th colspan="2" class="text-center">Ranking</th>
+                                                <th rowspan="2" class="text-center">Project</th>
+                                                <th rowspan="2" class="text-center">
+                                                    <span>Qualitative score</span>
+                                                    <button class="btn btn-xs" data-ng-click="parentCtrl.orderByRanking('qualitativeScore', true)">
+                                                        <span class="glyphicon glyphicon-sort-by-attributes-alt"></span>
+                                                    </button>
+                                                </th>
+                                                <th rowspan="2" class="text-center">
+                                                    <span>Risk score</span>
+                                                    <button class="btn btn-xs" data-ng-click="parentCtrl.orderByRanking('riskScore', false)">
+                                                        <span class="glyphicon glyphicon-sort-by-attributes"></span>
+                                                    </button>
+                                                </th>
+                                                <th rowspan="2" class="text-center">
+                                                    <span>Earmarked funds</span>
+                                                    <button class="btn btn-xs" data-ng-click="parentCtrl.orderByRanking('earmarkedFunds', true)">
+                                                        <span class="glyphicon glyphicon-sort-by-attributes-alt"></span>
+                                                    </button>
+                                                </th>
+                                                <th colspan="6" class="text-center">Financial indicators</th>
+                                            </tr>
+                                            <tr>
+                                                <th data-ng-show="parentCtrl.treeSelectionFlag === 'all' || parentCtrl.treeSelectionFlag === 'unassigned'" class="text-center">
+                                                    <span>Overall</span>
+                                                    <button class="btn btn-xs" data-ng-click="parentCtrl.orderByRanking('overallRanking', false)">
+                                                        <span class="glyphicon glyphicon-sort-by-attributes"></span>
+                                                    </button>
+                                                </th>
+                                                <th data-ng-show="parentCtrl.treeSelectionFlag === 'portfolio'" class="text-center">
+                                                    <span>Portfolio</span>
+                                                    <button class="btn btn-xs" data-ng-click="parentCtrl.orderByRanking('portfolioRanking', false)">
+                                                        <span class="glyphicon glyphicon-sort-by-attributes"></span>
+                                                    </button>
+                                                </th>
+                                                <th> </th>
+                                                <th class="text-center">
+                                                    <span>Benefits</span>
+                                                    <button class="btn btn-xs" data-ng-click="parentCtrl.orderByRanking('financialRatios.totalBenefitDiscounted', true)">
+                                                        <span class="glyphicon glyphicon-sort-by-attributes-alt"></span>
+                                                    </button>
+                                                </th>
+                                                <th class="text-center">
+                                                    <span>Costs</span>
+                                                    <button class="btn btn-xs" data-ng-click="parentCtrl.orderByRanking('financialRatios.totalCostDiscounted', true)">
+                                                        <span class="glyphicon glyphicon-sort-by-attributes-alt"></span>
+                                                    </button>
+                                                </th>
+                                                <th class="text-center">
+                                                    <span>B/C ratio</span>
+                                                    <button class="btn btn-xs" data-ng-click="parentCtrl.orderByRanking('financialRatios.benefitCostRatio', true)">
+                                                        <span class="glyphicon glyphicon-sort-by-attributes-alt"></span>
+                                                    </button>
+                                                </th>
+                                                <th class="text-center">
+                                                    <span>NPV</span>
+                                                    <button class="btn btn-xs" data-ng-click="parentCtrl.orderByRanking('financialRatios.totalNetDiscounted', true)">
+                                                        <span class="glyphicon glyphicon-sort-by-attributes-alt"></span>
+                                                    </button>
+                                                </th>
+                                                <th class="text-center">
+                                                    <span>IRR</span>
+                                                    <button class="btn btn-xs" data-ng-click="parentCtrl.orderByRanking('financialRatios.IRR', true)">
+                                                        <span class="glyphicon glyphicon-sort-by-attributes-alt"></span>
+                                                    </button>
+                                                </th>
+                                                <th class="text-center">
+                                                    <span>Payback</span>
+                                                    <button class="btn btn-xs" data-ng-click="parentCtrl.orderByRanking('financialRatios.IRR', false)">
+                                                        <span class="glyphicon glyphicon-sort-by-attributes"></span>
+                                                    </button>
+                                                </th>
+                                            </tr>
+                                            </thead>
+                                            <tbody>
+                                            <tr data-ng-repeat="profile in parentCtrl.qualitativeSummaryView | orderBy : parentCtrl.orderByProperty : parentCtrl.orderByDirection" data-ng-click="parentCtrl.selectProjectProfile(profile)">
+                                                <td data-ng-show="parentCtrl.treeSelectionFlag === 'all' || parentCtrl.treeSelectionFlag === 'unassigned'" class="text-center">{{profile.overallRanking}}</td>
+                                                <td data-ng-show="parentCtrl.treeSelectionFlag === 'portfolio'" class="text-center">{{profile.portfolioRanking}}</td>
+                                                <td class="text-center"><b>{{$index + 1}}</b></td>
+                                                <td class="btn-link">{{profile.projectName}}</td>
+                                                <td class="text-center">{{profile.qualitativeScore | number : 2}}</td>
+                                                <td class="text-center">{{profile.riskScore | number : 2}}</td>
+                                                <td class="text-center">{{profile.earmarkedFunds | number : 0}}</td>
+                                                <td class="text-center">{{profile.financialRatios.totalBenefitDiscounted | number : 0}}</td>
+                                                <td class="text-center">{{profile.financialRatios.totalCostDiscounted | number : 0}}</td>
+                                                <td class="text-center">{{profile.financialRatios.benefitCostRatio * 100 | number : 1}}%</td>
+                                                <td class="text-center">{{profile.financialRatios.totalNetDiscounted | number : 0}}</td>
+                                                <td class="text-center">{{profile.financialRatios.IRR * 100 | number : 1}}%</td>
+                                                <td class="text-center">{{profile.financialRatios.paybackPeriod | number : 1}}</td>
+                                            </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
                                 </div>
                             </div>
                         </div>
