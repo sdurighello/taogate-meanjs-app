@@ -971,24 +971,24 @@
 												</div>
 												<br>
 												<div class="row">
-													<div class="col-md-4" data-ng-show="userHasAuthorization && selectedProjectStatusUpdate.approval.currentRecord.approvalState === 'draft'">
+													<div class="col-md-6" data-ng-show="userHasAuthorization && selectedProjectStatusUpdate.approval.currentRecord.approvalState === 'draft'">
 														<button class="form-control btn btn-success" data-ng-click="submit(selectedProject, selectedProjectStatusUpdate)">
 															Submit status update
 														</button>
 													</div>
 													<div data-ng-show="userHasAuthorization && selectedProjectStatusUpdate.approval.currentRecord.approvalState === 'submitted'">
-														<div class="col-md-4">
+														<div class="col-md-6">
 															<button class="form-control btn btn-success" data-ng-click="approve(selectedProject, selectedProjectStatusUpdate)">
 																Approve status update
 															</button>
 														</div>
-														<div class="col-md-4">
+														<div class="col-md-6">
 															<button class="form-control btn btn-danger" data-ng-click="reject(selectedProject, selectedProjectStatusUpdate)">
 																Reject status update
 															</button>
 														</div>
 													</div>
-													<div class="col-md-4" data-ng-show="userHasAuthorization && selectedProjectStatusUpdate.approval.currentRecord.approvalState === 'rejected'">
+													<div class="col-md-6" data-ng-show="userHasAuthorization && selectedProjectStatusUpdate.approval.currentRecord.approvalState === 'rejected'">
 														<button class="form-control btn btn-success" data-ng-click="draft(selectedProject, selectedProjectStatusUpdate)">
 															Draft status update
 														</button>

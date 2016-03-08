@@ -30,8 +30,21 @@
     text-shadow: black 0.5em 0.5em 0.5em;
 }
 
+.jumbotron-contact-us {
+    background: url("../img/brand/contact-us.jpeg");
+    height: 380px;
+}
+
 .jumbotron-financials {
     background: linear-gradient( rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.7) ), url("../img/brand/jumbotron-financials.jpg");
+    padding-top: 40px;
+    padding-bottom: 60px;
+    color: white;
+    text-shadow: black 0.5em 0.5em 0.5em;
+}
+
+.jumbotron-financials-lg {
+    background: linear-gradient( rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.7) ), url("../img/brand/jumbotron-financial-lg.jpeg");
     padding-top: 40px;
     padding-bottom: 60px;
     color: white;

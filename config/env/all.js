@@ -17,7 +17,8 @@ module.exports = {
 				'public/lib/bootstrap/dist/css/bootstrap-theme.css',
 				'public/lib/ng-sortable/dist/ng-sortable.css',
 				'public/lib/ng-sortable/dist/ng-sortable.style.css',
-				'public/lib/angular-loading-bar/build/loading-bar.css'
+				'public/lib/angular-loading-bar/build/loading-bar.css',
+                'public/lib/angular-chart.js/dist/angular-chart.css'
 			],
 			js: [
 				'public/lib/lodash/lodash.js',
@@ -33,11 +34,9 @@ module.exports = {
 				'public/lib/checklist-model/checklist-model.js',
 				'public/lib/ng-sortable/dist/ng-sortable.js',
 				'public/lib/angular-loading-bar/build/loading-bar.js',
-				// High-Charts
-                'public/lib/highcharts/adapters/standalone-frameworks.js',
-                'public/lib/highcharts/highcharts.js',
-				'public/lib/highcharts/modules/drilldown.js',
-				'public/lib/highcharts-ng/dist/highcharts-ng.js'
+				// Charts.js
+				'public/lib/Chart.js/Chart.js',
+                'public/lib/angular-chart.js/dist/angular-chart.js'
             ]
 		},
 		css: [

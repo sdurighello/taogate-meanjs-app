@@ -1,8 +1,8 @@
 'use strict';
 
 angular.module('category-assignment').controller('CategoryAssignmentController', ['$scope','$stateParams', '$location', 'Authentication',
-	'Projects','CategoryGroups', 'Categories', 'CategoryValues', '_','$q',
-	function($scope, $stateParams, $location, Authentication, Projects, CategoryGroups, Categories, CategoryValues, _ , $q) {
+	'Projects','Portfolios', 'GateProcesses', 'CategoryGroups', 'Categories', 'CategoryValues', '_','$q',
+	function($scope, $stateParams, $location, Authentication, Projects, Portfolios, GateProcesses, CategoryGroups, Categories, CategoryValues, _ , $q) {
 
 		// ----------- INIT ---------------
 
@@ -15,6 +15,18 @@ angular.module('category-assignment').controller('CategoryAssignmentController',
 			}, function(err){
 				$scope.initError.push(err.data.message);
 			});
+
+			Portfolios.query(function(res){
+				$scope.portfolios = res;
+			}, function(err){
+				$scope.initError.push(err.data.message);
+			});
+
+            GateProcesses.query(function(res){
+                $scope.gateProcesses = res;
+            }, function(err){
+                $scope.initError.push(err.data.message);
+            });
 
 			CategoryGroups.query(function(groups){
 				$scope.categoryGroups = groups;
