@@ -15,23 +15,78 @@
 		<strong data-ng-bind="initError"></strong>
 	</div>
     <div class="row">
-        <div class="col-md-3">
-            <div class="form-group">
+        <div class="col-xs-3">
+            <div class="form-group-sm" style="margin-bottom: 2px;">
+                <label>Filter identification data</label>
+            </div>
+            <div class="form-group-sm" style="margin-bottom: 2px;">
+                <input class="form-control" data-ng-model="filterIdentification.idNumber" placeholder="project id">
+            </div>
+            <div class="form-group-sm" style="margin-bottom: 2px;">
+                <input class="form-control" data-ng-model="filterIdentification.name" placeholder="project name">
+            </div>
+        </div>
+        <div class="col-xs-3">
+            <div class="form-group-sm" style="margin-bottom: 2px;">
+                <label>Filter categorization</label>
+            </div>
+            <div class="form-group-sm" style="margin-bottom: 2px;">
                 <select class="form-control" data-ng-model="filterCategorization.group"
                         data-ng-options="group.name for group in categoryGroups" data-ng-disabled="!!filterCategorization.category">
                     <option value="">--group</option>
                 </select>
             </div>
-            <div class="form-group">
-                <select class="form-control" data-ng-model="filterCategorization.group"
-                        data-ng-options="group.name for group in categoryGroups" data-ng-disabled="!!filterCategorization.category">
+            <div class="form-group-sm" style="margin-bottom: 2px;">
+                <select class="form-control" data-ng-model="filterCategorization.category"
+                        data-ng-options="category.name for category in filterCategorization.group.categories"
+                        data-ng-disabled="!!filterCategorization.categoryValue">
+                    <option value="">--category</option>
+                </select>
+            </div>
+            <div class="form-group-sm" style="margin-bottom: 2px;">
+                <select class="form-control" data-ng-model="filterCategorization.categoryValue"
+                        data-ng-options="catValue.name for catValue in filterCategorization.category.categoryValues">
+                    <option value="">--value</option>
+                </select>
+            </div>
+        </div>
+        <div class="col-xs-3">
+            <div class="form-group-sm" style="margin-bottom: 2px;">
+                <label>Filter prioritization</label>
+            </div>
+            <div class="form-group-sm" style="margin-bottom: 2px;">
+                <select class="form-control" data-ng-model="filterPrioritization.group"
+                        data-ng-options="group.name for group in priorityGroups" data-ng-disabled="!!filterPrioritization.priority">
                     <option value="">--group</option>
                 </select>
             </div>
-            <div class="form-group">
-                <select class="form-control" data-ng-model="filterCategorization.group"
-                        data-ng-options="group.name for group in categoryGroups" data-ng-disabled="!!filterCategorization.category">
-                    <option value="">--group</option>
+            <div class="form-group-sm" style="margin-bottom: 2px;">
+                <select class="form-control" data-ng-model="filterPrioritization.priority"
+                        data-ng-options="priority.name for priority in filterPrioritization.group.priorities">
+                    <option value="">--priority</option>
+                </select>
+            </div>
+            <div class="form-group-sm" style="margin-bottom: 2px;">
+                <select class="form-control" data-ng-model="filterPrioritization.priorityValue"
+                        data-ng-options="prioValue.name for prioValue in priorityValues">
+                    <option value="">--value</option>
+                </select>
+            </div>
+        </div>
+        <div class="col-xs-3">
+            <div class="form-group-sm" style="margin-bottom: 2px;">
+                <label>Filter hierarchy data</label>
+            </div>
+            <div class="form-group-sm" style="margin-bottom: 2px;">
+                <select class="form-control" data-ng-model="filterHierarchy.portfolio"
+                        data-ng-options="portfolio.name for portfolio in portfolios">
+                    <option value="">--portfolio</option>
+                </select>
+            </div>
+            <div class="form-group-sm" style="margin-bottom: 2px;">
+                <select class="form-control" data-ng-model="filterHierarchy.strategyNode"
+                        data-ng-options="strategyNode.name for strategyNode in strategyNodes">
+                    <option value="">--strategy node</option>
                 </select>
             </div>
         </div>
@@ -39,177 +94,94 @@
     <hr>
 	<div class="row">
         <div class="col-xs-12">
-            <table class="table">
-                <tr>
-                    <th>Project</th>
-                    <th>Activate</th>
-                    <th>Select for Prioritization</th>
-                    <th>Select for Evaluation</th>
-                    <th>Select for Delivery</th>
-                </tr>
-                <tr>
-                    <td>
-                        <span>{{selectedProject.identification.name}}</span>
-                    </td>
-                    <td>
-                        <input disabled type="checkbox" data-ng-model="selectedProject.selection.active">
-                        <span data-ng-show="selectedProject.selection.active === true">Active</span>
-                        <span data-ng-show="selectedProject.selection.active === false">Inactive</span>
-                    </td>
-                    <td>
-                        <input disabled type="checkbox" data-ng-model="selectedProject.selection.selectedForPrioritization">
-                        <span data-ng-show="selectedProject.selection.selectedForPrioritization === true">Selected</span>
-                        <span data-ng-show="selectedProject.selection.selectedForPrioritization === false">Not selected</span>
-                    </td>
-                    <td>
-                        <input disabled type="checkbox" data-ng-model="selectedProject.selection.selectedForEvaluation">
-                        <span data-ng-show="selectedProject.selection.selectedForEvaluation === true">Selected</span>
-                        <span data-ng-show="selectedProject.selection.selectedForEvaluation === false">Not selected</span>
-                    </td>
-                    <td>
-                        <input disabled type="checkbox" data-ng-model="selectedProject.selection.selectedForDelivery">
-                        <span data-ng-show="selectedProject.selection.selectedForDelivery === true">Selected</span>
-                        <span data-ng-show="selectedProject.selection.selectedForDelivery === false">Not selected</span>
-                    </td>
-                </tr>
-            </table>
+            <div class="alert alert-warning text-center" data-ng-show="!projects.$resolved || !projects.length">
+                No projects to select
+            </div>
+            <form class="form" novalidate name="editProjectForm" data-ng-show="projects.length">
+                <fieldset>
+                    <table class="table">
+                        <tr>
+                            <th class="text-center">id</th>
+                            <th class="text-center">Project</th>
+                            <th class="text-center">Active&nbsp;<input type="checkbox" data-ng-model="filterSelection.active"></th>
+                            <th class="text-center">Prioritization&nbsp;<input type="checkbox" data-ng-model="filterSelection.prioritization"></th>
+                            <th class="text-center">Evaluation&nbsp;<input type="checkbox" data-ng-model="filterSelection.evaluation"></th>
+                            <th class="text-center">Delivery&nbsp;<input type="checkbox" data-ng-model="filterSelection.delivery"></th>
+                            <th colspan="2" class="text-center"> </th>
+                        </tr>
+                        <tr data-ng-repeat="project in projects | projectsCategorization : filterCategorization | filter:
+{
+	identification: ((!!filterIdentification.name || !!filterIdentification.idNumber) || undefined) && {
+			name : (!!filterIdentification.name || undefined) && filterIdentification.name,
+			idNumber : (!!filterIdentification.idNumber || undefined) && filterIdentification.idNumber
+			},
+	selection: ((!!filterSelection.active || !!filterSelection.prioritization || !!filterSelection.evaluation || !!filterSelection.delivery) || undefined) && {
+			active : (!!filterSelection.active || undefined) && filterSelection.active,
+			selectedForPrioritization : (!!filterSelection.prioritization || undefined) && filterSelection.prioritization,
+			selectedForEvaluation : (!!filterSelection.evaluation || undefined) && filterSelection.evaluation,
+			selectedForDelivery : (!!filterSelection.delivery || undefined) && filterSelection.delivery,
+			},
+	portfolio: filterHierarchy.portfolio._id,
+	parent: filterHierarchy.strategyNode._id
+}">
+                            <td class="text-center">
+                                <span>{{project.identification.idNumber}}</span>
+                            </td>
+                            <td class="text-center">
+                                <span>{{project.identification.name}}</span>
+                            </td>
+                            <td class="text-center">
+                                <button type="button" class="btn btn-xs btn-default" data-ng-click="project.selection.active = !project.selection.active"
+                                        data-ng-class="{'btn-success':project.selection.active, 'btn-danger':!project.selection.active}"
+                                        data-ng-disabled="!showEditProjectForm[project._id]">
+                                    <span class="glyphicon glyphicon-ok" data-ng-show="project.selection.active"></span>
+                                    <span class="glyphicon glyphicon-remove" data-ng-show="!project.selection.active"></span>
+                                </button>
+                            </td>
+                            <td class="text-center">
+                                <button type="button" class="btn btn-xs btn-default" data-ng-click="project.selection.selectedForPrioritization = !project.selection.selectedForPrioritization"
+                                        data-ng-class="{'btn-success':project.selection.selectedForPrioritization, 'btn-danger':!project.selection.selectedForPrioritization}"
+                                        data-ng-disabled="!showEditProjectForm[project._id]">
+                                    <span class="glyphicon glyphicon-ok" data-ng-show="project.selection.selectedForPrioritization"></span>
+                                    <span class="glyphicon glyphicon-remove" data-ng-show="!project.selection.selectedForPrioritization"></span>
+                                </button>
+                            </td>
+                            <td class="text-center">
+                                <button type="button" class="btn btn-xs btn-default" data-ng-click="project.selection.selectedForEvaluation = !project.selection.selectedForEvaluation"
+                                        data-ng-class="{'btn-success':project.selection.selectedForEvaluation, 'btn-danger':!project.selection.selectedForEvaluation}"
+                                        data-ng-disabled="!showEditProjectForm[project._id]">
+                                    <span class="glyphicon glyphicon-ok" data-ng-show="project.selection.selectedForEvaluation"></span>
+                                    <span class="glyphicon glyphicon-remove" data-ng-show="!project.selection.selectedForEvaluation"></span>
+                                </button>
+                            </td>
+                            <td class="text-center">
+                                <button type="button" class="btn btn-xs btn-default" data-ng-click="project.selection.selectedForDelivery = !project.selection.selectedForDelivery"
+                                        data-ng-class="{'btn-success':project.selection.selectedForDelivery, 'btn-danger':!project.selection.selectedForDelivery}"
+                                        data-ng-disabled="!showEditProjectForm[project._id]">
+                                    <span class="glyphicon glyphicon-ok" data-ng-show="project.selection.selectedForDelivery"></span>
+                                    <span class="glyphicon glyphicon-remove" data-ng-show="!project.selection.selectedForDelivery"></span>
+                                </button>
+                            </td>
+                            <td data-ng-show="!showEditProjectForm[project._id]" class="text-center">
+                                <button type="button" class="btn btn-success btn-sm"
+                                        data-ng-click="selectProject(project)">
+                                    <span class="glyphicon glyphicon-edit"></span>
+                                </button>
+                            </td>
+                            <td data-ng-show="showEditProjectForm[project._id]" class="text-center">
+                                <div class="btn-group btn-group-sm" role="group">
+                                    <button type="button" class="btn btn-success" data-ng-click="saveEditProject(project)">
+                                        <span class="glyphicon glyphicon-ok"></span>
+                                    </button>
+                                    <button type="button" class="btn btn-info" data-ng-click="cancelEditProject(project)">
+                                        <span class="glyphicon glyphicon-remove"></span>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
+                </fieldset>
+            </form>
         </div>
-		<div class="col-sm-3">
-			<div class="panel panel-default">
-				<div class="panel-heading">
-					<h6 class="panel-title text-center">Projects</h6>
-				</div>
-				<div class="panel-body">
-                    <div class="row">
-						<div class="col-md-12 form-group-sm">
-							<input type="text" class="form-control" placeholder="Type to filter projects" data-ng-model="filterProject">
-						</div>
-					</div>
-					<hr>
-					<div class="row" style="min-height: 350px; max-height: 350px; overflow-y: auto">
-						<div class="col-md-12">
-							<button type="button" ng-repeat="project in projects | filter:filterProject"
-									ng-click="selectProject(project)" class="btn btn-default btn-sm center-block btn-block" style="overflow: hidden;">
-								{{project.identification.idNumber}} {{project.identification.name}}
-							</button>
-						</div>
-					</div>
-				</div>
-			</div>
-		</div>
-		<div class="col-md-9" data-ng-switch="switchProjectForm">
-			<div ng-switch-default="default">
-				<div class="row">
-					<div class="col-md-12">
-						<div data-ng-hide="selectedProject || projects.length === 0" class="alert alert-warning text-center">
-							Select a project to see its details
-						</div>
-						<div data-ng-show="projects.length === 0" class="alert alert-warning text-center">
-							There are no projects created yet
-						</div>
-					</div>
-				</div>
-			</div>
-			<div class="panel panel-default" data-ng-switch-when="view">
-				<div class="panel-heading">
-					<h6 class="panel-title text-center" data-ng-bind="selectedProject.identification.name"></h6>
-				</div>
-				<div class="panel-body" style="min-height: 450px;">
-                    <form class="form">
-                        <fieldset>
-                            <table class="table">
-                                <tr>
-                                    <th>Activate</th>
-                                    <th>Select for Prioritization</th>
-                                    <th>Select for Evaluation</th>
-                                    <th>Select for Delivery</th>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        <input disabled type="checkbox" data-ng-model="selectedProject.selection.active">
-                                        <span data-ng-show="selectedProject.selection.active === true">Active</span>
-                                        <span data-ng-show="selectedProject.selection.active === false">Inactive</span>
-                                    </td>
-                                    <td>
-                                        <input disabled type="checkbox" data-ng-model="selectedProject.selection.selectedForPrioritization">
-                                        <span data-ng-show="selectedProject.selection.selectedForPrioritization === true">Selected</span>
-                                        <span data-ng-show="selectedProject.selection.selectedForPrioritization === false">Not selected</span>
-                                    </td>
-                                    <td>
-                                        <input disabled type="checkbox" data-ng-model="selectedProject.selection.selectedForEvaluation">
-                                        <span data-ng-show="selectedProject.selection.selectedForEvaluation === true">Selected</span>
-                                        <span data-ng-show="selectedProject.selection.selectedForEvaluation === false">Not selected</span>
-                                    </td>
-                                    <td>
-                                        <input disabled type="checkbox" data-ng-model="selectedProject.selection.selectedForDelivery">
-                                        <span data-ng-show="selectedProject.selection.selectedForDelivery === true">Selected</span>
-                                        <span data-ng-show="selectedProject.selection.selectedForDelivery === false">Not selected</span>
-                                    </td>
-                                </tr>
-                            </table>
-                            <hr>
-                            <div class="row">
-                                <div class="col-md-12">
-                                    <div class="pull-right">
-                                        <button class="btn btn-success btn-sm" ng-click="selectProjectForm('edit')">Edit</button>
-                                        <button class="btn btn-info btn-sm" ng-click="cancelViewProject()">Close</button>
-                                    </div>
-                                </div>
-                            </div>
-                        </fieldset>
-                    </form>
-				</div>
-			</div>
-			<div class="panel panel-default" data-ng-switch-when="edit">
-				<div class="panel-heading">
-					<h6 class="panel-title text-center" data-ng-bind="selectedProject.identification.name"></h6>
-				</div>
-				<div class="panel-body" style="min-height: 450px;">
-                    <form class="form" data-ng-submit="editProject()" novalidate name="editProjectForm">
-                        <fieldset>
-                            <table class="table">
-                                <tr>
-                                    <th>Activate</th>
-                                    <th>Select for Prioritization</th>
-                                    <th>Select for Evaluation</th>
-                                    <th>Select for Delivery</th>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        <input type="checkbox" data-ng-model="selectedProject.selection.active">
-                                        <span data-ng-show="selectedProject.selection.active === true">Active</span>
-                                        <span data-ng-show="selectedProject.selection.active === false">Inactive</span>
-                                    </td>
-                                    <td>
-                                        <input type="checkbox" data-ng-model="selectedProject.selection.selectedForPrioritization">
-                                        <span data-ng-show="selectedProject.selection.selectedForPrioritization === true">Selected</span>
-                                        <span data-ng-show="selectedProject.selection.selectedForPrioritization === false">Not selected</span>
-                                    </td>
-                                    <td>
-                                        <input type="checkbox" data-ng-model="selectedProject.selection.selectedForEvaluation">
-                                        <span data-ng-show="selectedProject.selection.selectedForEvaluation === true">Selected</span>
-                                        <span data-ng-show="selectedProject.selection.selectedForEvaluation === false">Not selected</span>
-                                    </td>
-                                    <td>
-                                        <input type="checkbox" data-ng-model="selectedProject.selection.selectedForDelivery">
-                                        <span data-ng-show="selectedProject.selection.selectedForDelivery === true">Selected</span>
-                                        <span data-ng-show="selectedProject.selection.selectedForDelivery === false">Not selected</span>
-                                    </td>
-                                </tr>
-                            </table>
-                            <hr>
-                            <div class="row">
-                                <div class="col-md-12">
-                                    <div class="pull-right">
-                                        <input type="submit" value="Save" class="btn btn-success btn-sm">
-                                        <button class="btn btn-info btn-sm" ng-click="cancelEditProject()">Cancel</button>
-                                    </div>
-                                </div>
-                            </div>
-                        </fieldset>
-                    </form>
-				</div>
-			</div>
-		</div>
 	</div>
 </section>
