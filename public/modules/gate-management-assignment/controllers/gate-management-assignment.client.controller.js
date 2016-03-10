@@ -1,8 +1,10 @@
 'use strict';
 
 angular.module('gate-management-assignment').controller('GateManagementAssignmentController', ['$scope','$stateParams', '$location',
-	'Authentication', 'Projects','Portfolios', 'GateProcesses', '_','$q',
-	function($scope, $stateParams, $location, Authentication, Projects, Portfolios, GateProcesses, _ , $q) {
+	'Authentication', 'Projects','Portfolios', 'GateProcesses', 'StrategyNodes',
+	'CategoryGroups', 'PriorityGroups', 'PriorityValues', '_','$q',
+	function($scope, $stateParams, $location, Authentication, Projects, Portfolios, GateProcesses, StrategyNodes,
+			 CategoryGroups, PriorityGroups, PriorityValues, _ , $q) {
 
 		// ----------- INIT ---------------
 
@@ -10,7 +12,7 @@ angular.module('gate-management-assignment').controller('GateManagementAssignmen
 
 		$scope.init = function(){
 
-			Projects.query({'selection.selectedForDelivery': true}, function(projects){
+			Projects.query({'selection.active': true, 'selection.selectedForDelivery': true}, function(projects){
 				$scope.projects = projects;
 			}, function(err){
 				$scope.initError.push(err.data.message);
@@ -24,6 +26,30 @@ angular.module('gate-management-assignment').controller('GateManagementAssignmen
 
 			GateProcesses.query(function(gateProcesses){
 				$scope.gateProcesses = gateProcesses;
+			}, function(err){
+				$scope.initError.push(err.data.message);
+			});
+
+			StrategyNodes.query(function(res){
+				$scope.strategyNodes = res;
+			}, function(err){
+				$scope.initError.push(err.data.message);
+			});
+
+			CategoryGroups.query(function(res){
+				$scope.categoryGroups = res;
+			}, function(err){
+				$scope.initError.push(err.data.message);
+			});
+
+			PriorityGroups.query(function(res){
+				$scope.priorityGroups = res;
+			}, function(err){
+				$scope.initError.push(err.data.message);
+			});
+
+			PriorityValues.query(function(res){
+				$scope.priorityValues = res;
 			}, function(err){
 				$scope.initError.push(err.data.message);
 			});
@@ -44,61 +70,38 @@ angular.module('gate-management-assignment').controller('GateManagementAssignmen
 		});
 
 
-		// ------------------- NG-SWITCH ---------------------
+        // ----------- FILTERS ------------
 
-		$scope.switchProjectForm = {};
+        $scope.filterCategorization = {};
+        $scope.filterPrioritization = {};
 
-		$scope.selectProjectForm = function(string){
-			if(string === 'default'){ $scope.switchProjectForm = 'default';}
-			if(string === 'new'){$scope.switchProjectForm = 'new';}
-			if(string === 'view'){ $scope.switchProjectForm = 'view';}
-			if(string === 'edit'){$scope.switchProjectForm = 'edit';}
-		};
+        // ------------- SELECT VIEW PROJECT ------------
 
+        $scope.showEditProjectForm = {};
+        var originalProject = {};
+        $scope.selectProject = function(project){
+            originalProject[project._id] = _.cloneDeep(project);
+            $scope.showEditProjectForm[project._id] = true;
+        };
 
-		// ------------- SELECT VIEW PROJECT ------------
+        // ------------- EDIT PROJECT ------------
 
-		var originalProject;
-		$scope.selectProject = function(project){
-			// Get the full project fat object from the "projectById" server function that populates everything
-			Projects.get({
-				projectId:project._id,
-				retPropertiesString : 'user created selection identification portfolio process',
-				deepPopulateArray : []
-			}, function(res){
-				$scope.selectedProject = res;
-				originalProject = _.cloneDeep(res);
-				$scope.selectProjectForm('view');
-			},function(errorResponse){
-				$scope.error = errorResponse.data.message;
-			});
-		};
+        $scope.saveEditProject = function(project){
+            // Save the project to the server
+            Projects.updateProcessAssignment(
+                {projectId: $scope.selectedProject._id},
+                {processId: $scope.selectedProject.process},
+                function(res) {
+                    $scope.showEditProjectForm[project._id] = false;
+                }, function(err) {
+                    $scope.error = err.data.message;
+                });
+        };
 
-
-		$scope.cancelViewProject = function(){
-			$scope.selectedProject = null;
-			$scope.selectProjectForm('default');
-		};
-
-
-		// ------------- EDIT PROJECT ------------
-
-		$scope.editProject = function(){
-			// Save the project to the server
-			Projects.updateProcessAssignment(
-				{projectId: $scope.selectedProject._id},
-				{processId: $scope.selectedProject.process},
-				function(res) {
-					$scope.selectProject($scope.selectedProject);
-				}, function(errorResponse) {
-					$scope.error = errorResponse.data.message;
-				});
-		};
-
-		$scope.cancelEditProject = function(){
-			$scope.selectedProject = _.cloneDeep(originalProject);
-			$scope.selectProject($scope.selectedProject);
-		};
+        $scope.cancelEditProject = function(project){
+            project.process = originalProject[project._id].process;
+            $scope.showEditProjectForm[project._id] = false;
+        };
 
 
 	}

@@ -58,6 +58,7 @@ exports.update = function(req, res) {
  * Delete an Strategy node
  */
 exports.delete = function(req, res) {
+    var Project = mongoose.mtModel(req.user.tenantId + '.' + 'Project');
     var StrategyNode = mongoose.mtModel(req.user.tenantId + '.' + 'StrategyNode');
     var strategyNode = req.strategyNode ;
 
@@ -92,6 +93,12 @@ exports.delete = function(req, res) {
                 });
             });
             callback(null);
+        },
+        // PROJECTS: Set 'parent' to null for assigned projects
+        function(callback){
+            Project.update({parent: strategyNode._id}, {$set: {parent: null}}).exec(function(err){
+                callback(err);
+            });
         }
     ],function(err){
         if (err) {

@@ -17,6 +17,10 @@ module.exports = function(app) {
 		.put(users.requiresLogin, projects.hasAuthorization, projects.update)
 		.delete(users.requiresLogin, projects.hasAuthorization, projects.delete);
 
+	// Strategy assignment
+	app.route('/projects/:projectId/strategyAssignment')
+		.put(users.requiresLogin, projects.hasAuthorization, projects.updateStrategyAssignment);
+
 	// Portfolio assignment
 	app.route('/projects/:projectId/portfolioAssignment')
 		.put(users.requiresLogin, projects.hasAuthorization, projects.updatePortfolioAssignment);

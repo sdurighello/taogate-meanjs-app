@@ -109,7 +109,7 @@
                             <th class="text-center">Delivery&nbsp;<input type="checkbox" data-ng-model="filterSelection.delivery"></th>
                             <th colspan="2" class="text-center"> </th>
                         </tr>
-                        <tr data-ng-repeat="project in projects | projectsCategorization : filterCategorization | filter:
+                        <tr data-ng-repeat="project in projects | projectsCategorization : filterCategorization | projectsPrioritization : filterPrioritization | filter:
 {
 	identification: ((!!filterIdentification.name || !!filterIdentification.idNumber) || undefined) && {
 			name : (!!filterIdentification.name || undefined) && filterIdentification.name,

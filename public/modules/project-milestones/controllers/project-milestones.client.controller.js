@@ -12,7 +12,7 @@ angular.module('project-milestones').controller('ProjectMilestoneController', ['
 
 		$scope.init = function(){
 
-			Projects.query({'selection.selectedForDelivery': true}, function(projects){
+			Projects.query({'selection.active': true, 'selection.selectedForDelivery': true}, function(projects){
 				$scope.projects = _.filter(projects, function(project){return project.process !== null;});
 			}, function(err){
 				$scope.initError.push(err.data.message);

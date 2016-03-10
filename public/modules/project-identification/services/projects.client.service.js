@@ -8,6 +8,11 @@ angular.module('project-identification').factory('Projects', ['$resource',
 			update: {
 				method: 'PUT'
 			},
+            updateStrategyAssignment: {
+                method: 'PUT',
+                url: 'projects/:projectId/strategyAssignment'
+                // req.body: {valueId: category value id}
+            },
 			updatePortfolioAssignment: {
 				method: 'PUT',
 				url: 'projects/:projectId/portfolioAssignment'

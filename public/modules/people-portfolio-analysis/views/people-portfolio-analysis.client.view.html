@@ -16,33 +16,7 @@
 	</div>
 	<div class="row">
 		<div class="col-sm-3"><!-- PORTFOLIO LIST -->
-			<div class="panel panel-default">
-				<div class="panel-heading">
-					<h6 class="panel-title text-center">Portfolio tree</h6>
-				</div>
-				<div class="panel-body" style="min-height: 520px; max-height: 520px; overflow-y: auto">
-					<div class="alert alert-warning text-center" data-ng-hide="!portfolios.$resolved || portfolios.length">
-						No portfolios yet
-					</div>
-					<script type="text/ng-template" id="portfolioTree">
-						<button class="btn btn-default btn-sm"
-								data-ng-click="selectPortfolio(tree.node);"
-								style="min-width:150px; max-width: 150px; overflow:hidden; margin: 2%;">
-							<span data-ng-bind="tree.node.name"></span>
-						</button>
-						<ul data-ng-if="tree.nodeTrees" style="list-style: none;">
-							<li data-ng-repeat="tree in tree.nodeTrees track by $index" >
-								<span data-ng-include="'portfolioTree'" style="display:block; margin-left:-0.5em;"></span>
-							</li>
-						</ul>
-					</script>
-					<ul style="margin-left: 2%; padding-left: 2%">
-						<li data-ng-repeat="tree in portfolioTrees track by $index" >
-							<span data-ng-include="'portfolioTree'" style="display:block; margin-left:-0.5em;"></span>
-						</li>
-					</ul>
-				</div>
-			</div>
+			<portfolio-tree portfolios="portfolios" portfolio-trees="portfolioTrees" select-portfolio="selectPortfolio"></portfolio-tree>
 		</div>
 		<div class="col-md-9">
 			<div class="row">
@@ -61,7 +35,7 @@
 									{{selectedPortfolio.name}}
 								</h6>
 							</div>
-							<div class="panel-body" style="min-height: 515px;">
+							<div class="panel-body" style="min-height: 525px; max-height: 525px;">
 								<div class="row">
 									<div class=" form-group-sm col-md-3">
 										<select id="selectSourcePortfolio" class="form-control input-sm" data-ng-model="filterStakeholders.group"
@@ -71,7 +45,7 @@
 									</div>
 								</div>
 								<hr style="margin: 10px">
-								<div class="row">
+								<div class="row" style="min-height: 450px; max-height: 450px; overflow-y: auto;">
 									<div data-ng-show="selectedPortfolio.stakeholders.length === 0" class="alert alert-warning text-center">
 										There are no stakeholders created yet
 									</div>

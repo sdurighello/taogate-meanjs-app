@@ -12,7 +12,7 @@ angular.module('portfolio-assignment').controller('PortfolioAssignmentController
 
 			$q.all([
 				Portfolios.query().$promise,
-				Projects.query().$promise
+				Projects.query({'selection.active': true}).$promise
 			]).then(function(data) {
 				var portfolios = data[0];
 				var projects = data[1];

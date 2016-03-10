@@ -12,40 +12,41 @@
         </div>
     </div>
     <div class="row">
-        <div class="col-md-3"><!-- PORTFOLIO LIST -->
+        <div class="col-sm-3"><!-- PORTFOLIO LIST -->
             <div class="panel panel-default">
                 <div class="panel-heading">
                     <h6 class="panel-title text-center">Portfolio tree</h6>
                 </div>
-                <div class="panel-body" style="min-height: 500px;  max-height: 500px; overflow-y: auto;">
+                <div class="panel-body">
                     <div class="alert alert-warning text-center" data-ng-hide="!parentCtrl.portfolios.$resolved || parentCtrl.portfolios.length">
                         No portfolios yet
                     </div>
                     <div class="row">
                         <div class="col-md-12">
-                            <ul>
-                                <li>
-                                    <button class="btn btn-default btn-sm btn-warning" style="overflow: hidden; margin: 1%;"
-                                            data-ng-click="parentCtrl.selectPortfolio('unassigned')">
-                                        Unassigned
-                                    </button>
-                                </li>
-                            </ul>
+                            <button class="btn btn-default btn-sm btn-warning" style="min-width:50px; max-width: 150px; overflow:hidden; margin: 2%;"
+                                    data-ng-click="parentCtrl.selectPortfolio('unassigned')">
+                                Unassigned
+                            </button>
                         </div>
                     </div>
-                    <div class="row">
+                    <hr style="margin: 5px">
+                    <div class="row" style="min-height: 470px;  max-height: 470px; overflow-y: auto;">
                         <div class="col-md-12">
                             <script type="text/ng-template" id="portfolioTree">
                                 <button class="btn btn-default btn-sm" data-ng-click="parentCtrl.selectPortfolio(tree.node);"
-                                        style="overflow: hidden; margin: 2%;">
+                                        style="min-width:50px; max-width: 150px; overflow:hidden; margin: 2%;">
                                     <span data-ng-bind="tree.node.name"></span>
                                 </button>
-                                <ul data-ng-if="tree.nodeTrees" class="">
-                                    <li data-ng-repeat="tree in tree.nodeTrees track by $index" data-ng-include="'portfolioTree'"></li>
+                                <ul data-ng-if="tree.nodeTrees" style="list-style: none;">
+                                    <li data-ng-repeat="tree in tree.nodeTrees track by $index " >
+                                        <span data-ng-include="'portfolioTree'" style="display:block; margin-left:-0.5em;"></span>
+                                    </li>
                                 </ul>
                             </script>
-                            <ul class="">
-                                <li data-ng-repeat="tree in parentCtrl.portfolioTrees track by $index" data-ng-include="'portfolioTree'"></li>
+                            <ul style="margin-left: 2%; padding-left: 2%; list-style: none;">
+                                <li data-ng-repeat="tree in parentCtrl.portfolioTrees track by $index" >
+                                    <span data-ng-include="'portfolioTree'" style="display:block; margin-left:-0.5em;"></span>
+                                </li>
                             </ul>
                         </div>
                     </div>

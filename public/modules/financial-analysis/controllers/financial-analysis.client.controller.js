@@ -16,7 +16,7 @@ angular.module('financial-analysis').controller('FinancialAnalysisController', [
             }, function(err){
                 $scope.initError.push(err.data.message);
             });
-			Projects.query({'selection.selectedForEvaluation': true}, function(projects){
+			Projects.query({'selection.active': true, 'selection.selectedForEvaluation': true}, function(projects){
 				$scope.projects = projects;
 			}, function(err){
 				$scope.initError.push(err.data.message);

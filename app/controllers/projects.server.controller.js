@@ -76,6 +76,8 @@ exports.list = function(req, res) {
 
 // ------------------------------ DEFINITION ------------------------------
 
+exports.updateStrategyAssignment = require('./projects/projects.strategyAssignment.server.controller').updateStrategyAssignment;
+
 exports.updatePortfolioAssignment = require('./projects/projects.portfolioAssignment.server.controller').updatePortfolioAssignment;
 
 exports.updateCategoryAssignment = require('./projects/projects.categorization.server.controller').updateCategoryAssignment;

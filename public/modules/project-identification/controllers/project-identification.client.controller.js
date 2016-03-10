@@ -21,7 +21,7 @@ angular.module('project-identification').controller('ProjectIdentificationContro
 				$scope.initError.push(err.data.message);
 			});
 
-			Projects.query(function(projects){
+			Projects.query({'selection.active': true}, function(projects){
 				$scope.projects = projects;
 			}, function(err){
 				$scope.initError.push(err.data.message);

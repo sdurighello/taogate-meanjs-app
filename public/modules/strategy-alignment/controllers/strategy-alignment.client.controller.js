@@ -12,7 +12,7 @@ angular.module('strategy-alignment').controller('StrategyAlignmentController', [
 
             $q.all([
                 StrategyNodes.query().$promise,
-                Projects.query().$promise
+                Projects.query({'selection.active': true}).$promise
             ]).then(function(data) {
                 var strategyNodes = data[0];
                 var projects = data[1];
@@ -109,8 +109,7 @@ angular.module('strategy-alignment').controller('StrategyAlignmentController', [
                     var aProject = assignedProjects[i];
                     if (aProject.parent !== node._id){
                         aProject.parent = node._id;
-						aProject.process = aProject.process._id; // Clean up deep populate
-                        Projects.update(aProject);
+						Projects.updateStrategyAssignment(aProject);
                     }
 
                 }
@@ -119,18 +118,12 @@ angular.module('strategy-alignment').controller('StrategyAlignmentController', [
                     var uProject = unassignedProjects[j];
                     if (uProject.parent !== null){
                         uProject.parent = null;
-						uProject.process = uProject.process._id;
-                        Projects.update(uProject);
+						Projects.updateStrategyAssignment(uProject);
                     }
 
                 }
             }
         };
-
-
-
-
-
 
 
 	}

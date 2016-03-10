@@ -11,14 +11,14 @@ var mongoose = require('mongoose'),
 
 
 /**
- *  Update portfolio assignment
+ *  Update strategy assignment
  */
 
-exports.updatePortfolioAssignment = function(req, res) {
+exports.updateStrategyAssignment = function(req, res) {
     var project = req.project ;
     project.user = req.user;
     project.created = Date.now();
-    project.portfolio = req.body.portfolio;
+    project.parent = req.body.parent;
 
     project.save(function(err) {
         if (err) {

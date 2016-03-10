@@ -15,42 +15,9 @@
 		<strong data-ng-bind="initError"></strong>
 	</div>
 	<div class="row">
-		<div class="col-sm-3"><!-- PROJECTS LIST -->
-			<div class="panel panel-default">
-				<div class="panel-heading">
-					<h6 class="panel-title text-center">Projects</h6>
-				</div>
-				<div class="panel-body">
-					<div class="row">
-						<div class=" form-group col-md-12">
-							<select id="selectSourcePortfolio" class="form-control input-sm" data-ng-model="filterProfilePortfolio"
-									ng-options="portfolio.name for portfolio in portfolios">
-								<option value="">--filter by portfolio</option>
-							</select>
-						</div>
-						<div class="col-md-12 form-group-sm">
-							<input id="filterProfileProject" type="text" class="form-control input-sm"
-								   ng-model="filterProfileProject" placeholder="Filter by project name">
-						</div>
-					</div>
-					<hr style="margin: 10px">
-					<div class="row" style="min-height: 415px; max-height: 415px; overflow-y: auto">
-						<div class="col-md-12">
-                            <div data-ng-show="projects.length === 0" class="alert alert-warning text-center">
-                                There are no projects created or selected for evaluation
-                            </div>
-							<button type="button" data-ng-repeat="project in projects |
-              filter: ((project.identification.name = filterProfileProject)&&
-              (project.portfolio = filterProfilePortfolio._id))"
-									data-ng-click="selectProject(project)"
-									class="btn btn-default btn-sm center-block btn-block" style="overflow: hidden;">
-								{{project.identification.idNumber}} - {{project.identification.name}}
-							</button>
-						</div>
-					</div>
-				</div>
-			</div>
-		</div>
+        <div class="col-md-3">
+            <project-list projects="projects" select-project="selectProject" portfolios="portfolios" gate-processes="gateProcesses"></project-list>
+        </div>
         <div class="col-md-9" data-ng-hide="selectedProject || projects.length === 0">
             <div class="alert alert-warning text-center">
                 Select a project to see its details
@@ -63,7 +30,7 @@
                         {{selectedProject.identification.name}}
                     </h6>
                 </div>
-                <div class="panel-body" style="min-height: 540px; max-height: 540px;">
+                <div class="panel-body" style="min-height: 535px; max-height: 535px;">
                     <tabset>
                         <tab heading="Costs">
                             <br>

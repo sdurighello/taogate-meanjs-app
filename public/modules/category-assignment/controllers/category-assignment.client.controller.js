@@ -10,7 +10,7 @@ angular.module('category-assignment').controller('CategoryAssignmentController',
 
 		$scope.init = function(){
 
-			Projects.query(function(projects){
+			Projects.query({'selection.active': true}, function(projects){
 				$scope.projects = projects;
 			}, function(err){
 				$scope.initError.push(err.data.message);

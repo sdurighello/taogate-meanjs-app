@@ -65,6 +65,7 @@ angular.module('project-selection').controller('ProjectSelectionController', ['$
         // ----------- FILTERS ------------
 
         $scope.filterCategorization = {};
+        $scope.filterPrioritization = {};
 
 		// ------------- SELECT VIEW PROJECT ------------
 

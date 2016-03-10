@@ -11,7 +11,7 @@ angular.module('risk-analysis').controller('RiskAnalysisController', ['$scope', 
 
 		$scope.init = function(){
 
-			Projects.query({'selection.selectedForEvaluation': true}, function(projects){
+			Projects.query({'selection.active': true, 'selection.selectedForEvaluation': true}, function(projects){
 				$scope.projects = projects;
 			}, function(err){
 				$scope.initError.push(err.data.message);

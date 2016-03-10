@@ -15,7 +15,7 @@ angular.module('project-reviews').controller('ProjectReviewsController', ['$scop
 
 		$scope.init = function(){
 
-			Projects.query({'selection.selectedForEvaluation': true}, function(res){
+			Projects.query({'selection.active': true, 'selection.selectedForEvaluation': true}, function(res){
 				$scope.projects = res;
 			}, function(err){
 				$scope.initError.push({message: err.data.message});
