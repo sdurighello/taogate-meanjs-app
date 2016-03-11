@@ -3,7 +3,6 @@
 angular.module('core').filter('projectsCategorization', ['_',
 	function(_) {
 		return function(projects, filterCategorization) {
-			console.log('projectsCategorization', arguments);
             if(filterCategorization.group && filterCategorization.category && filterCategorization.categoryValue){
                 return _.filter(projects, function(project){
                     return _.find(project.categorization, function (assignedGroup) {

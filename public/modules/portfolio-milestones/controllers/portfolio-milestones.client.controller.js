@@ -128,6 +128,8 @@ angular.module('portfolio-milestones').controller('PortfolioMilestonesController
 
 		// ------------------- UTILITIES ---------------------
 
+		vm.portfolioMilestoneFilter = {};
+
 		var allowNull = function(obj){
 			if(obj){return obj._id;} else {return null;}
 		};

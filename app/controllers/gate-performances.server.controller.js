@@ -996,9 +996,11 @@ exports.portfolioPerformances = function(req, res){
     var ActualCompletion = mongoose.mtModel(req.user.tenantId + '.' + 'ActualCompletion');
 
     async.waterfall([
-        // Get all the projects in delivery
+        // Get all the projects in delivery, active and with an assigned process
         function(callback){
-            Project.find({'selection.selectedForDelivery' : true}).populate('process').populate('portfolio').exec(function(err, projects){
+            Project.find({'selection.active' : true, 'selection.selectedForDelivery' : true, process: {$ne: null}})
+                .populate('process').populate('portfolio')
+                .exec(function(err, projects){
                 if(err){
                     return callback(err);
                 }
@@ -2025,7 +2027,6 @@ exports.portfolioPerformances = function(req, res){
                 message: errorHandler.getErrorMessage(err)
             });
         } else {
-            console.log(allProfiles);
             res.jsonp(allProfiles);
         }
     });

@@ -3,7 +3,6 @@
 angular.module('core').filter('projectsPrioritization', ['_',
 	function(_) {
 		return function(projects, filterPrioritization) {
-			console.log('projectsPrioritization', arguments);
 			if(filterPrioritization.group && filterPrioritization.priority && filterPrioritization.priorityValue){
 				return _.filter(projects, function(project){
 					return _.find(project.prioritization, function (assignedGroup) {

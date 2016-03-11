@@ -15,9 +15,19 @@
         <strong data-ng-bind="initError"></strong>
     </div>
     <div class="row">
+        <div class="col-md-12">
+            <button class="btn-link" data-ng-click="showFilters = true" data-ng-show="!showFilters">
+                Show filters
+            </button>
+            <button class="btn-link" data-ng-click="showFilters = false" data-ng-show="showFilters">
+                Hide filters
+            </button>
+        </div>
+    </div>
+    <div class="row" data-ng-show="showFilters">
         <div class="col-xs-3">
             <div class="form-group-sm" style="margin-bottom: 2px;">
-                <label>Filter identification data</label>
+                <label>Identification data</label>
             </div>
             <div class="form-group-sm" style="margin-bottom: 2px;">
                 <input class="form-control" data-ng-model="filterIdentification.idNumber" placeholder="project id">
@@ -26,7 +36,7 @@
                 <input class="form-control" data-ng-model="filterIdentification.name" placeholder="project name">
             </div>
             <div class="form-group-sm" style="margin-bottom: 2px;">
-                <label>Filter delivery process</label>
+                <label>Delivery process</label>
             </div>
             <div class="form-group-sm" style="margin-bottom: 2px;">
                 <select class="form-control" data-ng-model="filterProcess.process"
@@ -40,7 +50,7 @@
         </div>
         <div class="col-xs-3">
             <div class="form-group-sm" style="margin-bottom: 2px;">
-                <label>Filter categorization</label>
+                <label>Categorization</label>
             </div>
             <div class="form-group-sm" style="margin-bottom: 2px;">
                 <select class="form-control" data-ng-model="filterCategorization.group"
@@ -64,7 +74,7 @@
         </div>
         <div class="col-xs-3">
             <div class="form-group-sm" style="margin-bottom: 2px;">
-                <label>Filter prioritization</label>
+                <label>Prioritization</label>
             </div>
             <div class="form-group-sm" style="margin-bottom: 2px;">
                 <select class="form-control" data-ng-model="filterPrioritization.group"
@@ -87,7 +97,7 @@
         </div>
         <div class="col-xs-3">
             <div class="form-group-sm" style="margin-bottom: 2px;">
-                <label>Filter hierarchy data</label>
+                <label>Hierarchy data</label>
             </div>
             <div class="form-group-sm" style="margin-bottom: 2px;">
                 <select class="form-control" data-ng-model="filterHierarchy.portfolio"
@@ -125,9 +135,8 @@
 			idNumber : (!!filterIdentification.idNumber || undefined) && filterIdentification.idNumber
 			},
 	portfolio: filterHierarchy.portfolio._id,
-	parent: filterHierarchy.strategyNode._id,
-	process : (!!filterProcess || undefined) && {_id: filterProcess._id}
-}">
+	parent: filterHierarchy.strategyNode._id
+} | projectsProcess : filterProcess">
                             <td class="text-center">
                                 <span>{{project.identification.idNumber}}</span>
                             </td>

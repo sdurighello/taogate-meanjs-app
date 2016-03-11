@@ -16,33 +16,7 @@
 	</div>
 	<div class="row">
 		<div class="col-sm-3"><!-- PORTFOLIO LIST -->
-			<div class="panel panel-default">
-				<div class="panel-heading">
-					<h6 class="panel-title text-center">Portfolio tree</h6>
-				</div>
-				<div class="panel-body" style="min-height: 500px;  max-height: 500px; overflow-y: auto;">
-					<div class="alert alert-warning text-center" data-ng-hide="!parentCtrl.portfolios.$resolved || parentCtrl.portfolios.length">
-						No portfolios yet
-					</div>
-					<script type="text/ng-template" id="portfolioTree">
-						<button class="btn btn-default btn-sm"
-								data-ng-click="parentCtrl.selectPortfolio(tree.node);"
-								style="min-width:150px; max-width: 150px; overflow:hidden; margin: 2%;">
-							<span data-ng-bind="tree.node.name"></span>
-						</button>
-						<ul data-ng-if="tree.nodeTrees" style="list-style: none;">
-							<li data-ng-repeat="tree in tree.nodeTrees track by $index" >
-								<span data-ng-include="'portfolioTree'" style="display:block; margin-left:-0.5em;"></span>
-							</li>
-						</ul>
-					</script>
-					<ul style="margin-left: 2%; padding-left: 2%">
-						<li data-ng-repeat="tree in parentCtrl.portfolioTrees track by $index" >
-							<span data-ng-include="'portfolioTree'" style="display:block; margin-left:-0.5em;"></span>
-						</li>
-					</ul>
-				</div>
-			</div>
+			<portfolio-tree portfolios="parentCtrl.portfolios" portfolio-trees="parentCtrl.portfolioTrees" select-portfolio="parentCtrl.selectPortfolio"></portfolio-tree>
 		</div>
 		<div class="col-md-9">
 			<div class="row" data-ng-hide="parentCtrl.selectedPortfolio || parentCtrl.portfolios.length === 0">
@@ -60,7 +34,7 @@
 								{{parentCtrl.selectedPortfolio.name}}
 							</h6>
 						</div>
-						<div class="panel-body" style="max-height: 500px; min-height: 500px;">
+						<div class="panel-body" style="max-height: 528px; min-height: 528px; overflow-y: auto">
 							<div class="row" data-ng-show="showNewPortfolioIssueForm">
 								<div class="col-md-12">
 									<div class="panel panel-default">

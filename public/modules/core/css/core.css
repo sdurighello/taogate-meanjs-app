@@ -184,7 +184,19 @@
 	background-color: #428bca;
 }
 
+/* Gate performances*/
 
+.gatePerformancesSliderPortfolio {
+	min-height: 343px;
+	max-height: 343px;
+	overflow-y: auto;
+}
+
+.gatePerformancesSliderAll {
+    min-height: 517px;
+    max-height: 517px;
+    overflow-y: auto;
+}
 
 /* MAIL CHIMP */
 /* MailChimp Form Embed Code - Classic - 08/17/2011 */

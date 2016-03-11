@@ -15,6 +15,16 @@
 		<strong data-ng-bind="initError"></strong>
 	</div>
     <div class="row">
+        <div class="col-md-12">
+            <button class="btn-link" data-ng-click="showFilters = true" data-ng-show="!showFilters">
+                Show filters
+            </button>
+            <button class="btn-link" data-ng-click="showFilters = false" data-ng-show="showFilters">
+                Hide filters
+            </button>
+        </div>
+    </div>
+    <div class="row" data-ng-show="showFilters">
         <div class="col-xs-3">
             <div class="form-group-sm" style="margin-bottom: 2px;">
                 <label>Filter identification data</label>
@@ -119,7 +129,7 @@
 			active : (!!filterSelection.active || undefined) && filterSelection.active,
 			selectedForPrioritization : (!!filterSelection.prioritization || undefined) && filterSelection.prioritization,
 			selectedForEvaluation : (!!filterSelection.evaluation || undefined) && filterSelection.evaluation,
-			selectedForDelivery : (!!filterSelection.delivery || undefined) && filterSelection.delivery,
+			selectedForDelivery : (!!filterSelection.delivery || undefined) && filterSelection.delivery
 			},
 	portfolio: filterHierarchy.portfolio._id,
 	parent: filterHierarchy.strategyNode._id
@@ -132,44 +142,44 @@
                             </td>
                             <td class="text-center">
                                 <button type="button" class="btn btn-xs btn-default" data-ng-click="project.selection.active = !project.selection.active"
-                                        data-ng-class="{'btn-success':project.selection.active, 'btn-danger':!project.selection.active}"
+                                        data-ng-class="{'btn-warning': project.selection.active, 'btn-danger':!project.selection.active}"
                                         data-ng-disabled="!showEditProjectForm[project._id]">
-                                    <span class="glyphicon glyphicon-ok" data-ng-show="project.selection.active"></span>
-                                    <span class="glyphicon glyphicon-remove" data-ng-show="!project.selection.active"></span>
+                                    <span class="glyphicon glyphicon-check" data-ng-show="project.selection.active"></span>
+                                    <span class="glyphicon glyphicon-unchecked" data-ng-show="!project.selection.active"></span>
                                 </button>
                             </td>
                             <td class="text-center">
                                 <button type="button" class="btn btn-xs btn-default" data-ng-click="project.selection.selectedForPrioritization = !project.selection.selectedForPrioritization"
-                                        data-ng-class="{'btn-success':project.selection.selectedForPrioritization, 'btn-danger':!project.selection.selectedForPrioritization}"
+                                        data-ng-class="{'btn-warning': project.selection.selectedForPrioritization, 'btn-danger':!project.selection.selectedForPrioritization}"
                                         data-ng-disabled="!showEditProjectForm[project._id]">
-                                    <span class="glyphicon glyphicon-ok" data-ng-show="project.selection.selectedForPrioritization"></span>
-                                    <span class="glyphicon glyphicon-remove" data-ng-show="!project.selection.selectedForPrioritization"></span>
+                                    <span class="glyphicon glyphicon-check" data-ng-show="project.selection.selectedForPrioritization"></span>
+                                    <span class="glyphicon glyphicon-unchecked" data-ng-show="!project.selection.selectedForPrioritization"></span>
                                 </button>
                             </td>
                             <td class="text-center">
                                 <button type="button" class="btn btn-xs btn-default" data-ng-click="project.selection.selectedForEvaluation = !project.selection.selectedForEvaluation"
-                                        data-ng-class="{'btn-success':project.selection.selectedForEvaluation, 'btn-danger':!project.selection.selectedForEvaluation}"
+                                        data-ng-class="{'btn-warning': project.selection.selectedForEvaluation, 'btn-danger':!project.selection.selectedForEvaluation}"
                                         data-ng-disabled="!showEditProjectForm[project._id]">
-                                    <span class="glyphicon glyphicon-ok" data-ng-show="project.selection.selectedForEvaluation"></span>
-                                    <span class="glyphicon glyphicon-remove" data-ng-show="!project.selection.selectedForEvaluation"></span>
+                                    <span class="glyphicon glyphicon-check" data-ng-show="project.selection.selectedForEvaluation"></span>
+                                    <span class="glyphicon glyphicon-unchecked" data-ng-show="!project.selection.selectedForEvaluation"></span>
                                 </button>
                             </td>
                             <td class="text-center">
                                 <button type="button" class="btn btn-xs btn-default" data-ng-click="project.selection.selectedForDelivery = !project.selection.selectedForDelivery"
-                                        data-ng-class="{'btn-success':project.selection.selectedForDelivery, 'btn-danger':!project.selection.selectedForDelivery}"
+                                        data-ng-class="{'btn-warning': project.selection.selectedForDelivery, 'btn-danger':!project.selection.selectedForDelivery}"
                                         data-ng-disabled="!showEditProjectForm[project._id]">
-                                    <span class="glyphicon glyphicon-ok" data-ng-show="project.selection.selectedForDelivery"></span>
-                                    <span class="glyphicon glyphicon-remove" data-ng-show="!project.selection.selectedForDelivery"></span>
+                                    <span class="glyphicon glyphicon-check" data-ng-show="project.selection.selectedForDelivery"></span>
+                                    <span class="glyphicon glyphicon-unchecked" data-ng-show="!project.selection.selectedForDelivery"></span>
                                 </button>
                             </td>
                             <td data-ng-show="!showEditProjectForm[project._id]" class="text-center">
-                                <button type="button" class="btn btn-success btn-sm"
+                                <button type="button" class="btn btn-success btn-xs"
                                         data-ng-click="selectProject(project)">
-                                    <span class="glyphicon glyphicon-edit"></span>
+                                    <span class="glyphicon glyphicon-pencil"></span>
                                 </button>
                             </td>
                             <td data-ng-show="showEditProjectForm[project._id]" class="text-center">
-                                <div class="btn-group btn-group-sm" role="group">
+                                <div class="btn-group btn-group-xs" role="group">
                                     <button type="button" class="btn btn-success" data-ng-click="saveEditProject(project)">
                                         <span class="glyphicon glyphicon-ok"></span>
                                     </button>

@@ -16,33 +16,7 @@
     </div>
     <div class="row">
         <div class="col-sm-3"><!-- PORTFOLIO LIST -->
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    <h6 class="panel-title text-center">Portfolio tree</h6>
-                </div>
-                <div class="panel-body" style="min-height: 500px;  max-height: 500px; overflow-y: auto;">
-                    <div class="alert alert-warning text-center" data-ng-hide="!parentCtrl.portfolios.$resolved || parentCtrl.portfolios.length">
-                        No portfolios yet
-                    </div>
-                    <script type="text/ng-template" id="portfolioTree">
-                        <button class="btn btn-default btn-sm"
-                                data-ng-click="parentCtrl.selectPortfolio(tree.node);"
-                                style="min-width:150px; max-width: 150px; overflow:hidden; margin: 2%;">
-                            <span data-ng-bind="tree.node.name"></span>
-                        </button>
-                        <ul data-ng-if="tree.nodeTrees" style="list-style: none;">
-                            <li data-ng-repeat="tree in tree.nodeTrees track by $index" >
-                                <span data-ng-include="'portfolioTree'" style="display:block; margin-left:-0.5em;"></span>
-                            </li>
-                        </ul>
-                    </script>
-                    <ul style="margin-left: 2%; padding-left: 2%">
-                        <li data-ng-repeat="tree in parentCtrl.portfolioTrees track by $index" >
-                            <span data-ng-include="'portfolioTree'" style="display:block; margin-left:-0.5em;"></span>
-                        </li>
-                    </ul>
-                </div>
-            </div>
+            <portfolio-tree portfolios="parentCtrl.portfolios" portfolio-trees="parentCtrl.portfolioTrees" select-portfolio="parentCtrl.selectPortfolio"></portfolio-tree>
         </div>
         <div class="col-md-9">
             <div class="row" data-ng-hide="parentCtrl.selectedPortfolio || parentCtrl.portfolios.length === 0" >
@@ -60,7 +34,7 @@
                                 {{parentCtrl.selectedPortfolio.name}}
                             </h6>
                         </div>
-                        <div class="panel-body" style="max-height: 500px; min-height: 500px;">
+                        <div class="panel-body">
                             <div class="row" data-ng-show="showNewPortfolioMilestoneForm">
                                 <div class="col-md-12">
                                     <div class="panel panel-default">
@@ -105,14 +79,26 @@
                                         <div class="panel-heading">
                                             <h6 class="panel-title text-center">Milestones</h6>
                                         </div>
-                                        <div class="panel-body" style="min-height: 430px; max-height: 430px;">
+                                        <div class="panel-body" style="min-height: 440px">
                                             <div class="row">
                                                 <div class="col-md-12 text-center">
                                                     <button class="btn btn-xs btn-success" data-ng-click="showNewPortfolioMilestoneForm = true">New milestone</button>
                                                 </div>
                                             </div>
-                                            <hr style="margin: 10px">
-                                            <div class="row" style="min-height: 350px; max-height: 350px; overflow-y: auto">
+                                            <hr style="margin: 5px">
+                                            <div class="row">
+                                                <div class="col-md-12" style="margin-bottom: 1px">
+                                                    <select class="form-control input-sm" data-ng-model = "portfolioMilestoneFilter.type"
+                                                            data-ng-options="type as type.name for type in parentCtrl.portfolioMilestoneTypes">
+                                                        <option value="">--filter type</option>
+                                                    </select>
+                                                </div>
+                                                <div class="col-md-12" style="margin-bottom: 1px">
+                                                    <input class="form-control input-sm" type="text" placeholder="filter name" data-ng-model="portfolioMilestoneFilter.name">
+                                                </div>
+                                            </div>
+                                            <hr style="margin: 5px">
+                                            <div class="row" style="min-height: 300px; max-height: 300px; overflow-y: auto;">
                                                 <div class="col-md-12" data-ng-show="parentCtrl.portfolioMilestones.length === 0">
                                                     <div class="alert alert-warning text-center">
                                                         There are no milestones for this portfolio
@@ -120,7 +106,7 @@
                                                 </div>
                                                 <div class="col-md-12">
                                                     <button type="button"
-                                                            data-ng-repeat="portfolioMilestone in parentCtrl.portfolioMilestones | orderBy : parentCtrl.sortMilestones : false track by portfolioMilestone._id"
+                                                            data-ng-repeat="portfolioMilestone in parentCtrl.portfolioMilestones | filter : {name: portfolioMilestoneFilter.name, type: portfolioMilestoneFilter.type._id}  | orderBy : parentCtrl.sortMilestones : false track by portfolioMilestone._id"
                                                             data-ng-click="parentCtrl.selectPortfolioMilestone(parentCtrl.selectedPortfolio, portfolioMilestone)"
                                                             class="btn btn-sm center-block btn-block" style="overflow: hidden;"
                                                             data-ng-class="{'btn-default' : portfolioMilestone.statusReview.currentRecord.completed, 'btn-info' : !portfolioMilestone.statusReview.currentRecord.completed}">
@@ -159,11 +145,11 @@
                                                             Status
                                                         </label>
                                                         <label class="btn btn-info btn-xs" data-ng-model="parentCtrl.portfolioMilestoneDetails" btn-radio="'associatedProjectMilestones'">
-                                                            Associated project milestones
+                                                            Associated milestones
                                                         </label>
                                                     </div>
                                                 </div>
-                                                <div class="panel-body" style="min-height: 405px; max-height: 405px; overflow-y: auto">
+                                                <div class="panel-body" style="min-height: 420px; max-height: 420px; overflow-y: auto">
                                                     <div data-ng-show="parentCtrl.portfolioMilestoneDetails === 'header'">
                                                         <div data-ng-switch="parentCtrl.switchHeaderForm[parentCtrl.selectedPortfolioMilestone._id]">
                                                             <form data-ng-switch-default="view">
@@ -404,40 +390,28 @@
                                                                                     </div>
                                                                                 </div>
                                                                                 <div class="row">
-                                                                                    <div class="col-md-12">
+                                                                                    <div class="col-md-12" style="margin-bottom: 2px">
                                                                                         <input class="form-control input-sm" type="text" placeholder="filter by name" data-ng-model="projectMilestoneFilterA.name">
                                                                                     </div>
-                                                                                </div>
-                                                                                <br>
-                                                                                <div class="row">
-                                                                                    <div class="col-md-12">
+                                                                                    <div class="col-md-12" style="margin-bottom: 2px">
                                                                                         <select class="form-control input-sm" data-ng-model = "projectMilestoneFilterA.project"
                                                                                                 data-ng-options="project as project.identification.name for project in parentCtrl.availableProjects">
                                                                                             <option value="">--filter by project</option>
                                                                                         </select>
                                                                                     </div>
-                                                                                </div>
-                                                                                <br>
-                                                                                <div class="row">
-                                                                                    <div class="col-md-12">
+                                                                                    <div class="col-md-12" style="margin-bottom: 2px">
                                                                                         <select class="form-control input-sm" data-ng-model = "projectMilestoneFilterA.type"
                                                                                                 data-ng-options="type as type.name for type in parentCtrl.projectMilestoneTypes">
                                                                                             <option value="">--filter by type</option>
                                                                                         </select>
                                                                                     </div>
-                                                                                </div>
-                                                                                <br>
-                                                                                <div class="row">
-                                                                                    <div class="col-md-12">
+                                                                                    <div class="col-md-12" style="margin-bottom: 2px">
                                                                                         <select class="form-control input-sm" data-ng-model = "projectMilestoneFilterA.state"
                                                                                                 data-ng-options="state as state.name for state in parentCtrl.milestoneStates">
                                                                                             <option value="">--filter by state</option>
                                                                                         </select>
                                                                                     </div>
-                                                                                </div>
-                                                                                <br>
-                                                                                <div class="row">
-                                                                                    <div class="col-md-12">
+                                                                                    <div class="col-md-12" style="margin-bottom: 2px">
                                                                                         <select class="form-control input-sm" data-ng-model = "projectMilestoneFilterA.gate"
                                                                                                 data-ng-options="gate as gate.name for gate in parentCtrl.logReasons">
                                                                                             <option value="">--filter by gate</option>
@@ -445,7 +419,7 @@
                                                                                     </div>
                                                                                 </div>
                                                                             </div>
-                                                                            <br>
+                                                                            <hr style="margin: 5px">
                                                                             <div class="row" style="max-height: 240px; min-height: 240px; overflow-y: auto">
                                                                                 <div class="col-xs-12">
                                                                                     <div class="row" data-ng-repeat="projectMilestone in parentCtrl.availableProjectMilestones | orderBy : parentCtrl.sortMilestones : false track by projectMilestone._id">
@@ -508,40 +482,28 @@
                                                                                     </div>
                                                                                 </div>
                                                                                 <div class="row">
-                                                                                    <div class="col-md-12">
+                                                                                    <div class="col-md-12" style="margin-bottom: 2px">
                                                                                         <input class="form-control input-sm" type="text" placeholder="filter by name" data-ng-model="projectMilestoneFilterNA.name">
                                                                                     </div>
-                                                                                </div>
-                                                                                <br>
-                                                                                <div class="row">
-                                                                                    <div class="col-md-12">
+                                                                                    <div class="col-md-12" style="margin-bottom: 2px">
                                                                                         <select class="form-control input-sm" data-ng-model = "projectMilestoneFilterNA.project"
                                                                                                 data-ng-options="project as project.identification.name for project in parentCtrl.availableProjects">
                                                                                             <option value="">--filter by project</option>
                                                                                         </select>
                                                                                     </div>
-                                                                                </div>
-                                                                                <br>
-                                                                                <div class="row">
-                                                                                    <div class="col-md-12">
+                                                                                    <div class="col-md-12" style="margin-bottom: 2px">
                                                                                         <select class="form-control input-sm" data-ng-model = "projectMilestoneFilterNA.priority"
                                                                                                 data-ng-options="priority as priority.name for priority in parentCtrl.logPriorities">
                                                                                             <option value="">--filter by priority</option>
                                                                                         </select>
                                                                                     </div>
-                                                                                </div>
-                                                                                <br>
-                                                                                <div class="row">
-                                                                                    <div class="col-md-12">
+                                                                                    <div class="col-md-12" style="margin-bottom: 2px">
                                                                                         <select class="form-control input-sm" data-ng-model = "projectMilestoneFilterNA.state"
                                                                                                 data-ng-options="state as state.name for state in parentCtrl.milestoneStates">
                                                                                             <option value="">--filter by state</option>
                                                                                         </select>
                                                                                     </div>
-                                                                                </div>
-                                                                                <br>
-                                                                                <div class="row">
-                                                                                    <div class="col-md-12">
+                                                                                    <div class="col-md-12" style="margin-bottom: 2px">
                                                                                         <select class="form-control input-sm" data-ng-model = "projectMilestoneFilterA.reason"
                                                                                                 data-ng-options="reason as reason.name for reason in parentCtrl.logReasons">
                                                                                             <option value="">--filter by reason</option>
@@ -549,7 +511,7 @@
                                                                                     </div>
                                                                                 </div>
                                                                             </div>
-                                                                            <br>
+                                                                            <hr style="margin: 5px">
                                                                             <div class="row" style="max-height: 240px; min-height: 240px; overflow-y: auto">
                                                                                 <div class="col-xs-12">
                                                                                     <div class="row" data-ng-repeat="associatedProjectMilestone in parentCtrl.selectedPortfolioMilestone.associatedProjectMilestones | orderBy: parentCtrl.sortMilestones : false track by associatedProjectMilestone._id">

@@ -72,6 +72,7 @@ angular.module('gate-management-assignment').controller('GateManagementAssignmen
 
         // ----------- FILTERS ------------
 
+        $scope.filterProcess = {};
         $scope.filterCategorization = {};
         $scope.filterPrioritization = {};
 
