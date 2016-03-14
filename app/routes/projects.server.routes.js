@@ -10,47 +10,47 @@ module.exports = function(app) {
 	// Projects Routes
 	app.route('/projects')
 		.get(users.requiresLogin, projects.list)
-		.post(users.requiresLogin, projects.hasAuthorization, projects.create);
+		.post(users.requiresLogin, projects.hasCreateAuthorization, projects.create);
 
 	app.route('/projects/:projectId')
 		.get(users.requiresLogin, projects.read)
-		.put(users.requiresLogin, projects.hasAuthorization, projects.update)
-		.delete(users.requiresLogin, projects.hasAuthorization, projects.delete);
+		.put(users.requiresLogin, projects.hasEditAuthorization, projects.update)
+		.delete(users.requiresLogin, projects.hasEditAuthorization, projects.delete);
 
 	// Strategy assignment
 	app.route('/projects/:projectId/strategyAssignment')
-		.put(users.requiresLogin, projects.hasAuthorization, projects.updateStrategyAssignment);
+		.put(users.requiresLogin, projects.hasAssignmentAuthorization, projects.updateStrategyAssignment);
 
 	// Portfolio assignment
 	app.route('/projects/:projectId/portfolioAssignment')
-		.put(users.requiresLogin, projects.hasAuthorization, projects.updatePortfolioAssignment);
+		.put(users.requiresLogin, projects.hasAssignmentAuthorization, projects.updatePortfolioAssignment);
 
 	// Category Assignment
 	app.route('/projects/:projectId/categoryAssignment/:assignedGroupId/:assignedCategoryId')
-		.put(users.requiresLogin, projects.hasAuthorization, projects.updateCategoryAssignment);
+		.put(users.requiresLogin, projects.hasEditAuthorization, projects.updateCategoryAssignment);
 
     // Priority Assignment
     app.route('/projects/:projectId/priorityAssignment/:assignedGroupId/:assignedPriorityId')
-        .put(users.requiresLogin, projects.hasAuthorization, projects.updatePriorityAssignment);
+        .put(users.requiresLogin, projects.hasEditAuthorization, projects.updatePriorityAssignment);
 
     // Impact Assignment
     app.route('/projects/:projectId/impactAssignment/:assignedGroupId/:assignedImpactId')
-        .put(users.requiresLogin, projects.hasAuthorization, projects.updateImpactAssignment);
+        .put(users.requiresLogin, projects.hasEditAuthorization, projects.updateImpactAssignment);
 
     // Risk Assignment
     app.route('/projects/:projectId/riskAssignment/:assignedCategoryId/:assignedRiskId')
-        .put(users.requiresLogin, projects.hasAuthorization, projects.updateRiskAssignment);
+        .put(users.requiresLogin, projects.hasEditAuthorization, projects.updateRiskAssignment);
 
     // Stakeholders
     app.route('/projects/:projectId/stakeholders/:assignedGroupId/:assignedRoleId')
-        .put(users.requiresLogin, projects.hasAuthorization, projects.updatePeopleAssignment);
+        .put(users.requiresLogin, projects.hasEditAuthorization, projects.updatePeopleAssignment);
 
 
     // -------------------------- DELIVERY -----------------------------
 
     // Gate process
     app.route('/projects/:projectId/process')
-        .put(users.requiresLogin, projects.hasAuthorization, projects.updateProcessAssignment);
+        .put(users.requiresLogin, projects.hasEditAuthorization, projects.updateProcessAssignment);
 
 
     // Finish by binding the Project middleware

@@ -62,7 +62,7 @@ exports.list = function(req, res) {
 
     var Project = mongoose.mtModel(req.user.tenantId + '.' + 'Project');
 
-    Project.find(req.query).deepPopulate(['process.gates']).populate('user', 'displayName').exec(function(err, projects) {
+    Project.find(req.query).deepPopulate(['process.gates', 'portfolio']).populate('user', 'displayName').exec(function(err, projects) {
         if (err) {
             return res.status(400).send({
                 message: errorHandler.getErrorMessage(err)
@@ -104,6 +104,7 @@ exports.updateProcessAssignment = require('./projects/projects.gateProcess.serve
 /**
  * Project middleware
  */
+
 exports.projectByID = function(req, res, next, id) {
     var Project = mongoose.mtModel(req.user.tenantId + '.' + 'Project');
 
@@ -130,10 +131,10 @@ exports.projectByID = function(req, res, next, id) {
 /**
  * Project authorization middleware
  */
-exports.hasAuthorization = function(req, res, next) {
-    // User role check
+
+exports.hasCreateAuthorization = function(req, res, next) {
     if(!_.find(req.user.roles, function(role){
-            return (role === 'superAdmin' || role === 'admin' || role === 'pmo');
+            return (role === 'superAdmin' || role === 'admin' || role === 'pmo' || role === 'portfolioManager');
         })
     ){
         return res.status(403).send({
@@ -141,4 +142,167 @@ exports.hasAuthorization = function(req, res, next) {
         });
     }
     next();
+};
+
+exports.hasEditAuthorization = function(req, res, next) {
+    var Portfolio = mongoose.mtModel(req.user.tenantId + '.' + 'Portfolio');
+    var authArray = [];
+    async.waterfall([
+        // Set flag if "project manager" or "backup project manager" of this project
+        function(callback) {
+            authArray.push(!!req.project.projectManager && req.project.projectManager.equals(req.user._id));
+            authArray.push(!!req.project.backupProjectManager && req.project.backupProjectManager.equals(req.user._id));
+            callback(null);
+        },
+        function(callback) {
+            // Set flag if "portfolio manager" or "backup portfolio manager" of the project's portfolio
+            if(req.project.portfolio){
+                Portfolio.findById(req.project.portfolio).exec(function(err, portfolio) {
+                    if(err){
+                        return callback(err);
+                    }
+                    authArray.push(!!portfolio.portfolioManager && portfolio.portfolioManager.equals(req.user._id));
+                    authArray.push(!!portfolio.backupPortfolioManager && portfolio.backupPortfolioManager.equals(req.user._id));
+                    callback(null);
+                });
+            } else {
+                callback(null);
+            }
+        },
+        // Set flag if user role is "super-hero"
+        function(callback) {
+            authArray.push(!!_.find(req.user.roles, function(role){
+                return (role === 'superAdmin' || role === 'admin' || role === 'pmo');
+            }));
+            callback(null);
+        }
+    ], function (err) {
+        if(err){
+            return res.status(400).send({
+                message: errorHandler.getErrorMessage(err)
+            });
+        }
+        if(
+            !_.some(authArray, function(elem){
+                return elem === true;
+            })
+        ){
+            return res.status(403).send({
+                message: 'User is not authorized'
+            });
+        }
+        next();
+    });
+};
+
+exports.hasAssignmentAuthorization = function(req, res, next) {
+    var Portfolio = mongoose.mtModel(req.user.tenantId + '.' + 'Portfolio');
+
+    var allowNull = function(obj){
+        if(obj){
+            return obj._id;
+        } else {
+            return null;
+        }
+    };
+
+    var sourcePortfolioId = req.project.portfolio;
+    var targetPortfolioId = allowNull(req.body.portfolio); // Cleanup deepPopulate
+    var authArray = [];
+
+    async.waterfall([
+        // Get source portfolio object
+        function(callback) {
+            var authPortfolios = {
+                sourcePortfolio : null,
+                targetPortfolio : null
+            };
+            if(sourcePortfolioId){
+                Portfolio.findById(sourcePortfolioId).exec(function(err, portfolio) {
+                    if(err){
+                        return callback(err);
+                    }
+                    authPortfolios.sourcePortfolio = portfolio;
+                    callback(null, authPortfolios);
+                });
+            } else {
+                authPortfolios.sourcePortfolio = null;
+                callback(null, authPortfolios);
+            }
+        },
+        // Get target portfolio object
+        function(authPortfolios, callback) {
+            if(targetPortfolioId){
+                Portfolio.findById(targetPortfolioId).exec(function(err, portfolio) {
+                    if(err){
+                        return callback(err);
+                    }
+                    authPortfolios.targetPortfolio = portfolio;
+                    callback(null, authPortfolios);
+                });
+            } else {
+                authPortfolios.targetPortfolio = null;
+                callback(null, authPortfolios);
+            }
+        },
+        function(authPortfolios, callback) {
+            var isSourcePM, isSourceBackupPM, isTargetPM, isTargetBackupPM;
+            var sourcePortfolio = authPortfolios.sourcePortfolio;
+            var targetPortfolio = authPortfolios.targetPortfolio;
+
+            // If both source and target not null, must be portfolio manager of both
+            if(sourcePortfolio && targetPortfolio){
+                isSourcePM = !!sourcePortfolio.portfolioManager && sourcePortfolio.portfolioManager.equals(req.user._id);
+                isSourceBackupPM = !!sourcePortfolio.backupPortfolioManager && sourcePortfolio.backupPortfolioManager.equals(req.user._id);
+                isTargetPM = !!targetPortfolio.portfolioManager && targetPortfolio.portfolioManager.equals(req.user._id);
+                isTargetBackupPM = !!targetPortfolio.backupPortfolioManager && targetPortfolio.backupPortfolioManager.equals(req.user._id);
+
+                authArray.push((isSourcePM || isSourceBackupPM) && (isTargetPM || isTargetBackupPM));
+            }
+            // If source null and target exist, must be portfolio manager of target
+            if(!sourcePortfolio && targetPortfolio){
+                isTargetPM = !!targetPortfolio.portfolioManager && targetPortfolio.portfolioManager.equals(req.user._id);
+                isTargetBackupPM = !!targetPortfolio.backupPortfolioManager && targetPortfolio.backupPortfolioManager.equals(req.user._id);
+
+                authArray.push(isTargetPM || isTargetBackupPM);
+            }
+            // If source exist and target is null, must be portfolio manager of source
+            if(sourcePortfolio && !targetPortfolio){
+                isSourcePM = !!sourcePortfolio.portfolioManager && sourcePortfolio.portfolioManager.equals(req.user._id);
+                isSourceBackupPM = !!sourcePortfolio.backupPortfolioManager && sourcePortfolio.backupPortfolioManager.equals(req.user._id);
+
+                authArray.push(isSourcePM || isSourceBackupPM);
+            }
+            // if both source and target null, authorize
+            if(!sourcePortfolio && !targetPortfolio){
+                authArray.push(true);
+            }
+
+            callback(null);
+        },
+        // Set flag if user role is "super-hero"
+        function(callback) {
+            authArray.push(!!_.find(req.user.roles, function(role){
+                return (role === 'superAdmin' || role === 'admin' || role === 'pmo');
+            }));
+            callback(null);
+        }
+    ], function (err) {
+        if(err){
+            console.log(err);
+            return res.status(400).send({
+                message: errorHandler.getErrorMessage(err)
+            });
+        }
+        if(
+            !_.some(authArray, function(elem){
+                return elem === true;
+            })
+        ){
+            return res.status(403).send({
+                message: 'User is not authorized'
+            });
+        }
+        next();
+    });
 };

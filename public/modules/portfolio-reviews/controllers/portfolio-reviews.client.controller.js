@@ -16,7 +16,9 @@ angular.module('portfolio-reviews').controller('PortfolioReviewsController', ['$
 
 		$scope.init = function(){
 
-			Projects.query({'selection.selectedForEvaluation': true}, function(res){
+			$scope.userData = Authentication.user;
+
+			Projects.query({'selection.active': true, 'selection.selectedForEvaluation': true}, function(res){
 				$scope.projects = res;
 			}, function(err){
 				$scope.initError.push({message: err.data.message});
@@ -61,17 +63,45 @@ angular.module('portfolio-reviews').controller('PortfolioReviewsController', ['$
 
 		};
 
-		// ------- ROLES FOR BUTTONS ------
+        // -------------- AUTHORIZATION FOR BUTTONS -----------------
 
-		var d = $q.defer();
-		d.resolve(Authentication);
+        $scope.userHasManagementAuthorization = function(action, userData, portfolio){
 
-		d.promise.then(function(data){
-			var obj = _.clone(data);
-			$scope.userHasAuthorization = _.some(obj.user.roles, function(role){
-				return role === 'superAdmin' || role === 'admin' || role === 'pmo';
-			});
-		});
+            // Guard against undefined at view startup
+            if(action && userData && portfolio){
+
+                var userIsSuperhero, userIsPortfolioManager, userIsBackupPortfolioManager;
+
+                if(action === 'edit'){
+                    userIsSuperhero = !!_.some(userData.roles, function(role){
+                        return role === 'superAdmin' || role === 'admin' || role === 'pmo';
+                    });
+                    userIsPortfolioManager = userData._id === portfolio.portfolioManager;
+                    userIsBackupPortfolioManager = userData._id === portfolio.backupPortfolioManager;
+
+                    return userIsSuperhero || userIsPortfolioManager || userIsBackupPortfolioManager;
+                }
+            }
+        };
+
+        $scope.userHasReviewAuthorization = function(action, userData, peopleReview){
+
+            // Guard against undefined at view startup
+            if(action && userData && peopleReview){
+
+                var userIsSuperhero, userIsReviewer;
+
+                if(action === 'edit'){
+                    userIsSuperhero = !!_.some(userData.roles, function(role){
+                        return role === 'superAdmin' || role === 'admin' || role === 'pmo';
+                    });
+                    if(peopleReview.person){
+                        userIsReviewer = (userData._id === peopleReview.person._id);
+                    }
+                    return userIsSuperhero || userIsReviewer;
+                }
+            }
+        };
 
 
         // ------ TREE RECURSIONS -----------

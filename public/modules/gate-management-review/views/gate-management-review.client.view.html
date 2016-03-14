@@ -120,9 +120,9 @@
                                                             data-ng-click="selectGateReview(gateReview)"
                                                             class="btn btn-sm center-block btn-block" style="overflow: hidden;"
                                                             data-ng-class="{'btn-default' : gateReview.approval.currentRecord.approvalState === 'approved', 'btn-info' : !(gateReview.approval.currentRecord.approvalState === 'approved')}">
-                                                        <span class="small">{{gateReview.reviewDate | date:'EEE d, MMM yyyy'}}</span>
-                                                        <br>
                                                         <span class="small">{{gateReview.title}}</span>
+                                                        <br>
+                                                        <span class="small">{{gateReview.reviewDate | date:'EEE d, MMM yyyy'}}</span>
                                                     </button>
                                                 </div>
                                             </div>

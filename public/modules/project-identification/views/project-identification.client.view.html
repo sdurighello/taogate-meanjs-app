@@ -15,32 +15,12 @@
 		<strong data-ng-bind="initError"></strong>
 	</div>
     <div class="row">
-        <div class="col-sm-3">
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    <h6 class="panel-title text-center">Projects</h6>
-                </div>
-                <div class="panel-body">
-                    <div class="row">
-                        <div class="col-md-12 form-group-sm">
-                            <input type="text" class="form-control" placeholder="Type to filter projects" data-ng-model="filterProject">
-                        </div>
-                    </div>
-                    <hr>
-                    <div class="row" style="min-height: 350px; max-height: 350px; overflow-y: auto">
-                        <div class="col-md-12">
-                            <button type="button" ng-repeat="project in projects | filter:filterProject"
-                                    ng-click="selectProject(project)" class="btn btn-default btn-sm center-block btn-block" style="overflow: hidden;">
-                                {{project.identification.idNumber}} {{project.identification.name}}
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
+        <div class="col-md-3">
+            <project-list projects="projects" select-project="selectProject" portfolios="portfolios" gate-processes="gateProcesses"></project-list>
         </div>
         <div class="col-md-9" data-ng-switch="switchProjectForm">
             <div ng-switch-default="default">
-                <div class="row" ng-show="userHasAuthorization">
+                <div class="row" ng-show="userHasAuthorization('new', userData)">
                     <div class="col-md-12">
                         <button class="btn btn-primary" data-ng-click="selectProjectForm('new')">
                             New project
@@ -63,7 +43,7 @@
                 <div class="panel-heading">
                     <h6 class="panel-title text-center">Add new project</h6>
                 </div>
-                <div class="panel-body" style="min-height: 450px;  max-height: 450px; overflow-y: auto;">
+                <div class="panel-body" style="min-height: 535px;  max-height: 535px; overflow-y: auto;">
                     <form class="form" data-ng-submit="createProject()" novalidate name="newProjectForm">
                         <fieldset>
                             <div class="row">
@@ -147,7 +127,7 @@
                 <div class="panel-heading">
                     <h6 class="panel-title text-center" data-ng-bind="selectedProject.identification.name"></h6>
                 </div>
-                <div class="panel-body" style="min-height: 450px;  max-height: 450px; overflow-y: auto;">
+                <div class="panel-body" style="min-height: 535px;  max-height: 535px; overflow-y: auto;">
                     <form class="form">
                         <fieldset>
                             <div class="row">
@@ -185,14 +165,14 @@
                                 <div class="form-group-sm col-md-4">
                                     <label for="projectManagerNew">Project Manager</label>
                                     <select id="projectManagerNew" class="form-control" data-ng-model = "selectedProject.identification.projectManager"
-                                            ng-options="projectManager.displayName for projectManager in projectManagers" disabled>
+                                            ng-options="projectManager._id as projectManager.displayName for projectManager in projectManagers" disabled>
                                         <option value="">--choose person</option>
                                     </select>
                                 </div>
                                 <div class="form-group-sm col-md-4">
                                     <label for="backupProjectManagerNew">Backup Project Manager</label>
                                     <select id="backupProjectManagerNew" class="form-control" data-ng-model = "selectedProject.identification.backupProjectManager"
-                                            ng-options="projectManager.displayName for projectManager in projectManagers" disabled>
+                                            ng-options="projectManager._id as projectManager.displayName for projectManager in projectManagers" disabled>
                                         <option value="">--choose person</option>
                                     </select>
                                 </div>
@@ -208,7 +188,10 @@
                             <div class="row">
                                 <div class="col-md-12">
                                     <div class="pull-right">
-                                        <button class="btn btn-success btn-sm" ng-click="selectProjectForm('edit')">Edit</button>
+                                        <button class="btn btn-success btn-sm" data-ng-click="selectProjectForm('edit')"
+                                                data-ng-show="userHasAuthorization('edit', userData, selectedProject)">
+                                            Edit
+                                        </button>
                                         <button class="btn btn-info btn-sm" ng-click="cancelViewProject()">Close</button>
                                     </div>
                                 </div>
@@ -221,8 +204,8 @@
                 <div class="panel-heading">
                     <h6 class="panel-title text-center" data-ng-bind="selectedProject.identification.name"></h6>
                 </div>
-                <div class="panel-body" style="min-height: 450px;  max-height: 450px; overflow-y: auto;">
-                    <form class="form" data-ng-submit="editProject()" novalidate name="editProjectForm">
+                <div class="panel-body" style="min-height: 535px;  max-height: 535px; overflow-y: auto;">
+                    <form class="form" data-ng-submit="saveEditProject(selectedProject)" novalidate name="editProjectForm">
                         <fieldset>
                             <div class="row">
                                 <div class="form-group-sm col-md-3">
@@ -269,14 +252,14 @@
                                 <div class="form-group-sm col-md-4">
                                     <label for="projectManagerNew">Project Manager</label>
                                     <select id="projectManagerNew" class="form-control" data-ng-model = "selectedProject.identification.projectManager"
-                                            ng-options="projectManager.displayName for projectManager in projectManagers" >
+                                            ng-options="projectManager._id as projectManager.displayName for projectManager in projectManagers" >
                                         <option value="">--choose person</option>
                                     </select>
                                 </div>
                                 <div class="form-group-sm col-md-4">
                                     <label for="backupProjectManagerNew">Backup Project Manager</label>
                                     <select id="backupProjectManagerNew" class="form-control" data-ng-model = "selectedProject.identification.backupProjectManager"
-                                            ng-options="projectManager.displayName for projectManager in projectManagers" >
+                                            ng-options="projectManager._id as projectManager.displayName for projectManager in projectManagers">
                                         <option value="">--choose person</option>
                                     </select>
                                 </div>
@@ -293,10 +276,10 @@
                                 <div class="col-md-12">
                                     <div class="pull-right">
                                         <input type="submit" value="Save" class="btn btn-success btn-sm">
-                                        <button type="button" class="btn btn-sm btn-danger" data-ng-click="deleteProject()">
+                                        <button type="button" class="btn btn-sm btn-danger" data-ng-click="deleteProject(selectedProject)">
                                             Delete
                                         </button>
-                                        <button class="btn btn-info btn-sm" ng-click="cancelEditProject()">Cancel</button>
+                                        <button class="btn btn-info btn-sm" ng-click="cancelEditProject(selectedProject)">Cancel</button>
                                     </div>
                                 </div>
                             </div>

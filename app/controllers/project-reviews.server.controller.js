@@ -85,7 +85,7 @@ exports.create = function(req, res) {
         },
         // Populate names of person
         function(result, callback) {
-            Person.populate(result, {path: 'groups.items.peopleReviews.person', select: 'name'}, function(err, populatedResult){
+            Person.populate(result, {path: 'groups.items.peopleReviews.person'}, function(err, populatedResult){
                 if(err){
                     return callback(err);
                 }
@@ -154,7 +154,7 @@ exports.list = function(req, res) {
 	var ProjectReview = mongoose.mtModel(req.user.tenantId + '.' + 'ProjectReview');
 	ProjectReview.find(req.query)
         .populate('user', 'displayName')
-        .populate('groups.items.peopleReviews.person', 'name')
+        .populate('groups.items.peopleReviews.person')
         .populate('approval.currentRecord.user', 'displayName')
         .populate('approval.history.user', 'displayName')
         .exec(function(err, projectReviews) {
@@ -175,6 +175,7 @@ exports.projectReviewByID = function(req, res, next, id) {
 	var ProjectReview = mongoose.mtModel(req.user.tenantId + '.' + 'ProjectReview');
 	ProjectReview.findById(id)
         .populate('user', 'displayName')
+        .populate('groups.items.peopleReviews.person')
         .populate('approval.currentRecord.user', 'displayName')
         .populate('approval.history.user', 'displayName')
         .exec(function(err, projectReview) {
@@ -338,15 +339,88 @@ exports.complete = function(req, res){
 /**
  * Project review authorization middleware
  */
-exports.hasAuthorization = function(req, res, next) {
-	// User role check
-	if(!_.find(req.user.roles, function(role){
-			return (role === 'superAdmin' || role === 'admin' || role === 'pmo');
-		})
-	){
-		return res.status(403).send({
-			message: 'User is not authorized'
-		});
-	}
-	next();
+
+exports.hasManagementAuthorization = function(req, res, next) {
+    var Portfolio = mongoose.mtModel(req.user.tenantId + '.' + 'Portfolio');
+    var Project = mongoose.mtModel(req.user.tenantId + '.' + 'Project');
+
+    var authArray = [];
+
+    async.waterfall([
+        // Set flag if "project manager" or "backup project manager" of this project
+        function(callback) {
+            Project.findById(req.projectReview.project).exec(function(err, project){
+                if(err){
+                    callback(err);
+                } else {
+                    authArray.push(!!project.projectManager && project.projectManager.equals(req.user._id));
+                    authArray.push(!!project.backupProjectManager && project.backupProjectManager.equals(req.user._id));
+                    callback(null, project);
+                }
+            });
+        },
+        function(project, callback) {
+            // Set flag if "portfolio manager" or "backup portfolio manager" of the project's portfolio
+            if(project.portfolio){
+                Portfolio.findById(project.portfolio).exec(function(err, portfolio) {
+                    if(err){
+                        return callback(err);
+                    }
+                    authArray.push(!!portfolio.portfolioManager && portfolio.portfolioManager.equals(req.user._id));
+                    authArray.push(!!portfolio.backupPortfolioManager && portfolio.backupPortfolioManager.equals(req.user._id));
+                    callback(null);
+                });
+            } else {
+                callback(null);
+            }
+        },
+        // Set flag if user role is "super-hero"
+        function(callback) {
+            authArray.push(!!_.find(req.user.roles, function(role){
+                return (role === 'superAdmin' || role === 'admin' || role === 'pmo');
+            }));
+            callback(null);
+        }
+    ], function (err) {
+        if(err){
+            return res.status(400).send({
+                message: errorHandler.getErrorMessage(err)
+            });
+        }
+        if(
+            !_.some(authArray, function(elem){
+                return elem === true;
+            })
+        ){
+            return res.status(403).send({
+                message: 'User is not authorized'
+            });
+        }
+
+        next();
+
+    });
+};
+
+exports.hasReviewAuthorization = function(req, res, next) {
+
+    var authArray = [];
+
+    // Set flag if user is the "assigned reviewer"
+    var peopleReview = req.projectReview.groups.id(req.params.groupId).items.id(req.params.itemId).peopleReviews.id(req.params.peopleReviewId);
+    authArray.push(req.user._id.equals(peopleReview.person.assignedUser));
+
+    // Set flag if user role is "super-hero"
+    authArray.push(!!_.find(req.user.roles, function(role){
+        return (role === 'superAdmin' || role === 'admin' || role === 'pmo');
+    }));
+
+    if(!_.some(authArray, function(elem){ return elem === true; })){
+        return res.status(403).send({
+            message: 'User is not authorized'
+        });
+    }
+
+    next();
+
 };

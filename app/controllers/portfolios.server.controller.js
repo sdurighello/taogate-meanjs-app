@@ -307,33 +307,26 @@ exports.portfolioByID = function(req, res, next, id) {
  */
 
 exports.hasAuthorization = function(req, res, next) {
-	// User role check
-    var isPortfolioManagerAssigned = function(){
-        if(_.isUndefined(req.portfolio.portfolioManager) || _.isNull(req.portfolio.portfolioManager)){
-           return false;
-        } else {
-            return req.portfolio.portfolioManager.equals(req.user._id);
-        }
-    };
 
-    var isBackupPortfolioManagerAssigned = function(){
-        if(_.isUndefined(req.portfolio.backupPortfolioManager) || _.isNull(req.portfolio.backupPortfolioManager)){
-            return false;
-        } else {
-            return req.portfolio.backupPortfolioManager.equals(req.user._id);
-        }
-    };
+    var userIsPortfolioManager, userIsBackupPortfolioManager, userIsSuperhero;
 
-	if(!_.find(req.user.roles, function(role){
-			return (role === 'superAdmin' || role === 'admin' || role === 'pmo' ||
-            (role === 'portfolioManager' && isPortfolioManagerAssigned()) ||
-                (role === 'portfolioManager' && isBackupPortfolioManagerAssigned())
-            );
-		})
-	){
+    if(req.portfolio.portfolioManager){
+        userIsPortfolioManager = req.portfolio.portfolioManager.equals(req.user._id);
+    }
+
+    if(req.portfolio.backupPortfolioManager){
+        userIsBackupPortfolioManager = req.portfolio.backupPortfolioManager.equals(req.user._id);
+    }
+
+    userIsSuperhero = !!_.find(req.user.roles, function(role) {
+        return (role === 'superAdmin' || role === 'admin' || role === 'pmo');
+    });
+
+	if(!(userIsPortfolioManager || userIsBackupPortfolioManager || userIsSuperhero)){
 		return res.status(403).send({
 			message: 'User is not authorized'
 		});
 	}
+
 	next();
 };

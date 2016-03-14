@@ -18,7 +18,14 @@ exports.updatePortfolioAssignment = function(req, res) {
     var project = req.project ;
     project.user = req.user;
     project.created = Date.now();
-    project.portfolio = req.body.portfolio;
+    var allowNull = function(obj){
+        if(obj){
+            return obj._id;
+        } else {
+            return null;
+        }
+    };
+    project.portfolio = allowNull(req.body.portfolio);
 
     project.save(function(err) {
         if (err) {

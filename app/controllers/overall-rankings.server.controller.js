@@ -79,10 +79,10 @@ exports.list = function(req, res) {
 
     OverallRanking.find().populate('user', 'displayName').populate('projects')
         .exec(function(err, rankings){
-            // Remove the projects 'Not selected for prioritization'
+            // Remove the projects 'Not selected for prioritization' or 'Inactive'
             async.each(rankings[0].projects, function(project, callback) {
                 if(project){
-                    if(project.selection.selectedForPrioritization === false){
+                    if(project.selection.selectedForPrioritization === false || project.selection.active === false){
                         rankings[0].projects.splice(rankings[0].projects.indexOf(project), 1);
                         rankings[0].save();
                     }

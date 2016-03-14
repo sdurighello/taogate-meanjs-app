@@ -15,6 +15,8 @@ angular.module('improvement-activities').controller('ImprovementActivitiesContro
 
 		vm.init = function () {
 
+			vm.userData = Authentication.user;
+
 			Portfolios.query(function(portfolios){
 				vm.portfolios = portfolios;
 				vm.portfolioTrees = createNodeTrees(portfolios);
@@ -66,17 +68,37 @@ angular.module('improvement-activities').controller('ImprovementActivitiesContro
 
 		};
 
-		// ------- ROLES FOR BUTTONS ------
+        // -------------- AUTHORIZATION FOR BUTTONS -----------------
 
-		var d = $q.defer();
-		d.resolve(Authentication);
+        vm.userHasAuthorization = function(action, userData, improvementActivity){
+            var userIsSuperhero, userIsOwner, userIsPortfolioManager;
 
-		d.promise.then(function (data) {
-			var obj = _.clone(data);
-			vm.userHasAuthorization = _.some(obj.user.roles, function (role) {
-				return role === 'superAdmin' || role === 'admin' || role === 'pmo';
-			});
-		});
+            if(action === 'new'){
+
+                userIsSuperhero = !!_.some(userData.roles, function(role){
+                    return role === 'superAdmin' || role === 'admin' || role === 'pmo';
+                });
+
+                return userIsSuperhero;
+            }
+
+            if(action === 'edit'){
+
+                userIsSuperhero = !!_.some(userData.roles, function(role){
+                    return role === 'superAdmin' || role === 'admin' || role === 'pmo';
+                });
+
+                if(improvementActivity.assignedTo){
+                    userIsOwner = userData._id === improvementActivity.assignedTo.assignedUser;
+                }
+
+                if(improvementActivity.portfolio){
+                    userIsPortfolioManager = (userData._id === improvementActivity.portfolio.portfolioManager) || (userData._id === improvementActivity.portfolio.backupPortfolioManager);
+                }
+
+                return userIsSuperhero || userIsOwner || userIsPortfolioManager;
+            }
+        };
 
 		// ------ TREE RECURSIONS -----------
 

@@ -52,18 +52,6 @@ angular.module('priority-assignment').controller('PrioritizationOverviewControll
 		};
 
 
-		// ------- ROLES FOR BUTTONS ------
-
-		var d = $q.defer();
-		d.resolve(Authentication);
-
-		d.promise.then(function(data){
-			var obj = _.clone(data);
-			$scope.userHasAuthorization = _.some(obj.user.roles, function(role){
-				return role === 'superAdmin' || role === 'admin' || role === 'pmo';
-			});
-		});
-
 		// ------ TREE RECURSIONS -----------
 
 		var createNodeTrees = function(strategicNodes){

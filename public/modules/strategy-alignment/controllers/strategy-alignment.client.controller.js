@@ -99,29 +99,36 @@ angular.module('strategy-alignment').controller('StrategyAlignmentController', [
 
         // ------------------- DRAG AND DROP LISTENERS -------
 
-        $scope.dragControlListeners = {
+        $scope.dragControlListenersAssigned = {
             itemMoved: function (eventObj) {
-                var node = $scope.selectedNode;
-                var assignedProjects = $scope.selectedAssignments.assignedProjects[$scope.selectedNode._id];
-                var unassignedProjects = $scope.selectedAssignments.unassignedProjects;
-                // Ensure all "parent" properties of projects assigned to node are set to node._id
-                for (var i=0; i<assignedProjects.length; i++){
-                    var aProject = assignedProjects[i];
-                    if (aProject.parent !== node._id){
-                        aProject.parent = node._id;
-						Projects.updateStrategyAssignment(aProject);
-                    }
+                var movedProjectFromAssigned = eventObj.source.itemScope.project;
+                var originalParent = movedProjectFromAssigned.parent;
+                movedProjectFromAssigned.parent = null;
+                Projects.updateStrategyAssignment(movedProjectFromAssigned, function(res){
+                    $scope.error = null;
+                }, function(err){
+                    $scope.error = err.data.message;
+                    // put back project in case of failure
+                    movedProjectFromAssigned.parent = originalParent;
+                    eventObj.dest.sortableScope.removeItem(eventObj.dest.index);
+                    eventObj.source.itemScope.sortableScope.insertItem(eventObj.source.index, movedProjectFromAssigned);
+                });
+            }
+        };
 
-                }
-                // Ensure all unassigned projects have parent set to null
-                for (var j=0; j<unassignedProjects.length; j++){
-                    var uProject = unassignedProjects[j];
-                    if (uProject.parent !== null){
-                        uProject.parent = null;
-						Projects.updateStrategyAssignment(uProject);
-                    }
-
-                }
+        $scope.dragControlListenersUnassigned = {
+            itemMoved: function (eventObj) {
+                var movedProjectFromUnassigned = eventObj.source.itemScope.project;
+                movedProjectFromUnassigned.parent = $scope.selectedNode._id;
+                Projects.updateStrategyAssignment(movedProjectFromUnassigned, function(res){
+                    $scope.error = null;
+                }, function(err){
+                    $scope.error = err.data.message;
+                    // put back project in case of failure
+                    movedProjectFromUnassigned.parent = null;
+                    eventObj.dest.sortableScope.removeItem(eventObj.dest.index);
+                    eventObj.source.itemScope.sortableScope.insertItem(eventObj.source.index, movedProjectFromUnassigned);
+                });
             }
         };
 

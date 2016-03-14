@@ -14,6 +14,9 @@
 	<div data-ng-show="initError" class="text-danger">
 		<strong data-ng-bind="initError"></strong>
 	</div>
+    <div data-ng-show="error" class="text-danger">
+        <strong data-ng-bind="error"></strong>
+    </div>
 	<div class="row">
 		<div class="col-md-4">
 			<div class="panel panel-default">
@@ -77,7 +80,7 @@
                                         <div class="row" style="max-height: 350px; min-height: 350px;">
                                             <div class="col-md-12">
                                                 <div class="panel panel-default">
-                                                    <div class="panel-body" data-as-sortable="dragControlListeners" data-ng-model="selectedAssignments.assignedProjects[selectedNode._id]"
+                                                    <div class="panel-body" data-as-sortable="dragControlListenersAssigned" data-ng-model="selectedAssignments.assignedProjects[selectedNode._id]"
                                                          style="overflow-y: auto; max-height: 330px; min-height: 330px;">
                                                         <div data-ng-show="selectedAssignments.assignedProjects[selectedNode._id].length === 0" class="alert alert-warning text-center">
                                                             No assigned projects yet
@@ -112,7 +115,7 @@
                                         <div class="row" style="max-height: 350px; min-height: 350px;">
                                             <div class="col-md-12">
                                                 <div class="panel panel-default">
-                                                    <div class="panel-body" data-as-sortable="dragControlListeners" data-ng-model="selectedAssignments.unassignedProjects"
+                                                    <div class="panel-body" data-as-sortable="dragControlListenersUnassigned" data-ng-model="selectedAssignments.unassignedProjects"
                                                          style="overflow-y: auto; max-height: 330px; min-height: 330px;">
                                                         <div data-ng-show="selectedAssignments.unassignedProjects.length === 0" class="alert alert-warning text-center">
                                                             No unassigned projects yet

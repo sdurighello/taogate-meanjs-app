@@ -164,262 +164,262 @@ angular.module('core').service('Menus', [
 		this.addMenu('topbar');
 
 		// taoPortfolio.com additions for menu
-		this.addMenuItem('topbar','My taoPortfolio','mytao','item','mytao',false,['superAdmin','admin','PMO','projectManager','portfolioManager','executive'],0);
+		this.addMenuItem('topbar','My taoPortfolio','mytao','item','mytao',false,['superAdmin','admin','pmo','projectManager','portfolioManager','executive'],0);
 		this.addMenuItem('topbar','Admin','admin','dropdown','admin',false,['superAdmin','admin'],1);
 
 		// SETUP
-		this.addMenuItem('topbar','Setup','setup','dropdown','setup',false,['superAdmin','admin','PMO','projectManager','portfolioManager','executive'],2);
+		this.addMenuItem('topbar','Setup','setup','dropdown','setup',false,['superAdmin','admin','pmo'],2);
 
 			// Portfolio Definition
 		this.addSubMenuItem('topbar', 'setup', 'Portfolio definition', 'menuTitle','menuTitle',false,
-			['superAdmin','admin','PMO','projectManager','portfolioManager','executive'],0);
+			['superAdmin','admin','pmo','projectManager','portfolioManager','executive'],0);
                 // Strategy nodes
         this.addSubMenuItem('topbar', 'setup', 'Strategy nodes', 'strategy-node-setup','strategy-node-setup',false,
-            ['superAdmin','admin','PMO','projectManager','portfolioManager','executive'],1);
+            ['superAdmin','admin','pmo','projectManager','portfolioManager','executive'],1);
 				// Portfolios
 		this.addSubMenuItem('topbar', 'setup', 'Portfolios', 'portfolio-setup','portfolio-setup',false,
-			['superAdmin','admin','PMO','projectManager','portfolioManager','executive'],2);
+			['superAdmin','admin','pmo','projectManager','portfolioManager','executive'],2);
 				// Priorities
 		this.addSubMenuItem('topbar', 'setup', 'Priorities', 'priority-setup','priority-setup',false,
-			['superAdmin','admin','PMO','projectManager','portfolioManager','executive'],3);
+			['superAdmin','admin','pmo','projectManager','portfolioManager','executive'],3);
 				// Categories
 		this.addSubMenuItem('topbar', 'setup', 'Categories', 'category-setup','category-setup',false,
-			['superAdmin','admin','PMO','projectManager','portfolioManager','executive'],4);
+			['superAdmin','admin','pmo','projectManager','portfolioManager','executive'],4);
 
 			// Portfolio Evaluation
 		this.addSubMenuItem('topbar', 'setup', '', 'divider','divider',false,
-			['superAdmin','admin','PMO','projectManager','portfolioManager','executive'],5);
+			['superAdmin','admin','pmo','projectManager','portfolioManager','executive'],5);
 		this.addSubMenuItem('topbar', 'setup', 'Portfolio evaluation', 'menuTitle','menuTitle',false,
-			['superAdmin','admin','PMO','projectManager','portfolioManager','executive'],6);
+			['superAdmin','admin','pmo','projectManager','portfolioManager','executive'],6);
                 // Financial analysis
         this.addSubMenuItem('topbar', 'setup', 'Financial analysis', 'financial-analysis-setup','financial-analysis-setup',false,
-            ['superAdmin','admin','PMO','projectManager','portfolioManager','executive'],7);
+            ['superAdmin','admin','pmo','projectManager','portfolioManager','executive'],7);
                 // Qualitative analysis
         this.addSubMenuItem('topbar', 'setup', 'Qualitative analysis', 'qualitative-analysis-setup','qualitative-analysis-setup',false,
-            ['superAdmin','admin','PMO','projectManager','portfolioManager','executive'],8);
+            ['superAdmin','admin','pmo','projectManager','portfolioManager','executive'],8);
                 // Risk analysis
         this.addSubMenuItem('topbar', 'setup', 'Risk analysis', 'risk-analysis-setup','risk-analysis-setup',false,
-            ['superAdmin','admin','PMO','projectManager','portfolioManager','executive'],9);
+            ['superAdmin','admin','pmo','projectManager','portfolioManager','executive'],9);
 				// Dependencies
 		this.addSubMenuItem('topbar', 'setup', 'Dependencies', 'dependency-setup','dependency-setup',false,
-			['superAdmin','admin','PMO','projectManager','portfolioManager','executive'],10);
+			['superAdmin','admin','pmo','projectManager','portfolioManager','executive'],10);
 
             // Stakeholders management
         this.addSubMenuItem('topbar', 'setup', '', 'divider','divider',false,
-            ['superAdmin','admin','PMO','projectManager','portfolioManager','executive'],11);
+            ['superAdmin','admin','pmo','projectManager','portfolioManager','executive'],11);
         this.addSubMenuItem('topbar', 'setup', 'Stakeholders management', 'menuTitle','menuTitle',false,
-            ['superAdmin','admin','PMO','projectManager','portfolioManager','executive'],12);
+            ['superAdmin','admin','pmo','projectManager','portfolioManager','executive'],12);
                 // Stakeholders
         this.addSubMenuItem('topbar', 'setup', 'Stakeholders', 'people-setup','people-setup',false,
-            ['superAdmin','admin','PMO','projectManager','portfolioManager','executive'],13);
+            ['superAdmin','admin','pmo','projectManager','portfolioManager','executive'],13);
 
             // Review and improvement
         this.addSubMenuItem('topbar', 'setup', '', 'divider','divider',false,
-            ['superAdmin','admin','PMO','projectManager','portfolioManager','executive'],14);
+            ['superAdmin','admin','pmo','projectManager','portfolioManager','executive'],14);
         this.addSubMenuItem('topbar', 'setup', 'Review and improvement', 'menuTitle','menuTitle',false,
-            ['superAdmin','admin','PMO','projectManager','portfolioManager','executive'],15);
+            ['superAdmin','admin','pmo','projectManager','portfolioManager','executive'],15);
                 // Review setup
         this.addSubMenuItem('topbar', 'setup', 'Review setup', 'project-review-setup','project-review-setup',false,
-            ['superAdmin','admin','PMO','projectManager','portfolioManager','executive'],16);
+            ['superAdmin','admin','pmo','projectManager','portfolioManager','executive'],16);
                 // Project Review
         this.addSubMenuItem('topbar', 'setup', 'Project review', 'project-review-templates','project-review-templates',false,
-            ['superAdmin','admin','PMO','projectManager','portfolioManager','executive'],17);
+            ['superAdmin','admin','pmo','projectManager','portfolioManager','executive'],17);
                 // Portfolio Review
         this.addSubMenuItem('topbar', 'setup', 'Portfolio review', 'portfolio-review-templates','portfolio-review-templates',false,
-            ['superAdmin','admin','PMO','projectManager','portfolioManager','executive'],18);
+            ['superAdmin','admin','pmo','projectManager','portfolioManager','executive'],18);
                 // Improvement activities
         this.addSubMenuItem('topbar', 'setup', 'Improvement activity', 'improvement-setup','improvement-setup',false,
-            ['superAdmin','admin','PMO','projectManager','portfolioManager','executive'],19);
+            ['superAdmin','admin','pmo','projectManager','portfolioManager','executive'],19);
 
         // Portfolio Delivery
         this.addSubMenuItem('topbar', 'setup', '', 'divider','divider',false,
-            ['superAdmin','admin','PMO','projectManager','portfolioManager','executive'],20);
+            ['superAdmin','admin','pmo','projectManager','portfolioManager','executive'],20);
         this.addSubMenuItem('topbar', 'setup', 'Portfolio delivery', 'menuTitle','menuTitle',false,
-            ['superAdmin','admin','PMO','projectManager','portfolioManager','executive'],21);
+            ['superAdmin','admin','pmo','projectManager','portfolioManager','executive'],21);
             // Gate Process
         this.addSubMenuItem('topbar', 'setup', 'Gate process', 'gate-management-setup','gate-management-setup',false,
-            ['superAdmin','admin','PMO','projectManager','portfolioManager','executive'],22);
+            ['superAdmin','admin','pmo','projectManager','portfolioManager','executive'],22);
             // Gate Review
         this.addSubMenuItem('topbar', 'setup', 'Gate review', 'gate-review-setup','gate-review-setup',false,
-            ['superAdmin','admin','PMO','projectManager','portfolioManager','executive'],23);
+            ['superAdmin','admin','pmo','projectManager','portfolioManager','executive'],23);
             // Issues & Changes
         this.addSubMenuItem('topbar', 'setup', 'Issues & Changes', 'log-delivery-setup','log-delivery-setup',false,
-            ['superAdmin','admin','PMO','projectManager','portfolioManager','executive'],24);
+            ['superAdmin','admin','pmo','projectManager','portfolioManager','executive'],24);
             // Milestone log
         this.addSubMenuItem('topbar', 'setup', 'Milestones', 'log-milestone-setup','log-milestone-setup',false,
-            ['superAdmin','admin','PMO','projectManager','portfolioManager','executive'],25);
+            ['superAdmin','admin','pmo','projectManager','portfolioManager','executive'],25);
 			// Status Report
 		this.addSubMenuItem('topbar', 'setup', 'Status report', 'status-report-setup','status-report-setup',false,
-			['superAdmin','admin','PMO','projectManager','portfolioManager','executive'],26);
+			['superAdmin','admin','pmo','projectManager','portfolioManager','executive'],26);
 
 
         // DEFINITION
 		this.addMenuItem('topbar','Definition','definition','dropdown','definition',false,
-            ['superAdmin','admin','PMO','projectManager','portfolioManager','executive'],3);
+            ['superAdmin','admin','pmo','projectManager','portfolioManager','executive'],3);
             // Identification
         this.addSubMenuItem('topbar', 'definition', 'Identification', 'menuTitle','menuTitle',false,
-            ['superAdmin','admin','PMO','projectManager','portfolioManager','executive'],0);
+            ['superAdmin','admin','pmo','projectManager','portfolioManager','executive'],0);
                 // Projects identification
         this.addSubMenuItem('topbar', 'definition', 'Projects identification', 'project-identification','project-identification',false,
-            ['superAdmin','admin','PMO','projectManager','portfolioManager','executive'],1);
+            ['superAdmin','admin','pmo','projectManager','portfolioManager','executive'],1);
                 // Strategy alignment
         this.addSubMenuItem('topbar', 'definition', 'Strategy alignment', 'strategy-alignment','strategy-alignment',false,
-            ['superAdmin','admin','PMO','projectManager','portfolioManager','executive'],2);
+            ['superAdmin','admin','pmo','projectManager','portfolioManager','executive'],2);
                 // Portfolio assignment
         this.addSubMenuItem('topbar', 'definition', 'Portfolio assignment', 'portfolio-assignment','portfolio-assignment',false,
-            ['superAdmin','admin','PMO','projectManager','portfolioManager','executive'],3);
+            ['superAdmin','admin','pmo','projectManager','portfolioManager','executive'],3);
             // Categorization
         this.addSubMenuItem('topbar', 'definition', '', 'divider','divider',false,
-            ['superAdmin','admin','PMO','projectManager','portfolioManager','executive'],4);
+            ['superAdmin','admin','pmo','projectManager','portfolioManager','executive'],4);
         this.addSubMenuItem('topbar', 'definition', 'Categorization', 'menuTitle','menuTitle',false,
-            ['superAdmin','admin','PMO','projectManager','portfolioManager','executive'],5);
+            ['superAdmin','admin','pmo','projectManager','portfolioManager','executive'],5);
                 // Category assignment
         this.addSubMenuItem('topbar', 'definition', 'Category assignment', 'category-assignment','category-assignment',false,
-            ['superAdmin','admin','PMO','projectManager','portfolioManager','executive'],6);
+            ['superAdmin','admin','pmo','projectManager','portfolioManager','executive'],6);
 				// Categorization overview
 		this.addSubMenuItem('topbar', 'definition', 'Categorization overview', 'categorization-overview','categorization-overview',false,
-			['superAdmin','admin','PMO','projectManager','portfolioManager','executive'],7);
+			['superAdmin','admin','pmo','projectManager','portfolioManager','executive'],7);
             // Selection
         this.addSubMenuItem('topbar', 'definition', '', 'divider','divider',false,
-            ['superAdmin','admin','PMO','projectManager','portfolioManager','executive'],8);
+            ['superAdmin','admin','pmo','projectManager','portfolioManager','executive'],8);
         this.addSubMenuItem('topbar', 'definition', 'Selection', 'menuTitle','menuTitle',false,
-            ['superAdmin','admin','PMO','projectManager','portfolioManager','executive'],9);
+            ['superAdmin','admin','pmo','projectManager','portfolioManager','executive'],9);
                 // Projects selection
         this.addSubMenuItem('topbar', 'definition', 'Projects selection', 'project-selection','project-selection',false,
-            ['superAdmin','admin','PMO','projectManager','portfolioManager','executive'],10);
+            ['superAdmin','admin','pmo','projectManager','portfolioManager','executive'],10);
             // Prioritization
         this.addSubMenuItem('topbar', 'definition', '', 'divider','divider',false,
-            ['superAdmin','admin','PMO','projectManager','portfolioManager','executive'],11);
+            ['superAdmin','admin','pmo','projectManager','portfolioManager','executive'],11);
         this.addSubMenuItem('topbar', 'definition', 'Prioritization', 'menuTitle','menuTitle',false,
-            ['superAdmin','admin','PMO','projectManager','portfolioManager','executive'],12);
+            ['superAdmin','admin','pmo','projectManager','portfolioManager','executive'],12);
                 // Priorities assignment
         this.addSubMenuItem('topbar', 'definition', 'Priority assignment', 'priority-assignment','priority-assignment',false,
-            ['superAdmin','admin','PMO','projectManager','portfolioManager','executive'],13);
+            ['superAdmin','admin','pmo','projectManager','portfolioManager','executive'],13);
 				// Prioritization overview
 		this.addSubMenuItem('topbar', 'definition', 'Prioritization overview', 'prioritization-overview','prioritization-overview',false,
-			['superAdmin','admin','PMO','projectManager','portfolioManager','executive'],14);
+			['superAdmin','admin','pmo','projectManager','portfolioManager','executive'],14);
                 // Portfolio rankings
         this.addSubMenuItem('topbar', 'definition', 'Portfolio rankings', 'portfolio-ranking-assignment','portfolio-ranking-assignment',false,
-            ['superAdmin','admin','PMO','projectManager','portfolioManager','executive'],15);
+            ['superAdmin','admin','pmo','projectManager','portfolioManager','executive'],15);
 
 
 
         // EVALUATION
 		this.addMenuItem('topbar','Evaluation','evaluation','dropdown','evaluation',false,
-            ['superAdmin','admin','PMO','projectManager','portfolioManager','executive'],4);
+            ['superAdmin','admin','pmo','projectManager','portfolioManager','executive'],4);
             // Evaluation profiles
         this.addSubMenuItem('topbar', 'evaluation', 'Evaluation profiles', 'menuTitle','menuTitle',false,
-            ['superAdmin','admin','PMO','projectManager','portfolioManager','executive'],0);
+            ['superAdmin','admin','pmo','projectManager','portfolioManager','executive'],0);
                 // Financial
         this.addSubMenuItem('topbar', 'evaluation', 'Financial analysis', 'financial-analysis','financial-analysis',false,
-            ['superAdmin','admin','PMO','projectManager','portfolioManager','executive'],1);
+            ['superAdmin','admin','pmo','projectManager','portfolioManager','executive'],1);
                 // Qualitative
         this.addSubMenuItem('topbar', 'evaluation', 'Qualitative analysis', 'qualitative-analysis','qualitative-analysis',false,
-            ['superAdmin','admin','PMO','projectManager','portfolioManager','executive'],2);
+            ['superAdmin','admin','pmo','projectManager','portfolioManager','executive'],2);
                 // Risk
         this.addSubMenuItem('topbar', 'evaluation', 'Risk analysis', 'risk-analysis','risk-analysis',false,
-            ['superAdmin','admin','PMO','projectManager','portfolioManager','executive'],3);
+            ['superAdmin','admin','pmo','projectManager','portfolioManager','executive'],3);
                 // Evaluation summary
         this.addSubMenuItem('topbar', 'evaluation', 'Evaluation summary', 'portfolio-evaluation-summary','portfolio-evaluation-summary',false,
-            ['superAdmin','admin','PMO','projectManager','portfolioManager','executive'],4);
+            ['superAdmin','admin','pmo','projectManager','portfolioManager','executive'],4);
             // Stakeholders
         this.addSubMenuItem('topbar', 'evaluation', '', 'divider','divider',false,
-            ['superAdmin','admin','PMO','projectManager','portfolioManager','executive'],5);
+            ['superAdmin','admin','pmo','projectManager','portfolioManager','executive'],5);
         this.addSubMenuItem('topbar', 'evaluation', 'Stakeholders', 'menuTitle','menuTitle',false,
-            ['superAdmin','admin','PMO','projectManager','portfolioManager','executive'],6);
+            ['superAdmin','admin','pmo','projectManager','portfolioManager','executive'],6);
                 // Project Stakeholders analysis
         this.addSubMenuItem('topbar', 'evaluation', 'Project stakeholders analysis', 'people-project-analysis','people-project-analysis',false,
-            ['superAdmin','admin','PMO','projectManager','portfolioManager','executive'],7);
+            ['superAdmin','admin','pmo','projectManager','portfolioManager','executive'],7);
                 // Portfolio Stakeholders analysis
         this.addSubMenuItem('topbar', 'evaluation', 'Portfolio stakeholders analysis', 'people-portfolio-analysis','people-portfolio-analysis',false,
-            ['superAdmin','admin','PMO','projectManager','portfolioManager','executive'],8);
+            ['superAdmin','admin','pmo','projectManager','portfolioManager','executive'],8);
             // Review and improvement
         this.addSubMenuItem('topbar', 'evaluation', '', 'divider','divider',false,
-            ['superAdmin','admin','PMO','projectManager','portfolioManager','executive'],9);
+            ['superAdmin','admin','pmo','projectManager','portfolioManager','executive'],9);
         this.addSubMenuItem('topbar', 'evaluation', 'Review and improvement', 'menuTitle','menuTitle',false,
-            ['superAdmin','admin','PMO','projectManager','portfolioManager','executive'],10);
+            ['superAdmin','admin','pmo','projectManager','portfolioManager','executive'],10);
                 // Project Reviews
         this.addSubMenuItem('topbar', 'evaluation', 'Project reviews', 'project-reviews','project-reviews',false,
-            ['superAdmin','admin','PMO','projectManager','portfolioManager','executive'],11);
+            ['superAdmin','admin','pmo','projectManager','portfolioManager','executive'],11);
                 // Portfolio Reviews
         this.addSubMenuItem('topbar', 'evaluation', 'Portfolio reviews', 'portfolio-reviews','portfolio-reviews',false,
-            ['superAdmin','admin','PMO','projectManager','portfolioManager','executive'],12);
+            ['superAdmin','admin','pmo','projectManager','portfolioManager','executive'],12);
                 // Reviews summary
         this.addSubMenuItem('topbar', 'evaluation', 'Reviews summary', 'review-summaries','review-summaries',false,
-            ['superAdmin','admin','PMO','projectManager','portfolioManager','executive'],13);
+            ['superAdmin','admin','pmo','projectManager','portfolioManager','executive'],13);
                 // Improvement activities
         this.addSubMenuItem('topbar', 'evaluation', 'Improvement activities', 'improvement-activities','improvement-activities',false,
-            ['superAdmin','admin','PMO','projectManager','portfolioManager','executive'],14);
+            ['superAdmin','admin','pmo','projectManager','portfolioManager','executive'],14);
             // Dependencies
         this.addSubMenuItem('topbar', 'evaluation', '', 'divider','divider',false,
-            ['superAdmin','admin','PMO','projectManager','portfolioManager','executive'],15);
+            ['superAdmin','admin','pmo','projectManager','portfolioManager','executive'],15);
         this.addSubMenuItem('topbar', 'evaluation', 'Dependencies', 'menuTitle','menuTitle',false,
-            ['superAdmin','admin','PMO','projectManager','portfolioManager','executive'],16);
+            ['superAdmin','admin','pmo','projectManager','portfolioManager','executive'],16);
                 // Project dependencies
         this.addSubMenuItem('topbar', 'evaluation', 'Project dependencies', 'dependency-analysis','dependency-analysis',false,
-            ['superAdmin','admin','PMO','projectManager','portfolioManager','executive'],17);
+            ['superAdmin','admin','pmo','projectManager','portfolioManager','executive'],17);
 
 
 
         // DELIVERY
 		this.addMenuItem('topbar','Delivery','delivery','dropdown','delivery',false,
-            ['superAdmin','admin','PMO','projectManager','portfolioManager','executive'],5);
+            ['superAdmin','admin','pmo','projectManager','portfolioManager','executive'],5);
             // Gate management
         this.addSubMenuItem('topbar', 'delivery', 'Gate management', 'menuTitle','menuTitle',false,
-            ['superAdmin','admin','PMO','projectManager','portfolioManager','executive'],0);
+            ['superAdmin','admin','pmo','projectManager','portfolioManager','executive'],0);
                 // Gate process assignment
         this.addSubMenuItem('topbar', 'delivery', 'Gate process assignment', 'gate-management-assignment','gate-management-assignment',false,
-            ['superAdmin','admin','PMO','projectManager','portfolioManager','executive'],1);
+            ['superAdmin','admin','pmo','projectManager','portfolioManager','executive'],1);
                 // Gate reviews
         this.addSubMenuItem('topbar', 'delivery', 'Gate reviews', 'gate-management-review','gate-management-review',false,
-            ['superAdmin','admin','PMO','projectManager','portfolioManager','executive'],2);
+            ['superAdmin','admin','pmo','projectManager','portfolioManager','executive'],2);
                 // Delivery Performances
         this.addSubMenuItem('topbar', 'delivery', 'Delivery performances', 'gate-performances-portfolio','gate-performances-portfolio',false,
-            ['superAdmin','admin','PMO','projectManager','portfolioManager','executive'],3);
+            ['superAdmin','admin','pmo','projectManager','portfolioManager','executive'],3);
             // Change requests
         this.addSubMenuItem('topbar', 'delivery', '', 'divider','divider',false,
-            ['superAdmin','admin','PMO','projectManager','portfolioManager','executive'],4);
+            ['superAdmin','admin','pmo','projectManager','portfolioManager','executive'],4);
         this.addSubMenuItem('topbar', 'delivery', 'Change requests', 'menuTitle','menuTitle',false,
-            ['superAdmin','admin','PMO','projectManager','portfolioManager','executive'],5);
+            ['superAdmin','admin','pmo','projectManager','portfolioManager','executive'],5);
                 // Project change requests
         this.addSubMenuItem('topbar', 'delivery', 'Project changes', 'project-change-requests','project-change-requests',false,
-            ['superAdmin','admin','PMO','projectManager','portfolioManager','executive'],6);
+            ['superAdmin','admin','pmo','projectManager','portfolioManager','executive'],6);
 				// Portfolio change requests
 		this.addSubMenuItem('topbar', 'delivery', 'Portfolio changes', 'portfolio-change-requests','portfolio-change-requests',false,
-			['superAdmin','admin','PMO','projectManager','portfolioManager','executive'],7);
+			['superAdmin','admin','pmo','projectManager','portfolioManager','executive'],7);
             // Issues
         this.addSubMenuItem('topbar', 'delivery', '', 'divider','divider',false,
-            ['superAdmin','admin','PMO','projectManager','portfolioManager','executive'],8);
+            ['superAdmin','admin','pmo','projectManager','portfolioManager','executive'],8);
         this.addSubMenuItem('topbar', 'delivery', 'Issues', 'menuTitle','menuTitle',false,
-            ['superAdmin','admin','PMO','projectManager','portfolioManager','executive'],9);
+            ['superAdmin','admin','pmo','projectManager','portfolioManager','executive'],9);
 				// Project issues
 		this.addSubMenuItem('topbar', 'delivery', 'Project issues', 'project-issues', 'project-issues',false,
-			['superAdmin','admin','PMO','projectManager','portfolioManager','executive'],10);
+			['superAdmin','admin','pmo','projectManager','portfolioManager','executive'],10);
                 // Portfolio issues
         this.addSubMenuItem('topbar', 'delivery', 'Portfolio issues', 'portfolio-issues','portfolio-issues',false,
-            ['superAdmin','admin','PMO','projectManager','portfolioManager','executive'],11);
+            ['superAdmin','admin','pmo','projectManager','portfolioManager','executive'],11);
 			// Milestones
 		this.addSubMenuItem('topbar', 'delivery', '', 'divider','divider',false,
-			['superAdmin','admin','PMO','projectManager','portfolioManager','executive'],12);
+			['superAdmin','admin','pmo','projectManager','portfolioManager','executive'],12);
 		this.addSubMenuItem('topbar', 'delivery', 'Milestones', 'menuTitle','menuTitle',false,
-			['superAdmin','admin','PMO','projectManager','portfolioManager','executive'],13);
+			['superAdmin','admin','pmo','projectManager','portfolioManager','executive'],13);
 				// Project milestones
 		this.addSubMenuItem('topbar', 'delivery', 'Project milestones', 'project-milestones','project-milestones',false,
-			['superAdmin','admin','PMO','projectManager','portfolioManager','executive'],14);
+			['superAdmin','admin','pmo','projectManager','portfolioManager','executive'],14);
                 // Portfolio milestones
         this.addSubMenuItem('topbar', 'delivery', 'Portfolio milestones', 'portfolio-milestones','portfolio-milestones',false,
-            ['superAdmin','admin','PMO','projectManager','portfolioManager','executive'],15);
+            ['superAdmin','admin','pmo','projectManager','portfolioManager','executive'],15);
             // Status reports
         this.addSubMenuItem('topbar', 'delivery', '', 'divider','divider',false,
-            ['superAdmin','admin','PMO','projectManager','portfolioManager','executive'],16);
+            ['superAdmin','admin','pmo','projectManager','portfolioManager','executive'],16);
         this.addSubMenuItem('topbar', 'delivery', 'Status', 'menuTitle','menuTitle',false,
-            ['superAdmin','admin','PMO','projectManager','portfolioManager','executive'],17);
+            ['superAdmin','admin','pmo','projectManager','portfolioManager','executive'],17);
                 // Project status
         this.addSubMenuItem('topbar', 'delivery', 'Project status', 'project-status-management','project-status-management',false,
-            ['superAdmin','admin','PMO','projectManager','portfolioManager','executive'],18);
+            ['superAdmin','admin','pmo','projectManager','portfolioManager','executive'],18);
                 // Portfolio status
         //this.addSubMenuItem('topbar', 'delivery', 'Portfolio status', 'portfolio-status-management','portfolio-status-management',false,
-        //    ['superAdmin','admin','PMO','projectManager','portfolioManager','executive'],19);
+        //    ['superAdmin','admin','pmo','projectManager','portfolioManager','executive'],19);
 
 
 	}

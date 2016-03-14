@@ -61,7 +61,8 @@
 			<div data-ng-show="!showNewImprovementActivityForm">
 				<div class="row">
 					<div class="col-md-5 form-group-sm center-block">
-						<button class="btn btn-warning btn-sm" data-ng-click="showNewImprovementActivityForm = true">
+						<button class="btn btn-warning btn-sm" data-ng-click="showNewImprovementActivityForm = true"
+                                data-ng-show="parentCtrl.userHasAuthorization('new', parentCtrl.userData)">
 							New improvement activity
 						</button>
 					</div>
@@ -75,11 +76,6 @@
 						<div class="table-responsive">
 							<table class="table table-bordered table-hover table-condensed small">
 								<thead>
-								<tr>
-									<td colspan="10" class="text-center">
-										<span><h5>Improvement activities</h5></span>
-									</td>
-								</tr>
 								<tr>
 									<td colspan="10">
 										<div class="row" data-ng-show="!showIssueFilters">
@@ -115,63 +111,60 @@
 														<a data-ng-click="showIssueFilters = false"><b>Hide filters</b></a>
 													</div>
 												</div>
-												<br>
-												<div class="row">
-													<div class="col-md-2 form-group-sm">
+												<div class="row form-group-sm" style="margin: 3px">
+													<div class="col-md-2">
 														<input class="form-control" type="number" placeholder="id" data-ng-model="improvementActivityFilter.idNumber">
 													</div>
-													<div class="col-md-4 form-group-sm">
+													<div class="col-md-4">
 														<input class="form-control" type="text" placeholder="filter by title" data-ng-model="improvementActivityFilter.title">
 													</div>
 												</div>
-                                                <br>
-                                                <div class="row">
-                                                    <div class="col-md-3 form-group-sm">
+                                                <div class="row form-group-sm" style="margin: 3px">
+                                                    <div class="col-md-3">
                                                         <select class="form-control" data-ng-model = "improvementActivityFilter.type"
                                                                 data-ng-options="type as type.name for type in parentCtrl.improvementTypes">
                                                             <option value="">--filter by type</option>
                                                         </select>
                                                     </div>
-                                                    <div class="col-md-3 form-group-sm">
+                                                    <div class="col-md-3">
                                                         <select class="form-control" data-ng-model = "improvementActivityFilter.portfolio"
                                                                 data-ng-options="portfolio as portfolio.name for portfolio in parentCtrl.portfolios">
                                                             <option value="">--filter by portfolio</option>
                                                         </select>
                                                     </div>
-                                                    <div class="col-md-3 form-group-sm">
+                                                    <div class="col-md-3">
                                                         <select class="form-control" data-ng-model = "improvementActivityFilter.assignedTo"
                                                                 data-ng-options="person as person.name for person in parentCtrl.people">
                                                             <option value="">--filter by owner</option>
                                                         </select>
                                                     </div>
-                                                    <div class="col-md-3 form-group-sm">
+                                                    <div class="col-md-3">
                                                         <select class="form-control" data-ng-model = "improvementActivityFilter.reason"
                                                                 data-ng-options="reason as reason.name for reason in parentCtrl.logReasons">
                                                             <option value="">--filter by reason</option>
                                                         </select>
                                                     </div>
                                                 </div>
-												<br>
-                                                <div class="row">
-                                                    <div class="col-md-3 form-group-sm">
+                                                <div class="row form-group-sm" style="margin: 3px">
+                                                    <div class="col-md-3">
                                                         <select class="form-control" data-ng-model = "improvementActivityFilter.priority"
                                                                 data-ng-options="priority as priority.name for priority in parentCtrl.logPriorities">
                                                             <option value="">--filter by priority</option>
                                                         </select>
                                                     </div>
-													<div class="col-md-3 form-group-sm">
+													<div class="col-md-3">
 														<select class="form-control" data-ng-model = "improvementActivityFilter.state"
 																data-ng-options="state as state.name for state in parentCtrl.improvementStates">
 															<option value="">--filter by state</option>
 														</select>
 													</div>
-                                                    <div class="col-md-3 form-group-sm">
+                                                    <div class="col-md-3">
                                                         <select class="form-control" data-ng-model = "improvementActivityFilter.statusReview.currentRecord.status"
                                                                 data-ng-options="status as status.name for status in parentCtrl.logStatuses">
                                                             <option value="">--filter by status</option>
                                                         </select>
                                                     </div>
-                                                    <div class="col-md-3 form-group-sm">
+                                                    <div class="col-md-3">
                                                         <select class="form-control" data-ng-model = "improvementActivityFilter.statusReview.currentRecord.completed"
                                                                 data-ng-options="completion.flag as completion.name for completion in parentCtrl.completionFilterArray">
                                                             <option value="">--filter by completion</option>
@@ -193,7 +186,7 @@
 									<th>Priority</th>
 									<th>State</th>
 									<th>Status</th>
-									<th></th>
+									<th colspan="2"></th>
 								</tr>
 								</thead>
 								<tbody>
@@ -230,13 +223,14 @@
 										<span data-ng-show="improvementActivity.statusReview.currentRecord.status">{{improvementActivity.statusReview.currentRecord.status.name}}</span>
 										<span data-ng-show="!improvementActivity.statusReview.currentRecord.status">No status</span>
 									</td>
-									<td class="text-center">
-										<button class="btn btn-success btn-xs" data-ng-click="parentCtrl.selectImprovementActivity(improvementActivity)">
-											<span class="glyphicon glyphicon-pencil"></span>
-										</button>
-										<button class="btn btn-danger btn-xs" data-ng-click="parentCtrl.deleteImprovementActivity(improvementActivity)">
-											<span class="glyphicon glyphicon-trash"></span>
-										</button>
+									<td colspan="2" class="col-xs-1 text-center">
+                                        <button type="button" class="btn btn-success btn-xs" data-ng-click="parentCtrl.selectImprovementActivity(improvementActivity)">
+                                            <span class="glyphicon glyphicon-pencil"></span>
+                                        </button>
+                                        <button type="button" class="btn btn-danger btn-xs" data-ng-click="parentCtrl.deleteImprovementActivity(improvementActivity)"
+                                                data-ng-show="parentCtrl.userHasAuthorization('edit', parentCtrl.userData, improvementActivity)">
+                                            <span class="glyphicon glyphicon-trash"></span>
+                                        </button>
 									</td>
 								</tr>
 								</tbody>

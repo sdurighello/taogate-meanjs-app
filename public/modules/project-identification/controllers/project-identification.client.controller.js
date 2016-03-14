@@ -1,14 +1,16 @@
 'use strict';
 
 angular.module('project-identification').controller('ProjectIdentificationController', ['$scope','$stateParams', '$location', 'Authentication',
-	'Projects','Subusers', '_','$q',
-	function($scope, $stateParams, $location, Authentication, Projects, Subusers, _ , $q) {
+	'Projects', 'Portfolios', 'GateProcesses', 'Subusers', '_','$q',
+	function($scope, $stateParams, $location, Authentication, Projects, Portfolios, GateProcesses, Subusers, _ , $q) {
 
 		// ----------- INIT ---------------
 
 		$scope.initError = [];
 
 		$scope.init = function(){
+
+            $scope.userData = Authentication.user;
 
 			Subusers.query(function(users){
 				$scope.users = users;
@@ -27,20 +29,44 @@ angular.module('project-identification').controller('ProjectIdentificationContro
 				$scope.initError.push(err.data.message);
 			});
 
+            Portfolios.query(function(res){
+                $scope.portfolios = res;
+            }, function(err){
+                $scope.initError.push(err.data.message);
+            });
+
+            GateProcesses.query(function(res){
+                $scope.gateProcesses = res;
+            }, function(err){
+                $scope.initError.push(err.data.message);
+            });
+
 		};
 
+        // -------------- AUTHORIZATION FOR BUTTONS -----------------
 
-		// ------- ROLES FOR BUTTONS ------
-
-		var d = $q.defer();
-		d.resolve(Authentication);
-
-		d.promise.then(function(data){
-			var obj = _.clone(data);
-			$scope.userHasAuthorization = _.some(obj.user.roles, function(role){
-				return role === 'superAdmin' || role === 'admin' || role === 'pmo';
-			});
-		});
+        $scope.userHasAuthorization = function(action, userData, project){
+            var userIsSuperhero, userIsProjectManager, userIsPortfolioManager;
+            if(action === 'edit'){
+                userIsSuperhero = !!_.some(userData.roles, function(role){
+                    return role === 'superAdmin' || role === 'admin' || role === 'pmo';
+                });
+                userIsProjectManager = (userData._id === project.projectManager) || (userData._id === project.backupProjectManager);
+                if(project.portfolio){
+                    userIsPortfolioManager = (userData._id === project.portfolio.portfolioManager) || (userData._id === project.portfolio.backupPortfolioManager);
+                }
+                return userIsSuperhero || userIsProjectManager || userIsPortfolioManager;
+            }
+            if(action === 'new'){
+                userIsSuperhero = !!_.some(userData.roles, function(role){
+                    return role === 'superAdmin' || role === 'admin' || role === 'pmo';
+                });
+                userIsPortfolioManager = !!_.some(userData.roles, function(role){
+                    return role === 'portfolioManager';
+                });
+                return userIsSuperhero || userIsPortfolioManager;
+            }
+        };
 
 
         // ------- DATE PICKER ------
@@ -129,14 +155,14 @@ angular.module('project-identification').controller('ProjectIdentificationContro
                 // Delivery
                 process: null
             });
-            newProject.$save(function(response) {
+            newProject.$save(function(res) {
                 // Add new project to view after saving to server
                 $scope.projects.unshift(newProject);
                 // Clear form fields
                 $scope.newProject = {};
                 $scope.selectProjectForm('default');
-            }, function(errorResponse) {
-                $scope.error = errorResponse.data.message;
+            }, function(err) {
+                $scope.error = err.data.message;
             });
         };
 
@@ -148,67 +174,46 @@ angular.module('project-identification').controller('ProjectIdentificationContro
 
         // ------------- SELECT VIEW PROJECT ------------
 
-        var originalProject;
-        var clickedProject;
+        var originalProject = {};
         $scope.selectProject = function(project){
-            // Save the clicked project to update its text if changes to name happen
-            clickedProject = project;
-            // Get the full project fat object from the "projectById" server function that populates everything
-            Projects.get({
-                projectId:project._id,
-                retPropertiesString : 'user created identification',
-                deepPopulateArray : ['identification.projectManager','identification.backupProjectManager']
-            }, function(res){
-                $scope.selectedProject = res;
-                originalProject = _.cloneDeep(res);
+                originalProject[project._id] = _.cloneDeep(project);
+                $scope.selectedProject = project;
                 $scope.selectProjectForm('view');
-            },function(errorResponse){
-                $scope.error = errorResponse.data.message;
-            });
         };
 
-
         $scope.cancelViewProject = function(){
+            originalProject = {};
             $scope.selectedProject = null;
-            clickedProject = null;
             $scope.selectProjectForm('default');
         };
 
-
         // ------------- EDIT PROJECT ------------
 
-        $scope.editProject = function(){
+        $scope.saveEditProject = function(project){
             // Clean up the deep populate
-            var projectCopy = _.cloneDeep($scope.selectedProject);
-            projectCopy.identification.projectManager = allowNull($scope.selectedProject.identification.projectManager);
-            projectCopy.identification.backupProjectManager = allowNull($scope.selectedProject.identification.backupProjectManager);
-
+            var projectCopy = _.cloneDeep(project);
+            projectCopy.process = allowNull(project);
             // Save the project to the server
             Projects.update(projectCopy, function(res) {
-                // Update the text on the project list (project from $scope.projects)
-                clickedProject.identification.idNumber = res.identification.idNumber;
-                clickedProject.identification.name = res.identification.name;
-                $scope.selectProject($scope.selectedProject);
-            }, function(errorResponse) {
-                $scope.error = errorResponse.data.message;
+                $scope.selectProject(project);
+            }, function(err) {
+                $scope.error = err.data.message;
             });
         };
 
-        $scope.cancelEditProject = function(){
-            $scope.selectedProject = _.cloneDeep(originalProject);
-            $scope.selectProject($scope.selectedProject);
+        $scope.cancelEditProject = function(project){
+            $scope.selectedProject = _.cloneDeep(originalProject[project._id]);
+            $scope.selectProject(project);
         };
 
 
 
         // ------------- DELETE PROJECT ------------
 
-        $scope.deleteProject = function(){
-            Projects.remove({},{_id: $scope.selectedProject._id}, function(projectRes){
-                // Remove project from the "projects" collection
-                $scope.projects = _.without($scope.projects, clickedProject);
+        $scope.deleteProject = function(project){
+            Projects.remove({},{_id: project._id}, function(res){
+                $scope.projects = _.without($scope.projects, project);
                 $scope.selectedProject = null;
-                clickedProject = null;
                 $scope.selectProjectForm('default');
             }, function(err){
                 $scope.error = err.data.message;

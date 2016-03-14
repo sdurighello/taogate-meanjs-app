@@ -172,14 +172,15 @@
                                     <span class="glyphicon glyphicon-unchecked" data-ng-show="!project.selection.selectedForDelivery"></span>
                                 </button>
                             </td>
-                            <td data-ng-show="!showEditProjectForm[project._id]" class="text-center">
+                            <td class="text-center">
                                 <button type="button" class="btn btn-success btn-xs"
+                                        data-ng-show="!showEditProjectForm[project._id] && userHasAuthorization('edit', userData, project)"
                                         data-ng-click="selectProject(project)">
                                     <span class="glyphicon glyphicon-pencil"></span>
                                 </button>
                             </td>
-                            <td data-ng-show="showEditProjectForm[project._id]" class="text-center">
-                                <div class="btn-group btn-group-xs" role="group">
+                            <td class="text-center">
+                                <div class="btn-group btn-group-xs" role="group" data-ng-show="showEditProjectForm[project._id]" >
                                     <button type="button" class="btn btn-success" data-ng-click="saveEditProject(project)">
                                         <span class="glyphicon glyphicon-ok"></span>
                                     </button>

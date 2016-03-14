@@ -38,7 +38,7 @@ angular.module('portfolio-assignment').controller('PortfolioAssignmentController
 					selectedAssignments.unassignedProjects.push(project);
 				} else {
 					_.forEach(portfolios, function(node){
-						if(project.portfolio === node._id){selectedAssignments.assignedProjects[node._id].push(project);}
+						if(project.portfolio._id === node._id){selectedAssignments.assignedProjects[node._id].push(project);}
 					});
 				}
 			});
@@ -99,31 +99,38 @@ angular.module('portfolio-assignment').controller('PortfolioAssignmentController
 
 		// ------------------- DRAG AND DROP LISTENERS -------
 
-		$scope.dragControlListeners = {
+		$scope.dragControlListenersAssigned = {
 			itemMoved: function (eventObj) {
-				var node = $scope.selectedNode;
-				var assignedProjects = $scope.selectedAssignments.assignedProjects[$scope.selectedNode._id];
-				var unassignedProjects = $scope.selectedAssignments.unassignedProjects;
-				// Ensure all "portfolio" properties of projects assigned to node are set to node._id
-				for (var i=0; i<assignedProjects.length; i++){
-					var aProject = assignedProjects[i];
-					if (aProject.portfolio !== node._id){
-						aProject.portfolio = node._id;
-						Projects.updatePortfolioAssignment(aProject);
-					}
-
-				}
-				// Ensure all unassigned projects have portfolio set to null
-				for (var j=0; j<unassignedProjects.length; j++){
-					var uProject = unassignedProjects[j];
-					if (uProject.portfolio !== null){
-						uProject.portfolio = null;
-						Projects.updatePortfolioAssignment(uProject);
-					}
-
-				}
+                var movedProjectFromAssigned = eventObj.source.itemScope.project;
+                var originalPortfolio = movedProjectFromAssigned.portfolio;
+                movedProjectFromAssigned.portfolio = null;
+                Projects.updatePortfolioAssignment(movedProjectFromAssigned, function(res){
+                    $scope.error = null;
+                }, function(err){
+                    $scope.error = err.data.message;
+                    // put back project in case of failure
+                    movedProjectFromAssigned.portfolio = originalPortfolio;
+                    eventObj.dest.sortableScope.removeItem(eventObj.dest.index);
+                    eventObj.source.itemScope.sortableScope.insertItem(eventObj.source.index, movedProjectFromAssigned);
+                });
 			}
 		};
+
+        $scope.dragControlListenersUnassigned = {
+            itemMoved: function (eventObj) {
+                var movedProjectFromUnassigned = eventObj.source.itemScope.project;
+                movedProjectFromUnassigned.portfolio = $scope.selectedNode;
+                Projects.updatePortfolioAssignment(movedProjectFromUnassigned, function(res){
+                    $scope.error = null;
+                }, function(err){
+                    $scope.error = err.data.message;
+                    // put back project in case of failure
+                    movedProjectFromUnassigned.portfolio = null;
+                    eventObj.dest.sortableScope.removeItem(eventObj.dest.index);
+                    eventObj.source.itemScope.sortableScope.insertItem(eventObj.source.index, movedProjectFromUnassigned);
+                });
+            }
+        };
 
 
 	}

@@ -146,7 +146,10 @@
                                                 <div class="panel-body" style="min-height: 455px; max-height: 455px; overflow-y: auto">
                                                     <div class="row">
                                                         <div class="col-md-12 text-center">
-                                                            <button class="btn btn-xs btn-success" data-ng-click="showNewProjectReviewForm = true">New review</button>
+                                                            <button class="btn btn-xs btn-success" data-ng-click="showNewProjectReviewForm = true"
+                                                                    data-ng-disabled="!userHasManagementAuthorization('edit', userData, selectedProject)">
+                                                                New review
+                                                            </button>
                                                         </div>
                                                     </div>
                                                     <hr style="margin: 10px">
@@ -242,7 +245,7 @@
                                                                             </div>
                                                                         </div>
                                                                         <hr>
-                                                                        <div class="form-group-sm pull-right" data-ng-show="userHasAuthorization && !(selectedProjectReview.approval.currentRecord.approvalState === 'completed')">
+                                                                        <div class="form-group-sm pull-right" data-ng-show="userHasManagementAuthorization('edit', userData, selectedProject) && !(selectedProjectReview.approval.currentRecord.approvalState === 'completed')">
                                                                             <button class="btn btn-success btn-xs" data-ng-click="editHeader(selectedProjectReview)">
                                                                                 Edit
                                                                             </button>
@@ -338,7 +341,8 @@
                                                                                             </div>
                                                                                         </div>
                                                                                         <accordion close-others="oneAtATime">
-                                                                                            <accordion-group data-ng-repeat="peopleReview in reviewItem.peopleReviews" data-ng-switch="switchPeopleReviewForm[peopleReview._id]">
+                                                                                            <accordion-group data-ng-repeat="peopleReview in reviewItem.peopleReviews"
+                                                                                                             data-ng-switch="switchPeopleReviewForm[peopleReview._id]" data-ng-show="peopleReview.person">
                                                                                                 <accordion-heading>
                                                                                                     <div class="row">
                                                                                                         <div class="col-md-10"><b>{{peopleReview.person.name}}</b></div>
@@ -378,7 +382,7 @@
                                                                                                         </div>
                                                                                                     </div>
                                                                                                     <hr>
-                                                                                                    <div class="row" data-ng-show="!(selectedProjectReview.approval.currentRecord.approvalState === 'completed') && !peopleReview.submitted">
+                                                                                                    <div class="row" data-ng-show="!(selectedProjectReview.approval.currentRecord.approvalState === 'completed') && !peopleReview.submitted && userHasReviewAuthorization('edit', userData, peopleReview)">
                                                                                                         <div class="col-md-12">
                                                                                                             <div class=" pull-right">
                                                                                                                 <button class="btn btn-warning btn-xs" data-ng-click="submitPeopleReview(selectedProjectReview, reviewGroup, reviewItem, peopleReview)"
@@ -466,17 +470,17 @@
                                                                 </div>
                                                                 <br>
                                                                 <div class="row">
-                                                                    <div class="col-md-4" data-ng-show="userHasAuthorization && selectedProjectReview.approval.currentRecord.approvalState === 'draft' ">
+                                                                    <div class="col-md-4" data-ng-show="userHasManagementAuthorization('edit', userData, selectedProject) && selectedProjectReview.approval.currentRecord.approvalState === 'draft' ">
                                                                         <button class="form-control btn btn-success" data-ng-click="submit(selectedProjectReview)">
                                                                             Submit review
                                                                         </button>
                                                                     </div>
-                                                                    <div class="col-md-4" data-ng-show="userHasAuthorization && selectedProjectReview.approval.currentRecord.approvalState === 'submitted'">
+                                                                    <div class="col-md-4" data-ng-show="userHasManagementAuthorization('edit', userData, selectedProject) && selectedProjectReview.approval.currentRecord.approvalState === 'submitted'">
                                                                         <button class="form-control btn btn-danger" data-ng-click="complete(selectedProjectReview)">
                                                                             Complete review
                                                                         </button>
                                                                     </div>
-                                                                    <div class="col-md-4" data-ng-show="userHasAuthorization && selectedProjectReview.approval.currentRecord.approvalState === 'completed'">
+                                                                    <div class="col-md-4" data-ng-show="userHasManagementAuthorization('edit', userData, selectedProject) && selectedProjectReview.approval.currentRecord.approvalState === 'completed'">
                                                                         <button class="form-control btn btn-warning" data-ng-click="draft(selectedProjectReview)">
                                                                             Draft review
                                                                         </button>

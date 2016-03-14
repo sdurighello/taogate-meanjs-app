@@ -5,7 +5,7 @@ angular.module('core').filter('projectsProcess', ['_',
 		return function(projects, filterProcess) {
 			if(filterProcess.unassigned){
 				return _.filter(projects, function(project){
-					return _.isNull(project.process)
+					return _.isNull(project.process);
 				});
 			} else if(filterProcess.process){
 				return _.filter(projects, function(project){

@@ -226,15 +226,35 @@ exports.improvementActivityByID = function(req, res, next, id) {
 /**
  * Improvement activity authorization middleware
  */
+
 exports.hasAuthorization = function(req, res, next) {
-    // User role check
-    if(!_.find(req.user.roles, function(role){
-            return (role === 'superAdmin' || role === 'admin' || role === 'pmo');
-        })
-    ){
+
+    var userIsSuperhero, userIsOwner, userIsPortfolioManager, userIsBackupPortfolioManager;
+
+    userIsSuperhero = !!_.find(req.user.roles, function(role){
+        return (role === 'superAdmin' || role === 'admin' || role === 'pmo');
+    });
+
+    if(req.improvementActivity){ // Guard when creating there is no 'improvement activity' yet
+
+        if(req.improvementActivity.assignedTo && req.improvementActivity.assignedTo.assignedUser){
+            userIsOwner = req.improvementActivity.assignedTo.assignedUser.equals(req.user._id);
+        }
+
+        if(req.improvementActivity.portfolio && req.improvementActivity.portfolio.portfolioManager){
+            userIsPortfolioManager = req.improvementActivity.portfolio.portfolioManager.equals(req.user._id);
+        }
+
+        if(req.improvementActivity.portfolio && req.improvementActivity.portfolio.backupPortfolioManager){
+            userIsBackupPortfolioManager = req.improvementActivity.portfolio.backupPortfolioManager.equals(req.user._id);
+        }
+    }
+
+    if(!(userIsSuperhero || userIsOwner || userIsPortfolioManager || userIsBackupPortfolioManager)){
         return res.status(403).send({
             message: 'User is not authorized'
         });
     }
+
     next();
 };

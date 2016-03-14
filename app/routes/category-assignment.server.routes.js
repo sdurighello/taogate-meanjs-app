@@ -5,7 +5,7 @@ module.exports = function(app) {
     var categoryAssignment = require('../../app/controllers/category-assignment.server.controller');
 
     app.route('/category-assignment/categorizationOverview')
-        .get(users.requiresLogin, categoryAssignment.hasAuthorization, categoryAssignment.categorizationOverview);
+        .get(users.requiresLogin, categoryAssignment.categorizationOverview);
 
 
 };

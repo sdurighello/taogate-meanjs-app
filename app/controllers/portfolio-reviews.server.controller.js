@@ -84,7 +84,7 @@ exports.create = function(req, res) {
 		},
 		// Populate names of person
 		function(result, callback) {
-			Person.populate(result, {path: 'groups.items.peopleReviews.person', select: 'name'}, function(err, populatedResult){
+			Person.populate(result, {path: 'groups.items.peopleReviews.person'}, function(err, populatedResult){
 				if(err){
 					return callback(err);
 				}
@@ -153,7 +153,7 @@ exports.list = function(req, res) {
 	var PortfolioReview = mongoose.mtModel(req.user.tenantId + '.' + 'PortfolioReview');
 	PortfolioReview.find(req.query)
         .populate('user', 'displayName')
-        .populate('groups.items.peopleReviews.person', 'name')
+        .populate('groups.items.peopleReviews.person')
         .populate('approval.currentRecord.user', 'displayName')
         .populate('approval.history.user', 'displayName')
 		.exec(function(err, portfolioReviews) {
@@ -174,6 +174,7 @@ exports.portfolioReviewByID = function(req, res, next, id) {
 	var PortfolioReview = mongoose.mtModel(req.user.tenantId + '.' + 'PortfolioReview');
 	PortfolioReview.findById(id)
         .populate('user', 'displayName')
+		.populate('groups.items.peopleReviews.person')
         .populate('approval.currentRecord.user', 'displayName')
         .populate('approval.history.user', 'displayName')
         .exec(function(err, portfolioReview) {
@@ -338,15 +339,74 @@ exports.complete = function(req, res){
 /**
  * Portfolio review authorization middleware
  */
-exports.hasAuthorization = function(req, res, next) {
-	// User role check
-	if(!_.find(req.user.roles, function(role){
-			return (role === 'superAdmin' || role === 'admin' || role === 'pmo');
-		})
-	){
-		return res.status(403).send({
-			message: 'User is not authorized'
-		});
-	}
-	next();
+
+
+exports.hasManagementAuthorization = function(req, res, next) {
+    var Portfolio = mongoose.mtModel(req.user.tenantId + '.' + 'Portfolio');
+
+    var authArray = [];
+
+    async.waterfall([
+        // Set flag if "portfolio manager" or "backup portfolio manager" of this portfolio
+        function(callback) {
+            Portfolio.findById(req.portfolioReview.portfolio).exec(function(err, portfolio){
+                if(err){
+                    callback(err);
+                } else {
+                    authArray.push(!!portfolio.portfolioManager && portfolio.portfolioManager.equals(req.user._id));
+                    authArray.push(!!portfolio.backupPortfolioManager && portfolio.backupPortfolioManager.equals(req.user._id));
+                    callback(null);
+                }
+            });
+        },
+        // Set flag if user role is "super-hero"
+        function(callback) {
+            authArray.push(!!_.find(req.user.roles, function(role){
+                return (role === 'superAdmin' || role === 'admin' || role === 'pmo');
+            }));
+            callback(null);
+        }
+    ], function (err) {
+        if(err){
+            return res.status(400).send({
+                message: errorHandler.getErrorMessage(err)
+            });
+        }
+        if(
+            !_.some(authArray, function(elem){
+                return elem === true;
+            })
+        ){
+            return res.status(403).send({
+                message: 'User is not authorized'
+            });
+        }
+
+        next();
+
+    });
+};
+
+exports.hasReviewAuthorization = function(req, res, next) {
+
+    var authArray = [];
+
+    // Set flag if user is the "assigned reviewer"
+    var peopleReview = req.portfolioReview.groups.id(req.params.groupId).items.id(req.params.itemId).peopleReviews.id(req.params.peopleReviewId);
+    authArray.push(req.user._id.equals(peopleReview.person.assignedUser));
+
+    // Set flag if user role is "super-hero"
+    authArray.push(!!_.find(req.user.roles, function (role) {
+        return (role === 'superAdmin' || role === 'admin' || role === 'pmo');
+    }));
+
+    if (!_.some(authArray, function (elem) {
+            return elem === true;
+        })) {
+        return res.status(403).send({
+            message: 'User is not authorized'
+        });
+    }
+
+    next();
 };

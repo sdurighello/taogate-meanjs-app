@@ -14,7 +14,7 @@ angular.module('evaluation-summaries').controller('EvaluationSummaryController',
 
 		vm.init = function(){
 
-			Projects.query({'selection.selectedForEvaluation': true}, function(projects){
+			Projects.query({'selection.active': true, 'selection.selectedForEvaluation': true}, function(projects){
 				vm.projects = projects;
 			}, function(err){
 				vm.initError.push(err.data.message);
@@ -43,17 +43,6 @@ angular.module('evaluation-summaries').controller('EvaluationSummaryController',
 		};
 
 
-		// ------- ROLES FOR BUTTONS ------
-
-		var d = $q.defer();
-		d.resolve(Authentication);
-
-		d.promise.then(function(data){
-			var obj = _.clone(data);
-			vm.userHasAuthorization = _.some(obj.user.roles, function(role){
-				return role === 'superAdmin' || role === 'admin' || role === 'pmo';
-			});
-		});
 
         // ------ TREE RECURSIONS -----------
 

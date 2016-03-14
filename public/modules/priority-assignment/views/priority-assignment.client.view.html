@@ -33,7 +33,7 @@
 							<div class="panel-heading text-center" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: normal; width: 100%;">
 								<h6 class="panel-title">{{selectedProject.identification.name}}</h6>
 							</div>
-							<div class="panel-body">
+							<div class="panel-body" style="min-height: 535px; max-height: 535px;">
 								<div class="row">
 									<div class=" form-group-sm col-md-5">
 										<select id="selectSourcePortfolio" class="form-control input-sm" data-ng-model="filterPriority.priorityGroup"
@@ -48,8 +48,8 @@
 										</select>
 									</div>
 								</div>
-								<hr>
-								<div class="row">
+								<hr style="margin: 10px;">
+								<div class="row" style="max-height: 460px; min-height: 460px; overflow-y: auto">
 									<div data-ng-show="selectedProject.prioritization.length === 0" class="alert alert-warning text-center">
 										There are no priorities created yet
 									</div>
@@ -75,7 +75,7 @@
 																	</div>
 																</div>
 																<br>
-																<div class="row" data-ng-show="userHasAuthorization && selectedProject.selection.active">
+																<div class="row" data-ng-show="userHasAuthorization('edit', userData, selectedProject)">
 																	<div class="col-md-12">
 																		<div class="btn-group-xs pull-right">
 																			<button type="button" class="btn btn-success btn-sm" ng-click="selectPriorityAssignment(assignedPriority)">

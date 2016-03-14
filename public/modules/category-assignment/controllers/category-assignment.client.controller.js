@@ -10,6 +10,8 @@ angular.module('category-assignment').controller('CategoryAssignmentController',
 
 		$scope.init = function(){
 
+            $scope.userData = Authentication.user;
+
 			Projects.query({'selection.active': true}, function(projects){
 				$scope.projects = projects;
 			}, function(err){
@@ -51,17 +53,21 @@ angular.module('category-assignment').controller('CategoryAssignmentController',
 		};
 
 
-		// ------- ROLES FOR BUTTONS ------
+        // -------------- AUTHORIZATION FOR BUTTONS -----------------
 
-		var d = $q.defer();
-		d.resolve(Authentication);
-
-		d.promise.then(function(data){
-			var obj = _.clone(data);
-			$scope.userHasAuthorization = _.some(obj.user.roles, function(role){
-				return role === 'superAdmin' || role === 'admin' || role === 'pmo';
-			});
-		});
+        $scope.userHasAuthorization = function(action, userData, project){
+            var userIsSuperhero, userIsProjectManager, userIsPortfolioManager;
+            if(action === 'edit'){
+                userIsSuperhero = !!_.some(userData.roles, function(role){
+                    return role === 'superAdmin' || role === 'admin' || role === 'pmo';
+                });
+                userIsProjectManager = (userData._id === project.projectManager) || (userData._id === project.backupProjectManager);
+                if(project.portfolio){
+                    userIsPortfolioManager = (userData._id === project.portfolio.portfolioManager) || (userData._id === project.portfolio.backupPortfolioManager);
+                }
+                return userIsSuperhero || userIsProjectManager || userIsPortfolioManager;
+            }
+        };
 
 
 
@@ -147,6 +153,7 @@ angular.module('category-assignment').controller('CategoryAssignmentController',
                     assignedGroupId: assignedGroup._id,
                     assignedCategoryId: assignedCategory._id
                 },{valueId: assignedCategory.categoryValue}, function(res){
+                    $scope.error = null;
                     $scope.selectCategoryForm(assignedCategory, 'view');
                 }, function(err){
                     $scope.error = err.data.message;
@@ -155,6 +162,7 @@ angular.module('category-assignment').controller('CategoryAssignmentController',
         };
 
         $scope.cancelEditAssignedCategory = function(assignedCategory){
+            $scope.error = null;
             assignedCategory.categoryValue = originalCategoryAssignment[assignedCategory._id].categoryValue;
             $scope.selectCategoryForm(assignedCategory, 'view');
         };

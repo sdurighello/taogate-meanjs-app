@@ -37,7 +37,7 @@
                             <div class="row" data-ng-show="selectedProject">
                                 <div class="col-md-12">
                                     <div class="row" data-ng-show="!showNewCostForm">
-                                        <div class="col-md-3">
+                                        <div class="col-md-3" data-ng-show="userHasAuthorization('edit', userData, selectedProject)">
                                             <button class="btn btn-sm btn-primary"
                                                     data-ng-click="showNewCostForm = true">
                                                 Add new cost
@@ -169,7 +169,8 @@
                                                                 {{cost.amount | number}}
                                                             </td>
                                                             <td colspan="3">
-                                                                <button class="btn btn-success btn-xs" data-ng-click="costEditFlag = true; selectCostAssignment(cost)" data-ng-show="!costEditFlag">
+                                                                <button class="btn btn-success btn-xs" data-ng-click="costEditFlag = true; selectCostAssignment(cost)"
+                                                                        data-ng-show="!costEditFlag && userHasAuthorization('edit', userData, selectedProject)">
                                                                     Edit
                                                                 </button>
                                                             </td>
@@ -229,7 +230,7 @@
                             <div class="row" data-ng-show="selectedProject">
                                 <div class="col-md-12">
                                     <div class="row" data-ng-show="!showNewBenefitForm">
-                                        <div class="col-md-3">
+                                        <div class="col-md-3" data-ng-show="userHasAuthorization('edit', userData, selectedProject)">
                                             <button class="btn btn-sm btn-primary"
                                                     data-ng-click="showNewBenefitForm = true">
                                                 Add new benefit
@@ -358,7 +359,8 @@
                                                                 {{benefit.amount | number}}
                                                             </td>
                                                             <td colspan="3">
-                                                                <button class="btn btn-success btn-xs" data-ng-click="benefitEditFlag = true; selectBenefitAssignment(benefit)" data-ng-show="!benefitEditFlag">
+                                                                <button class="btn btn-success btn-xs" data-ng-click="benefitEditFlag = true; selectBenefitAssignment(benefit)"
+                                                                        data-ng-show="!benefitEditFlag && userHasAuthorization('edit', userData, selectedProject)">
                                                                     Edit
                                                                 </button>
                                                             </td>
@@ -438,7 +440,7 @@
                                                 </div>
                                                 <br>
                                                 <div class="row pull-right">
-                                                    <div class="form-group-sm col-md-6" data-ng-show="userHasAuthorization">
+                                                    <div class="form-group-sm col-md-6" data-ng-show="userHasAuthorization('edit', userData, selectedProject)">
                                                         <button class="btn btn-success btn-xs" data-ng-click="showDiscountRateEdit = true; selectDiscountRate(selectedProject);">
                                                             Edit
                                                         </button>

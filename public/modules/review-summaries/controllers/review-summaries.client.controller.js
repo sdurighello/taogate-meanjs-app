@@ -50,18 +50,6 @@ angular.module('review-summaries').controller('ReviewSummariesController', ['$sc
 		};
 
 
-		// ------- ROLES FOR BUTTONS ------
-
-		var d = $q.defer();
-		d.resolve(Authentication);
-
-		d.promise.then(function(data){
-			var obj = _.clone(data);
-			vm.userHasAuthorization = _.some(obj.user.roles, function(role){
-				return role === 'superAdmin' || role === 'admin' || role === 'pmo';
-			});
-		});
-
 		// ------ TREE RECURSIONS -----------
 
 		var createNodeTrees = function(strategicNodes){
@@ -95,6 +83,7 @@ angular.module('review-summaries').controller('ReviewSummariesController', ['$sc
 		// ------ PORTFOLIO SELECTION -----------
 
 		vm.selectPortfolio = function(portfolio){
+			vm.selectedPortfolioReviews = false;
 			if(portfolio === 'unassigned'){
 				vm.treeSelectionFlag = 'unassigned';
 				vm.selectedReviewProfile = null;

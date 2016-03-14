@@ -10,7 +10,9 @@ angular.module('portfolio-ranking-assignment').controller('PortfolioRankingAssig
 
 		$scope.init = function(){
 
-			Projects.query({'selection.selectedForPrioritization': true}, function(projects){
+            $scope.userData = Authentication.user;
+
+            Projects.query({'selection.active': true, 'selection.selectedForPrioritization': true}, function(projects){
 				$scope.projects = projects;
 			}, function(err){
 				$scope.initError.push(err.data.message);
@@ -36,20 +38,6 @@ angular.module('portfolio-ranking-assignment').controller('PortfolioRankingAssig
             });
 
 		};
-
-
-
-		// ------- ROLES FOR BUTTONS ------
-
-		var d = $q.defer();
-		d.resolve(Authentication);
-
-		d.promise.then(function(data){
-			var obj = _.clone(data);
-			$scope.userHasAuthorization = _.some(obj.user.roles, function(role){
-				return role === 'superAdmin' || role === 'admin' || role === 'pmo';
-			});
-		});
 
 
 		// ------ TREE RECURSIONS -----------
@@ -81,6 +69,23 @@ angular.module('portfolio-ranking-assignment').controller('PortfolioRankingAssig
 			return nodeTrees;
 		};
 
+        // ------------------- AUTHORIZATION FUNCTION -------
+
+        var userHasAuthorization = false;
+
+        var getAuthorization = function(portfolio, userData){
+            var isPortfolioManager, isBackupPortfolioManager, isSuperhero;
+            if(portfolio.portfolioManager){
+                isPortfolioManager = portfolio.portfolioManager === userData._id;
+            }
+            if(portfolio.backupPortfolioManager){
+                isBackupPortfolioManager = portfolio.backupPortfolioManager === userData._id;
+            }
+            isSuperhero = !!_.find(userData.roles, function(role){
+                return (role === 'superAdmin' || role === 'admin' || role === 'pmo');
+            });
+            return isPortfolioManager || isBackupPortfolioManager || isSuperhero;
+        };
 
 
 		// ------------------- PROJECTS FOR NODE ------------
@@ -88,7 +93,8 @@ angular.module('portfolio-ranking-assignment').controller('PortfolioRankingAssig
         var selectedPortfolioRanking = {};
         $scope.selectedAssignment = {};
         var overallSelected = false; // Required for the drag and drop listeners
-		$scope.selectNode = function(node){
+		$scope.selectNode = function(node, userData){
+            userHasAuthorization = getAuthorization(node, userData);
             if(node === 'overall'){
                 $scope.error = null;
                 $scope.selectedNode = {name : 'Overall'};
@@ -137,7 +143,7 @@ angular.module('portfolio-ranking-assignment').controller('PortfolioRankingAssig
                     $scope.selectedAssignment.unassignedProjects = [];
                     _.forEach($scope.projects, function(project){
                         //Check if project belongs to ranking portfolio
-                        if(project.portfolio === node._id){
+                        if(project.portfolio._id === node._id){
                             // Check if the project has been already added to the ranking, if not then push it in the unassigned
                             if(!_.find(res.projects,'_id', project._id)){
                                 $scope.selectedAssignment.unassignedProjects.push({
@@ -157,9 +163,9 @@ angular.module('portfolio-ranking-assignment').controller('PortfolioRankingAssig
 		// ------------------- DRAG AND DROP LISTENERS -------
 
 		$scope.dragControlListeners = {
-            // Check for user authorization or if project selected for prioritization/active
+            // Check for user authorization
             accept: function (sourceItemHandleScope, destSortableScope) {
-                if($scope.userHasAuthorization){ return true; }
+                return userHasAuthorization;
             },
             // Just save the all "projects" array property to the object on the server every time there is a change
 			itemMoved: function (eventObj) {
@@ -171,15 +177,19 @@ angular.module('portfolio-ranking-assignment').controller('PortfolioRankingAssig
                     // Save the new "projects" array to the server
                     if(overallSelected){
                         OverallRankings.update({overallRankingId: selectedPortfolioRanking._id},{projects: cleanProjectsArray}, function(res){
-
+                            $scope.error = null;
                         }, function(err){
                             $scope.error = err.data.message;
+                            eventObj.dest.sortableScope.removeItem(eventObj.dest.index);
+                            eventObj.source.itemScope.sortableScope.insertItem(eventObj.source.index, eventObj.source.itemScope.project);
                         });
                     } else {
                         PortfolioRankings.update({portfolioRankingId: selectedPortfolioRanking._id},{projects: cleanProjectsArray}, function(res){
-
+                            $scope.error = null;
                         }, function(err){
                             $scope.error = err.data.message;
+                            eventObj.dest.sortableScope.removeItem(eventObj.dest.index);
+                            eventObj.source.itemScope.sortableScope.insertItem(eventObj.source.index, eventObj.source.itemScope.project);
                         });
                     }
                 }
@@ -193,15 +203,19 @@ angular.module('portfolio-ranking-assignment').controller('PortfolioRankingAssig
                     // Save the new "projects" array to the server
                     if(overallSelected){
                         OverallRankings.update({overallRankingId: selectedPortfolioRanking._id},{projects: cleanProjectsArray}, function(res){
-
+                            $scope.error = null;
                         }, function(err){
                             $scope.error = err.data.message;
+                            eventObj.dest.sortableScope.removeItem(eventObj.dest.index);
+                            eventObj.source.itemScope.sortableScope.insertItem(eventObj.source.index, eventObj.source.itemScope.project);
                         });
                     } else {
                         PortfolioRankings.update({portfolioRankingId: selectedPortfolioRanking._id},{projects: cleanProjectsArray}, function(res){
-
+                            $scope.error = null;
                         }, function(err){
                             $scope.error = err.data.message;
+                            eventObj.dest.sortableScope.removeItem(eventObj.dest.index);
+                            eventObj.source.itemScope.sortableScope.insertItem(eventObj.source.index, eventObj.source.itemScope.project);
                         });
                     }
                 }

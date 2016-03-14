@@ -19,7 +19,7 @@ exports.portfolioSummary = function(req, res){
 	async.waterfall([
 		// Get all the projects in evaluation
 		function(callback) {
-			Project.find({'selection.selectedForEvaluation':true})
+			Project.find({'selection.active':true, 'selection.selectedForEvaluation':true})
 				.deepPopulate(['portfolio','parent',
 					'qualitativeAnalysis.group', 'qualitativeAnalysis.impacts.impact', 'qualitativeAnalysis.impacts.score',
 					'riskAnalysis.category', 'riskAnalysis.risks.risk', 'riskAnalysis.risks.severityAssignment.severity',
@@ -364,14 +364,6 @@ exports.portfolioSummary = function(req, res){
  * Definition dashboard authorization middleware
  */
 exports.hasAuthorization = function(req, res, next) {
-	// User role check
-	if(!_.find(req.user.roles, function(role){
-			return (role === 'superAdmin' || role === 'admin' || role === 'pmo');
-		})
-	){
-		return res.status(403).send({
-			message: 'User is not authorized'
-		});
-	}
+
 	next();
 };

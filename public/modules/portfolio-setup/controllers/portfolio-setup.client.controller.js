@@ -49,6 +49,17 @@ angular.module('portfolio-setup').controller('PortfolioSetupController', ['$scop
 		});
 
 
+        // ------- UTILITIES ------
+
+        var allowNull = function(obj){
+            if(obj){
+                return obj._id;
+            }
+            return null;
+        };
+
+
+
 // ----------------------------------------------- PORTFOLIO TYPES ---------------------------------------
 
 
@@ -245,12 +256,11 @@ angular.module('portfolio-setup').controller('PortfolioSetupController', ['$scop
 		// ------------ EDIT ONE PORTFOLIO ---------------
 
 		$scope.update = function() {
-
 			masterPortfolio.name = _.get($scope.editPortfolio,'name');
-			masterPortfolio.portfolioManager = _.get($scope.editPortfolio,'portfolioManager._id');
-			masterPortfolio.backupPortfolioManager = _.get($scope.editPortfolio,'backupPortfolioManager._id');
+			masterPortfolio.portfolioManager = allowNull($scope.editPortfolio.portfolioManager);
+			masterPortfolio.backupPortfolioManager = allowNull($scope.editPortfolio.backupPortfolioManager);
 			masterPortfolio.parent = editParent(_.get($scope.editPortfolio,'parent'));
-			masterPortfolio.type = _.get($scope.editPortfolio,'type._id');
+			masterPortfolio.type = allowNull($scope.editPortfolio.type);
 			masterPortfolio.funds = _.get($scope.editPortfolio,'funds');
 			masterPortfolio.ancestors = ancestorsArray(_.get($scope.editPortfolio,'parent'));
 

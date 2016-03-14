@@ -11,6 +11,8 @@ angular.module('people-portfolio-analysis').controller('PeoplePortfolioAnalysisC
 
 		$scope.init = function(){
 
+			$scope.userData = Authentication.user;
+
 			Portfolios.query(function(portfolios){
 				$scope.portfolios = portfolios;
 				$scope.portfolioTrees = createNodeTrees(portfolios);
@@ -53,17 +55,33 @@ angular.module('people-portfolio-analysis').controller('PeoplePortfolioAnalysisC
 		};
 
 
-		// ------- ROLES FOR BUTTONS ------
+        // -------------- AUTHORIZATION FOR BUTTONS -----------------
 
-		var d = $q.defer();
-		d.resolve(Authentication);
+        $scope.userHasAuthorization = function(action, userData, portfolio){
 
-		d.promise.then(function(data){
-			var obj = _.clone(data);
-			$scope.userHasAuthorization = _.some(obj.user.roles, function(role){
-				return role === 'superAdmin' || role === 'admin' || role === 'pmo';
-			});
-		});
+            // Guard against undefined at view startup
+            if(action && userData && portfolio){
+
+                var userIsSuperhero, userIsPortfolioManager, userIsBackupPortfolioManager;
+
+                if(action === 'edit'){
+
+                    userIsSuperhero = !!_.some(userData.roles, function(role){
+                        return role === 'superAdmin' || role === 'admin' || role === 'pmo';
+                    });
+
+                    if(portfolio.portfolioManager){
+                        userIsPortfolioManager = userData._id === portfolio.portfolioManager._id;
+                    }
+
+                    if(portfolio.backupPortfolioManager){
+                        userIsBackupPortfolioManager = userData._id === portfolio.backupPortfolioManager._id;
+                    }
+
+                    return userIsSuperhero || userIsPortfolioManager || userIsBackupPortfolioManager;
+                }
+            }
+        };
 
 
         // ------ TREE RECURSIONS -----------

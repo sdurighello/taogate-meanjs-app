@@ -115,9 +115,9 @@
                                                             data-ng-click="selectProjectChangeRequest(projectChangeRequest)"
                                                             class="btn btn-sm center-block btn-block" style="overflow: hidden;"
                                                             data-ng-class="{'btn-default' : projectChangeRequest.statusReview.currentRecord.completed, 'btn-info' : !projectChangeRequest.statusReview.currentRecord.completed}">
-                                                        <span class="small">{{projectChangeRequest.raisedOnDate | date:'EEE d, MMM yyyy'}}</span>
-                                                        <br>
                                                         <span class="small">{{projectChangeRequest.title}}</span>
+                                                        <br>
+                                                        <span class="small">{{projectChangeRequest.raisedOnDate | date:'EEE d, MMM yyyy'}}</span>
                                                     </button>
                                                 </div>
                                             </div>

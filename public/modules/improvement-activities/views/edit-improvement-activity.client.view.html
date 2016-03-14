@@ -6,6 +6,9 @@
                 #{{selectedImprovementActivity.idNumber}} - {{selectedImprovementActivity.title}}
             </h6>
         </div>
+        <div data-ng-show="parentCtrl.error" class="text-danger">
+            <strong data-ng-bind="parentCtrl.error"></strong>
+        </div>
         <div class="row">
             <div class="col-md-12 btn-group btn-group-xs btn-group-justified">
                 <label class="btn btn-info btn-xs" data-ng-model="parentCtrl.improvementActivityDetails" btn-radio="'header'">
@@ -81,7 +84,7 @@
                             </div>
                         </div>
                         <hr>
-                        <div class="form-group-sm pull-right" data-ng-show="parentCtrl.userHasAuthorization">
+                        <div class="form-group-sm pull-right" data-ng-show="parentCtrl.userHasAuthorization('edit', parentCtrl.userData, selectedImprovementActivity)">
                             <button class="btn btn-success btn-xs" data-ng-click="parentCtrl.editHeader()">
                                 Edit
                             </button>
@@ -212,7 +215,7 @@
                             </div>
                         </div>
                         <hr>
-                        <div class="pull-right" data-ng-show="parentCtrl.userHasAuthorization">
+                        <div class="pull-right" data-ng-show="parentCtrl.userHasAuthorization('edit', parentCtrl.userData, selectedImprovementActivity)">
                             <button class="btn btn-success btn-xs" data-ng-click="parentCtrl.editStatus()">
                                 Edit
                             </button>

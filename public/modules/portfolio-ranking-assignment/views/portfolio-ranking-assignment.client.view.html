@@ -14,6 +14,9 @@
 	<div data-ng-show="initError" class="text-danger">
 		<strong data-ng-bind="initError"></strong>
 	</div>
+	<div data-ng-show="error" class="text-danger">
+		<strong data-ng-bind="error"></strong>
+	</div>
 	<div class="row">
 		<div class="col-sm-4"><!-- PORTFOLIO LIST -->
 			<div class="panel panel-default">
@@ -27,7 +30,7 @@
 					<div class="row">
 						<div class="col-md-12">
 							<button class="btn btn-default btn-sm btn-info" style="min-width:50px; max-width: 150px; overflow:hidden; margin: 2%;"
-									data-ng-click="selectNode('overall')">
+									data-ng-click="selectNode('overall', userData)">
 								Overall
 							</button>
 						</div>
@@ -36,7 +39,7 @@
 					<div class="row" style="min-height: 420px;  max-height: 420px; overflow-y: auto;">
 						<div class="col-md-12">
 							<script type="text/ng-template" id="portfolioTree">
-								<button class="btn btn-default btn-sm" data-ng-click="selectNode(tree.node)"
+								<button class="btn btn-default btn-sm" data-ng-click="selectNode(tree.node, userData)"
 										style="min-width:50px; max-width: 150px; overflow:hidden; margin: 2%;">
 									<span data-ng-bind="tree.node.name"></span>
 								</button>

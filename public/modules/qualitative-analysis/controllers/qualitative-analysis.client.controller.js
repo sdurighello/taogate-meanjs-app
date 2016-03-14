@@ -11,6 +11,8 @@ angular.module('qualitative-analysis').controller('QualitativeAnalysisController
 
 		$scope.init = function(){
 
+			$scope.userData = Authentication.user;
+
 			Projects.query({'selection.active': true, 'selection.selectedForEvaluation': true}, function(projects){
 				$scope.projects = projects;
 			}, function(err){
@@ -40,17 +42,27 @@ angular.module('qualitative-analysis').controller('QualitativeAnalysisController
 		};
 
 
-		// ------- ROLES FOR BUTTONS ------
+        // -------------- AUTHORIZATION FOR BUTTONS -----------------
 
-		var d = $q.defer();
-		d.resolve(Authentication);
+        $scope.userHasAuthorization = function(action, userData, project){
 
-		d.promise.then(function(data){
-			var obj = _.clone(data);
-			$scope.userHasAuthorization = _.some(obj.user.roles, function(role){
-				return role === 'superAdmin' || role === 'admin' || role === 'pmo';
-			});
-		});
+            // Guard against undefined at view startup
+            if(action && userData && project){
+
+                var userIsSuperhero, userIsProjectManager, userIsPortfolioManager;
+
+                if(action === 'edit'){
+                    userIsSuperhero = !!_.some(userData.roles, function(role){
+                        return role === 'superAdmin' || role === 'admin' || role === 'pmo';
+                    });
+                    userIsProjectManager = (userData._id === project.projectManager) || (userData._id === project.backupProjectManager);
+                    if(project.portfolio){
+                        userIsPortfolioManager = (userData._id === project.portfolio.portfolioManager) || (userData._id === project.portfolio.backupPortfolioManager);
+                    }
+                    return userIsSuperhero || userIsProjectManager || userIsPortfolioManager;
+                }
+            }
+        };
 
 
 
