@@ -51,7 +51,7 @@ angular.module('project-identification').controller('ProjectIdentificationContro
                 userIsSuperhero = !!_.some(userData.roles, function(role){
                     return role === 'superAdmin' || role === 'admin' || role === 'pmo';
                 });
-                userIsProjectManager = (userData._id === project.projectManager) || (userData._id === project.backupProjectManager);
+                userIsProjectManager = (userData._id === project.identification.projectManager) || (userData._id === project.identification.backupProjectManager);
                 if(project.portfolio){
                     userIsPortfolioManager = (userData._id === project.portfolio.portfolioManager) || (userData._id === project.portfolio.backupPortfolioManager);
                 }
@@ -100,7 +100,7 @@ angular.module('project-identification').controller('ProjectIdentificationContro
 
 		var projectList = function(){
 			$scope.initError = [];
-			Projects.query(function(projects){
+			Projects.query({'selection.active': true}, function(projects){
                 $scope.projects = projects;
 			}, function(err){
 				$scope.initError.push(err.data.message);
@@ -192,7 +192,8 @@ angular.module('project-identification').controller('ProjectIdentificationContro
         $scope.saveEditProject = function(project){
             // Clean up the deep populate
             var projectCopy = _.cloneDeep(project);
-            projectCopy.process = allowNull(project);
+            projectCopy.process = allowNull(project.process);
+            projectCopy.portfolio = allowNull(project.portfolio);
             // Save the project to the server
             Projects.update(projectCopy, function(res) {
                 $scope.selectProject(project);
@@ -202,7 +203,16 @@ angular.module('project-identification').controller('ProjectIdentificationContro
         };
 
         $scope.cancelEditProject = function(project){
-            $scope.selectedProject = _.cloneDeep(originalProject[project._id]);
+            project.identification = originalProject[project._id].identification;
+            //$scope.selectedProject.identification.idNumber = originalProject[project._id].identification.idNumber;
+            //$scope.selectedProject.identification.name = originalProject[project._id].identification.name;
+            //$scope.selectedProject.identification.reqStartDate = originalProject[project._id].identification.reqStartDate;
+            //$scope.selectedProject.identification.reqEndDate = originalProject[project._id].identification.reqEndDate;
+            //$scope.selectedProject.identification.earmarkedFunds = originalProject[project._id].identification.earmarkedFunds;
+            //$scope.selectedProject.identification.projectManager = originalProject[project._id].identification.projectManager;
+            //$scope.selectedProject.identification.backupProjectManager = originalProject[project._id].identification.backupProjectManager;
+            //$scope.selectedProject.identification.description = originalProject[project._id].identification.description;
+
             $scope.selectProject(project);
         };
 

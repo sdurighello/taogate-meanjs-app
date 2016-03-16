@@ -134,7 +134,7 @@
 			name : (!!filterIdentification.name || undefined) && filterIdentification.name,
 			idNumber : (!!filterIdentification.idNumber || undefined) && filterIdentification.idNumber
 			},
-	portfolio: filterHierarchy.portfolio._id,
+	portfolio: (!!filterHierarchy.portfolio || undefined) && {_id : filterHierarchy.portfolio._id},
 	parent: filterHierarchy.strategyNode._id
 } | projectsProcess : filterProcess">
                             <td class="text-center">
@@ -144,15 +144,16 @@
                                 <span>{{project.identification.name}}</span>
                             </td>
                             <td class="text-center">
-                                <select class="form-control" data-ng-model="project.process._id"
-                                        data-ng-options="process._id as process.name for process in gateProcesses"
+                                <select class="form-control" data-ng-model="project.process"
+                                        data-ng-options="process as process.name for process in gateProcesses track by process._id"
                                         data-ng-disabled="!showEditProjectForm[project._id]">
-                                    <option value="">--gate process</option>
+                                    <option value="">--select process</option>
                                 </select>
                             </td>
                             <td data-ng-show="!showEditProjectForm[project._id]" class="text-center">
                                 <button type="button" class="btn btn-success btn-sm"
-                                        data-ng-click="selectProject(project)">
+                                        data-ng-click="selectProject(project)"
+                                        data-ng-show="userHasAuthorization('edit', user, project)">
                                     <span class="glyphicon glyphicon-edit"></span>
                                 </button>
                             </td>

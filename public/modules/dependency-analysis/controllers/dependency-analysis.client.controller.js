@@ -11,6 +11,8 @@ angular.module('dependency-analysis').controller('DependencyAnalysisController',
 
 		$scope.init = function(){
 
+            $scope.user = Authentication.user;
+
 			Projects.query({'selection.active': true, 'selection.selectedForEvaluation': true}, function(projects){
 				$scope.projects = projects;
 			}, function(err){
@@ -52,17 +54,46 @@ angular.module('dependency-analysis').controller('DependencyAnalysisController',
 		};
 
 
-		// ------- ROLES FOR BUTTONS ------
+        // -------------- AUTHORIZATION FOR BUTTONS -----------------
 
-		var d = $q.defer();
-		d.resolve(Authentication);
+        $scope.userHasAuthorization = function(action, user, dependency){
+            var userIsSuperhero, userIsProjectManager, userIsPortfolioManager,
+                userIsSourceProjectManager, userIsSourcePortfolioManager,
+                userIsTargetProjectManager, userIsTargetPortfolioManager;
 
-		d.promise.then(function(data){
-			var obj = _.clone(data);
-			$scope.userHasAuthorization = _.some(obj.user.roles, function(role){
-				return role === 'superAdmin' || role === 'admin' || role === 'pmo';
-			});
-		});
+            if(action === 'edit' && user && dependency){
+                var source = dependency.source;
+                var target = dependency.target;
+
+                userIsSuperhero = !!_.some(user.roles, function(role){
+                    return role === 'superAdmin' || role === 'admin' || role === 'pmo';
+                });
+                userIsSourceProjectManager = (user._id === source.identification.projectManager) || (user._id === source.identification.backupProjectManager);
+                if(source.portfolio){
+                    userIsSourcePortfolioManager = (user._id === source.portfolio.portfolioManager) || (user._id === source.portfolio.backupPortfolioManager);
+                }
+                userIsTargetProjectManager = (user._id === target.identification.projectManager) || (user._id === target.identification.backupProjectManager);
+                if(target.portfolio){
+                    userIsTargetPortfolioManager = (user._id === target.portfolio.portfolioManager) || (user._id === target.portfolio.backupPortfolioManager);
+                }
+                return userIsSuperhero ||
+                    userIsSourceProjectManager || userIsSourcePortfolioManager ||
+                    userIsTargetProjectManager || userIsTargetPortfolioManager;
+            }
+
+            if(action === 'new' && user){
+                userIsSuperhero = !!_.some(user.roles, function(role){
+                    return role === 'superAdmin' || role === 'admin' || role === 'pmo';
+                });
+                userIsPortfolioManager = !!_.some(user.roles, function(role){
+                    return role === 'portfolioManager';
+                });
+                userIsProjectManager = !!_.some(user.roles, function(role){
+                    return role === 'projectManager';
+                });
+                return userIsSuperhero || userIsPortfolioManager || userIsProjectManager;
+            }
+        };
 
 
 		// ------- DATE PICKER ------
@@ -151,11 +182,15 @@ angular.module('dependency-analysis').controller('DependencyAnalysisController',
         };
 
         $scope.saveEditHeader = function(dependency){
+            // Cleanup deepPopulate
+            var copyDependency = _.cloneDeep(dependency);
+            copyDependency.source = copyDependency.source._id;
+            copyDependency.target = copyDependency.target._id;
 
             Dependencies.updateHeader(
                 {
                     dependencyId : dependency._id
-                }, dependency,
+                }, copyDependency,
                 function(res){
                     // Update details pane view with new saved details
                     originalDependency[dependency._id].name = dependency.name;
@@ -186,7 +221,12 @@ angular.module('dependency-analysis').controller('DependencyAnalysisController',
 
 
         $scope.deleteDependency = function(dependency){
-            Dependencies.remove({dependencyId: dependency._id}, dependency, function(res){
+            // Cleanup deepPopulate
+            var copyDependency = _.cloneDeep(dependency);
+            copyDependency.source = copyDependency.source._id;
+            copyDependency.target = copyDependency.target._id;
+
+            Dependencies.remove({dependencyId: dependency._id}, copyDependency, function(res){
                 $scope.dependencies = _.without($scope.dependencies, dependency);
                 $scope.cancelNewDependency();
                 $scope.selectedDependency = null;
@@ -225,7 +265,12 @@ angular.module('dependency-analysis').controller('DependencyAnalysisController',
         };
 
         $scope.saveEditStatus = function(dependency){
-            Dependencies.updateStatus( { dependencyId : dependency._id }, dependency,
+            // Cleanup deepPopulate
+            var copyDependency = _.cloneDeep(dependency);
+            copyDependency.source = copyDependency.source._id;
+            copyDependency.target = copyDependency.target._id;
+
+            Dependencies.updateStatus( { dependencyId : dependency._id }, copyDependency,
                 function(res){
                     // Change the selected CR
                     originalDependency[dependency._id].statusReview.currentRecord.baselineDeliveryDate = dependency.statusReview.currentRecord.baselineDeliveryDate;

@@ -12,6 +12,8 @@ angular.module('project-change-requests').controller('ProjectChangeRequestContro
 
 		$scope.init = function(){
 
+			$scope.user = Authentication.user;
+
 			Projects.query({'selection.active': true, 'selection.selectedForDelivery': true}, function(projects){
 				$scope.projects = _.filter(projects, function(project){return project.process !== null;});
 			}, function(err){
@@ -56,17 +58,34 @@ angular.module('project-change-requests').controller('ProjectChangeRequestContro
 
 		};
 
-		// ------- ROLES FOR BUTTONS ------
+        // -------------- AUTHORIZATION FOR BUTTONS -----------------
 
-		var d = $q.defer();
-		d.resolve(Authentication);
+        $scope.userHasAuthorization = function(action, user, project){
+            var userIsSuperhero, userIsProjectManager, userIsPortfolioManager;
+            if(action === 'edit' && project){
+                userIsSuperhero = !!_.some(user.roles, function(role){
+                    return role === 'superAdmin' || role === 'admin' || role === 'pmo';
+                });
+                userIsProjectManager = (user._id === project.identification.projectManager) || (user._id === project.identification.backupProjectManager);
+                if(project.portfolio){
+                    userIsPortfolioManager = (user._id === project.portfolio.portfolioManager) || (user._id === project.portfolio.backupPortfolioManager);
+                }
 
-		d.promise.then(function(data){
-			var obj = _.clone(data);
-			$scope.userHasAuthorization = _.some(obj.user.roles, function(role){
-				return role === 'superAdmin' || role === 'admin' || role === 'pmo';
-			});
-		});
+                return userIsSuperhero || userIsProjectManager || userIsPortfolioManager;
+            }
+            if(action === 'approve' && project){
+                userIsSuperhero = !!_.some(user.roles, function(role){
+                    return role === 'superAdmin' || role === 'admin' || role === 'pmo';
+                });
+
+                if(project.portfolio){
+                    userIsPortfolioManager = (user._id === project.portfolio.portfolioManager) || (user._id === project.portfolio.backupPortfolioManager);
+                }
+
+                return userIsSuperhero || userIsPortfolioManager;
+            }
+
+        };
 
 		// ------------------- NG-SWITCH ---------------------
 
@@ -192,6 +211,7 @@ angular.module('project-change-requests').controller('ProjectChangeRequestContro
 			ProjectChangeRequests.getChangeRequestsForProject({
 				project: project._id
 			}, function (res) {
+                $scope.error = null;
 				$scope.projectChangeRequestList = res;
 			}, function (err) {
 				$scope.error = err.data.message;
@@ -221,6 +241,7 @@ angular.module('project-change-requests').controller('ProjectChangeRequestContro
 				title : $scope.newProjectChangeRequest.title
 			});
 			newProjectChangeRequest.$save(function(res) {
+                $scope.error = null;
 				// Clear new form
 				$scope.newProjectChangeRequest = {};
 				// Refresh the list of gate reviews
@@ -234,6 +255,7 @@ angular.module('project-change-requests').controller('ProjectChangeRequestContro
 		};
 
 		$scope.cancelNewProjectChangeRequest = function(){
+            $scope.error = null;
 			$scope.newProjectChangeRequest = {};
 		};
 
@@ -249,6 +271,7 @@ angular.module('project-change-requests').controller('ProjectChangeRequestContro
             ProjectChangeRequests.get({
                 projectChangeRequestId:projectChangeRequest._id
 			}, function(res){
+                $scope.error = null;
 				$scope.selectedProjectChangeRequest = res;
 				originalProjectChangeRequest[projectChangeRequest._id] = _.cloneDeep(res);
 				//$scope.selectProjectChangeRequestForm('view');
@@ -262,6 +285,7 @@ angular.module('project-change-requests').controller('ProjectChangeRequestContro
 		// ------------- CHANGE GATE ------------
 
 		$scope.changeGate = function(){
+            $scope.error = null;
 			$scope.cancelNewProjectChangeRequest();
 			$scope.selectedProjectChangeRequest = null;
 			originalProjectChangeRequest = {};
@@ -294,6 +318,7 @@ angular.module('project-change-requests').controller('ProjectChangeRequestContro
                     projectChangeRequestId : copyProjectChangeRequest._id
 				}, copyProjectChangeRequest,
 				function(res){
+                    $scope.error = null;
 					// Update details pane view with new saved details
 					originalProjectChangeRequest[projectChangeRequest._id].raisedOnDate = projectChangeRequest.raisedOnDate;
                     originalProjectChangeRequest[projectChangeRequest._id].title = projectChangeRequest.title;
@@ -312,6 +337,7 @@ angular.module('project-change-requests').controller('ProjectChangeRequestContro
 		};
 
 		$scope.cancelEditHeader = function(projectChangeRequest){
+            $scope.error = null;
             projectChangeRequest.raisedOnDate = originalProjectChangeRequest[projectChangeRequest._id].raisedOnDate;
             projectChangeRequest.title = originalProjectChangeRequest[projectChangeRequest._id].title;
             projectChangeRequest.description = originalProjectChangeRequest[projectChangeRequest._id].description;
@@ -324,6 +350,7 @@ angular.module('project-change-requests').controller('ProjectChangeRequestContro
 
 		$scope.deleteProjectChangeRequest = function(reviewObject, projectChangeRequest){
             ProjectChangeRequests.remove({projectChangeRequestId: projectChangeRequest._id}, projectChangeRequest, function(res){
+                $scope.error = null;
 				reviewObject.projectChangeRequests = _.without(reviewObject.projectChangeRequests, _.find(reviewObject.projectChangeRequests, _.matchesProperty('_id',projectChangeRequest._id)));
 				$scope.cancelNewProjectChangeRequest();
 				$scope.selectedProjectChangeRequest = null;
@@ -348,6 +375,7 @@ angular.module('project-change-requests').controller('ProjectChangeRequestContro
 					projectChangeRequestId : copyProjectChangeRequest._id
 				}, copyProjectChangeRequest,
 				function(res){
+                    $scope.error = null;
 					// Refresh the approval history
                     projectChangeRequestFromList[projectChangeRequest._id].approval = res.approval;
                     projectChangeRequest.approval = res.approval;
@@ -368,6 +396,7 @@ angular.module('project-change-requests').controller('ProjectChangeRequestContro
                     projectChangeRequestId : copyProjectChangeRequest._id
 				}, copyProjectChangeRequest,
 				function(res){
+                    $scope.error = null;
 					// Refresh the object with the current performances values since you approved
                     $scope.selectProjectChangeRequest(projectChangeRequest);
 				},
@@ -387,6 +416,7 @@ angular.module('project-change-requests').controller('ProjectChangeRequestContro
                     projectChangeRequestId : copyProjectChangeRequest._id
                 }, copyProjectChangeRequest,
                 function(res){
+                    $scope.error = null;
                     // Refresh the approval history
                     projectChangeRequestFromList[projectChangeRequest._id].approval = res.approval;
                     projectChangeRequest.approval = res.approval;
@@ -407,6 +437,7 @@ angular.module('project-change-requests').controller('ProjectChangeRequestContro
                     projectChangeRequestId : copyProjectChangeRequest._id
                 }, copyProjectChangeRequest,
                 function(res){
+                    $scope.error = null;
                     // Refresh the approval history
                     projectChangeRequestFromList[projectChangeRequest._id].approval = res.approval;
                     projectChangeRequest.approval = res.approval;
@@ -434,6 +465,7 @@ angular.module('project-change-requests').controller('ProjectChangeRequestContro
                     projectChangeRequestId : copyProjectChangeRequest._id
                 }, copyProjectChangeRequest,
                 function(res){
+                    $scope.error = null;
                     // Update details pane view with new saved details
                     originalProjectChangeRequest[projectChangeRequest._id].gateAssignmentReview.budgetChange = projectChangeRequest.gateAssignmentReview.budgetChange;
                     // Update list of reviews with new date / title
@@ -446,6 +478,7 @@ angular.module('project-change-requests').controller('ProjectChangeRequestContro
         };
 
         $scope.cancelEditBudget = function(projectChangeRequest){
+            $scope.error = null;
             projectChangeRequest.gateAssignmentReview.budgetChange = originalProjectChangeRequest[projectChangeRequest._id].gateAssignmentReview.budgetChange;
             $scope.selectBudgetForm('view', projectChangeRequest);
         };
@@ -488,6 +521,7 @@ angular.module('project-change-requests').controller('ProjectChangeRequestContro
 			// Update server header
             ProjectChangeRequests.updateStatus( { projectChangeRequestId : copyProjectChangeRequest._id }, copyProjectChangeRequest,
 				function(res){
+                    $scope.error = null;
                     // Set the "final" in the gate from the list
                     projectChangeRequestFromList[projectChangeRequest._id].statusReview.currentRecord.completed = projectChangeRequest.statusReview.currentRecord.completed;
                     // Change the selected CR
@@ -506,6 +540,7 @@ angular.module('project-change-requests').controller('ProjectChangeRequestContro
 		};
 
 		$scope.cancelEditStatus = function(projectChangeRequest){
+            $scope.error = null;
             projectChangeRequest.statusReview.currentRecord.baselineDeliveryDate = originalProjectChangeRequest[projectChangeRequest._id].statusReview.currentRecord.baselineDeliveryDate;
             projectChangeRequest.statusReview.currentRecord.estimateDeliveryDate = originalProjectChangeRequest[projectChangeRequest._id].statusReview.currentRecord.estimateDeliveryDate;
             projectChangeRequest.statusReview.currentRecord.actualDeliveryDate = originalProjectChangeRequest[projectChangeRequest._id].statusReview.currentRecord.actualDeliveryDate;
@@ -531,7 +566,9 @@ angular.module('project-change-requests').controller('ProjectChangeRequestContro
                     projectChangeRequestId: projectChangeRequest._id,
 					baselineDurationReviewId : baselineDurationReview._id
 				}, baselineDurationReview,
-				function(res){ },
+				function(res){
+                    $scope.error = null;
+                },
 				function(err){
 					$scope.error = err.data.message;
 				}
@@ -540,6 +577,7 @@ angular.module('project-change-requests').controller('ProjectChangeRequestContro
 		};
 
 		$scope.cancelEditBaselineDuration = function(baselineDurationReview){
+            $scope.error = null;
 			baselineDurationReview.dateChange = originalBaselineDurationReview[baselineDurationReview._id].dateChange;
 			$scope.selectBaselineDurationForm('view', baselineDurationReview);
 		};
@@ -561,7 +599,9 @@ angular.module('project-change-requests').controller('ProjectChangeRequestContro
                     projectChangeRequestId: projectChangeRequest._id,
 					actualDurationReviewId : actualDurationReview._id
 				}, actualDurationReview,
-				function(res){ },
+				function(res){
+                    $scope.error = null;
+                },
 				function(err){
 					$scope.error = err.data.message;
 				}
@@ -570,6 +610,7 @@ angular.module('project-change-requests').controller('ProjectChangeRequestContro
 		};
 
 		$scope.cancelEditActualDuration = function(actualDurationReview){
+            $scope.error = null;
 			actualDurationReview.dateChange = originalActualDurationReview[actualDurationReview._id].dateChange;
 			$scope.selectActualDurationForm('view', actualDurationReview);
 		};
@@ -590,7 +631,9 @@ angular.module('project-change-requests').controller('ProjectChangeRequestContro
                     projectChangeRequestId: projectChangeRequest._id,
 					baselineCostReviewId : baselineCostReview._id
 				}, baselineCostReview,
-				function(res){ },
+				function(res){
+                    $scope.error = null;
+                },
 				function(err){
 					$scope.error = err.data.message;
 				}
@@ -599,6 +642,7 @@ angular.module('project-change-requests').controller('ProjectChangeRequestContro
 		};
 
 		$scope.cancelEditBaselineCost = function(baselineCostReview){
+            $scope.error = null;
 			baselineCostReview.costChange = originalBaselineCostReview[baselineCostReview._id].costChange;
 			$scope.selectBaselineCostForm('view', baselineCostReview);
 		};
@@ -619,7 +663,9 @@ angular.module('project-change-requests').controller('ProjectChangeRequestContro
                     projectChangeRequestId: projectChangeRequest._id,
 					actualCostReviewId : actualCostReview._id
 				}, actualCostReview,
-				function(res){ },
+				function(res){
+                    $scope.error = null;
+                },
 				function(err){
 					$scope.error = err.data.message;
 				}
@@ -628,6 +674,7 @@ angular.module('project-change-requests').controller('ProjectChangeRequestContro
 		};
 
 		$scope.cancelEditActualCost = function(actualCostReview){
+            $scope.error = null;
 			actualCostReview.costChange = originalActualCostReview[actualCostReview._id].costChange;
 			$scope.selectActualCostForm('view', actualCostReview);
 		};
@@ -649,7 +696,9 @@ angular.module('project-change-requests').controller('ProjectChangeRequestContro
                     projectChangeRequestId: projectChangeRequest._id,
 					baselineCompletionReviewId : baselineCompletionReview._id
 				}, baselineCompletionReview,
-				function(res){ },
+				function(res){
+                    $scope.error = null;
+                },
 				function(err){
 					$scope.error = err.data.message;
 				}
@@ -658,6 +707,7 @@ angular.module('project-change-requests').controller('ProjectChangeRequestContro
 		};
 
 		$scope.cancelEditBaselineCompletion = function(baselineCompletionReview){
+            $scope.error = null;
 			baselineCompletionReview.completionChange = originalBaselineCompletionReview[baselineCompletionReview._id].completionChange;
 			$scope.selectBaselineCompletionForm('view', baselineCompletionReview);
 		};
@@ -678,7 +728,9 @@ angular.module('project-change-requests').controller('ProjectChangeRequestContro
                     projectChangeRequestId: projectChangeRequest._id,
 					actualCompletionReviewId : actualCompletionReview._id
 				}, actualCompletionReview,
-				function(res){ },
+				function(res){
+                    $scope.error = null;
+                },
 				function(err){
 					$scope.error = err.data.message;
 				}
@@ -687,6 +739,7 @@ angular.module('project-change-requests').controller('ProjectChangeRequestContro
 		};
 
 		$scope.cancelEditActualCompletion = function(actualCompletionReview){
+            $scope.error = null;
 			actualCompletionReview.completionChange = originalActualCompletionReview[actualCompletionReview._id].completionChange;
 			$scope.selectActualCompletionForm('view', actualCompletionReview);
 		};

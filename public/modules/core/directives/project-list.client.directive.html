@@ -34,7 +34,14 @@
                     There are no projects
                 </div>
                 <button type="button"
-                        data-ng-repeat="project in projects | filter:{identification: ((!!filterProfile.name || !!filterProfile.idNumber) || undefined) && {name : (!!filterProfile.name || undefined) && filterProfile.name, idNumber : (!!filterProfile.idNumber || undefined) && filterProfile.idNumber}, portfolio: filterProfilePortfolio._id, process: (!!filterProfileProcess || undefined) && {_id : filterProfileProcess._id} }"
+                        data-ng-repeat="project in projects | filter:
+{
+    identification: ((!!filterProfile.name || !!filterProfile.idNumber) || undefined) && {
+        name : (!!filterProfile.name || undefined) && filterProfile.name,
+        idNumber : (!!filterProfile.idNumber || undefined) && filterProfile.idNumber},
+    portfolio: (!!filterProfilePortfolio || undefined) && {_id : filterProfilePortfolio._id},
+    process: (!!filterProfileProcess || undefined) && {_id : filterProfileProcess._id}
+}"
                         data-ng-click="selectProject(project)"
                         class="btn btn-default btn-sm center-block btn-block" style="overflow: hidden;">
                     {{project.identification.idNumber}} - {{project.identification.name}}

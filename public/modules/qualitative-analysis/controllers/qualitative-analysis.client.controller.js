@@ -55,7 +55,7 @@ angular.module('qualitative-analysis').controller('QualitativeAnalysisController
                     userIsSuperhero = !!_.some(userData.roles, function(role){
                         return role === 'superAdmin' || role === 'admin' || role === 'pmo';
                     });
-                    userIsProjectManager = (userData._id === project.projectManager) || (userData._id === project.backupProjectManager);
+                    userIsProjectManager = (userData._id === project.identification.projectManager) || (userData._id === project.identification.backupProjectManager);
                     if(project.portfolio){
                         userIsPortfolioManager = (userData._id === project.portfolio.portfolioManager) || (userData._id === project.portfolio.backupPortfolioManager);
                     }

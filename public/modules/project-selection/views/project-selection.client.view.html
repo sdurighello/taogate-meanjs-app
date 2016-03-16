@@ -112,6 +112,7 @@
                     <table class="table">
                         <tr>
                             <th class="text-center">id</th>
+                            <th>portfolio</th>
                             <th class="text-center">Project</th>
                             <th class="text-center">Active&nbsp;<input type="checkbox" data-ng-model="filterSelection.active"></th>
                             <th class="text-center">Prioritization&nbsp;<input type="checkbox" data-ng-model="filterSelection.prioritization"></th>
@@ -131,7 +132,7 @@
 			selectedForEvaluation : (!!filterSelection.evaluation || undefined) && filterSelection.evaluation,
 			selectedForDelivery : (!!filterSelection.delivery || undefined) && filterSelection.delivery
 			},
-	portfolio: filterHierarchy.portfolio._id,
+	portfolio: (!!filterHierarchy.portfolio || undefined) && {_id : filterHierarchy.portfolio._id},
 	parent: filterHierarchy.strategyNode._id
 }">
                             <td class="text-center">

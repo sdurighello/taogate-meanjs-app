@@ -353,8 +353,8 @@ exports.hasManagementAuthorization = function(req, res, next) {
                 if(err){
                     callback(err);
                 } else {
-                    authArray.push(!!project.projectManager && project.projectManager.equals(req.user._id));
-                    authArray.push(!!project.backupProjectManager && project.backupProjectManager.equals(req.user._id));
+                    authArray.push(!!project.identification.projectManager && project.identification.projectManager.equals(req.user._id));
+                    authArray.push(!!project.identification.backupProjectManager && project.identification.backupProjectManager.equals(req.user._id));
                     callback(null, project);
                 }
             });

@@ -7,20 +7,20 @@ module.exports = function(app) {
 	// Dependencies Routes
 	app.route('/dependencies')
 		.get(users.requiresLogin, dependencies.list)
-		.post(users.requiresLogin, dependencies.hasAuthorization, dependencies.create);
+		.post(users.requiresLogin, dependencies.hasCreateAuthorization, dependencies.create);
 
 	app.route('/dependencies/:dependencyId')
 		.get(users.requiresLogin, dependencies.read)
-		.put(users.requiresLogin, dependencies.hasAuthorization, dependencies.update)
-		.delete(users.requiresLogin, dependencies.hasAuthorization, dependencies.delete);
+		.put(users.requiresLogin, dependencies.hasEditAuthorization, dependencies.update)
+		.delete(users.requiresLogin, dependencies.hasEditAuthorization, dependencies.delete);
 
 	// Header
 	app.route('/dependencies/:dependencyId/header')
-		.put(users.requiresLogin, dependencies.hasAuthorization, dependencies.updateHeader);
+		.put(users.requiresLogin, dependencies.hasEditAuthorization, dependencies.updateHeader);
 
 	// Status
 	app.route('/dependencies/:dependencyId/status')
-		.put(users.requiresLogin, dependencies.hasAuthorization, dependencies.updateStatus);
+		.put(users.requiresLogin, dependencies.hasEditAuthorization, dependencies.updateStatus);
 
 	// Finish by binding the Dependency middleware
 	app.param('dependencyId', dependencies.dependencyByID);

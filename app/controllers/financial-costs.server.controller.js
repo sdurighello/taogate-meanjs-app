@@ -147,44 +147,37 @@ exports.financialCostByID = function(req, res, next, id) {
  */
 exports.hasAuthorization = function(req, res, next) {
 
-    var Portfolio = mongoose.mtModel(req.user.tenantId + '.' + 'Portfolio');
     var Project = mongoose.mtModel(req.user.tenantId + '.' + 'Project');
 
-    var authArray = [];
+    var authObj = {
+        isProjectManager : false,
+        isPortfolioManager : false,
+        isSuperhero : false
+    };
 
     async.waterfall([
-        // Set flag if "project manager" or "backup project manager" of this project
+        // Set flag if "project manager" or "portfolio manager" of this project
         function(callback) {
-            Project.findById(req.query.projectId).exec(function(err, project){
+            Project.findById(req.query.projectId).populate('portfolio').exec(function(err, project){
                 if(err){
-                    callback(err);
-                } else {
-                    authArray.push(!!project.projectManager && project.projectManager.equals(req.user._id));
-                    authArray.push(!!project.backupProjectManager && project.backupProjectManager.equals(req.user._id));
-                    callback(null, project);
+                    return callback(err);
                 }
-            });
-        },
-        function(project, callback) {
-            // Set flag if "portfolio manager" or "backup portfolio manager" of the project's portfolio
-            if(project.portfolio){
-                Portfolio.findById(project.portfolio).exec(function(err, portfolio) {
-                    if(err){
-                        return callback(err);
-                    }
-                    authArray.push(!!portfolio.portfolioManager && portfolio.portfolioManager.equals(req.user._id));
-                    authArray.push(!!portfolio.backupPortfolioManager && portfolio.backupPortfolioManager.equals(req.user._id));
-                    callback(null);
-                });
-            } else {
+                authObj.isProjectManager = (!!project.identification.projectManager && project.identification.projectManager.equals(req.user._id)) ||
+                    (!!project.identification.backupProjectManager && project.identification.backupProjectManager.equals(req.user._id));
+
+                if(project.portfolio){
+                    authObj.isPortfolioManager = (!!project.portfolio.portfolioManager && project.portfolio.portfolioManager.equals(req.user._id)) ||
+                        (!!project.portfolio.backupPortfolioManager && project.portfolio.backupPortfolioManager.equals(req.user._id));
+                }
+
                 callback(null);
-            }
+            });
         },
         // Set flag if user role is "super-hero"
         function(callback) {
-            authArray.push(!!_.find(req.user.roles, function(role){
+            authObj.isSuperhero = !!_.find(req.user.roles, function(role){
                 return (role === 'superAdmin' || role === 'admin' || role === 'pmo');
-            }));
+            });
             callback(null);
         }
     ], function (err) {
@@ -193,11 +186,7 @@ exports.hasAuthorization = function(req, res, next) {
                 message: errorHandler.getErrorMessage(err)
             });
         }
-        if(
-            !_.some(authArray, function(elem){
-                return elem === true;
-            })
-        ){
+        if(!(authObj.isPortfolioManager || authObj.isProjectManager || authObj.isSuperhero)){
             return res.status(403).send({
                 message: 'User is not authorized'
             });

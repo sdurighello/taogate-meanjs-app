@@ -8,9 +8,13 @@ angular.module('gate-management-review').controller('GateManagementReviewControl
 
         // ------------- INIT -------------
 
+        $scope.isResolving = false;
+
         $scope.initError = [];
 
         $scope.init = function(){
+
+            $scope.user = Authentication.user;
 
             Projects.query({'selection.active': true, 'selection.selectedForDelivery': true}, function(projects){
                 $scope.projects = _.filter(projects, function(project){return project.process !== null;});
@@ -45,17 +49,32 @@ angular.module('gate-management-review').controller('GateManagementReviewControl
         };
 
 
-        // ------- ROLES FOR BUTTONS ------
+        // -------------- AUTHORIZATION FOR BUTTONS -----------------
 
-        var d = $q.defer();
-        d.resolve(Authentication);
+        $scope.userHasAuthorization = function(action, user, project){
 
-        d.promise.then(function(data){
-            var obj = _.clone(data);
-            $scope.userHasAuthorization = _.some(obj.user.roles, function(role){
-                return role === 'superAdmin' || role === 'admin' || role === 'pmo';
-            });
-        });
+            var userIsSuperhero, userIsProjectManager, userIsPortfolioManager;
+
+            if(action === 'edit' && project){
+                userIsSuperhero = !!_.some(user.roles, function(role){
+                    return role === 'superAdmin' || role === 'admin' || role === 'pmo';
+                });
+                userIsProjectManager = (user._id === project.identification.projectManager) || (user._id === project.identification.backupProjectManager);
+                if(project.portfolio){
+                    userIsPortfolioManager = (user._id === project.portfolio.portfolioManager) || (user._id === project.portfolio.backupPortfolioManager);
+                }
+
+                return userIsSuperhero || userIsProjectManager || userIsPortfolioManager;
+            }
+
+            if(action === 'approve' && project){
+                userIsSuperhero = !!_.some(user.roles, function(role){
+                    return role === 'superAdmin' || role === 'admin' || role === 'pmo';
+                });
+
+                return userIsSuperhero;
+            }
+        };
 
         // ------------------- NG-SWITCH ---------------------
 
@@ -194,7 +213,6 @@ angular.module('gate-management-review').controller('GateManagementReviewControl
         var originalGateReview = {};
 
         $scope.selectProject = function(project) {
-            $scope.error = {};
             $scope.selectedProject = null;
             $scope.gateReviewList = null;
             $scope.reviewObject = null;
@@ -204,12 +222,16 @@ angular.module('gate-management-review').controller('GateManagementReviewControl
 
             $scope.selectedProject = project;
 
+            $scope.isResolving = true;
             GateReviews.getReviewsForProject({
                 project: project._id
             }, function (res) {
+                $scope.isResolving = false;
+                $scope.error = null;
                 $scope.gateReviewList = res;
             }, function (err) {
-                $scope.error.gateReviews = err.data.message;
+                $scope.isResolving = false;
+                $scope.error = err.data.message;
             });
         };
 
@@ -266,14 +288,17 @@ angular.module('gate-management-review').controller('GateManagementReviewControl
         // in the details pane that are also reported in the list of gate reviews
 
         $scope.selectGateReview = function(gateReview){
+            $scope.isResolving = true;
             gateReviewFromList[gateReview._id] = gateReview;
             GateReviews.get({
                 gateReviewId:gateReview._id
             }, function(res){
+                $scope.isResolving = false;
                 $scope.selectedGateReview = res;
                 originalGateReview[gateReview._id] = _.cloneDeep(res);
                 //$scope.selectGateReviewForm('view');
             },function(errorResponse){
+                $scope.isResolving = false;
                 $scope.error = errorResponse.data.message;
                 $scope.selectedGateReview = null;
                 originalGateReview = {};
@@ -304,6 +329,7 @@ angular.module('gate-management-review').controller('GateManagementReviewControl
         };
 
         $scope.saveEditHeader = function(gateReview){
+            $scope.isResolving = true;
             // Clean-up deepPopulate
             var copyGateReview = _.cloneDeep(gateReview);
             copyGateReview.project = _.get(copyGateReview.project, '_id');
@@ -315,6 +341,7 @@ angular.module('gate-management-review').controller('GateManagementReviewControl
                     gateReviewId : copyGateReview._id
                 }, copyGateReview,
                 function(res){
+                    $scope.isResolving = false;
                     // Update details pane view with new saved details
                     originalGateReview[gateReview._id].reviewDate = gateReview.reviewDate;
                     originalGateReview[gateReview._id].title = gateReview.title;
@@ -325,7 +352,10 @@ angular.module('gate-management-review').controller('GateManagementReviewControl
                     // Close edit header form and back to view
                     $scope.selectHeaderForm('view', gateReview);
                 },
-                function(err){$scope.error = err.data.message;}
+                function(err){
+                    $scope.isResolving = false;
+                    $scope.error = err.data.message;
+                }
             );
         };
 
@@ -338,12 +368,15 @@ angular.module('gate-management-review').controller('GateManagementReviewControl
 
 
         $scope.deleteGateReview = function(reviewObject, gateReview){
+            $scope.isResolving = true;
             GateReviews.remove({gateReviewId: gateReview._id}, gateReview, function(res){
+                $scope.isResolving = false;
                 reviewObject.gateReviews = _.without(reviewObject.gateReviews, _.find(reviewObject.gateReviews, _.matchesProperty('_id',gateReview._id)));
                 $scope.cancelNewGateReview();
                 $scope.selectedGateReview = null;
                 originalGateReview = {};
             }, function(err){
+                $scope.isResolving = false;
                 $scope.error = err.data.message;
             });
         };
@@ -353,6 +386,7 @@ angular.module('gate-management-review').controller('GateManagementReviewControl
 
 
         $scope.submit = function(project, gateReview){
+            $scope.isResolving = true;
             // Clean-up deepPopulate
             var copyGateReview = _.cloneDeep(gateReview);
             copyGateReview.project = _.get(copyGateReview.project, '_id');
@@ -364,16 +398,22 @@ angular.module('gate-management-review').controller('GateManagementReviewControl
                     gateReviewId : copyGateReview._id
                 }, copyGateReview,
                 function(res){
+                    $scope.response = res;
+                    $scope.isResolving = false;
                     // Set the "approval" in the gate from the list
                     gateReviewFromList[gateReview._id].approval = res.approval;
                     // Refresh the object with the current performances values
                     $scope.selectGateReview(gateReview);
                 },
-                function(err){$scope.error = err.data.message;}
+                function(err){
+                    $scope.isResolving = false;
+                    $scope.error = err.data.message;
+                }
             );
         };
 
         $scope.approve = function(project, gateReview){
+            $scope.isResolving = true;
             // Clean-up deepPopulate
             var copyGateReview = _.cloneDeep(gateReview);
             copyGateReview.project = _.get(copyGateReview.project, '_id');
@@ -385,16 +425,21 @@ angular.module('gate-management-review').controller('GateManagementReviewControl
                     gateReviewId : copyGateReview._id
                 }, copyGateReview,
                 function(res){
+                    $scope.isResolving = false;
                     // Set the "approval" in the gate from the list
                     gateReviewFromList[gateReview._id].approval = res.approval;
                     // Refresh the object with the current performances values
                     $scope.selectGateReview(gateReview);
                 },
-                function(err){$scope.error = err.data.message;}
+                function(err){
+                    $scope.isResolving = false;
+                    $scope.error = err.data.message;
+                }
             );
         };
 
         $scope.reject = function(project, gateReview){
+            $scope.isResolving = true;
             // Clean-up deepPopulate
             var copyGateReview = _.cloneDeep(gateReview);
             copyGateReview.project = _.get(copyGateReview.project, '_id');
@@ -406,16 +451,21 @@ angular.module('gate-management-review').controller('GateManagementReviewControl
                     gateReviewId : copyGateReview._id
                 }, copyGateReview,
                 function(res){
+                    $scope.isResolving = false;
                     // Set the "approval" in the gate from the list
                     gateReviewFromList[gateReview._id].approval = res.approval;
                     // Refresh the object with the current performances values
                     $scope.selectGateReview(gateReview);
                 },
-                function(err){$scope.error = err.data.message;}
+                function(err){
+                    $scope.isResolving = false;
+                    $scope.error = err.data.message;
+                }
             );
         };
 
         $scope.draft = function(project, gateReview){
+            $scope.isResolving = true;
             // Clean-up deepPopulate
             var copyGateReview = _.cloneDeep(gateReview);
             copyGateReview.project = _.get(copyGateReview.project, '_id');
@@ -427,12 +477,16 @@ angular.module('gate-management-review').controller('GateManagementReviewControl
                     gateReviewId : copyGateReview._id
                 }, copyGateReview,
                 function(res){
+                    $scope.isResolving = false;
                     // Set the "approval" in the gate from the list
                     gateReviewFromList[gateReview._id].approval = res.approval;
                     // Refresh the object with the current performances values
                     $scope.selectGateReview(gateReview);
                 },
-                function(err){$scope.error = err.data.message;}
+                function(err){
+                    $scope.isResolving = false;
+                    $scope.error = err.data.message;
+                }
             );
         };
 
@@ -444,6 +498,7 @@ angular.module('gate-management-review').controller('GateManagementReviewControl
         };
 
         $scope.saveEditStatus = function(gateReview){
+            $scope.isResolving = true;
             // Clean-up deepPopulate
             var copyGateReview = _.cloneDeep(gateReview);
             copyGateReview.project = _.get(copyGateReview.project, '_id');
@@ -452,12 +507,14 @@ angular.module('gate-management-review').controller('GateManagementReviewControl
             // Update server header
             GateReviews.updateStatus( { gateReviewId : copyGateReview._id }, copyGateReview,
                 function(res){
+                    $scope.isResolving = false;
                     originalGateReview[gateReview._id].overallScore = gateReview.overallScore;
                     originalGateReview[gateReview._id].status = gateReview.status;
                     originalGateReview[gateReview._id].completed = gateReview.completed;
                     $scope.selectStatusForm('view', gateReview);
                 },
                 function(err){
+                    $scope.isResolving = false;
                     $scope.error = err.data.message;
                 }
             );
@@ -479,6 +536,7 @@ angular.module('gate-management-review').controller('GateManagementReviewControl
         };
 
         $scope.saveEditBudget = function(gateReview){
+            $scope.isResolving = true;
             // Clean-up deepPopulate
             var copyGateReview = _.cloneDeep(gateReview);
             copyGateReview.project = _.get(copyGateReview.project, '_id');
@@ -487,10 +545,12 @@ angular.module('gate-management-review').controller('GateManagementReviewControl
             // Update server header
             GateReviews.updateBudget( { gateReviewId : copyGateReview._id }, copyGateReview,
                 function(res){
+                    $scope.isResolving = false;
                     originalGateReview[gateReview._id].budget = gateReview.budget;
                     $scope.selectBudgetForm('view', gateReview);
                 },
                 function(err){
+                    $scope.isResolving = false;
                     $scope.error = err.data.message;
                 }
             );
@@ -514,13 +574,18 @@ angular.module('gate-management-review').controller('GateManagementReviewControl
         };
 
         $scope.saveEditOutcomeReview = function(gateReview, outcomeReview){
+            $scope.isResolving = true;
             GateReviews.updateOutcomeReview(
                 {
                     gateReviewId: gateReview._id,
                     outcomeReviewId : outcomeReview._id
                 }, outcomeReview,
-                function(res){ },
+                function(res){
+                    $scope.isResolving = false;
+                    $scope.error = null;
+                },
                 function(err){
+                    $scope.isResolving = false;
                     $scope.error = err.data.message;
                 }
             );
@@ -552,13 +617,18 @@ angular.module('gate-management-review').controller('GateManagementReviewControl
         };
 
         $scope.saveEditBaselineDuration = function(gateReview, baselineDurationReview){
+            $scope.isResolving = true;
+            $scope.error = null;
             GateReviews.updateBaselineDuration(
                 {
                     gateReviewId: gateReview._id,
                     baselineDurationReviewId : baselineDurationReview._id
                 }, baselineDurationReview,
-                function(res){ },
+                function(res){
+                    $scope.isResolving = false;
+                },
                 function(err){
+                    $scope.isResolving = false;
                     $scope.error = err.data.message;
                 }
             );
@@ -588,13 +658,18 @@ angular.module('gate-management-review').controller('GateManagementReviewControl
         };
 
         $scope.saveEditEstimateDuration = function(gateReview, estimateDurationReview){
+            $scope.isResolving = true;
+            $scope.error = null;
             GateReviews.updateEstimateDuration(
                 {
                     gateReviewId: gateReview._id,
                     estimateDurationReviewId : estimateDurationReview._id
                 }, estimateDurationReview,
-                function(res){ },
+                function(res){
+                    $scope.isResolving = false;
+                },
                 function(err){
+                    $scope.isResolving = false;
                     $scope.error = err.data.message;
                 }
             );
@@ -624,13 +699,18 @@ angular.module('gate-management-review').controller('GateManagementReviewControl
         };
 
         $scope.saveEditActualDuration = function(gateReview, actualDurationReview){
+            $scope.isResolving = true;
+            $scope.error = null;
             GateReviews.updateActualDuration(
                 {
                     gateReviewId: gateReview._id,
                     actualDurationReviewId : actualDurationReview._id
                 }, actualDurationReview,
-                function(res){ },
+                function(res){
+                    $scope.isResolving = false;
+                },
                 function(err){
+                    $scope.isResolving = false;
                     $scope.error = err.data.message;
                 }
             );
@@ -648,18 +728,23 @@ angular.module('gate-management-review').controller('GateManagementReviewControl
         var originalBaselineCostReview = {};
 
         $scope.editBaselineCost = function(baselineCostReview){
+            $scope.error = null;
             originalBaselineCostReview[baselineCostReview._id] = _.cloneDeep(baselineCostReview);
             $scope.selectBaselineCostForm('edit', baselineCostReview);
         };
 
         $scope.saveEditBaselineCost = function(gateReview, baselineCostReview){
+            $scope.isResolving = true;
             GateReviews.updateBaselineCost(
                 {
                     gateReviewId: gateReview._id,
                     baselineCostReviewId : baselineCostReview._id
                 }, baselineCostReview,
-                function(res){ },
+                function(res){
+                    $scope.isResolving = false;
+                },
                 function(err){
+                    $scope.isResolving = false;
                     $scope.error = err.data.message;
                 }
             );
@@ -677,18 +762,23 @@ angular.module('gate-management-review').controller('GateManagementReviewControl
         var originalEstimateCostReview = {};
 
         $scope.editEstimateCost = function(estimateCostReview){
+            $scope.error = null;
             originalEstimateCostReview[estimateCostReview._id] = _.cloneDeep(estimateCostReview);
             $scope.selectEstimateCostForm('edit', estimateCostReview);
         };
 
         $scope.saveEditEstimateCost = function(gateReview, estimateCostReview){
+            $scope.isResolving = true;
             GateReviews.updateEstimateCost(
                 {
                     gateReviewId: gateReview._id,
                     estimateCostReviewId : estimateCostReview._id
                 }, estimateCostReview,
-                function(res){ },
+                function(res){
+                    $scope.isResolving = false;
+                },
                 function(err){
+                    $scope.isResolving = false;
                     $scope.error = err.data.message;
                 }
             );
@@ -696,6 +786,7 @@ angular.module('gate-management-review').controller('GateManagementReviewControl
         };
 
         $scope.cancelEditEstimateCost = function(estimateCostReview){
+            $scope.error = null;
             estimateCostReview.newCost = originalEstimateCostReview[estimateCostReview._id].newCost;
             $scope.selectEstimateCostForm('view', estimateCostReview);
         };
@@ -706,18 +797,23 @@ angular.module('gate-management-review').controller('GateManagementReviewControl
         var originalActualCostReview = {};
 
         $scope.editActualCost = function(actualCostReview){
+            $scope.error = null;
             originalActualCostReview[actualCostReview._id] = _.cloneDeep(actualCostReview);
             $scope.selectActualCostForm('edit', actualCostReview);
         };
 
         $scope.saveEditActualCost = function(gateReview, actualCostReview){
+            $scope.isResolving = true;
             GateReviews.updateActualCost(
                 {
                     gateReviewId: gateReview._id,
                     actualCostReviewId : actualCostReview._id
                 }, actualCostReview,
-                function(res){ },
+                function(res){
+                    $scope.isResolving = false;
+                },
                 function(err){
+                    $scope.isResolving = false;
                     $scope.error = err.data.message;
                 }
             );
@@ -725,6 +821,7 @@ angular.module('gate-management-review').controller('GateManagementReviewControl
         };
 
         $scope.cancelEditActualCost = function(actualCostReview){
+            $scope.error = true;
             actualCostReview.newCost = originalActualCostReview[actualCostReview._id].newCost;
             $scope.selectActualCostForm('view', actualCostReview);
         };
@@ -736,18 +833,23 @@ angular.module('gate-management-review').controller('GateManagementReviewControl
         var originalBaselineCompletionReview = {};
 
         $scope.editBaselineCompletion = function(baselineCompletionReview){
+            $scope.error = null;
             originalBaselineCompletionReview[baselineCompletionReview._id] = _.cloneDeep(baselineCompletionReview);
             $scope.selectBaselineCompletionForm('edit', baselineCompletionReview);
         };
 
         $scope.saveEditBaselineCompletion = function(gateReview, baselineCompletionReview){
+            $scope.isResolving = true;
             GateReviews.updateBaselineCompletion(
                 {
                     gateReviewId: gateReview._id,
                     baselineCompletionReviewId : baselineCompletionReview._id
                 }, baselineCompletionReview,
-                function(res){ },
+                function(res){
+                    $scope.isResolving = false;
+                },
                 function(err){
+                    $scope.isResolving = false;
                     $scope.error = err.data.message;
                 }
             );
@@ -755,6 +857,7 @@ angular.module('gate-management-review').controller('GateManagementReviewControl
         };
 
         $scope.cancelEditBaselineCompletion = function(baselineCompletionReview){
+            $scope.error = null;
             baselineCompletionReview.newCompletion = originalBaselineCompletionReview[baselineCompletionReview._id].newCompletion;
             $scope.selectBaselineCompletionForm('view', baselineCompletionReview);
         };
@@ -765,18 +868,23 @@ angular.module('gate-management-review').controller('GateManagementReviewControl
         var originalEstimateCompletionReview = {};
 
         $scope.editEstimateCompletion = function(estimateCompletionReview){
+            $scope.error = null;
             originalEstimateCompletionReview[estimateCompletionReview._id] = _.cloneDeep(estimateCompletionReview);
             $scope.selectEstimateCompletionForm('edit', estimateCompletionReview);
         };
 
         $scope.saveEditEstimateCompletion = function(gateReview, estimateCompletionReview){
+            $scope.isResolving = true;
             GateReviews.updateEstimateCompletion(
                 {
                     gateReviewId: gateReview._id,
                     estimateCompletionReviewId : estimateCompletionReview._id
                 }, estimateCompletionReview,
-                function(res){ },
+                function(res){
+                    $scope.isResolving = false;
+                },
                 function(err){
+                    $scope.isResolving = false;
                     $scope.error = err.data.message;
                 }
             );

@@ -16,15 +16,36 @@ exports.create = function(req, res) {
 	var dependency = new Dependency(req.body);
 	dependency.user = req.user;
 
-	dependency.save(function(err) {
-		if (err) {
-			return res.status(400).send({
-				message: errorHandler.getErrorMessage(err)
-			});
-		} else {
-			res.jsonp(dependency);
-		}
-	});
+    async.waterfall([
+        function(callback) {
+            dependency.save(function(err) {
+                if (err) {
+                    return callback(err);
+                } else {
+                    callback(null);
+                }
+            });
+        },
+        function(callback) {
+            Dependency.findById(dependency._id).deepPopulate([
+                'source.portfolio', 'target.portfolio'
+            ]).exec(function(err, populatedDependency){
+                if(err){
+                    return callback(err);
+                }
+                callback(null, populatedDependency);
+            });
+        }
+    ], function (err, populatedDependency) {
+        if (err) {
+            return res.status(400).send({
+                message: errorHandler.getErrorMessage(err)
+            });
+        } else {
+            res.jsonp(populatedDependency);
+        }
+    });
+
 };
 
 /**
@@ -141,7 +162,9 @@ exports.delete = function(req, res) {
  */
 exports.list = function(req, res) {
     var Dependency = mongoose.mtModel(req.user.tenantId + '.' + 'Dependency');
-    Dependency.find(req.query).populate('user', 'displayName').exec(function(err, dependencies) {
+    Dependency.find(req.query).populate('user', 'displayName').deepPopulate([
+        'source.portfolio', 'target.portfolio'
+    ]).exec(function(err, dependencies) {
 		if (err) {
 			return res.status(400).send({
 				message: errorHandler.getErrorMessage(err)
@@ -155,11 +178,14 @@ exports.list = function(req, res) {
 /**
  * Dependency middleware
  */
+
 exports.dependencyByID = function(req, res, next, id) {
 
     var Dependency = mongoose.mtModel(req.user.tenantId + '.' + 'Dependency');
 
-	Dependency.findById(id).populate('user', 'displayName').exec(function(err, dependency) {
+	Dependency.findById(id).populate('user', 'displayName').deepPopulate([
+        'source.portfolio', 'target.portfolio'
+    ]).exec(function(err, dependency) {
 		if (err) return next(err);
 		if (! dependency) return next(new Error('Failed to load Dependency ' + id));
 		req.dependency = dependency ;
@@ -170,15 +196,141 @@ exports.dependencyByID = function(req, res, next, id) {
 /**
  * Dependency authorization middleware
  */
-exports.hasAuthorization = function(req, res, next) {
-    // User role check
-    if(!_.find(req.user.roles, function(role){
-            return (role === 'superAdmin' || role === 'admin' || role === 'pmo');
-        })
+
+exports.hasCreateAuthorization = function(req, res, next) {
+    var Project = mongoose.mtModel(req.user.tenantId + '.' + 'Project');
+    var Portfolio = mongoose.mtModel(req.user.tenantId + '.' + 'Portfolio');
+
+    var authObj = {
+
+        isSourceProjectManager : false,
+        isSourcePortfolioManager : false,
+
+        isTargetProjectManager : false,
+        isTargetPortfolioManager : false,
+
+        isSuperhero : false
+    };
+
+    var sourceId = req.body.source;
+    var targetId = req.body.target;
+
+    async.waterfall([
+        // SOURCE
+        function(callback) {
+            Project.findById(sourceId).populate('portfolio').exec(function(err, project){
+                if(err){
+                    return callback(err);
+                }
+                if(project.portfolio){
+                    authObj.isSourcePortfolioManager =
+                        (!!project.portfolio.portfolioManager && project.portfolio.portfolioManager.equals(req.user._id)) ||
+                        (!!project.portfolio.backupPortfolioManager && project.portfolio.backupPortfolioManager.equals(req.user._id));
+                }
+                authObj.isSourceProjectManager =
+                    (!!project.identification.projectManager && project.identification.projectManager.equals(req.user._id)) ||
+                    (!!project.identification.backupProjectManager && project.identification.backupProjectManager.equals(req.user._id));
+
+                callback(null);
+            });
+        },
+        // TARGET
+        function(callback) {
+            Project.findById(targetId).populate('portfolio').exec(function(err, project){
+                if(err){
+                    return callback(err);
+                }
+                if(project.portfolio){
+                    authObj.isTargetPortfolioManager =
+                        (!!project.portfolio.portfolioManager && project.portfolio.portfolioManager.equals(req.user._id)) ||
+                        (!!project.portfolio.backupPortfolioManager && project.portfolio.backupPortfolioManager.equals(req.user._id));
+                }
+                authObj.isTargetProjectManager =
+                    (!!project.identification.projectManager && project.identification.projectManager.equals(req.user._id)) ||
+                    (!!project.identification.backupProjectManager && project.identification.backupProjectManager.equals(req.user._id));
+
+                callback(null);
+            });
+        },
+        // SUPERHERO
+        function(callback) {
+            authObj.isSuperhero = !!_.find(req.user.roles, function(role){
+                return (role === 'superAdmin' || role === 'admin' || role === 'pmo');
+            });
+            callback(null);
+        }
+    ], function (err) {
+        if(err){
+            return res.status(400).send({
+                message: errorHandler.getErrorMessage(err)
+            });
+        }
+        if(
+            !(authObj.isSourcePortfolioManager || authObj.isSourceProjectManager ||
+            authObj.isTargetPortfolioManager || authObj.isTargetProjectManager ||
+            authObj.isSuperhero)
+        ){
+            return res.status(403).send({
+                message: 'User is not authorized'
+            });
+        }
+
+        next();
+    });
+
+};
+
+exports.hasEditAuthorization = function(req, res, next) {
+
+    var authObj = {
+
+        isSourceProjectManager : false,
+        isSourcePortfolioManager : false,
+
+        isTargetProjectManager : false,
+        isTargetPortfolioManager : false,
+
+        isSuperhero : false
+    };
+
+    var source = req.dependency.source;
+    var target = req.dependency.target;
+
+    // SOURCE
+    if(source.portfolio){
+        authObj.isSourcePortfolioManager =
+            (!!source.portfolio.portfolioManager && source.portfolio.portfolioManager.equals(req.user._id)) ||
+            (!!source.portfolio.backupPortfolioManager && source.portfolio.backupPortfolioManager.equals(req.user._id));
+    }
+    authObj.isSourceProjectManager =
+        (!!source.identification.projectManager && source.identification.projectManager.equals(req.user._id)) ||
+        (!!source.identification.backupProjectManager && source.identification.backupProjectManager.equals(req.user._id));
+
+    // TARGET
+    if(target.portfolio){
+        authObj.isTargetPortfolioManager =
+            (!!target.portfolio.portfolioManager && target.portfolio.portfolioManager.equals(req.user._id)) ||
+            (!!target.portfolio.backupPortfolioManager && target.portfolio.backupPortfolioManager.equals(req.user._id));
+    }
+    authObj.isTargetProjectManager =
+        (!!target.identification.projectManager && target.identification.projectManager.equals(req.user._id)) ||
+        (!!target.identification.backupProjectManager && target.identification.backupProjectManager.equals(req.user._id));
+
+    // SUPERHERO
+    authObj.isSuperhero = !!_.find(req.user.roles, function(role){
+        return (role === 'superAdmin' || role === 'admin' || role === 'pmo');
+    });
+
+    if(
+        !(authObj.isSourcePortfolioManager || authObj.isSourceProjectManager ||
+        authObj.isTargetPortfolioManager || authObj.isTargetProjectManager ||
+        authObj.isSuperhero)
     ){
         return res.status(403).send({
             message: 'User is not authorized'
         });
     }
+
     next();
 };
+

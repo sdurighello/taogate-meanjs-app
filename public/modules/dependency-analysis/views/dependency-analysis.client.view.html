@@ -14,6 +14,9 @@
 	<div data-ng-show="initError" class="text-danger">
 		<strong data-ng-bind="initError"></strong>
 	</div>
+    <div data-ng-show="error" class="text-danger">
+        <strong data-ng-bind="error"></strong>
+    </div>
 	<div class="row">
 		<div class="col-sm-4">
 			<div class="panel panel-default">
@@ -101,7 +104,7 @@
                                         <div class="form-group-sm col-md-8">
                                             <label for="dependencyName">Dependency name</label>
                                             <input id="dependencyName" type="text" class="form-control" placeholder="Enter name"
-                                                   ng-model="newDependency.name" required>
+                                                   data-ng-model="newDependency.name" required>
                                         </div>
                                     </div>
                                     <br>
@@ -124,13 +127,15 @@
                                     <div class="row">
                                         <div class="form-group-sm col-md-6">
                                             <select id="sourceNew" class="form-control" data-ng-model = "newDependency.source"
-                                                    ng-options="project._id as project.identification.name for project in projects | filter: project.portfolio = filterDependencyNew.sourcePortfolio">
+                                                    data-ng-options="project._id as project.identification.name for project in projects | filter: project.portfolio = filterDependencyNew.sourcePortfolio"
+                                                    required>
                                                 <option value="">--source project</option>
                                             </select>
                                         </div>
                                         <div class="form-group-sm col-md-6">
                                             <select id="sourceNew" class="form-control" data-ng-model = "newDependency.target"
-                                                    ng-options="project._id as project.identification.name for project in projects | filter: project.portfolio = filterDependencyNew.targetPortfolio">
+                                                    data-ng-options="project._id as project.identification.name for project in projects | filter: project.portfolio = filterDependencyNew.targetPortfolio"
+                                                    required>
                                                 <option value="">--target project</option>
                                             </select>
                                         </div>
@@ -170,7 +175,8 @@
                                     <div class="row">
                                         <div class="col-md-12 form-group">
                                             <div class="pull-right">
-                                                <button class="btn btn-success btn-sm" data-ng-click="createDependency(); showNewDependencyForm = false;">
+                                                <button class="btn btn-success btn-sm" data-ng-click="createDependency(); showNewDependencyForm = false;"
+                                                        data-ng-disabled="newDependencyForm.$invalid">
                                                     Save
                                                 </button>
                                                 <button class="btn btn-info btn-sm" data-ng-click="cancelNewDependency(); showNewDependencyForm = false;">
@@ -187,7 +193,7 @@
             </div>
             <div class="row" data-ng-show="!showNewDependencyForm">
                 <div class="col-md-12">
-                    <div class="row" data-ng-show="!showNewDependencyForm">
+                    <div class="row" data-ng-show="!showNewDependencyForm && userHasAuthorization('new', user)">
                         <div class="col-md-12 form-group-sm center-block">
                             <button class="btn btn-warning btn-sm" ng-click="showNewDependencyForm = true">
                                 New dependency
@@ -236,13 +242,13 @@
                                                             <div class="form-group-sm col-md-6">
                                                                 <label for="sourceNew">Source</label>
                                                                 <select id="sourceNew" class="form-control" data-ng-model = "selectedDependency.source"
-                                                                        ng-options="project._id as project.identification.name for project in projects" disabled>
+                                                                        ng-options="project as project.identification.name for project in projects track by project._id" disabled>
                                                                 </select>
                                                             </div>
                                                             <div class="form-group-sm col-md-6">
                                                                 <label for="sourceNew">Target</label>
                                                                 <select id="sourceNew" class="form-control" data-ng-model = "selectedDependency.target"
-                                                                        ng-options="project._id as project.identification.name for project in projects" disabled>
+                                                                        ng-options="project as project.identification.name for project in projects track by project._id" disabled>
                                                                 </select>
                                                             </div>
                                                         </div>
@@ -275,7 +281,7 @@
                                                             </div>
                                                         </div>
                                                         <hr>
-                                                        <div class="form-group-sm pull-right" data-ng-show="userHasAuthorization && !selectedDependency.final">
+                                                        <div class="form-group-sm pull-right" data-ng-show="userHasAuthorization('edit', user, selectedDependency) && !selectedDependency.final">
                                                             <button class="btn btn-success btn-xs" data-ng-click="editHeader(selectedDependency)">
                                                                 Edit
                                                             </button>
@@ -294,14 +300,14 @@
                                                             <div class="form-group-sm col-md-6">
                                                                 <label for="sourceNew">Source</label>
                                                                 <select id="sourceNew" class="form-control" data-ng-model = "selectedDependency.source"
-                                                                        ng-options="project._id as project.identification.name for project in projects">
+                                                                        ng-options="project as project.identification.name for project in projects track by project._id" required>
                                                                     <option value="">--choose project</option>
                                                                 </select>
                                                             </div>
                                                             <div class="form-group-sm col-md-6">
                                                                 <label for="sourceNew">Target</label>
                                                                 <select id="sourceNew" class="form-control" data-ng-model = "selectedDependency.target"
-                                                                        ng-options="project._id as project.identification.name for project in projects">
+                                                                        ng-options="project as project.identification.name for project in projects track by project._id" required>
                                                                     <option value="">--choose project</option>
                                                                 </select>
                                                             </div>
@@ -392,7 +398,7 @@
                                                             </div>
                                                         </div>
                                                         <hr>
-                                                        <div class="pull-right" data-ng-show="userHasAuthorization">
+                                                        <div class="pull-right" data-ng-show="userHasAuthorization('edit', user, selectedDependency)">
                                                             <button class="btn btn-success btn-xs" data-ng-click="editStatus(selectedDependency)">
                                                                 Edit
                                                             </button>

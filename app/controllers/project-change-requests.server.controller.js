@@ -150,15 +150,152 @@ exports.projectChangeRequestByID = function(req, res, next, id) {
 /**
  * Project change request authorization middleware
  */
-exports.hasAuthorization = function(req, res, next) {
-    var roleIsAuthorized = _.some(req.user.roles, function(role){
-        return (role === 'superAdmin' || role === 'admin' || role === 'pmo');
-    });
-    if(!roleIsAuthorized){
-        return res.status(403).send({
-            message: 'Role is not authorized'
-        });
-    }
 
-    next();
+exports.hasCreateAuthorization = function(req, res, next) {
+
+    var Project = mongoose.mtModel(req.user.tenantId + '.' + 'Project');
+
+    var authObj = {
+        isProjectManager : false,
+        isPortfolioManager : false,
+        isSuperhero : false
+    };
+
+    async.waterfall([
+        // isProjectManager - isPortfolioManager
+        function(callback) {
+            Project.findById(req.body.project).populate('portfolio').exec(function(err, project) {
+                if(err){
+                    return callback(err);
+                }
+                authObj.isProjectManager = (!!project.identification.projectManager && project.identification.projectManager.equals(req.user._id)) ||
+                    (!!project.identification.backupProjectManager && project.identification.backupProjectManager.equals(req.user._id));
+                if(project.portfolio){
+                    authObj.isPortfolioManager = (!!project.portfolio.portfolioManager && project.portfolio.portfolioManager.equals(req.user._id)) ||
+                        (!!project.portfolio.backupPortfolioManager && project.portfolio.backupPortfolioManager.equals(req.user._id));
+                }
+                callback(null);
+            });
+        },
+        // isSuperhero
+        function(callback) {
+            authObj.isSuperhero = !!_.find(req.user.roles, function(role){
+                return (role === 'superAdmin' || role === 'admin' || role === 'pmo');
+            });
+            callback(null);
+        }
+    ], function (err) {
+        if(err){
+            return res.status(400).send({
+                message: errorHandler.getErrorMessage(err)
+            });
+        }
+        if(!(authObj.isPortfolioManager || authObj.isProjectManager || authObj.isSuperhero)){
+            return res.status(403).send({
+                message: 'User is not authorized'
+            });
+        }
+        next();
+    });
 };
+
+
+exports.hasEditAuthorization = function(req, res, next) {
+
+    var Project = mongoose.mtModel(req.user.tenantId + '.' + 'Project');
+
+    var authObj = {
+        isProjectManager : false,
+        isPortfolioManager : false,
+        isSuperhero : false
+    };
+
+    async.waterfall([
+        // isProjectManager - isPortfolioManager
+        function(callback) {
+            Project.findById(req.projectChangeRequest.project).populate('portfolio').exec(function(err, project) {
+                if(err){
+                    return callback(err);
+                }
+                authObj.isProjectManager = (!!project.identification.projectManager && project.identification.projectManager.equals(req.user._id)) ||
+                    (!!project.identification.backupProjectManager && project.identification.backupProjectManager.equals(req.user._id));
+
+                if(project.portfolio){
+                    authObj.isPortfolioManager = (!!project.portfolio.portfolioManager && project.portfolio.portfolioManager.equals(req.user._id)) ||
+                        (!!project.portfolio.backupPortfolioManager && project.portfolio.backupPortfolioManager.equals(req.user._id));
+                }
+
+                callback(null);
+            });
+        },
+        // isSuperhero
+        function(callback) {
+            authObj.isSuperhero = !!_.find(req.user.roles, function(role){
+                return (role === 'superAdmin' || role === 'admin' || role === 'pmo');
+            });
+            callback(null);
+        }
+    ], function (err) {
+        if(err){
+            return res.status(400).send({
+                message: errorHandler.getErrorMessage(err)
+            });
+        }
+        if(!(authObj.isPortfolioManager || authObj.isProjectManager || authObj.isSuperhero)){
+            return res.status(403).send({
+                message: 'User is not authorized'
+            });
+        }
+        next();
+    });
+};
+
+
+// Project Managers can't approve/reject, only submit/draft
+exports.hasApproveAuthorization = function(req, res, next) {
+
+    var Project = mongoose.mtModel(req.user.tenantId + '.' + 'Project');
+
+    var authObj = {
+        isPortfolioManager : false,
+        isSuperhero : false
+    };
+
+    async.waterfall([
+        // isPortfolioManager
+        function(callback) {
+            Project.findById(req.projectChangeRequest.project).populate('portfolio').exec(function(err, project) {
+                if(err){
+                    return callback(err);
+                }
+
+                if(project.portfolio){
+                    authObj.isPortfolioManager = (!!project.portfolio.portfolioManager && project.portfolio.portfolioManager.equals(req.user._id)) ||
+                        (!!project.portfolio.backupPortfolioManager && project.portfolio.backupPortfolioManager.equals(req.user._id));
+                }
+
+                callback(null);
+            });
+        },
+        // isSuperhero
+        function(callback) {
+            authObj.isSuperhero = !!_.find(req.user.roles, function(role){
+                return (role === 'superAdmin' || role === 'admin' || role === 'pmo');
+            });
+            callback(null);
+        }
+    ], function (err) {
+        if(err){
+            return res.status(400).send({
+                message: errorHandler.getErrorMessage(err)
+            });
+        }
+        if(!(authObj.isPortfolioManager || authObj.isSuperhero)){
+            return res.status(403).send({
+                message: 'User is not authorized'
+            });
+        }
+        next();
+    });
+};
+

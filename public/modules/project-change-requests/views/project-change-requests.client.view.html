@@ -12,8 +12,11 @@
 		</div>
 	</div>
 	<div data-ng-show="initError" class="text-danger">
-		<strong data-ng-bind="initError"></strong>
+		<strong data-ng-repeat="item in initError" data-ng-bind="item.data.message"></strong>
 	</div>
+    <div data-ng-show="error" class="text-danger">
+        <strong data-ng-bind="error"></strong>
+    </div>
 	<div class="row">
         <div class="col-md-3">
             <project-list projects="projects" select-project="selectProject" portfolios="portfolios" gate-processes="gateProcesses"></project-list>
@@ -99,7 +102,10 @@
                                         <div class="panel-body">
                                             <div class="row">
                                                 <div class="col-md-12 text-center">
-                                                    <button class="btn btn-xs btn-success" data-ng-click="showNewProjectChangeRequestForm = true">New change</button>
+                                                    <button class="btn btn-xs btn-success" data-ng-click="showNewProjectChangeRequestForm = true"
+                                                            data-ng-disabled="!userHasAuthorization('edit', user, selectedProject)">
+                                                        New change
+                                                    </button>
                                                 </div>
                                             </div>
                                             <hr style="margin: 10px ">
@@ -200,7 +206,8 @@
                                                             </div>
                                                         </div>
                                                         <hr>
-                                                        <div class="form-group-sm pull-right" data-ng-show="userHasAuthorization && !selectedProjectChangeRequest.final">
+                                                        <div class="form-group-sm pull-right"
+                                                             data-ng-show="userHasAuthorization('edit', user, selectedProject) && !(selectedProjectChangeRequest.approval.currentRecord.approvalState === 'approved') ">
                                                             <button class="btn btn-success btn-xs" data-ng-click="editHeader(selectedProjectChangeRequest)">
                                                                 Edit
                                                             </button>
@@ -312,7 +319,8 @@
                                                             </div>
                                                         </div>
                                                         <hr>
-                                                        <div class="pull-right" data-ng-show="userHasAuthorization">
+                                                        <div class="pull-right"
+                                                             data-ng-show="userHasAuthorization('edit', user, selectedProject) && !(selectedProjectChangeRequest.approval.currentRecord.approvalState === 'approved') ">
                                                             <button class="btn btn-success btn-xs" data-ng-click="editStatus(selectedProjectChangeRequest)">
                                                                 Edit
                                                             </button>
@@ -418,7 +426,7 @@
                                                                     <span data-ng-hide="baselineDurationReview.dateChange">No change</span>
                                                                     <span data-ng-show="baselineDurationReview.dateChange" data-ng-bind="baselineDurationReview.dateChange"></span>
                                                                     <button class="btn btn-primary btn-xs"
-                                                                            data-ng-show="userHasAuthorization && baselineDurationReview.baselineDuration.currentRecord.gateDate"
+                                                                            data-ng-show="userHasAuthorization('edit', user, selectedProject) && baselineDurationReview.baselineDuration.currentRecord.gateDate"
                                                                             data-ng-disabled="selectedProjectChangeRequest.approval.currentRecord.approvalState === 'approved'"
                                                                             data-ng-click="editBaselineDuration(baselineDurationReview)">
                                                                         <span class="glyphicon glyphicon-pencil"></span>
@@ -478,7 +486,7 @@
                                                                     <span data-ng-hide="actualDurationReview.dateChange">No change</span>
                                                                     <span data-ng-show="actualDurationReview.dateChange" data-ng-bind="actualDurationReview.dateChange"></span>
                                                                     <button class="btn btn-primary btn-xs"
-                                                                            data-ng-show="userHasAuthorization && actualDurationReview.actualDuration.currentRecord.gateDate"
+                                                                            data-ng-show="userHasAuthorization('edit', user, selectedProject) && actualDurationReview.actualDuration.currentRecord.gateDate"
                                                                             data-ng-disabled="selectedProjectChangeRequest.approval.currentRecord.approvalState === 'approved'"
                                                                             data-ng-click="editActualDuration(actualDurationReview)">
                                                                         <span class="glyphicon glyphicon-pencil"></span>
@@ -535,7 +543,7 @@
                                                                     <span data-ng-hide="selectedProjectChangeRequest.gateAssignmentReview.budgetChange">No change</span>
                                                                     <span data-ng-show="selectedProjectChangeRequest.gateAssignmentReview.budgetChange" data-ng-bind="selectedProjectChangeRequest.gateAssignmentReview.budgetChange"></span>
                                                                     <button class="btn btn-success btn-xs"
-                                                                            data-ng-show="userHasAuthorization && selectedProjectChangeRequest.gateAssignmentReview.gateStatusAssignment.budget.currentRecord.amount"
+                                                                            data-ng-show="userHasAuthorization('edit', user, selectedProject) && selectedProjectChangeRequest.gateAssignmentReview.gateStatusAssignment.budget.currentRecord.amount"
                                                                             data-ng-disabled="selectedProjectChangeRequest.approval.currentRecord.approvalState === 'approved'"
                                                                             data-ng-click="editBudget(selectedProjectChangeRequest)">
                                                                         <span class="glyphicon glyphicon-pencil"></span>
@@ -592,7 +600,7 @@
                                                                     <span data-ng-hide="baselineCostReview.costChange">No change</span>
                                                                     <span data-ng-show="baselineCostReview.costChange" data-ng-bind="baselineCostReview.costChange"></span>
                                                                     <button class="btn btn-primary btn-xs"
-                                                                            data-ng-show="userHasAuthorization && baselineCostReview.baselineCost.currentRecord.cost"
+                                                                            data-ng-show="userHasAuthorization('edit', user, selectedProject) && baselineCostReview.baselineCost.currentRecord.cost"
                                                                             data-ng-disabled="selectedProjectChangeRequest.approval.currentRecord.approvalState === 'approved'"
                                                                             data-ng-click="editBaselineCost(baselineCostReview)">
                                                                         <span class="glyphicon glyphicon-pencil"></span>
@@ -646,7 +654,7 @@
                                                                     <span data-ng-hide="actualCostReview.costChange">No change</span>
                                                                     <span data-ng-show="actualCostReview.costChange" data-ng-bind="actualCostReview.costChange"></span>
                                                                     <button class="btn btn-primary btn-xs"
-                                                                            data-ng-show="userHasAuthorization && actualCostReview.actualCost.currentRecord.cost"
+                                                                            data-ng-show="userHasAuthorization('edit', user, selectedProject) && actualCostReview.actualCost.currentRecord.cost"
                                                                             data-ng-disabled="selectedProjectChangeRequest.approval.currentRecord.approvalState === 'approved'"
                                                                             data-ng-click="editActualCost(actualCostReview)">
                                                                         <span class="glyphicon glyphicon-pencil"></span>
@@ -702,7 +710,7 @@
                                                                     <span data-ng-hide="baselineCompletionReview.completionChange">No change</span>
                                                                     <span data-ng-show="baselineCompletionReview.completionChange" data-ng-bind="baselineCompletionReview.completionChange"></span>
                                                                     <button class="btn btn-primary btn-xs"
-                                                                            data-ng-show="userHasAuthorization && baselineCompletionReview.baselineCompletion.currentRecord.completion"
+                                                                            data-ng-show="userHasAuthorization('edit', user, selectedProject) && baselineCompletionReview.baselineCompletion.currentRecord.completion"
                                                                             data-ng-disabled="selectedProjectChangeRequest.approval.currentRecord.approvalState === 'approved'"
                                                                             data-ng-click="editBaselineCompletion(baselineCompletionReview)">
                                                                         <span class="glyphicon glyphicon-pencil"></span>
@@ -756,7 +764,7 @@
                                                                     <span data-ng-hide="actualCompletionReview.completionChange">No change</span>
                                                                     <span data-ng-show="actualCompletionReview.completionChange" data-ng-bind="actualCompletionReview.completionChange"></span>
                                                                     <button class="btn btn-primary btn-xs"
-                                                                            data-ng-show="userHasAuthorization && actualCompletionReview.actualCompletion.currentRecord.completion"
+                                                                            data-ng-show="userHasAuthorization('edit', user, selectedProject) && actualCompletionReview.actualCompletion.currentRecord.completion"
                                                                             data-ng-disabled="selectedProjectChangeRequest.approval.currentRecord.approvalState === 'approved'"
                                                                             data-ng-click="editActualCompletion(actualCompletionReview)">
                                                                         <span class="glyphicon glyphicon-pencil"></span>
@@ -798,12 +806,12 @@
                                                 </div>
                                                 <br>
                                                 <div class="row">
-                                                    <div class="col-md-6" data-ng-show="userHasAuthorization && selectedProjectChangeRequest.approval.currentRecord.approvalState === 'draft'">
+                                                    <div class="col-md-6" data-ng-show="userHasAuthorization('edit', user, selectedProject) && selectedProjectChangeRequest.approval.currentRecord.approvalState === 'draft'">
                                                         <button class="form-control btn btn-success" data-ng-click="submit(selectedProject, selectedProjectChangeRequest)">
                                                             Submit change request
                                                         </button>
                                                     </div>
-                                                    <div data-ng-show="userHasAuthorization && selectedProjectChangeRequest.approval.currentRecord.approvalState === 'submitted'">
+                                                    <div data-ng-show="userHasAuthorization('approve', user, selectedProject) && selectedProjectChangeRequest.approval.currentRecord.approvalState === 'submitted'">
                                                         <div class="col-md-6">
                                                             <button class="form-control btn btn-success" data-ng-click="approve(selectedProject, selectedProjectChangeRequest)">
                                                                 Approve change request
@@ -815,7 +823,7 @@
                                                             </button>
                                                         </div>
                                                     </div>
-                                                    <div class="col-md-6" data-ng-show="userHasAuthorization && selectedProjectChangeRequest.approval.currentRecord.approvalState === 'rejected'">
+                                                    <div class="col-md-6" data-ng-show="userHasAuthorization('edit', user, selectedProject) && selectedProjectChangeRequest.approval.currentRecord.approvalState === 'rejected'">
                                                         <button class="form-control btn btn-success" data-ng-click="draft(selectedProject, selectedProjectChangeRequest)">
                                                             Draft change request
                                                         </button>

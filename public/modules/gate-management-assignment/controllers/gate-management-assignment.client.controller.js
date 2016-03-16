@@ -12,6 +12,8 @@ angular.module('gate-management-assignment').controller('GateManagementAssignmen
 
 		$scope.init = function(){
 
+			$scope.user = Authentication.user;
+
 			Projects.query({'selection.active': true, 'selection.selectedForDelivery': true}, function(projects){
 				$scope.projects = projects;
 			}, function(err){
@@ -57,17 +59,21 @@ angular.module('gate-management-assignment').controller('GateManagementAssignmen
 		};
 
 
-		// ------- ROLES FOR BUTTONS ------
+        // -------------- AUTHORIZATION FOR BUTTONS -----------------
 
-		var d = $q.defer();
-		d.resolve(Authentication);
-
-		d.promise.then(function(data){
-			var obj = _.clone(data);
-			$scope.userHasAuthorization = _.some(obj.user.roles, function(role){
-				return role === 'superAdmin' || role === 'admin' || role === 'pmo';
-			});
-		});
+        $scope.userHasAuthorization = function(action, userData, project){
+            var userIsSuperhero, userIsProjectManager, userIsPortfolioManager;
+            if(action === 'edit'){
+                userIsSuperhero = !!_.some(userData.roles, function(role){
+                    return role === 'superAdmin' || role === 'admin' || role === 'pmo';
+                });
+                userIsProjectManager = (userData._id === project.projectManager) || (userData._id === project.backupProjectManager);
+                if(project.portfolio){
+                    userIsPortfolioManager = (userData._id === project.portfolio.portfolioManager) || (userData._id === project.portfolio.backupPortfolioManager);
+                }
+                return userIsSuperhero || userIsProjectManager || userIsPortfolioManager;
+            }
+        };
 
 
         // ----------- FILTERS ------------
@@ -90,8 +96,8 @@ angular.module('gate-management-assignment').controller('GateManagementAssignmen
         $scope.saveEditProject = function(project){
             // Save the project to the server
             Projects.updateProcessAssignment(
-                {projectId: $scope.selectedProject._id},
-                {processId: $scope.selectedProject.process},
+                {projectId: project._id},
+                {processId: project.process._id},
                 function(res) {
                     $scope.showEditProjectForm[project._id] = false;
                 }, function(err) {

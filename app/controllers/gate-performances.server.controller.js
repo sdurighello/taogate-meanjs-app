@@ -1112,11 +1112,19 @@ exports.portfolioPerformances = function(req, res){
                             },
                             function(assignments, callback){
 
-                                retObj.lastCompleted = _.max(_.filter(assignments, function(assignment){
+                                // get last completed assignment. _.max() of empty returns infinity and if(!xxx) doesn't work
+
+                                var completedAssignments = _.filter(assignments, function(assignment){
                                     return assignment.currentRecord.completed;
-                                }),function(completedAssignment){
-                                    return completedAssignment.gate.position;
                                 });
+
+                                if(_.isEmpty(completedAssignments)){
+                                    retObj.lastCompleted = null;
+                                } else {
+                                    retObj.lastCompleted = _.max(completedAssignments,function(completedAssignment){
+                                        return completedAssignment.gate.position;
+                                    });
+                                }
 
                                 retObj.gateAssignments = assignments;
                                 if(!retObj.lastCompleted){
@@ -2038,14 +2046,6 @@ exports.portfolioPerformances = function(req, res){
  * Delivery dashboard authorization middleware
  */
 exports.hasAuthorization = function(req, res, next) {
-	// User role check
-	if(!_.find(req.user.roles, function(role){
-			return (role === 'superAdmin' || role === 'admin' || role === 'pmo');
-		})
-	){
-		return res.status(403).send({
-			message: 'User is not authorized'
-		});
-	}
+
 	next();
 };

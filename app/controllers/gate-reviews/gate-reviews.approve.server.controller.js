@@ -59,18 +59,30 @@ exports.approve = function(req, res) {
                     }
                 });
                 // Completed: iterate and find the max that is completed
-                var lastCompletedGateAssignment = _.chain(assignments)
-                    .filter(function(assignment){
-                        return assignment.currentRecord.completed === true;
-                    })
-                    .max(function(assignment){
+                var completedAssignments, lastCompletedGateAssignment;
+
+                completedAssignments = _.filter(assignments, function(assignment){
+                    return assignment.currentRecord.completed === true;
+                });
+
+                if(_.isEmpty(completedAssignments)){ // none is completed
+                    lastCompletedGateAssignment = null;
+                } else {
+                    lastCompletedGateAssignment = _.max(completedAssignments, function(assignment){
                         return assignment.gate.position;
-                    })
-                    .value();
-                // Current: the next one will be the current (unless the completed is the closure, then it is also the current)
+                    });
+                }
+
+                // Current: the next one will be the current
+                // unless the completed is the 'closure', then it is also the current
+                // or none has been set completed, so the current is 'startup'
                 var currentGateAssignment = null;
-                if(lastCompletedGateAssignment.gate._id.equals(process.closureGate)){
+                if(lastCompletedGateAssignment && lastCompletedGateAssignment.gate._id.equals(process.closureGate)){
                     currentGateAssignment = lastCompletedGateAssignment;
+                } else if(!lastCompletedGateAssignment){
+                    currentGateAssignment = _.find(assignments, function(assignment){
+                        return assignment.gate._id.equals(process.startupGate);
+                    });
                 } else {
                     currentGateAssignment = _.find(assignments, function(assignment){
                         return assignment.gate.position === lastCompletedGateAssignment.gate.position + 1;
@@ -78,7 +90,7 @@ exports.approve = function(req, res) {
                 }
                 // Put all the other gate assignments in the 'neither' array
                 var neither = _.filter(assignments, function(assignment){
-                    return !assignment._id.equals(lastCompletedGateAssignment._id) && !assignment._id.equals(currentGateAssignment._id);
+                    return (!lastCompletedGateAssignment || !assignment._id.equals(lastCompletedGateAssignment._id)) && !assignment._id.equals(currentGateAssignment._id);
                 });
                 // Create an array with all assignments ids
                 var allIds = _.map(assignments, function(assignment){
