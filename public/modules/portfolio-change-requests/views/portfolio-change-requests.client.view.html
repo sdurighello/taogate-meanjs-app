@@ -12,11 +12,14 @@
         </div>
     </div>
     <div data-ng-show="parentCtrl.initError" class="text-danger">
-        <strong data-ng-bind="parentCtrl.initError"></strong>
+        <strong data-ng-repeat="item in parentCtrl.initError" data-ng-bind="item.data.message"></strong>
+    </div>
+    <div data-ng-show="parentCtrl.error" class="text-danger">
+        <strong data-ng-bind="parentCtrl.error"></strong>
     </div>
     <div class="row">
         <div class="col-sm-3"><!-- PORTFOLIO LIST -->
-            <portfolio-tree portfolios="parentCtrl.portfolios" portfolio-trees="parentCtrl.portfolioTrees" select-portfolio="parentCtrl.selectPortfolio"></portfolio-tree>
+            <portfolio-tree portfolios="parentCtrl.portfolios" portfolio-trees="parentCtrl.portfolioTrees" select-portfolio="parentCtrl.selectPortfolio" is-resolving="parentCtrl.isResolving"></portfolio-tree>
         </div>
         <div class="col-md-9">
             <div class="row" data-ng-hide="parentCtrl.selectedPortfolio || parentCtrl.portfolios.length === 0" >
@@ -35,7 +38,7 @@
                             </h6>
                         </div>
                         <div class="panel-body" style="max-height: 530px; min-height: 530px;">
-                            <div class="row" data-ng-show="showNewPortfolioChangeRequestForm">
+                            <div class="row" data-ng-show="parentCtrl.showNewPortfolioChangeRequestForm">
                                 <div class="col-md-12">
                                     <div class="panel panel-default">
                                         <div class="panel-heading">
@@ -46,7 +49,7 @@
                                         <div class="panel-body">
                                             <form class="form" name="newPortfolioChangeRequestForm">
                                                 <div class="row">
-                                                    <div class="form-group-sm col-md-3">
+                                                    <div class="form-group-sm col-md-4">
                                                         <label for="">Raised on date</label>
                                                         <div class="input-group">
                                                             <input type="text" id="" class="form-control" datepicker-popup="dd-MMMM-yyyy" data-ng-model="parentCtrl.newPortfolioChangeRequest.raisedOnDate"
@@ -56,7 +59,7 @@
                                                                 </span>
                                                         </div>
                                                     </div>
-                                                    <div class="form-group-sm col-md-6">
+                                                    <div class="form-group-sm col-md-8">
                                                         <label for="reviewTitleNew">Request title</label>
                                                         <input id="reviewTitleNew" name="reviewTitleNew" class="form-control" type="text" placeholder="Enter request title"
                                                                data-ng-model="parentCtrl.newPortfolioChangeRequest.title" >
@@ -64,10 +67,13 @@
                                                 </div>
                                                 <hr>
                                                 <div class="form-group-sm pull-right">
-                                                    <button class="btn btn-success btn-xs" data-ng-click="parentCtrl.createNewPortfolioChangeRequest(parentCtrl.selectedPortfolio); showNewPortfolioChangeRequestForm = false;">
+                                                    <button class="btn btn-success btn-xs"
+                                                            data-ng-click="parentCtrl.createNewPortfolioChangeRequest(parentCtrl.selectedPortfolio)"
+                                                            data-ng-disabled="parentCtrl.isResolving">
                                                         Save
                                                     </button>
-                                                    <button class="btn btn-info btn-xs" data-ng-click="parentCtrl.cancelNewPortfolioChangeRequest(); showNewPortfolioChangeRequestForm = false;">
+                                                    <button class="btn btn-info btn-xs" data-ng-click="parentCtrl.cancelNewPortfolioChangeRequest()"
+                                                            data-ng-disabled="parentCtrl.isResolving">
                                                         Cancel
                                                     </button>
                                                 </div>
@@ -76,7 +82,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="row" data-ng-show="!showNewPortfolioChangeRequestForm && parentCtrl.selectedPortfolio">
+                            <div class="row" data-ng-show="!parentCtrl.showNewPortfolioChangeRequestForm && parentCtrl.selectedPortfolio">
                                 <div class="col-md-3">
                                     <div class="panel panel-default">
                                         <div class="panel-heading">
@@ -85,7 +91,10 @@
                                         <div class="panel-body" style="min-height: 460px; max-height: 460px;">
                                             <div class="row">
                                                 <div class="col-md-12 text-center">
-                                                    <button class="btn btn-xs btn-success" data-ng-click="showNewPortfolioChangeRequestForm = true">New change</button>
+                                                    <button class="btn btn-xs btn-success" data-ng-click="parentCtrl.showNewPortfolioChangeRequestForm = true"
+                                                            data-ng-show="parentCtrl.userHasAuthorization('edit', parentCtrl.user, parentCtrl.selectedPortfolio)">
+                                                        New change
+                                                    </button>
                                                 </div>
                                             </div>
                                             <hr style="margin: 10px">
@@ -100,7 +109,12 @@
                                                             data-ng-repeat="portfolioChangeRequest in parentCtrl.portfolioChangeRequests | orderBy: parentCtrl.sortPortfolioChangeRequests : true"
                                                             data-ng-click="parentCtrl.selectPortfolioChangeRequest(parentCtrl.selectedPortfolio, portfolioChangeRequest)"
                                                             class="btn btn-sm center-block btn-block" style="overflow: hidden;"
-                                                            data-ng-class="{'btn-default' : portfolioChangeRequest.approval.currentRecord.approvalState === 'approved', 'btn-info' : portfolioChangeRequest.approval.currentRecord.approvalState !== 'approved'}">
+                                                            data-ng-class="{
+                                                            'btn-info' : portfolioChangeRequest.approval.currentRecord.approvalState === 'draft',
+                                                            'btn-warning' : portfolioChangeRequest.approval.currentRecord.approvalState === 'submitted',
+                                                            'btn-success' : portfolioChangeRequest.approval.currentRecord.approvalState === 'approved',
+                                                            'btn-danger' : portfolioChangeRequest.approval.currentRecord.approvalState === 'rejected'}"
+                                                            data-ng-disabled="parentCtrl.isResolving">
                                                         <span class="small">{{portfolioChangeRequest.raisedOnDate | date:'EEE d, MMM yyyy'}}</span>
                                                         <br>
                                                         <span class="small">{{portfolioChangeRequest.title}}</span>
@@ -176,7 +190,9 @@
                                                                     </div>
                                                                 </div>
                                                                 <hr>
-                                                                <div class="form-group-sm pull-right" data-ng-show="parentCtrl.userHasAuthorization && !parentCtrl.selectedPortfolioChangeRequest.final">
+                                                                <div class="form-group-sm pull-right"
+                                                                     data-ng-show="parentCtrl.userHasAuthorization('edit', parentCtrl.user, parentCtrl.selectedPortfolio) &&
+                                                                     (parentCtrl.selectedPortfolioChangeRequest.approval.currentRecord.approvalState === 'draft')">
                                                                     <button class="btn btn-success btn-xs" data-ng-click="parentCtrl.editHeader(parentCtrl.selectedPortfolioChangeRequest)">
                                                                         Edit
                                                                     </button>
@@ -226,13 +242,16 @@
                                                                 </div>
                                                                 <hr>
                                                                 <div class="form-group-sm pull-right">
-                                                                    <button class="btn btn-success btn-xs" data-ng-click="parentCtrl.saveEditHeader(parentCtrl.selectedPortfolioChangeRequest)">
+                                                                    <button class="btn btn-success btn-xs" data-ng-click="parentCtrl.saveEditHeader(parentCtrl.selectedPortfolioChangeRequest)"
+                                                                            data-ng-disabled="parentCtrl.isResolving">
                                                                         Save
                                                                     </button>
-                                                                    <button class="btn btn-danger btn-xs" data-ng-click="parentCtrl.deletePortfolioChangeRequest(parentCtrl.selectedPortfolioChangeRequest)">
+                                                                    <button class="btn btn-danger btn-xs" data-ng-click="parentCtrl.deletePortfolioChangeRequest(parentCtrl.selectedPortfolioChangeRequest)"
+                                                                            data-ng-disabled="parentCtrl.isResolving">
                                                                         Delete change request
                                                                     </button>
-                                                                    <button class="btn btn-info btn-xs" data-ng-click="parentCtrl.cancelEditHeader(parentCtrl.selectedPortfolioChangeRequest)">
+                                                                    <button class="btn btn-info btn-xs" data-ng-click="parentCtrl.cancelEditHeader(parentCtrl.selectedPortfolioChangeRequest)"
+                                                                            data-ng-disabled="parentCtrl.isResolving">
                                                                         Cancel
                                                                     </button>
                                                                 </div>
@@ -331,8 +350,11 @@
                                                                                                     </button>
                                                                                                 </div>
                                                                                                 <div class="btn-group" style="width: 20%">
-                                                                                                    <button type="button" class="btn btn-success btn-sm" data-ng-click="parentCtrl.addProjectChangeRequest(parentCtrl.selectedPortfolioChangeRequest, projectChangeRequest)"
-                                                                                                            data-ng-show="parentCtrl.userHasAuthorization">
+                                                                                                    <button type="button" class="btn btn-success btn-sm"
+                                                                                                            data-ng-click="parentCtrl.addProjectChangeRequest(parentCtrl.selectedPortfolioChangeRequest, projectChangeRequest)"
+                                                                                                            data-ng-show="parentCtrl.userHasAuthorization('edit', parentCtrl.user, parentCtrl.selectedPortfolio) &&
+                                                                                                            (parentCtrl.selectedPortfolioChangeRequest.approval.currentRecord.approvalState === 'draft')"
+                                                                                                            data-ng-disabled="parentCtrl.isResolving">
                                                                                                         <span class="glyphicon glyphicon-plus"></span>
                                                                                                     </button>
                                                                                                 </div>
@@ -435,8 +457,11 @@
                                                                                                     </button>
                                                                                                 </div>
                                                                                                 <div class="btn-group" style="width: 20%">
-                                                                                                    <button type="button" class="btn btn-danger btn-sm" data-ng-click="parentCtrl.removeProjectChangeRequest(parentCtrl.selectedPortfolioChangeRequest, associatedProjectChangeRequest)"
-                                                                                                            data-ng-show="parentCtrl.userHasAuthorization">
+                                                                                                    <button type="button" class="btn btn-danger btn-sm"
+                                                                                                            data-ng-click="parentCtrl.removeProjectChangeRequest(parentCtrl.selectedPortfolioChangeRequest, associatedProjectChangeRequest)"
+                                                                                                            data-ng-show="parentCtrl.userHasAuthorization('edit', parentCtrl.user, parentCtrl.selectedPortfolio) &&
+                                                                                                            (parentCtrl.selectedPortfolioChangeRequest.approval.currentRecord.approvalState === 'draft')"
+                                                                                                            data-ng-disabled="parentCtrl.isResolving">
                                                                                                         <span class="glyphicon glyphicon-remove"></span>
                                                                                                     </button>
                                                                                                 </div>
@@ -468,7 +493,11 @@
                                                         <hr>
                                                         <div class="row">
                                                             <div class="col-md-12">
-                                                                <button class="btn btn-primary btn-xs" data-ng-click="parentCtrl.createFundingRequest(parentCtrl.selectedPortfolioChangeRequest)">
+                                                                <button class="btn btn-primary btn-xs"
+                                                                        data-ng-click="parentCtrl.createFundingRequest(parentCtrl.selectedPortfolioChangeRequest)"
+                                                                        data-ng-disabled="parentCtrl.isResolving"
+                                                                        data-ng-show="parentCtrl.userHasAuthorization('edit', parentCtrl.user, parentCtrl.selectedPortfolio) &&
+                                                                         (parentCtrl.selectedPortfolioChangeRequest.approval.currentRecord.approvalState === 'draft')">
                                                                     Add a new funding request
                                                                 </button>
                                                             </div>
@@ -487,7 +516,9 @@
                                                                                    data-ng-model="fundingRequest.funds" disabled>
                                                                         </div>
                                                                         <div class="col-md-2">
-                                                                            <button class="btn btn-success btn-xs" data-ng-click="parentCtrl.editFundingRequest(fundingRequest)">
+                                                                            <button class="btn btn-success btn-xs" data-ng-click="parentCtrl.editFundingRequest(fundingRequest)"
+                                                                                    data-ng-show="parentCtrl.userHasAuthorization('edit', parentCtrl.user, parentCtrl.selectedPortfolio) &&
+                                                                                     (parentCtrl.selectedPortfolioChangeRequest.approval.currentRecord.approvalState === 'draft')">
                                                                                 <span class="glyphicon glyphicon-pencil"></span>
                                                                             </button>
                                                                         </div>
@@ -504,17 +535,23 @@
                                                                         <div class="col-md-3">
                                                                             <div class="btn-group btn-group-justified">
                                                                                 <div class="btn-group">
-                                                                                    <button class="btn btn-success btn-xs" data-ng-click="parentCtrl.saveEditFundingRequest(parentCtrl.selectedPortfolioChangeRequest, fundingRequest)">
+                                                                                    <button class="btn btn-success btn-xs"
+                                                                                            data-ng-click="parentCtrl.saveEditFundingRequest(parentCtrl.selectedPortfolioChangeRequest, fundingRequest)"
+                                                                                            data-ng-disabled="parentCtrl.isResolving">
                                                                                         <span class="glyphicon glyphicon-ok"></span>
                                                                                     </button>
                                                                                 </div>
                                                                                 <div class="btn-group">
-                                                                                    <button class="btn btn-info btn-xs" data-ng-click="parentCtrl.cancelEditFundingRequest(parentCtrl.selectedPortfolioChangeRequest, fundingRequest)">
+                                                                                    <button class="btn btn-info btn-xs"
+                                                                                            data-ng-click="parentCtrl.cancelEditFundingRequest(parentCtrl.selectedPortfolioChangeRequest, fundingRequest)"
+                                                                                            data-ng-disabled="parentCtrl.isResolving">
                                                                                         <span class="glyphicon glyphicon-remove"></span>
                                                                                     </button>
                                                                                 </div>
                                                                                 <div class="btn-group">
-                                                                                    <button class="btn btn-danger btn-xs" data-ng-click="parentCtrl.deleteFundingRequest(parentCtrl.selectedPortfolioChangeRequest, fundingRequest)">
+                                                                                    <button class="btn btn-danger btn-xs"
+                                                                                            data-ng-click="parentCtrl.deleteFundingRequest(parentCtrl.selectedPortfolioChangeRequest, fundingRequest)"
+                                                                                            data-ng-disabled="parentCtrl.isResolving">
                                                                                         <span class="glyphicon glyphicon-trash"></span>
                                                                                     </button>
                                                                                 </div>
@@ -541,25 +578,33 @@
                                                         </div>
                                                         <br>
                                                         <div class="row">
-                                                            <div class="col-md-6" data-ng-show="parentCtrl.userHasAuthorization && parentCtrl.selectedPortfolioChangeRequest.approval.currentRecord.approvalState === 'draft'">
-                                                                <button class="form-control btn btn-success" data-ng-click="parentCtrl.submit(parentCtrl.selectedPortfolio, parentCtrl.selectedPortfolioChangeRequest)">
+                                                            <div class="col-md-6" data-ng-show="parentCtrl.userHasAuthorization('edit', parentCtrl.user, parentCtrl.selectedPortfolio) && (parentCtrl.selectedPortfolioChangeRequest.approval.currentRecord.approvalState === 'draft')">
+                                                                <button class="form-control btn btn-success"
+                                                                        data-ng-click="parentCtrl.submit(parentCtrl.selectedPortfolio, parentCtrl.selectedPortfolioChangeRequest)"
+                                                                        data-ng-disabled="parentCtrl.isResolving">
                                                                     Submit change request
                                                                 </button>
                                                             </div>
-                                                            <div data-ng-show="parentCtrl.userHasAuthorization && parentCtrl.selectedPortfolioChangeRequest.approval.currentRecord.approvalState === 'submitted'">
+                                                            <div data-ng-show="parentCtrl.userHasAuthorization('approve', parentCtrl.user, parentCtrl.selectedPortfolio) && (parentCtrl.selectedPortfolioChangeRequest.approval.currentRecord.approvalState === 'submitted')">
                                                                 <div class="col-md-6">
-                                                                    <button class="form-control btn btn-success" data-ng-click="parentCtrl.approve(parentCtrl.selectedPortfolio, parentCtrl.selectedPortfolioChangeRequest)">
+                                                                    <button class="form-control btn btn-success"
+                                                                            data-ng-click="parentCtrl.approve(parentCtrl.selectedPortfolio, parentCtrl.selectedPortfolioChangeRequest)"
+                                                                            data-ng-disabled="parentCtrl.isResolving">
                                                                         Approve change request
                                                                     </button>
                                                                 </div>
                                                                 <div class="col-md-6">
-                                                                    <button class="form-control btn btn-danger" data-ng-click="parentCtrl.reject(parentCtrl.selectedPortfolio, parentCtrl.selectedPortfolioChangeRequest)">
+                                                                    <button class="form-control btn btn-danger"
+                                                                            data-ng-click="parentCtrl.reject(parentCtrl.selectedPortfolio, parentCtrl.selectedPortfolioChangeRequest)"
+                                                                            data-ng-disabled="parentCtrl.isResolving">
                                                                         Reject change request
                                                                     </button>
                                                                 </div>
                                                             </div>
-                                                            <div class="col-md-6" data-ng-show="parentCtrl.userHasAuthorization && parentCtrl.selectedPortfolioChangeRequest.approval.currentRecord.approvalState === 'rejected'">
-                                                                <button class="form-control btn btn-success" data-ng-click="parentCtrl.draft(parentCtrl.selectedPortfolio, parentCtrl.selectedPortfolioChangeRequest)">
+                                                            <div class="col-md-6" data-ng-show="parentCtrl.userHasAuthorization('edit', parentCtrl.user, parentCtrl.selectedPortfolio) && (parentCtrl.selectedPortfolioChangeRequest.approval.currentRecord.approvalState === 'rejected')">
+                                                                <button class="form-control btn btn-success"
+                                                                        data-ng-click="parentCtrl.draft(parentCtrl.selectedPortfolio, parentCtrl.selectedPortfolioChangeRequest)"
+                                                                        data-ng-disabled="parentCtrl.isResolving">
                                                                     Draft change request
                                                                 </button>
                                                             </div>

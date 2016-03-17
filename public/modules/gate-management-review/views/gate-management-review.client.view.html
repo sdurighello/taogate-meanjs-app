@@ -11,8 +11,6 @@
             </div>
         </div>
     </div>
-    {{isResolving}}
-    {{response.$resolved}}
     <div data-ng-show="initError" class="text-danger">
         <strong data-ng-repeat="item in initError" data-ng-bind="item.data.message"></strong>
     </div>
@@ -109,11 +107,11 @@
                                         <div class="panel-heading">
                                             <h6 class="panel-title text-center">Gate reviews</h6>
                                         </div>
-                                        <div class="panel-body">
+                                        <div class="panel-body" style="min-height: 410px;">
                                             <div class="row">
                                                 <div class="col-md-12 text-center">
                                                     <button class="btn btn-xs btn-success" data-ng-click="showNewGateReviewForm = true"
-                                                            data-ng-disabled="!userHasAuthorization('edit', user, selectedProject)">
+                                                            data-ng-show="userHasAuthorization('edit', user, selectedProject)">
                                                         New gate review
                                                     </button>
                                                 </div>
@@ -130,7 +128,12 @@
                                                             data-ng-repeat="gateReview in reviewObject.gateReviews | orderBy: sortGateReviews : true"
                                                             data-ng-click="selectGateReview(gateReview)"
                                                             class="btn btn-sm center-block btn-block" style="overflow: hidden;"
-                                                            data-ng-class="{'btn-default' : gateReview.approval.currentRecord.approvalState === 'approved', 'btn-info' : !(gateReview.approval.currentRecord.approvalState === 'approved')}">
+                                                            data-ng-class="{
+                                                            'btn-info' : gateReview.approval.currentRecord.approvalState === 'draft',
+                                                            'btn-warning' : gateReview.approval.currentRecord.approvalState === 'submitted',
+                                                            'btn-success' : gateReview.approval.currentRecord.approvalState === 'approved',
+                                                            'btn-danger' : gateReview.approval.currentRecord.approvalState === 'rejected'}"
+                                                            data-ng-disabled="isResolving">
                                                         <span class="small">{{gateReview.title}}</span>
                                                         <br>
                                                         <span class="small">{{gateReview.reviewDate | date:'EEE d, MMM yyyy'}}</span>
@@ -198,7 +201,7 @@
                                                             </div>
                                                         </div>
                                                         <hr>
-                                                        <div class="form-group-sm pull-right" data-ng-show="userHasAuthorization('edit', user, selectedProject) && !(selectedGateReview.approval.currentRecord.approvalState === 'approved')">
+                                                        <div class="form-group-sm pull-right" data-ng-show="userHasAuthorization('edit', user, selectedProject) && (selectedGateReview.approval.currentRecord.approvalState === 'draft')">
                                                             <button class="btn btn-success btn-xs" data-ng-click="editHeader(selectedGateReview)">
                                                                 Edit
                                                             </button>
@@ -230,14 +233,14 @@
                                                             </div>
                                                         </div>
                                                         <hr>
-                                                        <div class="form-group-sm pull-right">
-                                                            <button class="btn btn-success btn-xs" data-ng-click="saveEditHeader(selectedGateReview)">
+                                                        <div class="form-group-sm pull-right" >
+                                                            <button class="btn btn-success btn-xs" data-ng-click="saveEditHeader(selectedGateReview)" data-ng-disabled="isResolving">
                                                                 Save
                                                             </button>
-                                                            <button class="btn btn-danger btn-xs" data-ng-click="deleteGateReview(reviewObject, selectedGateReview)">
+                                                            <button class="btn btn-danger btn-xs" data-ng-click="deleteGateReview(reviewObject, selectedGateReview)" data-ng-disabled="isResolving">
                                                                 Delete gate review
                                                             </button>
-                                                            <button class="btn btn-info btn-xs" data-ng-click="cancelEditHeader(selectedGateReview)">
+                                                            <button class="btn btn-info btn-xs" data-ng-click="cancelEditHeader(selectedGateReview)" data-ng-disabled="isResolving">
                                                                 Cancel
                                                             </button>
                                                         </div>
@@ -288,7 +291,7 @@
                                                                     New
                                                                 </div>
                                                                 <div class="col-md-6">
-                                                                    <div class="pull-right" data-ng-show="userHasAuthorization('edit', user, selectedProject) && !(selectedGateReview.approval.currentRecord.approvalState === 'approved')">
+                                                                    <div class="pull-right" data-ng-show="userHasAuthorization('edit', user, selectedProject) && (selectedGateReview.approval.currentRecord.approvalState === 'draft')">
                                                                         <button class="btn btn-success btn-xs" data-ng-click="editStatus(selectedGateReview)">
                                                                             Edit
                                                                         </button>
@@ -329,10 +332,12 @@
                                                                 </div>
                                                                 <div class="col-md-6">
                                                                     <div class="pull-right">
-                                                                        <button class="btn btn-success btn-xs" data-ng-click="saveEditStatus(selectedGateReview)">
+                                                                        <button class="btn btn-success btn-xs" data-ng-click="saveEditStatus(selectedGateReview)"
+                                                                                data-ng-disabled="isResolving">
                                                                             Save
                                                                         </button>
-                                                                        <button class="btn btn-info btn-xs" data-ng-click="cancelEditStatus(selectedGateReview)">
+                                                                        <button class="btn btn-info btn-xs" data-ng-click="cancelEditStatus(selectedGateReview)"
+                                                                                data-ng-disabled="isResolving">
                                                                             Cancel
                                                                         </button>
                                                                     </div>
@@ -406,7 +411,7 @@
                                                                             New
                                                                         </div>
                                                                         <div class="col-md-6">
-                                                                            <div class="pull-right" data-ng-show="userHasAuthorization('edit', user, selectedProject) && !(selectedGateReview.approval.currentRecord.approvalState === 'approved')">
+                                                                            <div class="pull-right" data-ng-show="userHasAuthorization('edit', user, selectedProject) && (selectedGateReview.approval.currentRecord.approvalState === 'draft')">
                                                                                 <button class="btn btn-success btn-xs" data-ng-click="editOutcomeReview(selectedOutcomeReview)">
                                                                                     Edit
                                                                                 </button>
@@ -436,10 +441,13 @@
                                                                         </div>
                                                                         <div class="col-md-6">
                                                                             <div class="pull-right">
-                                                                                <button class="btn btn-success btn-xs" data-ng-click="saveEditOutcomeReview(selectedGateReview, selectedOutcomeReview)">
+                                                                                <button class="btn btn-success btn-xs"
+                                                                                        data-ng-click="saveEditOutcomeReview(selectedGateReview, selectedOutcomeReview)"
+                                                                                        data-ng-disabled="isResolving">
                                                                                     Save
                                                                                 </button>
-                                                                                <button class="btn btn-info btn-xs" data-ng-click="cancelEditOutcomeReview(selectedOutcomeReview)">
+                                                                                <button class="btn btn-info btn-xs" data-ng-click="cancelEditOutcomeReview(selectedOutcomeReview)"
+                                                                                        data-ng-disabled="isResolving">
                                                                                     Cancel
                                                                                 </button>
                                                                             </div>
@@ -490,7 +498,10 @@
                                                                 <div data-ng-switch-default="view">
                                                                     <span data-ng-show="!baselineDurationReview.newDate">No new baseline yet</span>
                                                                     <span data-ng-bind="baselineDurationReview.newDate | date:'EEE d, MMM yyyy'"></span>
-                                                                    <button class="btn btn-success btn-xs" data-ng-show="userHasAuthorization('edit', user, selectedProject) && !(selectedGateReview.approval.currentRecord.approvalState === 'approved')" data-ng-click="editBaselineDuration(baselineDurationReview)">
+                                                                    <button class="btn btn-success btn-xs"
+                                                                            data-ng-show="userHasAuthorization('edit', user, selectedProject) &&
+                                                                            (selectedGateReview.approval.currentRecord.approvalState === 'draft')"
+                                                                            data-ng-click="editBaselineDuration(baselineDurationReview)">
                                                                         <span class="glyphicon glyphicon-pencil"></span>
                                                                     </button>
                                                                 </div>
@@ -503,10 +514,12 @@
                                                                     </span>
                                                                     </div>
                                                                     <br>
-                                                                    <button class="btn btn-success btn-xs" data-ng-click="saveEditBaselineDuration(selectedGateReview, baselineDurationReview)">
+                                                                    <button class="btn btn-success btn-xs" data-ng-click="saveEditBaselineDuration(selectedGateReview, baselineDurationReview)"
+                                                                            data-ng-disabled="isResolving">
                                                                         <span class="glyphicon glyphicon-ok"></span>
                                                                     </button>
-                                                                    <button class="btn btn-info btn-xs" data-ng-click="cancelEditBaselineDuration(baselineDurationReview)">
+                                                                    <button class="btn btn-info btn-xs" data-ng-click="cancelEditBaselineDuration(baselineDurationReview)"
+                                                                            data-ng-disabled="isResolving">
                                                                         <span class="glyphicon glyphicon-remove"></span>
                                                                     </button>
                                                                 </div>
@@ -537,7 +550,10 @@
                                                                 <div data-ng-switch-default="view">
                                                                     <span data-ng-show="!estimateDurationReview.newDate">No new estimate yet</span>
                                                                     <span data-ng-bind="estimateDurationReview.newDate | date:'EEE d, MMM yyyy'"></span>
-                                                                    <button class="btn btn-success btn-xs" data-ng-show="userHasAuthorization('edit', user, selectedProject) && !(selectedGateReview.approval.currentRecord.approvalState === 'approved')" data-ng-click="editEstimateDuration(estimateDurationReview)">
+                                                                    <button class="btn btn-success btn-xs"
+                                                                            data-ng-show="userHasAuthorization('edit', user, selectedProject) &&
+                                                                            (selectedGateReview.approval.currentRecord.approvalState === 'draft')"
+                                                                            data-ng-click="editEstimateDuration(estimateDurationReview)">
                                                                         <span class="glyphicon glyphicon-pencil"></span>
                                                                     </button>
                                                                 </div>
@@ -550,10 +566,12 @@
                                                                     </span>
                                                                     </div>
                                                                     <br>
-                                                                    <button class="btn btn-success btn-xs" data-ng-click="saveEditEstimateDuration(selectedGateReview, estimateDurationReview)">
+                                                                    <button class="btn btn-success btn-xs" data-ng-click="saveEditEstimateDuration(selectedGateReview, estimateDurationReview)"
+                                                                            data-ng-disabled="isResolving">
                                                                         <span class="glyphicon glyphicon-ok"></span>
                                                                     </button>
-                                                                    <button class="btn btn-info btn-xs" data-ng-click="cancelEditEstimateDuration(estimateDurationReview)">
+                                                                    <button class="btn btn-info btn-xs" data-ng-click="cancelEditEstimateDuration(estimateDurationReview)"
+                                                                            data-ng-disabled="isResolving">
                                                                         <span class="glyphicon glyphicon-remove"></span>
                                                                     </button>
                                                                 </div>
@@ -584,7 +602,10 @@
                                                                 <div data-ng-switch-default="view">
                                                                     <span data-ng-show="!actualDurationReview.newDate">No new actual yet</span>
                                                                     <span data-ng-bind="actualDurationReview.newDate | date:'EEE d, MMM yyyy'"></span>
-                                                                    <button class="btn btn-success btn-xs" data-ng-show="userHasAuthorization('edit', user, selectedProject) && !(selectedGateReview.approval.currentRecord.approvalState === 'approved')" data-ng-click="editActualDuration(actualDurationReview)">
+                                                                    <button class="btn btn-success btn-xs"
+                                                                            data-ng-show="userHasAuthorization('edit', user, selectedProject) &&
+                                                                            (selectedGateReview.approval.currentRecord.approvalState === 'draft')"
+                                                                            data-ng-click="editActualDuration(actualDurationReview)">
                                                                         <span class="glyphicon glyphicon-pencil"></span>
                                                                     </button>
                                                                 </div>
@@ -597,10 +618,12 @@
                                                                     </span>
                                                                     </div>
                                                                     <br>
-                                                                    <button class="btn btn-success btn-xs" data-ng-click="saveEditActualDuration(selectedGateReview, actualDurationReview)">
+                                                                    <button class="btn btn-success btn-xs" data-ng-click="saveEditActualDuration(selectedGateReview, actualDurationReview)"
+                                                                            data-ng-disabled="isResolving">
                                                                         <span class="glyphicon glyphicon-ok"></span>
                                                                     </button>
-                                                                    <button class="btn btn-info btn-xs" data-ng-click="cancelEditActualDuration(actualDurationReview)">
+                                                                    <button class="btn btn-info btn-xs" data-ng-click="cancelEditActualDuration(actualDurationReview)"
+                                                                            data-ng-disabled="isResolving">
                                                                         <span class="glyphicon glyphicon-remove"></span>
                                                                     </button>
                                                                 </div>
@@ -629,7 +652,10 @@
                                                                 <div data-ng-switch-default="view">
                                                                     <span data-ng-hide="selectedGateReview.budget">No amount</span>
                                                                     <span data-ng-bind="selectedGateReview.budget"></span>
-                                                                    <button class="btn btn-success btn-xs" data-ng-show="userHasAuthorization('edit', user, selectedProject) && !(selectedGateReview.approval.currentRecord.approvalState === 'approved')" data-ng-click="editBudget(selectedGateReview)">
+                                                                    <button class="btn btn-success btn-xs"
+                                                                            data-ng-show="userHasAuthorization('edit', user, selectedProject) &&
+                                                                            (selectedGateReview.approval.currentRecord.approvalState === 'draft')"
+                                                                            data-ng-click="editBudget(selectedGateReview)">
                                                                         <span class="glyphicon glyphicon-pencil"></span>
                                                                     </button>
                                                                 </div>
@@ -638,10 +664,12 @@
                                                                         <input type="number" min="0" id="" class="form-control" data-ng-model="selectedGateReview.budget">
                                                                     </div>
                                                                     <br>
-                                                                    <button class="btn btn-success btn-xs" data-ng-click="saveEditBudget(selectedGateReview)">
+                                                                    <button class="btn btn-success btn-xs" data-ng-click="saveEditBudget(selectedGateReview)"
+                                                                            data-ng-disabled="isResolving">
                                                                         <span class="glyphicon glyphicon-ok"></span>
                                                                     </button>
-                                                                    <button class="btn btn-info btn-xs" data-ng-click="cancelEditBudget(selectedGateReview)">
+                                                                    <button class="btn btn-info btn-xs" data-ng-click="cancelEditBudget(selectedGateReview)"
+                                                                            data-ng-disabled="isResolving">
                                                                         <span class="glyphicon glyphicon-remove"></span>
                                                                     </button>
                                                                 </div>
@@ -672,7 +700,10 @@
                                                                 <div data-ng-switch-default="view">
                                                                     <span data-ng-show="!baselineCostReview.newCost">No new baseline yet</span>
                                                                     <span data-ng-bind="baselineCostReview.newCost"></span>
-                                                                    <button class="btn btn-success btn-xs" data-ng-show="userHasAuthorization('edit', user, selectedProject) && !(selectedGateReview.approval.currentRecord.approvalState === 'approved')" data-ng-click="editBaselineCost(baselineCostReview)">
+                                                                    <button class="btn btn-success btn-xs"
+                                                                            data-ng-show="userHasAuthorization('edit', user, selectedProject) &&
+                                                                            (selectedGateReview.approval.currentRecord.approvalState === 'draft')"
+                                                                            data-ng-click="editBaselineCost(baselineCostReview)">
                                                                         <span class="glyphicon glyphicon-pencil"></span>
                                                                     </button>
                                                                 </div>
@@ -681,10 +712,12 @@
                                                                         <input type="number" min="0" id="" class="form-control" data-ng-model="baselineCostReview.newCost">
                                                                     </div>
                                                                     <br>
-                                                                    <button class="btn btn-success btn-xs" data-ng-click="saveEditBaselineCost(selectedGateReview, baselineCostReview)">
+                                                                    <button class="btn btn-success btn-xs" data-ng-click="saveEditBaselineCost(selectedGateReview, baselineCostReview)"
+                                                                            data-ng-disabled="isResolving">
                                                                         <span class="glyphicon glyphicon-ok"></span>
                                                                     </button>
-                                                                    <button class="btn btn-info btn-xs" data-ng-click="cancelEditBaselineCost(baselineCostReview)">
+                                                                    <button class="btn btn-info btn-xs" data-ng-click="cancelEditBaselineCost(baselineCostReview)"
+                                                                            data-ng-disabled="isResolving">
                                                                         <span class="glyphicon glyphicon-remove"></span>
                                                                     </button>
                                                                 </div>
@@ -715,7 +748,10 @@
                                                                 <div data-ng-switch-default="view">
                                                                     <span data-ng-show="!estimateCostReview.newCost">No new estimate yet</span>
                                                                     <span data-ng-bind="estimateCostReview.newCost"></span>
-                                                                    <button class="btn btn-success btn-xs" data-ng-show="userHasAuthorization('edit', user, selectedProject) && !(selectedGateReview.approval.currentRecord.approvalState === 'approved')" data-ng-click="editEstimateCost(estimateCostReview)">
+                                                                    <button class="btn btn-success btn-xs"
+                                                                            data-ng-show="userHasAuthorization('edit', user, selectedProject) &&
+                                                                            (selectedGateReview.approval.currentRecord.approvalState === 'draft')"
+                                                                            data-ng-click="editEstimateCost(estimateCostReview)">
                                                                         <span class="glyphicon glyphicon-pencil"></span>
                                                                     </button>
                                                                 </div>
@@ -724,10 +760,12 @@
                                                                         <input type="number" min="0" id="" class="form-control" data-ng-model="estimateCostReview.newCost">
                                                                     </div>
                                                                     <br>
-                                                                    <button class="btn btn-success btn-xs" data-ng-click="saveEditEstimateCost(selectedGateReview, estimateCostReview)">
+                                                                    <button class="btn btn-success btn-xs" data-ng-click="saveEditEstimateCost(selectedGateReview, estimateCostReview)"
+                                                                            data-ng-disabled="isResolving">
                                                                         <span class="glyphicon glyphicon-ok"></span>
                                                                     </button>
-                                                                    <button class="btn btn-info btn-xs" data-ng-click="cancelEditEstimateCost(estimateCostReview)">
+                                                                    <button class="btn btn-info btn-xs" data-ng-click="cancelEditEstimateCost(estimateCostReview)"
+                                                                            data-ng-disabled="isResolving">
                                                                         <span class="glyphicon glyphicon-remove"></span>
                                                                     </button>
                                                                 </div>
@@ -758,7 +796,10 @@
                                                                 <div data-ng-switch-default="view">
                                                                     <span data-ng-show="!actualCostReview.newCost">No new actual yet</span>
                                                                     <span data-ng-bind="actualCostReview.newCost"></span>
-                                                                    <button class="btn btn-success btn-xs" data-ng-show="userHasAuthorization('edit', user, selectedProject) && !(selectedGateReview.approval.currentRecord.approvalState === 'approved')" data-ng-click="editActualCost(actualCostReview)">
+                                                                    <button class="btn btn-success btn-xs"
+                                                                            data-ng-show="userHasAuthorization('edit', user, selectedProject) &&
+                                                                            (selectedGateReview.approval.currentRecord.approvalState === 'draft')"
+                                                                            data-ng-click="editActualCost(actualCostReview)">
                                                                         <span class="glyphicon glyphicon-pencil"></span>
                                                                     </button>
                                                                 </div>
@@ -767,10 +808,12 @@
                                                                         <input type="number" min="0" id="" class="form-control" data-ng-model="actualCostReview.newCost">
                                                                     </div>
                                                                     <br>
-                                                                    <button class="btn btn-success btn-xs" data-ng-click="saveEditActualCost(selectedGateReview, actualCostReview)">
+                                                                    <button class="btn btn-success btn-xs" data-ng-click="saveEditActualCost(selectedGateReview, actualCostReview)"
+                                                                            data-ng-disabled="isResolving">
                                                                         <span class="glyphicon glyphicon-ok"></span>
                                                                     </button>
-                                                                    <button class="btn btn-info btn-xs" data-ng-click="cancelEditActualCost(actualCostReview)">
+                                                                    <button class="btn btn-info btn-xs" data-ng-click="cancelEditActualCost(actualCostReview)"
+                                                                            data-ng-disabled="isResolving">
                                                                         <span class="glyphicon glyphicon-remove"></span>
                                                                     </button>
                                                                 </div>
@@ -803,7 +846,10 @@
                                                                 <div data-ng-switch-default="view">
                                                                     <span data-ng-show="!baselineCompletionReview.newCompletion">No new baseline yet</span>
                                                                     <span data-ng-bind="baselineCompletionReview.newCompletion"></span>
-                                                                    <button class="btn btn-success btn-xs" data-ng-show="userHasAuthorization('edit', user, selectedProject) && !(selectedGateReview.approval.currentRecord.approvalState === 'approved')" data-ng-click="editBaselineCompletion(baselineCompletionReview)">
+                                                                    <button class="btn btn-success btn-xs"
+                                                                            data-ng-show="userHasAuthorization('edit', user, selectedProject) &&
+                                                                            (selectedGateReview.approval.currentRecord.approvalState === 'draft')"
+                                                                            data-ng-click="editBaselineCompletion(baselineCompletionReview)">
                                                                         <span class="glyphicon glyphicon-pencil"></span>
                                                                     </button>
                                                                 </div>
@@ -812,10 +858,12 @@
                                                                         <input type="number" min="0" id="" class="form-control" data-ng-model="baselineCompletionReview.newCompletion">
                                                                     </div>
                                                                     <br>
-                                                                    <button class="btn btn-success btn-xs" data-ng-click="saveEditBaselineCompletion(selectedGateReview, baselineCompletionReview)">
+                                                                    <button class="btn btn-success btn-xs" data-ng-click="saveEditBaselineCompletion(selectedGateReview, baselineCompletionReview)"
+                                                                            data-ng-disabled="isResolving">
                                                                         <span class="glyphicon glyphicon-ok"></span>
                                                                     </button>
-                                                                    <button class="btn btn-info btn-xs" data-ng-click="cancelEditBaselineCompletion(baselineCompletionReview)">
+                                                                    <button class="btn btn-info btn-xs" data-ng-click="cancelEditBaselineCompletion(baselineCompletionReview)"
+                                                                            data-ng-disabled="isResolving">
                                                                         <span class="glyphicon glyphicon-remove"></span>
                                                                     </button>
                                                                 </div>
@@ -846,7 +894,10 @@
                                                                 <div data-ng-switch-default="view">
                                                                     <span data-ng-show="!estimateCompletionReview.newCompletion">No new estimate yet</span>
                                                                     <span data-ng-bind="estimateCompletionReview.newCompletion"></span>
-                                                                    <button class="btn btn-success btn-xs" data-ng-show="userHasAuthorization('edit', user, selectedProject) && !(selectedGateReview.approval.currentRecord.approvalState === 'approved')" data-ng-click="editEstimateCompletion(estimateCompletionReview)">
+                                                                    <button class="btn btn-success btn-xs"
+                                                                            data-ng-show="userHasAuthorization('edit', user, selectedProject) &&
+                                                                            (selectedGateReview.approval.currentRecord.approvalState === 'draft')"
+                                                                            data-ng-click="editEstimateCompletion(estimateCompletionReview)">
                                                                         <span class="glyphicon glyphicon-pencil"></span>
                                                                     </button>
                                                                 </div>
@@ -855,10 +906,12 @@
                                                                         <input type="number" min="0" id="" class="form-control" data-ng-model="estimateCompletionReview.newCompletion">
                                                                     </div>
                                                                     <br>
-                                                                    <button class="btn btn-success btn-xs" data-ng-click="saveEditEstimateCompletion(selectedGateReview, estimateCompletionReview)">
+                                                                    <button class="btn btn-success btn-xs" data-ng-click="saveEditEstimateCompletion(selectedGateReview, estimateCompletionReview)"
+                                                                            data-ng-disabled="isResolving">
                                                                         <span class="glyphicon glyphicon-ok"></span>
                                                                     </button>
-                                                                    <button class="btn btn-info btn-xs" data-ng-click="cancelEditEstimateCompletion(estimateCompletionReview)">
+                                                                    <button class="btn btn-info btn-xs" data-ng-click="cancelEditEstimateCompletion(estimateCompletionReview)"
+                                                                            data-ng-disabled="isResolving">
                                                                         <span class="glyphicon glyphicon-remove"></span>
                                                                     </button>
                                                                 </div>
@@ -889,7 +942,10 @@
                                                                 <div data-ng-switch-default="view">
                                                                     <span data-ng-show="!actualCompletionReview.newCompletion">No new actual yet</span>
                                                                     <span data-ng-bind="actualCompletionReview.newCompletion"></span>
-                                                                    <button class="btn btn-success btn-xs" data-ng-show="userHasAuthorization('edit', user, selectedProject) && !(selectedGateReview.approval.currentRecord.approvalState === 'approved')" data-ng-click="editActualCompletion(actualCompletionReview)">
+                                                                    <button class="btn btn-success btn-xs"
+                                                                            data-ng-show="userHasAuthorization('edit', user, selectedProject) &&
+                                                                            (selectedGateReview.approval.currentRecord.approvalState === 'draft')"
+                                                                            data-ng-click="editActualCompletion(actualCompletionReview)">
                                                                         <span class="glyphicon glyphicon-pencil"></span>
                                                                     </button>
                                                                 </div>
@@ -898,10 +954,12 @@
                                                                         <input type="number" min="0" id="" class="form-control" data-ng-model="actualCompletionReview.newCompletion">
                                                                     </div>
                                                                     <br>
-                                                                    <button class="btn btn-success btn-xs" data-ng-click="saveEditActualCompletion(selectedGateReview, actualCompletionReview)">
+                                                                    <button class="btn btn-success btn-xs" data-ng-click="saveEditActualCompletion(selectedGateReview, actualCompletionReview)"
+                                                                            data-ng-disabled="isResolving">
                                                                         <span class="glyphicon glyphicon-ok"></span>
                                                                     </button>
-                                                                    <button class="btn btn-info btn-xs" data-ng-click="cancelEditActualCompletion(actualCompletionReview)">
+                                                                    <button class="btn btn-info btn-xs" data-ng-click="cancelEditActualCompletion(actualCompletionReview)"
+                                                                            data-ng-disabled="isResolving">
                                                                         <span class="glyphicon glyphicon-remove"></span>
                                                                     </button>
                                                                 </div>
@@ -926,25 +984,29 @@
                                                 </div>
                                                 <br>
                                                 <div class="row">
-                                                    <div class="col-md-4" data-ng-show="userHasAuthorization('edit', user, selectedProject) && selectedGateReview.approval.currentRecord.approvalState === 'draft' ">
-                                                        <button class="form-control btn btn-success" data-ng-click="submit(selectedProject, selectedGateReview)">
+                                                    <div class="col-md-6" data-ng-show="userHasAuthorization('edit', user, selectedProject) && (selectedGateReview.approval.currentRecord.approvalState === 'draft') ">
+                                                        <button class="form-control btn btn-success" data-ng-click="submit(selectedProject, selectedGateReview)"
+                                                                data-ng-disabled="isResolving">
                                                             Submit gate review
                                                         </button>
                                                     </div>
                                                     <div data-ng-show="userHasAuthorization('approve', user, selectedProject) && selectedGateReview.approval.currentRecord.approvalState === 'submitted'">
-                                                        <div class="col-md-4">
-                                                            <button class="form-control btn btn-success" data-ng-click="approve(selectedProject, selectedGateReview)">
+                                                        <div class="col-md-6">
+                                                            <button class="form-control btn btn-success" data-ng-click="approve(selectedProject, selectedGateReview)"
+                                                                    data-ng-disabled="isResolving">
                                                                 Approve gate review
                                                             </button>
                                                         </div>
-                                                        <div class="col-md-4">
-                                                            <button class="form-control btn btn-danger" data-ng-click="reject(selectedProject, selectedGateReview)">
+                                                        <div class="col-md-6">
+                                                            <button class="form-control btn btn-danger" data-ng-click="reject(selectedProject, selectedGateReview)"
+                                                                    data-ng-disabled="isResolving">
                                                                 Reject gate review
                                                             </button>
                                                         </div>
                                                     </div>
-                                                    <div class="col-md-4" data-ng-show="userHasAuthorization('edit', user, selectedProject) && selectedGateReview.approval.currentRecord.approvalState === 'rejected'">
-                                                        <button class="form-control btn btn-success" data-ng-click="draft(selectedProject, selectedGateReview)">
+                                                    <div class="col-md-6" data-ng-show="userHasAuthorization('edit', user, selectedProject) && selectedGateReview.approval.currentRecord.approvalState === 'rejected'">
+                                                        <button class="form-control btn btn-success" data-ng-click="draft(selectedProject, selectedGateReview)"
+                                                                data-ng-disabled="isResolving">
                                                             Draft gate review
                                                         </button>
                                                     </div>

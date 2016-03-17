@@ -8,11 +8,15 @@ angular.module('portfolio-change-requests').controller('PortfolioChangeRequestsC
 
 		var vm = this;
 
+		vm.isResolving = false;
+
 		// ------------- INIT -------------
 
 		vm.initError = [];
 
 		vm.init = function(){
+
+            vm.user = Authentication.user;
 
 			Projects.query({'selection.selectedForDelivery': true}, function(projects){
 				vm.projects = _.filter(projects, function(project){return project.process !== null;});
@@ -65,18 +69,30 @@ angular.module('portfolio-change-requests').controller('PortfolioChangeRequestsC
 
 		};
 
-		// ------- ROLES FOR BUTTONS ------
+        // -------------- AUTHORIZATION FOR BUTTONS -----------------
 
-		var d = $q.defer();
-		d.resolve(Authentication);
+        vm.userHasAuthorization = function(action, user, portfolio){
 
-		d.promise.then(function(data){
-			var obj = _.clone(data);
-			vm.userHasAuthorization = _.some(obj.user.roles, function(role){
-				return role === 'superAdmin' || role === 'admin' || role === 'pmo';
-			});
-		});
+            var userIsSuperhero, userIsPortfolioManager;
 
+            if(action === 'edit' && portfolio){
+                userIsSuperhero = !!_.some(user.roles, function(role){
+                    return role === 'superAdmin' || role === 'admin' || role === 'pmo';
+                });
+                userIsPortfolioManager = (user._id === portfolio.portfolioManager) || (user._id === portfolio.backupPortfolioManager);
+
+
+                return userIsSuperhero || userIsPortfolioManager;
+            }
+
+            if(action === 'approve' && portfolio){
+                userIsSuperhero = !!_.some(user.roles, function(role){
+                    return role === 'superAdmin' || role === 'admin' || role === 'pmo';
+                });
+
+                return userIsSuperhero;
+            }
+        };
 
 		// ------ TREE RECURSIONS -----------
 
@@ -175,7 +191,6 @@ angular.module('portfolio-change-requests').controller('PortfolioChangeRequestsC
 		var originalPortfolioChangeRequest = {};
 
 		vm.selectPortfolio = function(portfolio) {
-			vm.error = {};
 			vm.selectedPortfolio = null;
 			vm.portfolioChangeRequests = null;
 
@@ -184,11 +199,15 @@ angular.module('portfolio-change-requests').controller('PortfolioChangeRequestsC
 
 			vm.selectedPortfolio = portfolio;
 
+            vm.error = null;
+            vm.isResolving = true;
 			PortfolioChangeRequests.query({
 				portfolio: portfolio._id
 			}, function (res) {
+                vm.isResolving = false;
 				vm.portfolioChangeRequests = res;
 			}, function (err) {
+                vm.isResolving = false;
 				vm.error = err.data.message;
 			});
 		};
@@ -204,6 +223,7 @@ angular.module('portfolio-change-requests').controller('PortfolioChangeRequestsC
 
 		// ------------- NEW PROJECT CHANGE REQUEST ------------
 
+        vm.showNewPortfolioChangeRequestForm = false;
 
 		vm.openNewPortfolioCRRaisedOnDate = function($event){
 			$event.preventDefault();
@@ -219,7 +239,11 @@ angular.module('portfolio-change-requests').controller('PortfolioChangeRequestsC
 				raisedOnDate : vm.newPortfolioChangeRequest.raisedOnDate,
 				title : vm.newPortfolioChangeRequest.title
 			});
+            vm.error = null;
+            vm.isResolving = true;
 			newPortfolioChangeRequest.$save(function(res) {
+                vm.isResolving = false;
+                vm.showNewPortfolioChangeRequestForm = false;
 				// Clear new form
 				vm.newPortfolioChangeRequest = {};
 				// Refresh the list of change requests
@@ -228,11 +252,13 @@ angular.module('portfolio-change-requests').controller('PortfolioChangeRequestsC
 				vm.selectPortfolioChangeRequest(portfolio, res);
 				// Close new review form done directly in the view's html
 			}, function(err) {
+                vm.isResolving = false;
 				vm.error = err.data.message;
 			});
 		};
 
 		vm.cancelNewPortfolioChangeRequest = function(){
+            vm.error = null;
 			vm.newPortfolioChangeRequest = {};
 		};
 
@@ -244,6 +270,8 @@ angular.module('portfolio-change-requests').controller('PortfolioChangeRequestsC
 		// in the details pane that are also reported in the list of change requests
 
 		vm.selectPortfolioChangeRequest = function(portfolio, portfolioChangeRequest){
+            vm.error = null;
+            vm.isResolving = true;
 			$q.all([
                 PortfolioChangeRequests.get({
                         portfolioChangeRequestId:portfolioChangeRequest._id }).$promise,
@@ -252,12 +280,14 @@ angular.module('portfolio-change-requests').controller('PortfolioChangeRequestsC
                 Projects.query(
                     { portfolio : portfolio._id }).$promise
             ]).then(function(data) {
+                vm.isResolving = false;
                 portfolioChangeRequestFromList[portfolioChangeRequest._id] = portfolioChangeRequest;
                 originalPortfolioChangeRequest[portfolioChangeRequest._id] = _.cloneDeep(data[0]);
                 vm.selectedPortfolioChangeRequest = data[0];
                 vm.availableProjectChangeRequests = data[1];
                 vm.availableProjects = data[2];
             }, function(err){
+                vm.isResolving = false;
                 vm.error = err.data.message;
             });
 
@@ -283,11 +313,14 @@ angular.module('portfolio-change-requests').controller('PortfolioChangeRequestsC
 			var copyPortfolioChangeRequest = _.cloneDeep(portfolioChangeRequest);
 			copyPortfolioChangeRequest.portfolio = _.get(copyPortfolioChangeRequest.portfolio, '_id');
 			// Update server header
+            vm.error = null;
+            vm.isResolving = true;
 			PortfolioChangeRequests.updateHeader(
 				{
 					portfolioChangeRequestId : copyPortfolioChangeRequest._id
 				}, copyPortfolioChangeRequest,
 				function(res){
+                    vm.isResolving = false;
 					// Update details pane view with new saved details
 					originalPortfolioChangeRequest[portfolioChangeRequest._id].raisedOnDate = portfolioChangeRequest.raisedOnDate;
 					originalPortfolioChangeRequest[portfolioChangeRequest._id].title = portfolioChangeRequest.title;
@@ -300,11 +333,15 @@ angular.module('portfolio-change-requests').controller('PortfolioChangeRequestsC
 					// Close edit header form and back to view
 					vm.selectHeaderForm('view', portfolioChangeRequest);
 				},
-				function(err){vm.error = err.data.message;}
+				function(err){
+                    vm.isResolving = false;
+                    vm.error = err.data.message;
+                }
 			);
 		};
 
 		vm.cancelEditHeader = function(portfolioChangeRequest){
+            vm.error = null;
 			portfolioChangeRequest.raisedOnDate = originalPortfolioChangeRequest[portfolioChangeRequest._id].raisedOnDate;
 			portfolioChangeRequest.title = originalPortfolioChangeRequest[portfolioChangeRequest._id].title;
 			portfolioChangeRequest.description = originalPortfolioChangeRequest[portfolioChangeRequest._id].description;
@@ -315,16 +352,22 @@ angular.module('portfolio-change-requests').controller('PortfolioChangeRequestsC
 
 
 		vm.deletePortfolioChangeRequest = function(portfolioChangeRequest){
+            vm.error = null;
+            vm.isResolving = true;
 			PortfolioChangeRequests.remove(
                 {portfolioChangeRequestId: portfolioChangeRequest._id},
-                portfolioChangeRequest, function(res){
-				vm.portfolioChangeRequests = _.without(vm.portfolioChangeRequests, _.find(vm.portfolioChangeRequests, _.matchesProperty('_id',portfolioChangeRequest._id)));
-				vm.cancelNewPortfolioChangeRequest();
-				vm.selectedPortfolioChangeRequest = null;
-				originalPortfolioChangeRequest = {};
-			}, function(err){
-				vm.error = err.data.message;
-			});
+                portfolioChangeRequest,
+                function(res){
+                    vm.isResolving = false;
+                    vm.portfolioChangeRequests = _.without(vm.portfolioChangeRequests, _.find(vm.portfolioChangeRequests, _.matchesProperty('_id',portfolioChangeRequest._id)));
+                    vm.cancelNewPortfolioChangeRequest();
+                    vm.selectedPortfolioChangeRequest = null;
+                    originalPortfolioChangeRequest = {};
+                }, function(err){
+                    vm.isResolving = false;
+                    vm.error = err.data.message;
+                }
+            );
 		};
 
 
@@ -335,16 +378,20 @@ angular.module('portfolio-change-requests').controller('PortfolioChangeRequestsC
             var copyPortfolioChangeRequest = _.cloneDeep(portfolioChangeRequest);
             copyPortfolioChangeRequest.portfolio = _.get(copyPortfolioChangeRequest.portfolio, '_id');
             // Run server side approve
+            vm.error = null;
+            vm.isResolving = true;
             PortfolioChangeRequests.submit(
                 {
                     portfolioChangeRequestId : copyPortfolioChangeRequest._id
                 }, copyPortfolioChangeRequest,
                 function(res){
+                    vm.isResolving = false;
                     // Refresh the object with the current performances values
                     originalPortfolioChangeRequest[portfolioChangeRequest._id].approval = res.approval;
                     portfolioChangeRequest.approval = res.approval;
                 },
                 function(err){
+                    vm.isResolving = false;
                     $scope.error = err.data.message;
                 }
             );
@@ -355,16 +402,21 @@ angular.module('portfolio-change-requests').controller('PortfolioChangeRequestsC
             var copyPortfolioChangeRequest = _.cloneDeep(portfolioChangeRequest);
             copyPortfolioChangeRequest.portfolio = _.get(copyPortfolioChangeRequest.portfolio, '_id');
             // Run server side approve
+            vm.error = null;
+            vm.isResolving = true;
             PortfolioChangeRequests.approve(
                 {
                     portfolioChangeRequestId : copyPortfolioChangeRequest._id
                 }, copyPortfolioChangeRequest,
                 function(res){
+                    vm.isResolving = false;
                     // Refresh the object with the current performances values
+                    portfolioChangeRequestFromList[portfolioChangeRequest._id].approval = res.approval;
                     originalPortfolioChangeRequest[portfolioChangeRequest._id].approval = res.approval;
                     portfolioChangeRequest.approval = res.approval;
                 },
                 function(err){
+                    vm.isResolving = false;
                     $scope.error = err.data.message;
                 }
             );
@@ -375,16 +427,23 @@ angular.module('portfolio-change-requests').controller('PortfolioChangeRequestsC
             var copyPortfolioChangeRequest = _.cloneDeep(portfolioChangeRequest);
             copyPortfolioChangeRequest.portfolio = _.get(copyPortfolioChangeRequest.portfolio, '_id');
             // Run server side approve
+            vm.error = null;
+            vm.isResolving = true;
             PortfolioChangeRequests.reject(
                 {
                     portfolioChangeRequestId : copyPortfolioChangeRequest._id
                 }, copyPortfolioChangeRequest,
                 function(res){
+                    vm.isResolving = false;
                     // Refresh the object with the current performances values
+                    portfolioChangeRequestFromList[portfolioChangeRequest._id].approval = res.approval;
                     originalPortfolioChangeRequest[portfolioChangeRequest._id].approval = res.approval;
                     portfolioChangeRequest.approval = res.approval;
                 },
-                function(err){$scope.error = err.data.message;}
+                function(err){
+                    vm.isResolving = false;
+                    $scope.error = err.data.message;
+                }
             );
         };
 
@@ -393,16 +452,22 @@ angular.module('portfolio-change-requests').controller('PortfolioChangeRequestsC
             var copyPortfolioChangeRequest = _.cloneDeep(portfolioChangeRequest);
             copyPortfolioChangeRequest.portfolio = _.get(copyPortfolioChangeRequest.portfolio, '_id');
             // Run server side approve
+            vm.error = null;
+            vm.isResolving = true;
             PortfolioChangeRequests.draft(
                 {
                     portfolioChangeRequestId : copyPortfolioChangeRequest._id
                 }, copyPortfolioChangeRequest,
                 function(res){
+                    vm.isResolving = false;
                     // Refresh the object with the current performances values
                     originalPortfolioChangeRequest[portfolioChangeRequest._id].approval = res.approval;
                     portfolioChangeRequest.approval = res.approval;
                 },
-                function(err){$scope.error = err.data.message;}
+                function(err){
+                    vm.isResolving = false;
+                    $scope.error = err.data.message;
+                }
             );
         };
 
@@ -462,25 +527,33 @@ angular.module('portfolio-change-requests').controller('PortfolioChangeRequestsC
         };
 
         vm.addProjectChangeRequest = function(portfolioChange, projectChange){
+            vm.error = null;
+            vm.isResolving = true;
             PortfolioChangeRequests.addProjectChangeRequest({
                 portfolioChangeRequestId : portfolioChange._id,
                 projectChangeRequestId : projectChange._id
             }, portfolioChange, function(res){
+                vm.isResolving = false;
                 portfolioChange.associatedProjectChangeRequests.push(projectChange);
                 vm.availableProjectChangeRequests = _.without(vm.availableProjectChangeRequests, projectChange);
             }, function(err){
+                vm.isResolving = false;
                 vm.error = err.data.message;
             });
         };
 
         vm.removeProjectChangeRequest = function(portfolioChange, projectChange){
+            vm.error = null;
+            vm.isResolving = true;
             PortfolioChangeRequests.removeProjectChangeRequest({
                 portfolioChangeRequestId : portfolioChange._id,
                 projectChangeRequestId : projectChange._id
             }, portfolioChange, function(res){
+                vm.isResolving = false;
                 portfolioChange.associatedProjectChangeRequests = _.without(portfolioChange.associatedProjectChangeRequests, projectChange);
                 vm.availableProjectChangeRequests.push(projectChange);
             }, function(err){
+                vm.isResolving = false;
                 vm.error = err.data.message;
             });
         };
@@ -501,11 +574,15 @@ angular.module('portfolio-change-requests').controller('PortfolioChangeRequestsC
                 description : '',
                 funds : 0
             };
+            vm.error = null;
+            vm.isResolving = true;
             PortfolioChangeRequests.createFundingRequest({
                 portfolioChangeRequestId : portfolioChange._id
             }, newFundingRequest, function(res){
+                vm.isResolving = false;
                 portfolioChange.fundingRequests.push(res);
             }, function(err){
+                vm.isResolving = false;
                 vm.error = err.data.message;
             });
         };
@@ -519,18 +596,23 @@ angular.module('portfolio-change-requests').controller('PortfolioChangeRequestsC
 
 
         vm.saveEditFundingRequest = function(portfolioChange, fundingRequest){
+            vm.error = null;
+            vm.isResolving = true;
             PortfolioChangeRequests.updateFundingRequest({
                 portfolioChangeRequestId : portfolioChange._id,
                 fundingRequestId : fundingRequest._id
             }, fundingRequest, function(res){
+                vm.isResolving = false;
                 vm.selectFundingRequestForm('view', fundingRequest);
             }, function(err){
+                vm.isResolving = false;
                 vm.error = err.data.message;
                 vm.selectFundingRequestForm('view', fundingRequest);
             });
         };
 
         vm.cancelEditFundingRequest = function(portfolioChange, fundingRequest){
+            vm.error = null;
             fundingRequest.title = originalFundingRequest[fundingRequest._id].title;
             fundingRequest.description = originalFundingRequest[fundingRequest._id].description;
             fundingRequest.funds = originalFundingRequest[fundingRequest._id].funds;
@@ -538,12 +620,16 @@ angular.module('portfolio-change-requests').controller('PortfolioChangeRequestsC
         };
 
         vm.deleteFundingRequest = function(portfolioChange, fundingRequest){
+            vm.error = null;
+            vm.isResolving = true;
             PortfolioChangeRequests.deleteFundingRequest({
                 portfolioChangeRequestId : portfolioChange._id,
                 fundingRequestId : fundingRequest._id
             }, fundingRequest, function(res){
+                vm.isResolving = false;
                 portfolioChange.fundingRequests = _.without(portfolioChange.fundingRequests, fundingRequest);
             }, function(err){
+                vm.isResolving = false;
                 vm.error = err.data.message;
             });
         };

@@ -8,6 +8,8 @@ angular.module('project-issues').controller('ProjectIssuesController', ['$scope'
 
         // ------------- INIT -------------
 
+        $scope.isResolving = false;
+
         $scope.initError = [];
         var logReasons = [];
         var issueStates = [];
@@ -16,7 +18,9 @@ angular.module('project-issues').controller('ProjectIssuesController', ['$scope'
 
         $scope.init = function () {
 
-            // main controller
+            $scope.user = Authentication.user;
+
+            // For main controller
 
             Projects.query({'selection.active': true, 'selection.selectedForDelivery': true}, function (projects) {
                 $scope.projects = _.filter(projects, function (project) {
@@ -38,7 +42,7 @@ angular.module('project-issues').controller('ProjectIssuesController', ['$scope'
                 $scope.initError.push(err.data.message);
             });
 
-            // Modal controller
+            // For modal controller
 
             LogReasons.query(function (res) {
                 logReasons = res;
@@ -72,15 +76,7 @@ angular.module('project-issues').controller('ProjectIssuesController', ['$scope'
 
         // ------- ROLES FOR BUTTONS ------
 
-        var d = $q.defer();
-        d.resolve(Authentication);
-
-        d.promise.then(function (data) {
-            var obj = _.clone(data);
-            $scope.userHasAuthorization = _.some(obj.user.roles, function (role) {
-                return role === 'superAdmin' || role === 'admin' || role === 'pmo';
-            });
-        });
+        $scope.userHasAuthorization = true;
 
 
         // ------------------- UTILITIES ---------------------

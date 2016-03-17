@@ -299,3 +299,16 @@ exports.hasApproveAuthorization = function(req, res, next) {
     });
 };
 
+
+exports.objectIsEditable = function(req, res, next) {
+
+    var objectIsDraft = req.projectChangeRequest.approval.currentRecord.approvalState === 'draft';
+
+    if(!objectIsDraft){
+        return res.status(403).send({
+            message: 'Object cannot be edited'
+        });
+    }
+
+    next();
+};

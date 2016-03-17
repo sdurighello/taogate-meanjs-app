@@ -14,7 +14,8 @@
             <script type="text/ng-template" id="portfolioTree">
                 <button class="btn btn-default btn-sm"
                         data-ng-click="selectPortfolio(tree.node);"
-                        style="min-width:50px; max-width: 150px; overflow:hidden; margin: 2%;">
+                        style="min-width:50px; max-width: 150px; overflow:hidden; margin: 2%;"
+                        data-ng-disabled="isResolving">
                     <span data-ng-bind="tree.node.name"></span>
                 </button>
                 <ul data-ng-if="tree.nodeTrees" style="list-style: none;">

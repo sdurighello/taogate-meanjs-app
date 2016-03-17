@@ -334,3 +334,17 @@ exports.hasEditAuthorization = function(req, res, next) {
         next();
     });
 };
+
+
+exports.objectIsEditable = function(req, res, next) {
+
+    var objectIsDraft = req.gateReview.approval.currentRecord.approvalState === 'draft';
+
+    if(!objectIsDraft){
+        return res.status(403).send({
+            message: 'Object cannot be edited'
+        });
+    }
+
+    next();
+};

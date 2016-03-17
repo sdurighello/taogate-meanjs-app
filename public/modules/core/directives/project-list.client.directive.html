@@ -43,7 +43,9 @@
     process: (!!filterProfileProcess || undefined) && {_id : filterProfileProcess._id}
 }"
                         data-ng-click="selectProject(project)"
-                        class="btn btn-default btn-sm center-block btn-block" style="overflow: hidden;">
+                        class="btn btn-default btn-sm center-block btn-block"
+                        style="overflow: hidden;"
+                        data-ng-disabled="isResolving">
                     {{project.identification.idNumber}} - {{project.identification.name}}
                 </button>
             </div>

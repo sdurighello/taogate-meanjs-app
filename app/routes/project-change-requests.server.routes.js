@@ -11,8 +11,8 @@ module.exports = function(app) {
 
 	app.route('/project-change-requests/:projectChangeRequestId')
 		.get(users.requiresLogin, projectChangeRequests.read)
-		.put(users.requiresLogin, projectChangeRequests.hasEditAuthorization, projectChangeRequests.update)
-		.delete(users.requiresLogin, projectChangeRequests.hasEditAuthorization, projectChangeRequests.delete);
+		.put(users.requiresLogin, projectChangeRequests.hasEditAuthorization, projectChangeRequests.objectIsEditable, projectChangeRequests.update)
+		.delete(users.requiresLogin, projectChangeRequests.hasEditAuthorization, projectChangeRequests.objectIsEditable, projectChangeRequests.delete);
 
 	// Changes for a project
 	app.route('/project-change-requests-changeRequestsForProject')
@@ -35,50 +35,50 @@ module.exports = function(app) {
 	// Header
 
 	app.route('/project-change-requests/:projectChangeRequestId/header')
-		.put(users.requiresLogin, projectChangeRequests.hasEditAuthorization, projectChangeRequests.updateHeader);
+		.put(users.requiresLogin, projectChangeRequests.hasEditAuthorization, projectChangeRequests.objectIsEditable, projectChangeRequests.updateHeader);
 
     // Status
 
 	app.route('/project-change-requests/:projectChangeRequestId/status')
-		.put(users.requiresLogin, projectChangeRequests.hasEditAuthorization, projectChangeRequests.updateStatus);
+		.put(users.requiresLogin, projectChangeRequests.hasEditAuthorization, projectChangeRequests.objectIsEditable, projectChangeRequests.updateStatus);
 
 	// Budget
 
 	app.route('/project-change-requests/:projectChangeRequestId/budget')
-		.put(users.requiresLogin, projectChangeRequests.hasEditAuthorization, projectChangeRequests.updateBudget);
+		.put(users.requiresLogin, projectChangeRequests.hasEditAuthorization, projectChangeRequests.objectIsEditable, projectChangeRequests.updateBudget);
 
 	// Baseline
 
 	app.route('/project-change-requests/:projectChangeRequestId/baseline-duration-reviews/:baselineDurationReviewId')
-		.put(users.requiresLogin, projectChangeRequests.hasEditAuthorization, projectChangeRequests.updateBaselineDuration);
+		.put(users.requiresLogin, projectChangeRequests.hasEditAuthorization, projectChangeRequests.objectIsEditable, projectChangeRequests.updateBaselineDuration);
 
 	app.route('/project-change-requests/:projectChangeRequestId/baseline-cost-reviews/:baselineCostReviewId')
-		.put(users.requiresLogin, projectChangeRequests.hasEditAuthorization, projectChangeRequests.updateBaselineCost);
+		.put(users.requiresLogin, projectChangeRequests.hasEditAuthorization, projectChangeRequests.objectIsEditable, projectChangeRequests.updateBaselineCost);
 
 	app.route('/project-change-requests/:projectChangeRequestId/baseline-completion-reviews/:baselineCompletionReviewId')
-		.put(users.requiresLogin, projectChangeRequests.hasEditAuthorization, projectChangeRequests.updateBaselineCompletion);
+		.put(users.requiresLogin, projectChangeRequests.hasEditAuthorization, projectChangeRequests.objectIsEditable, projectChangeRequests.updateBaselineCompletion);
 
 	// Estimate
 
 	app.route('/project-change-requests/:projectChangeRequestId/estimate-duration-reviews/:estimateDurationReviewId')
-		.put(users.requiresLogin, projectChangeRequests.hasEditAuthorization, projectChangeRequests.updateEstimateDuration);
+		.put(users.requiresLogin, projectChangeRequests.hasEditAuthorization, projectChangeRequests.objectIsEditable, projectChangeRequests.updateEstimateDuration);
 
 	app.route('/project-change-requests/:projectChangeRequestId/estimate-cost-reviews/:estimateCostReviewId')
-		.put(users.requiresLogin, projectChangeRequests.hasEditAuthorization, projectChangeRequests.updateEstimateCost);
+		.put(users.requiresLogin, projectChangeRequests.hasEditAuthorization, projectChangeRequests.objectIsEditable, projectChangeRequests.updateEstimateCost);
 
 	app.route('/project-change-requests/:projectChangeRequestId/estimate-completion-reviews/:estimateCompletionReviewId')
-		.put(users.requiresLogin, projectChangeRequests.hasEditAuthorization, projectChangeRequests.updateEstimateCompletion);
+		.put(users.requiresLogin, projectChangeRequests.hasEditAuthorization, projectChangeRequests.objectIsEditable, projectChangeRequests.updateEstimateCompletion);
 
 	// Actual
 
 	app.route('/project-change-requests/:projectChangeRequestId/actual-duration-reviews/:actualDurationReviewId')
-		.put(users.requiresLogin, projectChangeRequests.hasEditAuthorization, projectChangeRequests.updateActualDuration);
+		.put(users.requiresLogin, projectChangeRequests.hasEditAuthorization, projectChangeRequests.objectIsEditable, projectChangeRequests.updateActualDuration);
 
 	app.route('/project-change-requests/:projectChangeRequestId/actual-cost-reviews/:actualCostReviewId')
-		.put(users.requiresLogin, projectChangeRequests.hasEditAuthorization, projectChangeRequests.updateActualCost);
+		.put(users.requiresLogin, projectChangeRequests.hasEditAuthorization, projectChangeRequests.objectIsEditable, projectChangeRequests.updateActualCost);
 
 	app.route('/project-change-requests/:projectChangeRequestId/actual-completion-reviews/:actualCompletionReviewId')
-		.put(users.requiresLogin, projectChangeRequests.hasEditAuthorization, projectChangeRequests.updateActualCompletion);
+		.put(users.requiresLogin, projectChangeRequests.hasEditAuthorization, projectChangeRequests.objectIsEditable, projectChangeRequests.updateActualCompletion);
 
 
 	// Finish by binding the Project change request middleware

@@ -8,6 +8,8 @@ angular.module('project-change-requests').controller('ProjectChangeRequestContro
 
 		// ------------- INIT -------------
 
+		$scope.isResolving = false;
+
 		$scope.initError = [];
 
 		$scope.init = function(){
@@ -188,6 +190,7 @@ angular.module('project-change-requests').controller('ProjectChangeRequestContro
         // -------------- SELECT GATE ---------------------
 
         $scope.setReviewObject = function(reviewObj){
+            $scope.error = null;
             $scope.selectedProjectChangeRequest = null;
             $scope.reviewObject = reviewObj;
         };
@@ -198,7 +201,7 @@ angular.module('project-change-requests').controller('ProjectChangeRequestContro
 		var originalProjectChangeRequest = {};
 
 		$scope.selectProject = function(project) {
-			$scope.error = {};
+			$scope.error = null;
 			$scope.selectedProject = null;
 			$scope.projectChangeRequestList = null;
             $scope.reviewObject = null;
@@ -208,12 +211,14 @@ angular.module('project-change-requests').controller('ProjectChangeRequestContro
 
 			$scope.selectedProject = project;
 
+            $scope.isResolving = true;
 			ProjectChangeRequests.getChangeRequestsForProject({
 				project: project._id
 			}, function (res) {
-                $scope.error = null;
+                $scope.isResolving = false;
 				$scope.projectChangeRequestList = res;
 			}, function (err) {
+                $scope.isResolving = false;
 				$scope.error = err.data.message;
 			});
 
@@ -240,8 +245,10 @@ angular.module('project-change-requests').controller('ProjectChangeRequestContro
 				raisedOnDate : $scope.newProjectChangeRequest.raisedOnDate,
 				title : $scope.newProjectChangeRequest.title
 			});
+            $scope.error = null;
+            $scope.isResolving = true;
 			newProjectChangeRequest.$save(function(res) {
-                $scope.error = null;
+                $scope.isResolving = false;
 				// Clear new form
 				$scope.newProjectChangeRequest = {};
 				// Refresh the list of gate reviews
@@ -250,6 +257,7 @@ angular.module('project-change-requests').controller('ProjectChangeRequestContro
 				$scope.selectProjectChangeRequest(res);
 				// Close new review form done directly in the view's html
 			}, function(err) {
+                $scope.isResolving = false;
 				$scope.error = err.data.message;
 			});
 		};
@@ -268,14 +276,17 @@ angular.module('project-change-requests').controller('ProjectChangeRequestContro
 
 		$scope.selectProjectChangeRequest = function(projectChangeRequest){
             projectChangeRequestFromList[projectChangeRequest._id] = projectChangeRequest;
+            $scope.error = null;
+            $scope.isResolving = true;
             ProjectChangeRequests.get({
                 projectChangeRequestId:projectChangeRequest._id
 			}, function(res){
-                $scope.error = null;
+                $scope.isResolving = false;
 				$scope.selectedProjectChangeRequest = res;
 				originalProjectChangeRequest[projectChangeRequest._id] = _.cloneDeep(res);
 				//$scope.selectProjectChangeRequestForm('view');
 			},function(errorResponse){
+                $scope.isResolving = false;
 				$scope.error = errorResponse.data.message;
 				$scope.selectedProjectChangeRequest = null;
 				originalProjectChangeRequest = {};
@@ -313,12 +324,14 @@ angular.module('project-change-requests').controller('ProjectChangeRequestContro
             copyProjectChangeRequest.gate = _.get(copyProjectChangeRequest.gate, '_id');
             copyProjectChangeRequest.gateAssignmentReview.gateStatusAssignment = allowNull(copyProjectChangeRequest.gateAssignmentReview.gateStatusAssignment);
             // Update server header
+            $scope.error = null;
+            $scope.isResolving = true;
             ProjectChangeRequests.updateHeader(
 				{
                     projectChangeRequestId : copyProjectChangeRequest._id
 				}, copyProjectChangeRequest,
 				function(res){
-                    $scope.error = null;
+                    $scope.isResolving = false;
 					// Update details pane view with new saved details
 					originalProjectChangeRequest[projectChangeRequest._id].raisedOnDate = projectChangeRequest.raisedOnDate;
                     originalProjectChangeRequest[projectChangeRequest._id].title = projectChangeRequest.title;
@@ -332,7 +345,10 @@ angular.module('project-change-requests').controller('ProjectChangeRequestContro
 					// Close edit header form and back to view
 					$scope.selectHeaderForm('view', projectChangeRequest);
 				},
-				function(err){$scope.error = err.data.message;}
+				function(err){
+                    $scope.isResolving = false;
+                    $scope.error = err.data.message;
+                }
 			);
 		};
 
@@ -349,13 +365,16 @@ angular.module('project-change-requests').controller('ProjectChangeRequestContro
 
 
 		$scope.deleteProjectChangeRequest = function(reviewObject, projectChangeRequest){
+            $scope.error = null;
+            $scope.isResolving = true;
             ProjectChangeRequests.remove({projectChangeRequestId: projectChangeRequest._id}, projectChangeRequest, function(res){
-                $scope.error = null;
+                $scope.isResolving = false;
 				reviewObject.projectChangeRequests = _.without(reviewObject.projectChangeRequests, _.find(reviewObject.projectChangeRequests, _.matchesProperty('_id',projectChangeRequest._id)));
 				$scope.cancelNewProjectChangeRequest();
 				$scope.selectedProjectChangeRequest = null;
 				originalProjectChangeRequest = {};
 			}, function(err){
+                $scope.isResolving = false;
 				$scope.error = err.data.message;
 			});
 		};
@@ -370,17 +389,22 @@ angular.module('project-change-requests').controller('ProjectChangeRequestContro
 			copyProjectChangeRequest.gate = _.get(copyProjectChangeRequest.gate, '_id');
             copyProjectChangeRequest.gateAssignmentReview.gateStatusAssignment = allowNull(copyProjectChangeRequest.gateAssignmentReview.gateStatusAssignment);
             // Run server side approve
+            $scope.error = null;
+            $scope.isResolving = true;
 			ProjectChangeRequests.submit(
 				{
 					projectChangeRequestId : copyProjectChangeRequest._id
 				}, copyProjectChangeRequest,
 				function(res){
-                    $scope.error = null;
+                    $scope.isResolving = false;
 					// Refresh the approval history
                     projectChangeRequestFromList[projectChangeRequest._id].approval = res.approval;
                     projectChangeRequest.approval = res.approval;
 				},
-				function(err){$scope.error = err.data.message;}
+				function(err){
+                    $scope.isResolving = false;
+                    $scope.error = err.data.message;
+                }
 			);
 		};
 
@@ -391,16 +415,21 @@ angular.module('project-change-requests').controller('ProjectChangeRequestContro
             copyProjectChangeRequest.gate = _.get(copyProjectChangeRequest.gate, '_id');
             copyProjectChangeRequest.gateAssignmentReview.gateStatusAssignment = allowNull(copyProjectChangeRequest.gateAssignmentReview.gateStatusAssignment);
             // Run server side approve
+            $scope.error = null;
+            $scope.isResolving = true;
             ProjectChangeRequests.approve(
 				{
                     projectChangeRequestId : copyProjectChangeRequest._id
 				}, copyProjectChangeRequest,
 				function(res){
-                    $scope.error = null;
+                    $scope.isResolving = false;
 					// Refresh the object with the current performances values since you approved
                     $scope.selectProjectChangeRequest(projectChangeRequest);
 				},
-				function(err){$scope.error = err.data.message;}
+				function(err){
+                    $scope.isResolving = false;
+                    $scope.error = err.data.message;
+                }
 			);
 		};
 
@@ -411,17 +440,22 @@ angular.module('project-change-requests').controller('ProjectChangeRequestContro
             copyProjectChangeRequest.gate = _.get(copyProjectChangeRequest.gate, '_id');
             copyProjectChangeRequest.gateAssignmentReview.gateStatusAssignment = allowNull(copyProjectChangeRequest.gateAssignmentReview.gateStatusAssignment);
             // Run server side approve
+            $scope.error = null;
+            $scope.isResolving = true;
             ProjectChangeRequests.reject(
                 {
                     projectChangeRequestId : copyProjectChangeRequest._id
                 }, copyProjectChangeRequest,
                 function(res){
-                    $scope.error = null;
+                    $scope.isResolving = false;
                     // Refresh the approval history
                     projectChangeRequestFromList[projectChangeRequest._id].approval = res.approval;
                     projectChangeRequest.approval = res.approval;
                 },
-                function(err){$scope.error = err.data.message;}
+                function(err){
+                    $scope.isResolving = false;
+                    $scope.error = err.data.message;
+                }
             );
         };
 
@@ -432,17 +466,22 @@ angular.module('project-change-requests').controller('ProjectChangeRequestContro
             copyProjectChangeRequest.gate = _.get(copyProjectChangeRequest.gate, '_id');
             copyProjectChangeRequest.gateAssignmentReview.gateStatusAssignment = _.get(copyProjectChangeRequest.gateAssignmentReview.gateStatusAssignment, '_id');
             // Run server side approve
+            $scope.error = null;
+            $scope.isResolving = true;
             ProjectChangeRequests.draft(
                 {
                     projectChangeRequestId : copyProjectChangeRequest._id
                 }, copyProjectChangeRequest,
                 function(res){
-                    $scope.error = null;
+                    $scope.isResolving = false;
                     // Refresh the approval history
                     projectChangeRequestFromList[projectChangeRequest._id].approval = res.approval;
                     projectChangeRequest.approval = res.approval;
                 },
-                function(err){$scope.error = err.data.message;}
+                function(err){
+                    $scope.isResolving = false;
+                    $scope.error = err.data.message;
+                }
             );
         };
 
@@ -460,12 +499,14 @@ angular.module('project-change-requests').controller('ProjectChangeRequestContro
             copyProjectChangeRequest.project = _.get(copyProjectChangeRequest.project, '_id');
             copyProjectChangeRequest.gate = _.get(copyProjectChangeRequest.gate, '_id');
             // Update server header
+            $scope.error = null;
+            $scope.isResolving = true;
             ProjectChangeRequests.updateBudget(
                 {
                     projectChangeRequestId : copyProjectChangeRequest._id
                 }, copyProjectChangeRequest,
                 function(res){
-                    $scope.error = null;
+                    $scope.isResolving = false;
                     // Update details pane view with new saved details
                     originalProjectChangeRequest[projectChangeRequest._id].gateAssignmentReview.budgetChange = projectChangeRequest.gateAssignmentReview.budgetChange;
                     // Update list of reviews with new date / title
@@ -473,7 +514,10 @@ angular.module('project-change-requests').controller('ProjectChangeRequestContro
                     // Close edit header form and back to view
                     $scope.selectBudgetForm('view', projectChangeRequest);
                 },
-                function(err){$scope.error = err.data.message;}
+                function(err){
+                    $scope.isResolving = false;
+                    $scope.error = err.data.message;
+                }
             );
         };
 
@@ -519,9 +563,11 @@ angular.module('project-change-requests').controller('ProjectChangeRequestContro
             copyProjectChangeRequest.project = _.get(copyProjectChangeRequest.project, '_id');
             copyProjectChangeRequest.gate = _.get(copyProjectChangeRequest.gate, '_id');
 			// Update server header
+            $scope.error = null;
+            $scope.isResolving = true;
             ProjectChangeRequests.updateStatus( { projectChangeRequestId : copyProjectChangeRequest._id }, copyProjectChangeRequest,
 				function(res){
-                    $scope.error = null;
+                    $scope.isResolving = false;
                     // Set the "final" in the gate from the list
                     projectChangeRequestFromList[projectChangeRequest._id].statusReview.currentRecord.completed = projectChangeRequest.statusReview.currentRecord.completed;
                     // Change the selected CR
@@ -534,6 +580,7 @@ angular.module('project-change-requests').controller('ProjectChangeRequestContro
                     $scope.selectStatusForm('view', projectChangeRequest);
 				},
 				function(err){
+                    $scope.isResolving = false;
 					$scope.error = err.data.message;
 				}
 			);
@@ -561,15 +608,18 @@ angular.module('project-change-requests').controller('ProjectChangeRequestContro
 		};
 
 		$scope.saveEditBaselineDuration = function(projectChangeRequest, baselineDurationReview){
+            $scope.error = null;
+            $scope.isResolving = true;
             ProjectChangeRequests.updateBaselineDuration(
 				{
                     projectChangeRequestId: projectChangeRequest._id,
 					baselineDurationReviewId : baselineDurationReview._id
 				}, baselineDurationReview,
 				function(res){
-                    $scope.error = null;
+                    $scope.isResolving = false;
                 },
 				function(err){
+                    $scope.isResolving = false;
 					$scope.error = err.data.message;
 				}
 			);
@@ -594,15 +644,18 @@ angular.module('project-change-requests').controller('ProjectChangeRequestContro
 		};
 
 		$scope.saveEditActualDuration = function(projectChangeRequest, actualDurationReview){
+            $scope.error = null;
+            $scope.isResolving = true;
             ProjectChangeRequests.updateActualDuration(
 				{
                     projectChangeRequestId: projectChangeRequest._id,
 					actualDurationReviewId : actualDurationReview._id
 				}, actualDurationReview,
 				function(res){
-                    $scope.error = null;
+                    $scope.isResolving = false;
                 },
 				function(err){
+                    $scope.isResolving = false;
 					$scope.error = err.data.message;
 				}
 			);
@@ -626,15 +679,18 @@ angular.module('project-change-requests').controller('ProjectChangeRequestContro
 		};
 
 		$scope.saveEditBaselineCost = function(projectChangeRequest, baselineCostReview){
+            $scope.error = null;
+            $scope.isResolving = true;
             ProjectChangeRequests.updateBaselineCost(
 				{
                     projectChangeRequestId: projectChangeRequest._id,
 					baselineCostReviewId : baselineCostReview._id
 				}, baselineCostReview,
 				function(res){
-                    $scope.error = null;
+                    $scope.isResolving = false;
                 },
 				function(err){
+                    $scope.isResolving = false;
 					$scope.error = err.data.message;
 				}
 			);
@@ -658,15 +714,18 @@ angular.module('project-change-requests').controller('ProjectChangeRequestContro
 		};
 
 		$scope.saveEditActualCost = function(projectChangeRequest, actualCostReview){
+            $scope.error = null;
+            $scope.isResolving = true;
             ProjectChangeRequests.updateActualCost(
 				{
                     projectChangeRequestId: projectChangeRequest._id,
 					actualCostReviewId : actualCostReview._id
 				}, actualCostReview,
 				function(res){
-                    $scope.error = null;
+                    $scope.isResolving = false;
                 },
 				function(err){
+                    $scope.isResolving = false;
 					$scope.error = err.data.message;
 				}
 			);
@@ -691,15 +750,18 @@ angular.module('project-change-requests').controller('ProjectChangeRequestContro
 		};
 
 		$scope.saveEditBaselineCompletion = function(projectChangeRequest, baselineCompletionReview){
+            $scope.error = null;
+            $scope.isResolving = true;
             ProjectChangeRequests.updateBaselineCompletion(
 				{
                     projectChangeRequestId: projectChangeRequest._id,
 					baselineCompletionReviewId : baselineCompletionReview._id
 				}, baselineCompletionReview,
 				function(res){
-                    $scope.error = null;
+                    $scope.isResolving = false;
                 },
 				function(err){
+                    $scope.isResolving = false;
 					$scope.error = err.data.message;
 				}
 			);
@@ -723,15 +785,18 @@ angular.module('project-change-requests').controller('ProjectChangeRequestContro
 		};
 
 		$scope.saveEditActualCompletion = function(projectChangeRequest, actualCompletionReview){
+            $scope.error = null;
+            $scope.isResolving = true;
             ProjectChangeRequests.updateActualCompletion(
 				{
                     projectChangeRequestId: projectChangeRequest._id,
 					actualCompletionReviewId : actualCompletionReview._id
 				}, actualCompletionReview,
 				function(res){
-                    $scope.error = null;
+                    $scope.isResolving = false;
                 },
 				function(err){
+                    $scope.isResolving = false;
 					$scope.error = err.data.message;
 				}
 			);

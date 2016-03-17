@@ -11,7 +11,7 @@ module.exports = function(app) {
 
 	app.route('/gate-reviews/:gateReviewId')
 		.get(users.requiresLogin, gateReviews.read)
-		.put(users.requiresLogin, gateReviews.hasEditAuthorization, gateReviews.update)
+		.put(users.requiresLogin, gateReviews.hasEditAuthorization, gateReviews.objectIsEditable, gateReviews.update)
 		.delete(users.requiresLogin, gateReviews.hasEditAuthorization, gateReviews.delete);
 
     // Reviews for a project
@@ -35,51 +35,51 @@ module.exports = function(app) {
     // Header & Status
 
 	app.route('/gate-reviews/:gateReviewId/header')
-		.put(users.requiresLogin, gateReviews.hasEditAuthorization, gateReviews.updateHeader);
+		.put(users.requiresLogin, gateReviews.hasEditAuthorization, gateReviews.objectIsEditable, gateReviews.updateHeader);
 
 	app.route('/gate-reviews/:gateReviewId/status')
-		.put(users.requiresLogin, gateReviews.hasEditAuthorization, gateReviews.updateStatus);
+		.put(users.requiresLogin, gateReviews.hasEditAuthorization, gateReviews.objectIsEditable,  gateReviews.updateStatus);
 
     app.route('/gate-reviews/:gateReviewId/budget')
-        .put(users.requiresLogin, gateReviews.hasEditAuthorization, gateReviews.updateBudget);
+        .put(users.requiresLogin, gateReviews.hasEditAuthorization, gateReviews.objectIsEditable, gateReviews.updateBudget);
 
     // Outcomes
 
     app.route('/gate-reviews/:gateReviewId/outcome-reviews/:outcomeReviewId')
-        .put(users.requiresLogin, gateReviews.hasEditAuthorization, gateReviews.updateOutcome);
+        .put(users.requiresLogin, gateReviews.hasEditAuthorization, gateReviews.objectIsEditable, gateReviews.updateOutcome);
 
     // Baseline
 
     app.route('/gate-reviews/:gateReviewId/baseline-duration-reviews/:baselineDurationReviewId')
-        .put(users.requiresLogin, gateReviews.hasEditAuthorization, gateReviews.updateBaselineDuration);
+        .put(users.requiresLogin, gateReviews.hasEditAuthorization, gateReviews.objectIsEditable, gateReviews.updateBaselineDuration);
 
     app.route('/gate-reviews/:gateReviewId/baseline-cost-reviews/:baselineCostReviewId')
-        .put(users.requiresLogin, gateReviews.hasEditAuthorization, gateReviews.updateBaselineCost);
+        .put(users.requiresLogin, gateReviews.hasEditAuthorization, gateReviews.objectIsEditable, gateReviews.updateBaselineCost);
 
     app.route('/gate-reviews/:gateReviewId/baseline-completion-reviews/:baselineCompletionReviewId')
-        .put(users.requiresLogin, gateReviews.hasEditAuthorization, gateReviews.updateBaselineCompletion);
+        .put(users.requiresLogin, gateReviews.hasEditAuthorization, gateReviews.objectIsEditable, gateReviews.updateBaselineCompletion);
 
     // Estimate
 
     app.route('/gate-reviews/:gateReviewId/estimate-duration-reviews/:estimateDurationReviewId')
-        .put(users.requiresLogin, gateReviews.hasEditAuthorization, gateReviews.updateEstimateDuration);
+        .put(users.requiresLogin, gateReviews.hasEditAuthorization, gateReviews.objectIsEditable, gateReviews.updateEstimateDuration);
 
     app.route('/gate-reviews/:gateReviewId/estimate-cost-reviews/:estimateCostReviewId')
-        .put(users.requiresLogin, gateReviews.hasEditAuthorization, gateReviews.updateEstimateCost);
+        .put(users.requiresLogin, gateReviews.hasEditAuthorization, gateReviews.objectIsEditable, gateReviews.updateEstimateCost);
 
     app.route('/gate-reviews/:gateReviewId/estimate-completion-reviews/:estimateCompletionReviewId')
-        .put(users.requiresLogin, gateReviews.hasEditAuthorization, gateReviews.updateEstimateCompletion);
+        .put(users.requiresLogin, gateReviews.hasEditAuthorization, gateReviews.objectIsEditable, gateReviews.updateEstimateCompletion);
 
     // Actual
 
     app.route('/gate-reviews/:gateReviewId/actual-duration-reviews/:actualDurationReviewId')
-        .put(users.requiresLogin, gateReviews.hasEditAuthorization, gateReviews.updateActualDuration);
+        .put(users.requiresLogin, gateReviews.hasEditAuthorization, gateReviews.objectIsEditable, gateReviews.updateActualDuration);
 
     app.route('/gate-reviews/:gateReviewId/actual-cost-reviews/:actualCostReviewId')
-        .put(users.requiresLogin, gateReviews.hasEditAuthorization, gateReviews.updateActualCost);
+        .put(users.requiresLogin, gateReviews.hasEditAuthorization, gateReviews.objectIsEditable, gateReviews.updateActualCost);
 
     app.route('/gate-reviews/:gateReviewId/actual-completion-reviews/:actualCompletionReviewId')
-        .put(users.requiresLogin, gateReviews.hasEditAuthorization, gateReviews.updateActualCompletion);
+        .put(users.requiresLogin, gateReviews.hasEditAuthorization, gateReviews.objectIsEditable, gateReviews.updateActualCompletion);
 
 
     // Finish by binding the Gate review middleware

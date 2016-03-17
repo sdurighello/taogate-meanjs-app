@@ -15,9 +15,9 @@ angular.module('project-identification').controller('ProjectIdentificationContro
 			Subusers.query(function(users){
 				$scope.users = users;
 				$scope.projectManagers = _.filter(users, function(user){
-					return _.find(_.get(user,'roles'), function(role){
-						return role === 'projectManager';
-					});
+					return _.some(user.roles, function(role){
+                        return role === 'projectManager';
+                    });
 				});
 			}, function(err){
 				$scope.initError.push(err.data.message);
@@ -204,15 +204,6 @@ angular.module('project-identification').controller('ProjectIdentificationContro
 
         $scope.cancelEditProject = function(project){
             project.identification = originalProject[project._id].identification;
-            //$scope.selectedProject.identification.idNumber = originalProject[project._id].identification.idNumber;
-            //$scope.selectedProject.identification.name = originalProject[project._id].identification.name;
-            //$scope.selectedProject.identification.reqStartDate = originalProject[project._id].identification.reqStartDate;
-            //$scope.selectedProject.identification.reqEndDate = originalProject[project._id].identification.reqEndDate;
-            //$scope.selectedProject.identification.earmarkedFunds = originalProject[project._id].identification.earmarkedFunds;
-            //$scope.selectedProject.identification.projectManager = originalProject[project._id].identification.projectManager;
-            //$scope.selectedProject.identification.backupProjectManager = originalProject[project._id].identification.backupProjectManager;
-            //$scope.selectedProject.identification.description = originalProject[project._id].identification.description;
-
             $scope.selectProject(project);
         };
 

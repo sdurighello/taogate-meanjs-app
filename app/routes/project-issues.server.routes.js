@@ -7,20 +7,20 @@ module.exports = function(app) {
 	// Project issues Routes
 	app.route('/project-issues')
 		.get(users.requiresLogin, projectIssues.list)
-		.post(users.requiresLogin, projectIssues.hasAuthorization, projectIssues.create);
+		.post(users.requiresLogin, projectIssues.hasCreateAuthorization, projectIssues.create);
 
 	app.route('/project-issues/:projectIssueId')
 		.get(users.requiresLogin, projectIssues.read)
-		.put(users.requiresLogin, projectIssues.hasAuthorization, projectIssues.update)
-		.delete(users.requiresLogin, projectIssues.hasAuthorization, projectIssues.delete);
+		.put(users.requiresLogin, projectIssues.hasEditAuthorization, projectIssues.update)
+		.delete(users.requiresLogin, projectIssues.hasEditAuthorization, projectIssues.delete);
 
 	// Header
 	app.route('/project-issues/:projectIssueId/header')
-		.put(users.requiresLogin, projectIssues.hasAuthorization, projectIssues.updateHeader);
+		.put(users.requiresLogin, projectIssues.hasEditAuthorization, projectIssues.updateHeader);
 
 	// Status
 	app.route('/project-issues/:projectIssueId/status')
-		.put(users.requiresLogin, projectIssues.hasAuthorization, projectIssues.updateStatus);
+		.put(users.requiresLogin, projectIssues.hasEditAuthorization, projectIssues.updateStatus);
 
 
 	// Finish by binding the Project issue middleware
