@@ -8,59 +8,71 @@ angular.module('project-milestones').controller('ProjectMilestoneController', ['
 
 		// ------------- INIT -------------
 
-		$scope.initError = [];
+		$scope.isResolving = false;
+
+		$scope.initErrors = [];
 
 		$scope.init = function(){
+
+			$scope.user = Authentication.user;
 
 			Projects.query({'selection.active': true, 'selection.selectedForDelivery': true}, function(projects){
 				$scope.projects = _.filter(projects, function(project){return project.process !== null;});
 			}, function(err){
-				$scope.initError.push(err.data.message);
+				$scope.initErrors.push(err.data.message);
 			});
 
 			Portfolios.query(function(portfolios){
 				$scope.portfolios = portfolios;
 			}, function(err){
-				$scope.initError.push(err.data.message);
+				$scope.initErrors.push(err.data.message);
 			});
 
 			GateProcesses.query(function(gateProcesses){
 				$scope.gateProcesses = gateProcesses;
 			}, function(err){
-				$scope.initError.push(err.data.message);
+				$scope.initErrors.push(err.data.message);
 			});
 
 			ProjectMilestoneTypes.query(function(projectMilestoneTypes){
 				$scope.projectMilestoneTypes = projectMilestoneTypes;
 			}, function(err){
-				$scope.initError.push(err.data.message);
+				$scope.initErrors.push(err.data.message);
 			});
 
 			MilestoneStates.query(function(milestoneStates){
 				$scope.milestoneStates = milestoneStates;
 			}, function(err){
-				$scope.initError.push(err.data.message);
+				$scope.initErrors.push(err.data.message);
 			});
 
 			LogStatusIndicators.query(function(logStatusIndicators){
 				$scope.logStatuses = logStatusIndicators;
 			}, function(err){
-				$scope.initError.push(err.data.message);
+				$scope.initErrors.push(err.data.message);
 			});
 
 		};
 
-		// ------- ROLES FOR BUTTONS ------
+        // -------------- AUTHORIZATION FOR BUTTONS -----------------
 
-		var d = $q.defer();
-		d.resolve(Authentication);
+        $scope.userHasAuthorization = function(action, user, project){
 
-		d.promise.then(function(data){
-			var obj = _.clone(data);
-			$scope.userHasAuthorization = _.some(obj.user.roles, function(role){
-				return role === 'superAdmin' || role === 'admin' || role === 'pmo';
-			});
-		});
+            var userIsSuperhero, userIsProjectManager, userIsPortfolioManager;
+
+            if(action === 'edit' && user && project){
+                userIsSuperhero = !!_.some(user.roles, function(role){
+                    return role === 'superAdmin' || role === 'admin' || role === 'pmo';
+                });
+                userIsProjectManager = (user._id === project.identification.projectManager) || (user._id === project.identification.backupProjectManager);
+                if(project.portfolio){
+                    userIsPortfolioManager = (user._id === project.portfolio.portfolioManager) || (user._id === project.portfolio.backupPortfolioManager);
+                }
+
+                return userIsSuperhero || userIsProjectManager || userIsPortfolioManager;
+            }
+
+        };
 
 		// ------------------- NG-SWITCH ---------------------
 
@@ -106,13 +118,6 @@ angular.module('project-milestones').controller('ProjectMilestoneController', ['
 
 		$scope.activeTab = {};
 
-		// -------------- SELECT GATE ---------------------
-
-		$scope.setReviewObject = function(reviewObj){
-			$scope.selectedProjectMilestone = null;
-			$scope.reviewObject = reviewObj;
-		};
-
 
 
 		// ------------- SELECT VIEW PROJECT ------------
@@ -120,21 +125,27 @@ angular.module('project-milestones').controller('ProjectMilestoneController', ['
 		var originalProjectMilestone = {};
 
 		$scope.selectProject = function(project) {
-			$scope.error = {};
 			$scope.selectedProject = null;
 			$scope.projectMilestoneList = null;
             $scope.reviewObject = null;
+
+            $scope.showNewProjectMilestoneForm = false;
+            $scope.newProjectMilestone = {};
 
 			$scope.selectedProjectMilestone = null;
 			originalProjectMilestone = {};
 
 			$scope.selectedProject = project;
 
+            $scope.error = null;
+            $scope.isResolving = true;
 			ProjectMilestones.getMilestonesForProject({
 				project: project._id
 			}, function (res) {
-				$scope.projectMilestoneList = res;
+                $scope.isResolving = false;
+                $scope.projectMilestoneList = res;
 			}, function (err) {
+                $scope.isResolving = false;
 				$scope.error = err.data.message;
 			});
 
@@ -148,6 +159,17 @@ angular.module('project-milestones').controller('ProjectMilestoneController', ['
 		};
 
 
+        // -------------- SELECT GATE ---------------------
+
+        $scope.setReviewObject = function(reviewObj){
+            $scope.error = null;
+            $scope.selectedProjectMilestone = null;
+            $scope.reviewObject = reviewObj;
+
+            $scope.showNewProjectMilestoneForm = false;
+            $scope.newProjectMilestone = {};
+        };
+
 
 		// ------------- NEW PROJECT CHANGE REQUEST ------------
 
@@ -160,22 +182,28 @@ angular.module('project-milestones').controller('ProjectMilestoneController', ['
 				type : $scope.newProjectMilestone.type,
 				name : $scope.newProjectMilestone.name
 			});
+            $scope.error = null;
+            $scope.isResolving = true;
 			newProjectMilestone.$save(function(res) {
+                $scope.isResolving = false;
 				// Clear new form
 				$scope.newProjectMilestone = {};
 				// Refresh the list of gate reviews
 				_.find($scope.projectMilestoneList, _.matchesProperty('gate._id', gate._id)).projectMilestones.push(res);
 				// Select in view mode the new review
 				$scope.selectProjectMilestone(res);
-				// Close new review form done directly in the view's html
+				// Close new review form
+                $scope.showNewProjectMilestoneForm = false;
 			}, function(err) {
-				console.log(err);
+                $scope.isResolving = false;
 				$scope.error = err.data.message;
 			});
 		};
 
 		$scope.cancelNewProjectMilestone = function(){
+            $scope.error = null;
 			$scope.newProjectMilestone = {};
+            $scope.showNewProjectMilestoneForm = false;
 		};
 
 
@@ -187,25 +215,22 @@ angular.module('project-milestones').controller('ProjectMilestoneController', ['
 
 		$scope.selectProjectMilestone = function(projectMilestone){
 			projectMilestoneFromList[projectMilestone._id] = projectMilestone;
+
+            $scope.error = null;
+            $scope.isResolving = true;
 			ProjectMilestones.get({
 				projectMilestoneId:projectMilestone._id
 			}, function(res){
+                $scope.isResolving = false;
 				$scope.selectedProjectMilestone = res;
 				originalProjectMilestone[projectMilestone._id] = _.cloneDeep(res);
 				//$scope.selectProjectMilestoneForm('view');
 			},function(errorResponse){
+                $scope.isResolving = false;
 				$scope.error = errorResponse.data.message;
 				$scope.selectedProjectMilestone = null;
 				originalProjectMilestone = {};
 			});
-		};
-
-		// ------------- CHANGE GATE ------------
-
-		$scope.milestoneGate = function(){
-			$scope.cancelNewProjectMilestone();
-			$scope.selectedProjectMilestone = null;
-			originalProjectMilestone = {};
 		};
 
 
@@ -223,11 +248,14 @@ angular.module('project-milestones').controller('ProjectMilestoneController', ['
 			copyProjectMilestone.project = _.get(copyProjectMilestone.project, '_id');
 			copyProjectMilestone.gate = _.get(copyProjectMilestone.gate, '_id');
 			// Update server header
+            $scope.error = null;
+            $scope.isResolving = true;
 			ProjectMilestones.updateHeader(
 				{
 					projectMilestoneId : copyProjectMilestone._id
 				}, copyProjectMilestone,
 				function(res){
+                    $scope.isResolving = false;
 					// Update details pane view with new saved details
 					originalProjectMilestone[projectMilestone._id].name = projectMilestone.name;
 					originalProjectMilestone[projectMilestone._id].description = projectMilestone.description;
@@ -238,11 +266,15 @@ angular.module('project-milestones').controller('ProjectMilestoneController', ['
 					// Close edit header form and back to view
 					$scope.selectHeaderForm('view', projectMilestone);
 				},
-				function(err){$scope.error = err.data.message;}
+				function(err){
+                    $scope.isResolving = false;
+                    $scope.error = err.data.message;
+                }
 			);
 		};
 
 		$scope.cancelEditHeader = function(projectMilestone){
+            $scope.error = null;
 			projectMilestone.name = originalProjectMilestone[projectMilestone._id].name;
 			projectMilestone.description = originalProjectMilestone[projectMilestone._id].description;
 			projectMilestone.state = originalProjectMilestone[projectMilestone._id].state;
@@ -252,12 +284,17 @@ angular.module('project-milestones').controller('ProjectMilestoneController', ['
 
 
 		$scope.deleteProjectMilestone = function(reviewObject, projectMilestone){
-			ProjectMilestones.remove({projectMilestoneId: projectMilestone._id}, projectMilestone, function(res){
+            $scope.error = null;
+            $scope.isResolving = true;
+			ProjectMilestones.remove({projectMilestoneId: projectMilestone._id}, projectMilestone,
+                function(res){
+                $scope.isResolving = false;
 				reviewObject.projectMilestones = _.without(reviewObject.projectMilestones, _.find(reviewObject.projectMilestones, _.matchesProperty('_id',projectMilestone._id)));
 				$scope.cancelNewProjectMilestone();
 				$scope.selectedProjectMilestone = null;
 				originalProjectMilestone = {};
 			}, function(err){
+                $scope.isResolving = false;
 				$scope.error = err.data.message;
 			});
 		};
@@ -296,8 +333,11 @@ angular.module('project-milestones').controller('ProjectMilestoneController', ['
 			copyProjectMilestone.project = _.get(copyProjectMilestone.project, '_id');
 			copyProjectMilestone.gate = _.get(copyProjectMilestone.gate, '_id');
 			// Update server header
+            $scope.error = null;
+            $scope.isResolving = true;
 			ProjectMilestones.updateStatus( { projectMilestoneId : copyProjectMilestone._id }, copyProjectMilestone,
 				function(res){
+                    $scope.isResolving = false;
 					// Update the "estimate delivery date" and the "final" in the gate from the list
 					projectMilestoneFromList[projectMilestone._id].statusReview.currentRecord.completed = projectMilestone.statusReview.currentRecord.completed;
                     projectMilestoneFromList[projectMilestone._id].statusReview.currentRecord.estimateDeliveryDate = projectMilestone.statusReview.currentRecord.estimateDeliveryDate;
@@ -311,12 +351,14 @@ angular.module('project-milestones').controller('ProjectMilestoneController', ['
 					$scope.selectStatusForm('view', projectMilestone);
 				},
 				function(err){
+                    $scope.isResolving = false;
 					$scope.error = err.data.message;
 				}
 			);
 		};
 
 		$scope.cancelEditStatus = function(projectMilestone){
+            $scope.error = null;
 			projectMilestone.statusReview.currentRecord.baselineDeliveryDate = originalProjectMilestone[projectMilestone._id].statusReview.currentRecord.baselineDeliveryDate;
 			projectMilestone.statusReview.currentRecord.estimateDeliveryDate = originalProjectMilestone[projectMilestone._id].statusReview.currentRecord.estimateDeliveryDate;
 			projectMilestone.statusReview.currentRecord.actualDeliveryDate = originalProjectMilestone[projectMilestone._id].statusReview.currentRecord.actualDeliveryDate;

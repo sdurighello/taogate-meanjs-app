@@ -75,7 +75,7 @@ angular.module('portfolio-change-requests').controller('PortfolioChangeRequestsC
 
             var userIsSuperhero, userIsPortfolioManager;
 
-            if(action === 'edit' && portfolio){
+            if((action === 'edit') && user && portfolio){
                 userIsSuperhero = !!_.some(user.roles, function(role){
                     return role === 'superAdmin' || role === 'admin' || role === 'pmo';
                 });
@@ -85,7 +85,7 @@ angular.module('portfolio-change-requests').controller('PortfolioChangeRequestsC
                 return userIsSuperhero || userIsPortfolioManager;
             }
 
-            if(action === 'approve' && portfolio){
+            if((action === 'approve') && user && portfolio){
                 userIsSuperhero = !!_.some(user.roles, function(role){
                     return role === 'superAdmin' || role === 'admin' || role === 'pmo';
                 });

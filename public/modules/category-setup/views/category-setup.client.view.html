@@ -1,343 +1,344 @@
 <section data-ng-controller="CategorySetupController" data-ng-init="init()">
-	<br>
-	<div class="row">
-		<div class="col-sm-12">
-			<div class="panel-heading">
-				<ol class="breadcrumb">
-					<li>Setup</li>
-					<li>Portfolio definition</li>
-					<li class="active">Categories</li>
-				</ol>
-			</div>
-		</div>
-	</div>
-	<div class="row">
+    <br>
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="panel-heading">
+                <ol class="breadcrumb">
+                    <li>Setup</li>
+                    <li>Portfolio definition</li>
+                    <li class="active">Categories</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+    <div data-ng-show="error" class="text-danger">
+        <strong data-ng-bind="error"></strong>
+    </div>
+    <div class="row">
 
-		<!-- LIST OF GROUPS -->
+        <!-- LIST OF GROUPS -->
 
-		<div class="col-md-4">
-			<div class="panel panel-default">
-				<div class="panel-heading">
-					<h6 class="panel-title text-center">Category Groups</h6>
-				</div>
-				<div class="panel-body">
-					<div class="row" data-ng-show="userHasAuthorization">
-						<div class="col-md-12">
-							<br>
-							<button class="btn btn-primary btn-sm" ng-click="createCategoryGroup()">
-								New category group
-							</button>
-							<div data-ng-show="error" class="text-danger">
-								<strong data-ng-bind="error"></strong>
-							</div>
-						</div>
-					</div>
-					<hr>
-					<div class="alert alert-warning text-center" data-ng-show="categoryGroups.length === 0">
-						There are no category groups created yet
-					</div>
-					<div class="row" style="min-height: 400px; max-height: 400px; overflow-y: scroll">
-						<div class="col-md-12 form-group" data-ng-repeat="group in categoryGroups track by $index">
-							<button class="btn btn-default btn-block" data-ng-click="selectCategoryGroup(group)"
-									data-ng-bind="group.name">
-							</button>
-						</div>
-					</div>
-				</div>
-			</div>
-		</div>
+        <div class="col-sm-4">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h6 class="panel-title text-center">Category Groups</h6>
+                </div>
+                <div class="panel-body" style="min-height: 500px">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <button class="btn btn-sm btn-success" data-ng-click="createCategoryGroup()"
+                                    data-ng-show="userHasAuthorization">
+                                New category group
+                            </button>
+                        </div>
+                    </div>
+                    <hr style="margin: 10px">
+                    <div class="alert alert-warning text-center" data-ng-show="categoryGroups.length === 0">
+                        There are no category groups created yet
+                    </div>
+                    <div class="row" style="min-height: 400px; max-height: 400px; overflow-y: scroll">
+                        <div class="col-md-12">
+                            <button class="btn btn-default btn-block"
+                                    data-ng-repeat="group in categoryGroups track by $index"
+                                    data-ng-click="selectCategoryGroup(group)"
+                                    data-ng-bind="group.name">
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-		<!-- CATEGORIES WITH VALUES-->
+        <!-- CATEGORIES WITH VALUES-->
 
-		<div class="col-md-8">
-			<div class="alert alert-warning text-center" data-ng-hide="selectedCategoryGroup">
-				Please select a category group to see the details
-			</div>
-			<div data-ng-show="selectedCategoryGroup">
-				<div class="row">
-					<div class="col-md-12">
-						<div class="panel panel-default">
-							<h5> &nbsp; Selected category group:
-								<button class="btn-link" data-ng-click="viewCategoryGroupDetails = !viewCategoryGroupDetails" style="overflow: hidden;">
-									<i data-ng-bind="selectedCategoryGroup.name"></i>
-								</button>
-							</h5>
-							<div class="panel-body" data-ng-show="viewCategoryGroupDetails" data-ng-switch="switchCategoryGroupForm[selectedCategoryGroup._id]">
-								<div ng-switch-default="view">
-									<form>
-										<fieldset>
-											<div class="row">
-												<div class="col-md-7 form-group">
-													<label for="categoryName" class="control-label">Group name</label>
-													<input disabled id="categoryName" type="text" class="form-control" data-ng-model="selectedCategoryGroup.name">
-												</div>
-											</div>
-											<div class="row">
-												<div class="col-md-12 form-group">
-													<label for="categoryDescription" class="control-label">Group description</label>
-													<textarea disabled id="categoryDescription" data-ng-model="selectedCategoryGroup.description" class="form-control" placeholder="No description yet"></textarea>
-												</div>
-											</div>
-											<div class="row" data-ng-show="userHasAuthorization">
-												<div class="col-md-12">
-													<div class="form-group pull-right">
-														<button class="btn btn-sm btn-success" data-ng-click="selectCategoryGroupForm(selectedCategoryGroup, 'edit')">Edit</button>
-													</div>
-												</div>
-											</div>
-										</fieldset>
-									</form>
-								</div>
-								<div ng-switch-when="edit">
-									<form name="editCategoryGroupForm" novalidate>
-										<fieldset>
-											<div class="row">
-												<div class="col-md-7 form-group">
-													<label for="groupNameEdit" class="control-label">Group name</label>
-													<input id="groupNameEdit" name="groupNameEdit" type="text" class="form-control" data-ng-model="selectedCategoryGroup.name" required>
+        <div class="col-sm-8">
+            <div class="alert alert-warning text-center" data-ng-show="!selectedCategoryGroup">
+                Please select a category group to see the details
+            </div>
+            <div class="panel panel-default" data-ng-show="selectedCategoryGroup">
+                <div class="panel-heading">
+                    <h6 class="panel-title text-center" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: normal; width: 100%;">
+                        {{selectedCategoryGroup.name}}
+                    </h6>
+                </div>
+                <div class="row">
+                    <div class="col-md-12 btn-group btn-group-xs btn-group-justified">
+                        <label class="btn btn-info btn-xs" data-ng-model="categoryGroupDetails" btn-radio="'groupHeader'">
+                            Group header
+                        </label>
+                        <label class="btn btn-info btn-xs" data-ng-model="categoryGroupDetails" btn-radio="'categories'">
+                            Categories
+                        </label>
+                    </div>
+                </div>
+                <div class="panel-body" style="min-height: 475px">
+                    <div data-ng-show="categoryGroupDetails === 'groupHeader'">
+                        <div data-ng-switch="switchCategoryGroupForm[selectedCategoryGroup._id]">
+                            <div ng-switch-default="view">
+                                <form>
+                                    <fieldset>
+                                        <div class="row">
+                                            <div class="col-md-7 form-group">
+                                                <label for="categoryName" class="control-label">Group name</label>
+                                                <input disabled id="categoryName" type="text" class="form-control" data-ng-model="selectedCategoryGroup.name">
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-12 form-group">
+                                                <label for="categoryDescription" class="control-label">Group description</label>
+                                                <textarea disabled id="categoryDescription" data-ng-model="selectedCategoryGroup.description" class="form-control" placeholder="No description yet"></textarea>
+                                            </div>
+                                        </div>
+                                        <div class="row" data-ng-show="userHasAuthorization">
+                                            <div class="col-md-12">
+                                                <div class="form-group pull-right">
+                                                    <button class="btn btn-sm btn-success" data-ng-click="selectCategoryGroupForm(selectedCategoryGroup, 'edit')">Edit</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </fieldset>
+                                </form>
+                            </div>
+                            <div ng-switch-when="edit">
+                                <form name="editCategoryGroupForm" novalidate>
+                                    <fieldset>
+                                        <div class="row">
+                                            <div class="col-md-7 form-group">
+                                                <label for="groupNameEdit" class="control-label">Group name</label>
+                                                <input id="groupNameEdit" name="groupNameEdit" type="text" class="form-control" data-ng-model="selectedCategoryGroup.name" required>
 													<span data-ng-show="editCategoryGroupForm.groupNameEdit.$error.required">
 														<em style="color: red">Name is required</em>
 													</span>
-												</div>
-											</div>
-											<div class="row">
-												<div class="col-md-12 form-group">
-													<label for="groupDescription" class="control-label">Group description</label>
-													<textarea id="groupDescription" data-ng-model="selectedCategoryGroup.description" class="form-control" placeholder="No description yet"></textarea>
-												</div>
-											</div>
-											<div class="row">
-												<div class="col-md-12">
-													<div class="form-group pull-right">
-														<button type="button" class="btn btn-sm btn-success" data-ng-click="updateCategoryGroup(selectedCategoryGroup)" data-ng-disabled="editCategoryGroupForm.$invalid">
-															Save
-														</button>
-														<button type="button" class="btn btn-sm btn-danger" data-ng-click="removeCategoryGroup(selectedCategoryGroup)">
-															Delete Category Group
-														</button>
-														<button type="button" class="btn btn-sm btn-info" data-ng-click="cancelEditCategoryGroup(selectedCategoryGroup)">
-															Cancel
-														</button>
-														<div data-ng-show="error" class="text-danger">
-															<strong data-ng-bind="error"></strong>
-														</div>
-													</div>
-												</div>
-											</div>
-										</fieldset>
-									</form>
-								</div>
-							</div>
-						</div>
-					</div>
-				</div>
-				<div class="row" data-ng-show="userHasAuthorization">
-					<div class="col-md-3">
-						<br>
-						<button class="btn btn-primary btn-sm" ng-click="createCategory(selectedCategoryGroup)">
-							New category
-						</button>
-						<div data-ng-show="error" class="text-danger">
-							<strong data-ng-bind="error"></strong>
-						</div>
-					</div>
-				</div>
-				<hr>
-				<div class="row">
-					<div class="col-md-12 form-group" data-ng-repeat="category in selectedCategoryGroup.categories track by $index">
-						<button class="btn btn-default btn-block" data-ng-bind="category.name" data-ng-click="viewCategoryDetails = !viewCategoryDetails"
-								title="Last updated on {{category.created | date:'medium'}} by {{category.user.displayName}}" style="overflow: hidden;"></button>
-						<div data-ng-show="viewCategoryDetails">
-							<div class="panel panel-default" >
-								<div class="panel-body">
-									<div class="row">
-										<div class="col-md-12">
-											<div class="panel panel-default" data-ng-switch="switchCategoryForm[category._id]">
-												<div class="panel-body" ng-switch-default="view">
-													<div class="row">
-														<div class="col-md-7 form-group">
-															<label for="categoryName" class="control-label">Category name</label>
-															<input disabled id="categoryName" type="text" class="form-control" data-ng-model="category.name">
-														</div>
-													</div>
-													<div class="row">
-														<div class="col-md-12 form-group">
-															<label for="categoryDescription" class="control-label">Category description</label>
-															<textarea disabled id="categoryDescription" data-ng-model="category.description" class="form-control" placeholder="No description yet"></textarea>
-														</div>
-													</div>
-													<div class="row" data-ng-show="userHasAuthorization">
-														<div class="col-md-12">
-															<div class="form-group pull-right">
-																<button class="btn btn-success btn-sm" data-ng-click="selectCategory(category)">Edit</button>
-															</div>
-														</div>
-													</div>
-												</div>
-												<div class="panel-body" ng-switch-when="edit">
-													<form name="editCategoryForm" novalidate>
-														<fieldset>
-															<div class="row">
-																<div class="col-md-12">
-																	<div class="panel-body">
-																		<div class="row">
-																			<div class="col-md-7 form-group">
-																				<label for="categoryNameEdit" class="control-label">Category name</label>
-																				<input id="categoryNameEdit" name="categoryNameEdit" type="text" class="form-control" data-ng-model="category.name" required>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-12 form-group">
+                                                <label for="groupDescription" class="control-label">Group description</label>
+                                                <textarea id="groupDescription" data-ng-model="selectedCategoryGroup.description" class="form-control" placeholder="No description yet"></textarea>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                <div class="form-group pull-right">
+                                                    <button type="button" class="btn btn-sm btn-success" data-ng-click="updateCategoryGroup(selectedCategoryGroup)" data-ng-disabled="editCategoryGroupForm.$invalid">
+                                                        Save
+                                                    </button>
+                                                    <button type="button" class="btn btn-sm btn-danger" data-ng-click="removeCategoryGroup(selectedCategoryGroup)">
+                                                        Delete Category Group
+                                                    </button>
+                                                    <button type="button" class="btn btn-sm btn-info" data-ng-click="cancelEditCategoryGroup(selectedCategoryGroup)">
+                                                        Cancel
+                                                    </button>
+                                                    <div data-ng-show="error" class="text-danger">
+                                                        <strong data-ng-bind="error"></strong>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </fieldset>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    <div data-ng-show="categoryGroupDetails === 'categories'">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <button class="btn btn-sm btn-success" data-ng-click="createCategory(selectedCategoryGroup)"
+                                        data-ng-show="userHasAuthorization">
+                                    New category
+                                </button>
+                            </div>
+                        </div>
+                        <hr style="margin: 10px">
+                        <div class="row" style="min-height: 390px; max-height: 390px; overflow-y: auto;">
+                            <div class="col-md-12">
+                                <accordion close-others="true">
+                                    <accordion-group data-ng-repeat="category in selectedCategoryGroup.categories track by $index"
+                                                     heading="{{category.name}}" style="overflow: hidden;">
+                                        <div class="row">
+                                            <div class="col-md-12 btn-group btn-group-xs btn-group-justified">
+                                                <label class="btn btn-info btn-xs" data-ng-model="categoryDetails" btn-radio="'categoryHeader'">
+                                                    Category header
+                                                </label>
+                                                <label class="btn btn-info btn-xs" data-ng-model="categoryDetails" btn-radio="'categoryValues'">
+                                                    Category values
+                                                </label>
+                                            </div>
+                                        </div>
+                                        <hr style="margin: 10px">
+                                        <div style="min-height: 300px;">
+                                            <div data-ng-show="categoryDetails === 'categoryHeader'">
+                                                <div data-ng-switch="switchCategoryForm[category._id]">
+                                                    <div ng-switch-default="view">
+                                                        <div class="row">
+                                                            <div class="col-md-7 form-group">
+                                                                <label for="categoryName" class="control-label">Category name</label>
+                                                                <input disabled id="categoryName" type="text" class="form-control" data-ng-model="category.name">
+                                                            </div>
+                                                        </div>
+                                                        <div class="row">
+                                                            <div class="col-md-12 form-group">
+                                                                <label for="categoryDescription" class="control-label">Category description</label>
+                                                                <textarea disabled id="categoryDescription" data-ng-model="category.description" class="form-control" placeholder="No description yet"></textarea>
+                                                            </div>
+                                                        </div>
+                                                        <div class="row" data-ng-show="userHasAuthorization">
+                                                            <div class="col-md-12">
+                                                                <div class="form-group pull-right">
+                                                                    <button class="btn btn-success btn-sm" data-ng-click="selectCategory(category)">Edit</button>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div ng-switch-when="edit">
+                                                        <form name="editCategoryForm" novalidate>
+                                                            <fieldset>
+                                                                <div class="row">
+                                                                    <div class="col-md-12">
+                                                                        <div class="panel-body">
+                                                                            <div class="row">
+                                                                                <div class="col-md-7 form-group">
+                                                                                    <label for="categoryNameEdit" class="control-label">Category name</label>
+                                                                                    <input id="categoryNameEdit" name="categoryNameEdit" type="text" class="form-control" data-ng-model="category.name" required>
 																				<span data-ng-show="editCategoryForm.categoryNameEdit.$error.required">
 																					<em style="color: red">Name is required</em>
 																				</span>
-																			</div>
-																		</div>
-																		<div class="row">
-																			<div class="col-md-12 form-group">
-																				<label for="categoryDescription" class="control-label">Category description</label>
-																				<textarea id="categoryDescription" data-ng-model="category.description" class="form-control" placeholder="No description yet"></textarea>
-																			</div>
-																		</div>
-																	</div>
-																</div>
-															</div>
-															<div class="row">
-																<div class="col-md-12">
-																	<div class="form-group pull-right">
-																		<button type="button" class="btn btn-sm btn-success" data-ng-click="updateCategory(category)" data-ng-disabled="editCategoryForm.$invalid">
-																			Save
-																		</button>
-																		<button type="button" class="btn btn-sm btn-danger" data-ng-click="removeCategory(selectedCategoryGroup, category)">
-																			Delete Category
-																		</button>
-																		<button type="button" class="btn btn-sm btn-info" data-ng-click="cancelEditCategory(category)">
-																			Cancel
-																		</button>
-																		<div data-ng-show="error" class="text-danger">
-																			<strong data-ng-bind="error"></strong>
-																		</div>
-																	</div>
-																</div>
-															</div>
-														</fieldset>
-													</form>
-												</div>
-											</div>
-										</div>
-									</div>
-									<div class="row">
-										<div class="col-md-12">
-											<div class="panel panel-default">
-												<div class="panel-body">
-													<div class="row" data-ng-show="userHasAuthorization">
-														<div class="col-md-3">
-															<div class="form-group">
-																<button type="button" class="btn btn-primary btn-sm" ng-click="createCategoryValue(category)">
-																	New category value
-																</button>
-															</div>
-															<div data-ng-show="error" class="text-danger">
-																<strong data-ng-bind="error"></strong>
-															</div>
-														</div>
-													</div>
-													<hr>
-													<div class="row">
-														<div class="col-md-4 form-group" data-ng-repeat="categoryValue in category.categoryValues track by $index" data-ng-switch="switchCategoryValueForm[categoryValue._id]">
-															<button class="btn btn-default btn-block" data-ng-bind="categoryValue.name" data-ng-click="viewCategoryValueDetails = !viewCategoryValueDetails"
-																	title="Last updated on {{categoryValue.created | date:'medium'}} by {{categoryValue.user.displayName}}" style="overflow: hidden;"></button>
-															<div data-ng-show="viewCategoryValueDetails">
-																<div class="panel panel-default">
-																	<div class="panel-body" ng-switch-default="view">
-																		<div class="row">
-																			<div class="col-md-12">
-																				<form>
-																					<fieldset>
-																						<div class="row">
-																							<div class="form-group col-md-12">
-																								<label for="categoryValueName" class="control-label">Value name</label>
-																								<input disabled id="categoryValueName" type="text" class="form-control" data-ng-model="categoryValue.name">
-																							</div>
-																						</div>
-																						<div class="row">
-																							<div class="form-group col-md-12">
-																								<label for="categoryValueDescription" class="control-label">Value description</label>
-																								<textarea disabled id="categoryValueDescription" data-ng-model="categoryValue.description" class="form-control" placeholder="No description yet"></textarea>
-																							</div>
-																						</div>
-																					</fieldset>
-																				</form>
-																				<div class="row" data-ng-show="userHasAuthorization">
-																					<div class="form-group col-md-12 pull-right">
-																						<button type="button" class="btn btn-success btn-sm pull-right"
-																								data-ng-click="selectEditCategoryValue(category, categoryValue)">
-																							Edit
-																						</button>
-																					</div>
-																				</div>
-																			</div>
-																		</div>
-																	</div>
-																	<div class="panel-body" ng-switch-when="edit">
-																		<div class="row" >
-																			<div class="col-md-12">
-																				<form name="editCategoryValueForm" novalidate>
-																					<fieldset>
-																						<div class="row">
-																							<div class="form-group col-md-12">
-																								<label for="categoryValueNameEdit" class="control-label">Category Value name</label>
-																								<input id="categoryValueNameEdit" name="categoryValueNameEdit" type="text" class="form-control" data-ng-model="categoryValue.name" required>
+                                                                                </div>
+                                                                            </div>
+                                                                            <div class="row">
+                                                                                <div class="col-md-12 form-group">
+                                                                                    <label for="categoryDescription" class="control-label">Category description</label>
+                                                                                    <textarea id="categoryDescription" data-ng-model="category.description" class="form-control" placeholder="No description yet"></textarea>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="row">
+                                                                    <div class="col-md-12">
+                                                                        <div class="form-group pull-right">
+                                                                            <button type="button" class="btn btn-sm btn-success" data-ng-click="updateCategory(category)" data-ng-disabled="editCategoryForm.$invalid">
+                                                                                Save
+                                                                            </button>
+                                                                            <button type="button" class="btn btn-sm btn-danger" data-ng-click="removeCategory(selectedCategoryGroup, category)">
+                                                                                Delete Category
+                                                                            </button>
+                                                                            <button type="button" class="btn btn-sm btn-info" data-ng-click="cancelEditCategory(category)">
+                                                                                Cancel
+                                                                            </button>
+                                                                            <div data-ng-show="error" class="text-danger">
+                                                                                <strong data-ng-bind="error"></strong>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </fieldset>
+                                                        </form>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div data-ng-show="categoryDetails === 'categoryValues'">
+                                                <div class="row">
+                                                    <div class="col-md-12">
+                                                        <button class="btn btn-sm btn-success" data-ng-click="createCategoryValue(category)"
+                                                                data-ng-show="userHasAuthorization">
+                                                            New category value
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                                <hr style="margin: 10px">
+                                                <div class="row">
+                                                    <div class="col-md-4" data-ng-repeat="categoryValue in category.categoryValues track by $index" data-ng-switch="switchCategoryValueForm[categoryValue._id]">
+                                                        <button class="btn btn-default btn-block" data-ng-bind="categoryValue.name" data-ng-click="viewCategoryValueDetails = !viewCategoryValueDetails"
+                                                                title="Last updated on {{categoryValue.created | date:'medium'}} by {{categoryValue.user.displayName}}" style="overflow: hidden;"></button>
+                                                        <div data-ng-show="viewCategoryValueDetails">
+                                                            <div class="panel panel-default">
+                                                                <div class="panel-body">
+                                                                    <div ng-switch-default="view">
+                                                                        <form>
+                                                                            <fieldset>
+                                                                                <div class="row">
+                                                                                    <div class="form-group col-md-12">
+                                                                                        <label for="categoryValueName" class="control-label">Value name</label>
+                                                                                        <input disabled id="categoryValueName" type="text" class="form-control" data-ng-model="categoryValue.name">
+                                                                                    </div>
+                                                                                </div>
+                                                                                <div class="row">
+                                                                                    <div class="form-group col-md-12">
+                                                                                        <label for="categoryValueDescription" class="control-label">Value description</label>
+                                                                                        <textarea disabled id="categoryValueDescription" data-ng-model="categoryValue.description" class="form-control" placeholder="No description yet"></textarea>
+                                                                                    </div>
+                                                                                </div>
+                                                                            </fieldset>
+                                                                        </form>
+                                                                        <div class="row" data-ng-show="userHasAuthorization">
+                                                                            <div class="form-group col-md-12 pull-right">
+                                                                                <button type="button" class="btn btn-success btn-sm pull-right"
+                                                                                        data-ng-click="selectEditCategoryValue(category, categoryValue)">
+                                                                                    Edit
+                                                                                </button>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div ng-switch-when="edit">
+                                                                        <form name="editCategoryValueForm" novalidate>
+                                                                            <fieldset>
+                                                                                <div class="row">
+                                                                                    <div class="form-group col-md-12">
+                                                                                        <label for="categoryValueNameEdit" class="control-label">Category Value name</label>
+                                                                                        <input id="categoryValueNameEdit" name="categoryValueNameEdit" type="text" class="form-control" data-ng-model="categoryValue.name" required>
 																								<span data-ng-show="editCategoryValueForm.categoryValueNameEdit.$error.required">
 																									<em style="color: red">Name is required</em>
 																								</span>
-																							</div>
-																						</div>
-																						<div class="row">
-																							<div class="form-group col-md-12">
-																								<label for="categoryValueDescription" class="control-label">Category Value description</label>
-																								<textarea id="categoryValueDescription" data-ng-model="categoryValue.description" class="form-control" placeholder="No description yet"></textarea>
-																							</div>
-																						</div>
-																						<div class="row">
-																							<div class="col-md-12">
-																								<div class="form-group pull-right btn-group-xs">
-																									<button type="button" class="btn btn-success" ng-click="updateCategoryValue(category, categoryValue)" data-ng-disabled="editCategoryValueForm.$invalid">
-																										Save
-																									</button>
-																									<a class="btn btn-danger" data-ng-click="removeCategoryValue(category, categoryValue)">
-																										<i class="glyphicon glyphicon-trash"></i>
-																									</a>
-																									<button type="button" class="btn btn-info" ng-click="cancelEditCategoryValue(categoryValue)">
-																										Cancel
-																									</button>
-																								</div>
-																							</div>
-																						</div>
-																						<div data-ng-show="error" class="text-danger">
-																							<strong data-ng-bind="error"></strong>
-																						</div>
-																					</fieldset>
-																				</form>
-																			</div>
-																		</div>
-																	</div>
-																</div>
-															</div>
-														</div>
-													</div>
-													<div class="alert alert-warning text-center" data-ng-show="category.categoryValues.length === 0">
-														No category values added to this category yet
-													</div>
-												</div>
-											</div>
-										</div>
-									</div>
-								</div>
-							</div>
-						</div>
-					</div>
-				</div>
-				<div class="alert alert-warning text-center" data-ng-hide="!categories.$resolved || categories.length">
-					No categories yet
-				</div>
-			</div>
-		</div>
-	</div>
+                                                                                    </div>
+                                                                                </div>
+                                                                                <div class="row">
+                                                                                    <div class="form-group col-md-12">
+                                                                                        <label for="categoryValueDescription" class="control-label">Category Value description</label>
+                                                                                        <textarea id="categoryValueDescription" data-ng-model="categoryValue.description" class="form-control" placeholder="No description yet"></textarea>
+                                                                                    </div>
+                                                                                </div>
+                                                                                <div class="row">
+                                                                                    <div class="col-md-12">
+                                                                                        <div class="form-group pull-right btn-group-xs">
+                                                                                            <button type="button" class="btn btn-success" ng-click="updateCategoryValue(category, categoryValue)" data-ng-disabled="editCategoryValueForm.$invalid">
+                                                                                                Save
+                                                                                            </button>
+                                                                                            <a class="btn btn-danger" data-ng-click="removeCategoryValue(category, categoryValue)">
+                                                                                                <i class="glyphicon glyphicon-trash"></i>
+                                                                                            </a>
+                                                                                            <button type="button" class="btn btn-info" ng-click="cancelEditCategoryValue(categoryValue)">
+                                                                                                Cancel
+                                                                                            </button>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                </div>
+                                                                                <div data-ng-show="error" class="text-danger">
+                                                                                    <strong data-ng-bind="error"></strong>
+                                                                                </div>
+                                                                            </fieldset>
+                                                                        </form>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="alert alert-warning text-center" data-ng-show="category.categoryValues.length === 0">
+                                                    No category values added to this category yet
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </accordion-group>
+                                </accordion>
+                            </div>
+                        </div>
+                        <div class="alert alert-warning text-center" data-ng-hide="!categories.$resolved || categories.length">
+                            No categories yet
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </section>

@@ -11,12 +11,15 @@
             </div>
         </div>
     </div>
-    <div data-ng-show="initError" class="text-danger">
-        <strong data-ng-bind="initError"></strong>
+    <div data-ng-show="initErrors" class="text-danger">
+        <strong data-ng-repeat="initError in initErrors" data-ng-bind="initError"></strong>
+    </div>
+    <div data-ng-show="error" class="text-danger">
+        <strong data-ng-bind="error"></strong>
     </div>
     <div class="row">
         <div class="col-md-3">
-            <project-list projects="projects" select-project="selectProject" portfolios="portfolios" gate-processes="gateProcesses"></project-list>
+            <project-list projects="projects" select-project="selectProject" portfolios="portfolios" gate-processes="gateProcesses" is-resolving="isResolving"></project-list>
         </div>
         <div class="col-md-9">
             <div class="row" data-ng-hide="selectedProject || projects.length === 0">
@@ -72,10 +75,11 @@
                                                 <hr>
                                                 <div class="form-group-sm pull-right">
                                                     <button class="btn btn-success btn-xs" data-ng-click="createNewProjectIssue(selectedProject); showNewProjectIssueForm = false;"
-                                                            data-ng-disabled="newProjectIssueForm.$invalid">
+                                                            data-ng-disabled="newProjectIssueForm.$invalid && isResolving">
                                                         Save
                                                     </button>
-                                                    <button class="btn btn-info btn-xs" data-ng-click="cancelNewProjectIssue(); showNewProjectIssueForm = false;">
+                                                    <button class="btn btn-info btn-xs" data-ng-click="cancelNewProjectIssue(); showNewProjectIssueForm = false;"
+                                                            data-ng-disabled="isResolving">
                                                         Cancel
                                                     </button>
                                                 </div>
@@ -87,7 +91,8 @@
                             <div data-ng-show="!showNewProjectIssueForm">
                                 <div class="row">
                                     <div class="col-md-5 form-group-sm center-block">
-                                        <button class="btn btn-success btn-sm" data-ng-click="showNewProjectIssueForm = true">
+                                        <button class="btn btn-success btn-sm" data-ng-click="showNewProjectIssueForm = true"
+                                                data-ng-show="userHasAuthorization('edit', user, selectedProject)">
                                             New project issue
                                         </button>
                                     </div>
@@ -215,10 +220,13 @@
                                                         <span data-ng-show="!projectIssue.statusReview.currentRecord.status">No status</span>
                                                     </td>
                                                     <td class="text-center">
-                                                        <button class="btn btn-success btn-xs" data-ng-click="selectProjectIssue(projectIssue, selectedProject)">
+                                                        <button class="btn btn-success btn-xs" data-ng-click="selectProjectIssue(user, projectIssue, selectedProject)"
+                                                                data-ng-disabled="isResolving">
                                                             <span class="glyphicon glyphicon-pencil"></span>
                                                         </button>
-                                                        <button class="btn btn-danger btn-xs" data-ng-click="deleteProjectIssue(projectIssue)">
+                                                        <button class="btn btn-danger btn-xs" data-ng-click="deleteProjectIssue(projectIssue)"
+                                                                data-ng-show="userHasAuthorization('edit', user, selectedProject)"
+                                                                data-ng-disabled="isResolving">
                                                             <span class="glyphicon glyphicon-trash"></span>
                                                         </button>
                                                     </td>

@@ -11,9 +11,12 @@
 			</div>
 		</div>
 	</div>
-	<div data-ng-show="initError" class="text-danger">
-		<strong data-ng-bind="initError"></strong>
+	<div data-ng-show="initErrors" class="text-danger">
+		<strong data-ng-repeat="initError in initErrors" data-ng-bind="initError"></strong>
 	</div>
+    <div data-ng-show="error" class="text-danger">
+        <strong data-ng-bind="error"></strong>
+    </div>
     <div class="row">
         <div class="col-md-3">
             <project-list projects="projects" select-project="selectProject" portfolios="portfolios" gate-processes="gateProcesses"></project-list>

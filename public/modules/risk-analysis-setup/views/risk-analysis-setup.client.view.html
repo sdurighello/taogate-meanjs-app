@@ -436,13 +436,13 @@
                     <div class="row">
                         <div class="col-md-5">
                             <div class="panel panel-default">
-                                <div class="panel-heading" data-ng-hide="severity || !userHasAuthorization">
-                                    <div class="text-center">
-                                        <em>Drag and drop to order by severity. Top is most severe.</em>
-                                    </div>
-                                </div>
                                 <div class="panel-body" data-as-sortable="dragControlListeners" data-ng-model="severities"
                                      style="overflow-y: auto; max-height: 500px; min-height: 500px;">
+									<a href="" tooltip="Drag up and down to order by severity. Top is most severe."
+									   tooltip-trigger="focus"
+									   data-ng-show="userHasAuthorization">
+										<span class="glyphicon glyphicon-info-sign"></span>
+									</a> &nbsp;
                                     <div class="alert alert-warning text-center" data-ng-hide="severities.length">
                                         No severities yet
                                     </div>
@@ -592,7 +592,7 @@
                         <div class="col-md-6" data-ng-repeat="impactAssignment in severityMatrix">
                             <div class="panel panel-default">
                                 <div class="panel-heading">
-                                    <h6 class="panel-title text-center" data-ng-bind="impactAssignment.impact.name"></h6>
+                                    <h6 class="panel-title text-center" data-ng-bind="impactAssignment.impact.name + ' Impact'"></h6>
                                 </div>
                                 <div class="panel-body">
                                     <div class="row">

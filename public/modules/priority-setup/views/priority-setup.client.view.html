@@ -22,13 +22,13 @@
 					<div class="row">
 						<div class="col-md-5">
 							<div class="panel panel-default">
-								<div class="panel-heading" data-ng-hide="priorityValue || !userHasAuthorization">
-									<div class="text-center">
-										<em>Drag and drop to order by importance. Top is most important.</em>
-									</div>
-								</div>
 								<div class="panel-body" data-as-sortable="dragControlListeners" data-ng-model="priorityValues"
 									 style="overflow-y: auto; max-height: 500px; min-height: 500px;">
+									<a href="" tooltip="Drag values up and down to define priority. Top is most important."
+									   tooltip-trigger="focus"
+									   data-ng-show="userHasAuthorization">
+										<span class="glyphicon glyphicon-info-sign"></span>
+									</a> &nbsp;
 									<div class="alert alert-warning text-center" data-ng-hide="priorityValues.length">
 										No priority values yet
 									</div>
@@ -70,7 +70,7 @@
 										<div class="panel-heading">
 											<h6 class="panel-title" data-ng-bind="priorityValue.name"></h6>
 											<div class="text-center" data-ng-hide="priorityValue">
-												<em>Please select a priority value to see the details</em>
+												<em>Select a priority value to see its details</em>
 											</div>
 										</div>
 										<div class="panel-body" data-ng-show="priorityValue">

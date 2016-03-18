@@ -76,6 +76,9 @@ angular.module('financial-analysis-setup').controller('FinancialAnalysisSetupCon
             if(string === 'edit'){$scope.switchBenefitTypeForm[type._id] = 'edit';}
         };
 
+        $scope.costGroupDetails = 'header';
+        $scope.benefitGroupDetails = 'header';
+
 
         // ----------------- REFRESH GROUPS LISTS ------------
 

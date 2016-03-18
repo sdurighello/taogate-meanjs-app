@@ -65,7 +65,7 @@
                             </div>
                         </div>
                         <hr>
-                        <div class="form-group-sm pull-right" data-ng-show="userHasAuthorization">
+                        <div class="form-group-sm pull-right" data-ng-show="userHasAuthorization('edit', user, selectedProject)">
                             <button class="btn btn-success btn-xs" data-ng-click="editHeader()">
                                 Edit
                             </button>
@@ -130,10 +130,11 @@
                         <hr>
                         <div class="form-group-sm pull-right">
                             <button class="btn btn-success btn-xs" data-ng-click="saveEditHeader(selectedProjectIssue, originalProjectIssue)"
-                                    data-ng-disabled="editProjectIssueForm.$invalid">
+                                    data-ng-disabled="editProjectIssueForm.$invalid || isResolving">
                                 Save
                             </button>
-                            <button class="btn btn-info btn-xs" data-ng-click="cancelEditHeader(selectedProjectIssue, originalProjectIssue)">
+                            <button class="btn btn-info btn-xs" data-ng-click="cancelEditHeader(selectedProjectIssue, originalProjectIssue)"
+                                    data-ng-disabled="isResolving">
                                 Cancel
                             </button>
                         </div>
@@ -179,7 +180,7 @@
                             </div>
                         </div>
                         <hr>
-                        <div class="pull-right" data-ng-show="userHasAuthorization">
+                        <div class="pull-right" data-ng-show="userHasAuthorization('edit', user, selectedProject)">
                             <button class="btn btn-success btn-xs" data-ng-click="editStatus()">
                                 Edit
                             </button>
@@ -243,10 +244,12 @@
                         </div>
                         <hr>
                         <div class="pull-right">
-                            <button class="btn btn-success btn-xs" data-ng-click="saveEditStatus(selectedProjectIssue, originalProjectIssue)">
+                            <button class="btn btn-success btn-xs" data-ng-click="saveEditStatus(selectedProjectIssue, originalProjectIssue)"
+                                    data-ng-disabled="isResolving">
                                 Save
                             </button>
-                            <button class="btn btn-info btn-xs" data-ng-click="cancelEditStatus(selectedProjectIssue, originalProjectIssue)">
+                            <button class="btn btn-info btn-xs" data-ng-click="cancelEditStatus(selectedProjectIssue, originalProjectIssue)"
+                                    data-ng-disabled="isResolving">
                                 Cancel
                             </button>
                         </div>
@@ -257,7 +260,11 @@
     </div>
     <div class="row">
         <div class="center-block text-center">
-            <button class="btn btn-primary btn-sm" data-ng-click="cancelEditStatus(selectedProjectIssue, originalProjectIssue); cancelEditHeader(selectedProjectIssue, originalProjectIssue); cancelModal()">
+            <button class="btn btn-primary btn-sm"
+                    data-ng-click="cancelEditStatus(selectedProjectIssue, originalProjectIssue);
+                    cancelEditHeader(selectedProjectIssue, originalProjectIssue);
+                    cancelModal()"
+                    data-ng-disabled="isResolving">
                 Close
             </button>
         </div>

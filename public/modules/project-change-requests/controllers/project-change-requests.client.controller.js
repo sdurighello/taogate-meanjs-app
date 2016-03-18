@@ -64,7 +64,7 @@ angular.module('project-change-requests').controller('ProjectChangeRequestContro
 
         $scope.userHasAuthorization = function(action, user, project){
             var userIsSuperhero, userIsProjectManager, userIsPortfolioManager;
-            if(action === 'edit' && project){
+            if((action === 'edit') && user && project){
                 userIsSuperhero = !!_.some(user.roles, function(role){
                     return role === 'superAdmin' || role === 'admin' || role === 'pmo';
                 });
@@ -75,7 +75,7 @@ angular.module('project-change-requests').controller('ProjectChangeRequestContro
 
                 return userIsSuperhero || userIsProjectManager || userIsPortfolioManager;
             }
-            if(action === 'approve' && project){
+            if((action === 'approve') && user && project){
                 userIsSuperhero = !!_.some(user.roles, function(role){
                     return role === 'superAdmin' || role === 'admin' || role === 'pmo';
                 });

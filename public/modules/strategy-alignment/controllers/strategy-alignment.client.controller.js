@@ -6,6 +6,8 @@ angular.module('strategy-alignment').controller('StrategyAlignmentController', [
 
 		// ----------- INIT ---------------
 
+        $scope.isResolving = false;
+
 		$scope.initError = [];
 
 		$scope.init = function(){
@@ -54,7 +56,7 @@ angular.module('strategy-alignment').controller('StrategyAlignmentController', [
 		d.promise.then(function(data){
 			var obj = _.clone(data);
 			$scope.userHasAuthorization = _.some(obj.user.roles, function(role){
-				return role === 'superAdmin' || role === 'admin' || role === 'pmo';
+				return role === 'superAdmin' || role === 'admin' || role === 'pmo' || role === 'portfolioManager';
 			});
 		});
 
@@ -93,6 +95,7 @@ angular.module('strategy-alignment').controller('StrategyAlignmentController', [
 		// ------------------- PROJECTS FOR NODE ------------
 
 		$scope.selectNode = function(node){
+            $scope.error = null;
 			$scope.selectedNode = node;
 		};
 
@@ -104,9 +107,12 @@ angular.module('strategy-alignment').controller('StrategyAlignmentController', [
                 var movedProjectFromAssigned = eventObj.source.itemScope.project;
                 var originalParent = movedProjectFromAssigned.parent;
                 movedProjectFromAssigned.parent = null;
+                $scope.error = null;
+                $scope.isResolving = true;
                 Projects.updateStrategyAssignment(movedProjectFromAssigned, function(res){
-                    $scope.error = null;
+                    $scope.isResolving = false;
                 }, function(err){
+                    $scope.isResolving = false;
                     $scope.error = err.data.message;
                     // put back project in case of failure
                     movedProjectFromAssigned.parent = originalParent;
@@ -120,9 +126,12 @@ angular.module('strategy-alignment').controller('StrategyAlignmentController', [
             itemMoved: function (eventObj) {
                 var movedProjectFromUnassigned = eventObj.source.itemScope.project;
                 movedProjectFromUnassigned.parent = $scope.selectedNode._id;
+                $scope.error = null;
+                $scope.isResolving = true;
                 Projects.updateStrategyAssignment(movedProjectFromUnassigned, function(res){
-                    $scope.error = null;
+                    $scope.isResolving = false;
                 }, function(err){
+                    $scope.isResolving = false;
                     $scope.error = err.data.message;
                     // put back project in case of failure
                     movedProjectFromUnassigned.parent = null;

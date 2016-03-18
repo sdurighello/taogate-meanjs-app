@@ -6,7 +6,7 @@ angular.module('project-identification').controller('ProjectIdentificationContro
 
 		// ----------- INIT ---------------
 
-		$scope.initError = [];
+		$scope.initErrors = [];
 
 		$scope.init = function(){
 
@@ -15,30 +15,30 @@ angular.module('project-identification').controller('ProjectIdentificationContro
 			Subusers.query(function(users){
 				$scope.users = users;
 				$scope.projectManagers = _.filter(users, function(user){
-					return _.some(user.roles, function(role){
+					return _.find(user.roles, function(role){
                         return role === 'projectManager';
                     });
 				});
 			}, function(err){
-				$scope.initError.push(err.data.message);
+				$scope.initErrors.push(err.data.message);
 			});
 
 			Projects.query({'selection.active': true}, function(projects){
 				$scope.projects = projects;
 			}, function(err){
-				$scope.initError.push(err.data.message);
+				$scope.initErrors.push(err.data.message);
 			});
 
             Portfolios.query(function(res){
                 $scope.portfolios = res;
             }, function(err){
-                $scope.initError.push(err.data.message);
+                $scope.initErrors.push(err.data.message);
             });
 
             GateProcesses.query(function(res){
                 $scope.gateProcesses = res;
             }, function(err){
-                $scope.initError.push(err.data.message);
+                $scope.initErrors.push(err.data.message);
             });
 
 		};
@@ -99,11 +99,11 @@ angular.module('project-identification').controller('ProjectIdentificationContro
 		// ------------- REFRESH PROJECT LIST ------------
 
 		var projectList = function(){
-			$scope.initError = [];
+			$scope.initErrors = [];
 			Projects.query({'selection.active': true}, function(projects){
                 $scope.projects = projects;
 			}, function(err){
-				$scope.initError.push(err.data.message);
+				$scope.initErrors.push(err.data.message);
 			});
 		};
 

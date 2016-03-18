@@ -11,9 +11,12 @@
 			</div>
 		</div>
 	</div>
-	<div data-ng-show="initError" class="text-danger">
-		<strong data-ng-bind="initError"></strong>
+	<div data-ng-show="initErrors" class="text-danger">
+		<strong data-ng-repeat="initError in initErrors" data-ng-bind="initError"></strong>
 	</div>
+    <div data-ng-show="error" class="text-danger">
+        <strong data-ng-bind="error"></strong>
+    </div>
 	<div class="row">
 		<div class="col-md-12">
 			<tabset>
@@ -26,23 +29,23 @@
                                     <h6 class="panel-title text-center">Cost groups</h6>
                                 </div>
                                 <div class="panel-body">
-                                    <div class="row" data-ng-show="userHasAuthorization">
+                                    <div class="row">
                                         <div class="col-md-12">
-                                            <button class="btn btn-primary btn-sm" ng-click="createCostGroup()">
+                                            <button class="btn btn-sm btn-success" data-ng-click="createCostGroup()"
+                                                    data-ng-show="userHasAuthorization">
                                                 New cost group
                                             </button>
-                                            <div data-ng-show="error" class="text-danger">
-                                                <strong data-ng-bind="error"></strong>
-                                            </div>
                                         </div>
                                     </div>
-                                    <hr>
+                                    <hr style="margin: 10px">
                                     <div class="alert alert-warning text-center" data-ng-show="costGroups.length === 0">
                                         There are no cost groups created yet
                                     </div>
-                                    <div class="row" style="min-height: 320px; max-height: 320px; overflow-y: auto">
-                                        <div class="col-md-12 form-group" data-ng-repeat="group in costGroups track by $index">
-                                            <button class="btn btn-default btn-block" data-ng-click="selectCostGroup(group)"
+                                    <div class="row" style="min-height: 400px; max-height: 400px; overflow-y: auto">
+                                        <div class="col-md-12">
+                                            <button class="btn btn-default btn-block"
+                                                    data-ng-repeat="group in costGroups track by $index"
+                                                    data-ng-click="selectCostGroup(group)"
                                                     data-ng-bind="group.name">
                                             </button>
                                         </div>
@@ -51,150 +54,81 @@
                             </div>
                         </div>
                         <div class="col-md-8">
-                            <div class="alert alert-warning text-center" data-ng-hide="selectedCostGroup">
+                            <div class="alert alert-warning text-center" data-ng-show="!selectedCostGroup">
                                 Please select a cost group to see the details
                             </div>
-                            <div data-ng-show="selectedCostGroup">
+                            <div class="panel panel-default" data-ng-show="selectedCostGroup">
+                                <div class="panel-heading">
+                                    <h6 class="panel-title text-center" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: normal; width: 100%;">
+                                        {{selectedCostGroup.name}}
+                                    </h6>
+                                </div>
                                 <div class="row">
-                                    <div class="col-md-12">
-                                        <div class="panel panel-default">
-                                            <h5> &nbsp; Selected cost group:
-                                                <button class="btn-link" data-ng-click="viewCostGroupDetails = !viewCostGroupDetails" style="overflow: hidden;">
-                                                    <i data-ng-bind="selectedCostGroup.name"></i>
-                                                </button>
-                                            </h5>
-                                            <div class="panel-body" data-ng-show="viewCostGroupDetails" data-ng-switch="switchCostGroupForm[selectedCostGroup._id]">
-                                                <div ng-switch-default="view">
-                                                    <form>
-                                                        <fieldset>
-                                                            <div class="row">
-                                                                <div class="col-md-7 form-group">
-                                                                    <label for="costGroupName" class="control-label">Group name</label>
-                                                                    <input disabled id="costGroupName" type="text" class="form-control" data-ng-model="selectedCostGroup.name">
-                                                                </div>
-                                                            </div>
-                                                            <div class="row">
-                                                                <div class="col-md-12 form-group">
-                                                                    <label for="costGroupDescription" class="control-label">Group description</label>
-                                                                    <textarea disabled id="costGroupDescription" data-ng-model="selectedCostGroup.description" class="form-control" placeholder="No description yet"></textarea>
-                                                                </div>
-                                                            </div>
-                                                            <div class="row" data-ng-show="userHasAuthorization">
-                                                                <div class="col-md-12">
-                                                                    <div class="pull-right">
-                                                                        <button class="btn btn-sm btn-success" data-ng-click="selectCostGroupForm(selectedCostGroup, 'edit')">Edit</button>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                        </fieldset>
-                                                    </form>
-                                                </div>
-                                                <div ng-switch-when="edit">
-                                                    <form name="editCostGroupForm" novalidate>
-                                                        <fieldset>
-                                                            <div class="row">
-                                                                <div class="col-md-7 form-group">
-                                                                    <label for="costGroupNameEdit" class="control-label">Group name</label>
-                                                                    <input id="costGroupNameEdit" name="costGroupNameEdit" type="text" class="form-control" data-ng-model="selectedCostGroup.name" required>
-                                                                    <span data-ng-show="editCostGroupForm.costGroupNameEdit.$error.required">
-                                                                        <em style="color: red">Name is required</em>
-                                                                    </span>
-                                                                </div>
-                                                            </div>
-                                                            <div class="row">
-                                                                <div class="col-md-12 form-group">
-                                                                    <label for="costGroupDescriptionEdit" class="control-label">Group description</label>
-                                                                    <textarea id="costGroupDescriptionEdit" data-ng-model="selectedCostGroup.description" class="form-control" placeholder="No description yet"></textarea>
-                                                                </div>
-                                                            </div>
-                                                            <div class="row">
-                                                                <div class="col-md-12">
-                                                                    <div class="pull-right">
-                                                                        <button type="button" class="btn btn-sm btn-success" data-ng-click="updateCostGroup(selectedCostGroup)" data-ng-disabled="editCostGroupForm.$invalid">
-                                                                            Save
-                                                                        </button>
-                                                                        <button type="button" class="btn btn-sm btn-danger" data-ng-click="removeCostGroup(selectedCostGroup)">
-                                                                            Delete Category Group
-                                                                        </button>
-                                                                        <button type="button" class="btn btn-sm btn-info" data-ng-click="cancelEditCostGroup(selectedCostGroup)">
-                                                                            Cancel
-                                                                        </button>
-                                                                        <div data-ng-show="error" class="text-danger">
-                                                                            <strong data-ng-bind="error"></strong>
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                        </fieldset>
-                                                    </form>
-                                                </div>
-                                            </div>
-                                        </div>
+                                    <div class="col-md-12 btn-group btn-group-xs btn-group-justified">
+                                        <label class="btn btn-info btn-xs" data-ng-model="costGroupDetails" btn-radio="'header'">
+                                            Header
+                                        </label>
+                                        <label class="btn btn-info btn-xs" data-ng-model="costGroupDetails" btn-radio="'costTypes'">
+                                            Cost types
+                                        </label>
                                     </div>
                                 </div>
-                                <div class="row" data-ng-show="userHasAuthorization">
-                                    <div class="col-md-3">
-                                        <button class="btn btn-primary btn-sm" ng-click="createCostType(selectedCostGroup)">
-                                            New cost type
-                                        </button>
-                                        <div data-ng-show="error" class="text-danger">
-                                            <strong data-ng-bind="error"></strong>
-                                        </div>
-                                    </div>
-                                </div>
-                                <hr>
-                                <div class="row">
-                                    <div class="col-md-4" data-ng-repeat="type in selectedCostGroup.costTypes track by $index">
-                                        <div class="panel panel-default panel-body" data-ng-switch="switchCostTypeForm[type._id]">
-                                            <div data-ng-switch-default="view">
-                                                <form class="form">
+                                <div class="panel-body" style="min-height: 455px">
+                                    <div data-ng-show="costGroupDetails === 'header'">
+                                        <div data-ng-switch="switchCostGroupForm[selectedCostGroup._id]">
+                                            <div ng-switch-default="view">
+                                                <form>
                                                     <fieldset>
                                                         <div class="row">
-                                                            <div class="col-md-12 form-group">
-                                                                <input disabled id="" type="text" class="form-control" data-ng-model="type.name">
+                                                            <div class="col-md-7 form-group">
+                                                                <label for="costGroupName" class="control-label">Group name</label>
+                                                                <input disabled id="costGroupName" type="text" class="form-control" data-ng-model="selectedCostGroup.name">
                                                             </div>
                                                         </div>
                                                         <div class="row">
                                                             <div class="col-md-12 form-group">
-                                                                <textarea disabled id="" data-ng-model="type.description" class="form-control" placeholder="Enter description"></textarea>
+                                                                <label for="costGroupDescription" class="control-label">Group description</label>
+                                                                <textarea disabled id="costGroupDescription" data-ng-model="selectedCostGroup.description" class="form-control" placeholder="No description yet"></textarea>
                                                             </div>
                                                         </div>
-                                                        <div class="row">
-                                                            <div class="col-md-12 pull-right" data-ng-show="userHasAuthorization">
+                                                        <div class="row" data-ng-show="userHasAuthorization">
+                                                            <div class="col-md-12">
                                                                 <div class="pull-right">
-                                                                    <button class="btn btn-success btn-xs" data-ng-click="selectCostType(type)">Edit</button>
+                                                                    <button class="btn btn-sm btn-success" data-ng-click="selectCostGroupForm(selectedCostGroup, 'edit')">Edit</button>
                                                                 </div>
                                                             </div>
                                                         </div>
                                                     </fieldset>
                                                 </form>
                                             </div>
-                                            <div data-ng-switch-when="edit">
-                                                <form class="form" name="editCostTypeForm" novalidate>
+                                            <div ng-switch-when="edit">
+                                                <form name="editCostGroupForm" novalidate>
                                                     <fieldset>
                                                         <div class="row">
-                                                            <div class="col-md-12 form-group">
-                                                                <input id="" name="costTypeNameEdit" type="text" class="form-control" data-ng-model="type.name" required>
-                                                                    <span data-ng-show="editCostTypeForm.costTypeNameEdit.$error.required">
+                                                            <div class="col-md-7 form-group">
+                                                                <label for="costGroupNameEdit" class="control-label">Group name</label>
+                                                                <input id="costGroupNameEdit" name="costGroupNameEdit" type="text" class="form-control" data-ng-model="selectedCostGroup.name" required>
+                                                                    <span data-ng-show="editCostGroupForm.costGroupNameEdit.$error.required">
                                                                         <em style="color: red">Name is required</em>
                                                                     </span>
                                                             </div>
                                                         </div>
                                                         <div class="row">
                                                             <div class="col-md-12 form-group">
-                                                                <textarea id="" data-ng-model="type.description" class="form-control" placeholder="Enter description"></textarea>
+                                                                <label for="costGroupDescriptionEdit" class="control-label">Group description</label>
+                                                                <textarea id="costGroupDescriptionEdit" data-ng-model="selectedCostGroup.description" class="form-control" placeholder="No description yet"></textarea>
                                                             </div>
                                                         </div>
                                                         <div class="row">
                                                             <div class="col-md-12">
                                                                 <div class="pull-right">
-                                                                    <button type="button" class="btn btn-xs btn-success" data-ng-click="updateCostType(type)" data-ng-disabled="editCostTypeForm.$invalid">
+                                                                    <button type="button" class="btn btn-sm btn-success" data-ng-click="updateCostGroup(selectedCostGroup)" data-ng-disabled="editCostGroupForm.$invalid">
                                                                         Save
                                                                     </button>
-                                                                    <button type="button" class="btn btn-xs btn-danger" data-ng-click="removeCostType(selectedCostGroup, type)">
-                                                                        Delete
+                                                                    <button type="button" class="btn btn-sm btn-danger" data-ng-click="removeCostGroup(selectedCostGroup)">
+                                                                        Delete Category Group
                                                                     </button>
-                                                                    <button type="button" class="btn btn-xs btn-info" data-ng-click="cancelEditCostType(type)">
+                                                                    <button type="button" class="btn btn-sm btn-info" data-ng-click="cancelEditCostGroup(selectedCostGroup)">
                                                                         Cancel
                                                                     </button>
                                                                     <div data-ng-show="error" class="text-danger">
@@ -208,9 +142,65 @@
                                             </div>
                                         </div>
                                     </div>
-                                </div>
-                                <div class="alert alert-warning text-center" data-ng-hide="!group.costTypes.$resolved || group.costTypes.length">
-                                    No cost types yet
+                                    <div data-ng-show="costGroupDetails === 'costTypes'">
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                <button class="btn btn-sm btn-success" data-ng-click="createCostType(selectedCostGroup)"
+                                                        data-ng-show="userHasAuthorization">
+                                                    New cost type
+                                                </button>
+                                            </div>
+                                        </div>
+                                        <hr style="margin: 10px">
+                                        <div class="row" style="min-height: 370px; max-height: 370px; overflow-y: auto;">
+                                            <div class="col-md-4" data-ng-repeat="type in selectedCostGroup.costTypes track by $index">
+                                                <div class="panel panel-default panel-body" data-ng-switch="switchCostTypeForm[type._id]">
+                                                    <div data-ng-switch-default="view">
+                                                        <form class="form">
+                                                            <div class="form-group">
+                                                                <input disabled id="" type="text" class="form-control" data-ng-model="type.name">
+                                                            </div>
+                                                            <div class="form-group">
+                                                                <textarea disabled id="" data-ng-model="type.description" class="form-control" placeholder="Enter description"></textarea>
+                                                            </div>
+                                                            <div class="pull-right" data-ng-show="userHasAuthorization">
+                                                                <button class="btn btn-success btn-xs" data-ng-click="selectCostType(type)">
+                                                                    Edit
+                                                                </button>
+                                                            </div>
+                                                        </form>
+                                                    </div>
+                                                    <div data-ng-switch-when="edit">
+                                                        <form class="form" name="editCostTypeForm" novalidate>
+                                                            <div class="form-group">
+                                                                <input id="" name="costTypeNameEdit" type="text" class="form-control" data-ng-model="type.name" required>
+                                                                    <span data-ng-show="editCostTypeForm.costTypeNameEdit.$error.required">
+                                                                        <em style="color: red">Name is required</em>
+                                                                    </span>
+                                                            </div>
+                                                            <div class="form-group">
+                                                                <textarea id="" data-ng-model="type.description" class="form-control" placeholder="Enter description"></textarea>
+                                                            </div>
+                                                            <div class="pull-right">
+                                                                <button type="button" class="btn btn-xs btn-success" data-ng-click="updateCostType(type)" data-ng-disabled="editCostTypeForm.$invalid">
+                                                                    Save
+                                                                </button>
+                                                                <button type="button" class="btn btn-xs btn-danger" data-ng-click="removeCostType(selectedCostGroup, type)">
+                                                                    Delete
+                                                                </button>
+                                                                <button type="button" class="btn btn-xs btn-info" data-ng-click="cancelEditCostType(type)">
+                                                                    Cancel
+                                                                </button>
+                                                            </div>
+                                                        </form>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="alert alert-warning text-center" data-ng-hide="!group.costTypes.$resolved || group.costTypes.length">
+                                            No cost types yet
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -225,23 +215,23 @@
                                     <h6 class="panel-title text-center">Benefit groups</h6>
                                 </div>
                                 <div class="panel-body">
-                                    <div class="row" data-ng-show="userHasAuthorization">
+                                    <div class="row">
                                         <div class="col-md-12">
-                                            <button class="btn btn-primary btn-sm" ng-click="createBenefitGroup()">
+                                            <button class="btn btn-sm btn-success" data-ng-click="createBenefitGroup()"
+                                                    data-ng-show="userHasAuthorization">
                                                 New benefit group
                                             </button>
-                                            <div data-ng-show="error" class="text-danger">
-                                                <strong data-ng-bind="error"></strong>
-                                            </div>
                                         </div>
                                     </div>
-                                    <hr>
+                                    <hr style="margin: 10px">
                                     <div class="alert alert-warning text-center" data-ng-show="benefitGroups.length === 0">
                                         There are no benefit groups created yet
                                     </div>
-                                    <div class="row" style="min-height: 320px; max-height: 320px; overflow-y: auto">
-                                        <div class="col-md-12 form-group" data-ng-repeat="group in benefitGroups track by $index">
-                                            <button class="btn btn-default btn-block" data-ng-click="selectBenefitGroup(group)"
+                                    <div class="row" style="min-height: 400px; max-height: 400px; overflow-y: auto">
+                                        <div class="col-md-12">
+                                            <button class="btn btn-default btn-block"
+                                                    data-ng-repeat="group in benefitGroups track by $index"
+                                                    data-ng-click="selectBenefitGroup(group)"
                                                     data-ng-bind="group.name">
                                             </button>
                                         </div>
@@ -250,150 +240,81 @@
                             </div>
                         </div>
                         <div class="col-md-8">
-                            <div class="alert alert-warning text-center" data-ng-hide="selectedBenefitGroup">
+                            <div class="alert alert-warning text-center" data-ng-show="!selectedBenefitGroup">
                                 Please select a benefit group to see the details
                             </div>
-                            <div data-ng-show="selectedBenefitGroup">
+                            <div class="panel panel-default" data-ng-show="selectedBenefitGroup">
+                                <div class="panel-heading">
+                                    <h6 class="panel-title text-center" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: normal; width: 100%;">
+                                        {{selectedBenefitGroup.name}}
+                                    </h6>
+                                </div>
                                 <div class="row">
-                                    <div class="col-md-12">
-                                        <div class="panel panel-default">
-                                            <h5> &nbsp; Selected benefit group:
-                                                <button class="btn-link" data-ng-click="viewBenefitGroupDetails = !viewBenefitGroupDetails" style="overflow: hidden;">
-                                                    <i data-ng-bind="selectedBenefitGroup.name"></i>
-                                                </button>
-                                            </h5>
-                                            <div class="panel-body" data-ng-show="viewBenefitGroupDetails" data-ng-switch="switchBenefitGroupForm[selectedBenefitGroup._id]">
-                                                <div ng-switch-default="view">
-                                                    <form>
-                                                        <fieldset>
-                                                            <div class="row">
-                                                                <div class="col-md-7 form-group">
-                                                                    <label for="benefitGroupName" class="control-label">Group name</label>
-                                                                    <input disabled id="benefitGroupName" type="text" class="form-control" data-ng-model="selectedBenefitGroup.name">
-                                                                </div>
-                                                            </div>
-                                                            <div class="row">
-                                                                <div class="col-md-12 form-group">
-                                                                    <label for="benefitGroupDescription" class="control-label">Group description</label>
-                                                                    <textarea disabled id="benefitGroupDescription" data-ng-model="selectedBenefitGroup.description" class="form-control" placeholder="No description yet"></textarea>
-                                                                </div>
-                                                            </div>
-                                                            <div class="row" data-ng-show="userHasAuthorization">
-                                                                <div class="col-md-12">
-                                                                    <div class="pull-right">
-                                                                        <button class="btn btn-sm btn-success" data-ng-click="selectBenefitGroupForm(selectedBenefitGroup, 'edit')">Edit</button>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                        </fieldset>
-                                                    </form>
-                                                </div>
-                                                <div ng-switch-when="edit">
-                                                    <form name="editBenefitGroupForm" novalidate>
-                                                        <fieldset>
-                                                            <div class="row">
-                                                                <div class="col-md-7 form-group">
-                                                                    <label for="benefitGroupNameEdit" class="control-label">Group name</label>
-                                                                    <input id="benefitGroupNameEdit" name="benefitGroupNameEdit" type="text" class="form-control" data-ng-model="selectedBenefitGroup.name" required>
-                                                                    <span data-ng-show="editBenefitGroupForm.benefitGroupNameEdit.$error.required">
-                                                                        <em style="color: red">Name is required</em>
-                                                                    </span>
-                                                                </div>
-                                                            </div>
-                                                            <div class="row">
-                                                                <div class="col-md-12 form-group">
-                                                                    <label for="benefitGroupDescriptionEdit" class="control-label">Group description</label>
-                                                                    <textarea id="benefitGroupDescriptionEdit" data-ng-model="selectedBenefitGroup.description" class="form-control" placeholder="No description yet"></textarea>
-                                                                </div>
-                                                            </div>
-                                                            <div class="row">
-                                                                <div class="col-md-12">
-                                                                    <div class="pull-right">
-                                                                        <button type="button" class="btn btn-sm btn-success" data-ng-click="updateBenefitGroup(selectedBenefitGroup)" data-ng-disabled="editBenefitGroupForm.$invalid">
-                                                                            Save
-                                                                        </button>
-                                                                        <button type="button" class="btn btn-sm btn-danger" data-ng-click="removeBenefitGroup(selectedBenefitGroup)">
-                                                                            Delete Category Group
-                                                                        </button>
-                                                                        <button type="button" class="btn btn-sm btn-info" data-ng-click="cancelEditBenefitGroup(selectedBenefitGroup)">
-                                                                            Cancel
-                                                                        </button>
-                                                                        <div data-ng-show="error" class="text-danger">
-                                                                            <strong data-ng-bind="error"></strong>
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                        </fieldset>
-                                                    </form>
-                                                </div>
-                                            </div>
-                                        </div>
+                                    <div class="col-md-12 btn-group btn-group-xs btn-group-justified">
+                                        <label class="btn btn-info btn-xs" data-ng-model="benefitGroupDetails" btn-radio="'header'">
+                                            Header
+                                        </label>
+                                        <label class="btn btn-info btn-xs" data-ng-model="benefitGroupDetails" btn-radio="'benefitTypes'">
+                                            Benefit types
+                                        </label>
                                     </div>
                                 </div>
-                                <div class="row" data-ng-show="userHasAuthorization">
-                                    <div class="col-md-3">
-                                        <button class="btn btn-primary btn-sm" ng-click="createBenefitType(selectedBenefitGroup)">
-                                            New benefit type
-                                        </button>
-                                        <div data-ng-show="error" class="text-danger">
-                                            <strong data-ng-bind="error"></strong>
-                                        </div>
-                                    </div>
-                                </div>
-                                <hr>
-                                <div class="row">
-                                    <div class="col-md-4" data-ng-repeat="type in selectedBenefitGroup.benefitTypes track by $index">
-                                        <div class="panel panel-default panel-body" data-ng-switch="switchBenefitTypeForm[type._id]">
-                                            <div data-ng-switch-default="view">
-                                                <form class="form">
+                                <div class="panel-body" style="min-height: 455px">
+                                    <div data-ng-show="benefitGroupDetails === 'header'">
+                                        <div data-ng-switch="switchBenefitGroupForm[selectedBenefitGroup._id]">
+                                            <div ng-switch-default="view">
+                                                <form>
                                                     <fieldset>
                                                         <div class="row">
-                                                            <div class="col-md-12 form-group">
-                                                                <input disabled id="" type="text" class="form-control" data-ng-model="type.name">
+                                                            <div class="col-md-7 form-group">
+                                                                <label for="benefitGroupName" class="control-label">Group name</label>
+                                                                <input disabled id="benefitGroupName" type="text" class="form-control" data-ng-model="selectedBenefitGroup.name">
                                                             </div>
                                                         </div>
                                                         <div class="row">
                                                             <div class="col-md-12 form-group">
-                                                                <textarea disabled id="" data-ng-model="type.description" class="form-control" placeholder="Enter description"></textarea>
+                                                                <label for="benefitGroupDescription" class="control-label">Group description</label>
+                                                                <textarea disabled id="benefitGroupDescription" data-ng-model="selectedBenefitGroup.description" class="form-control" placeholder="No description yet"></textarea>
                                                             </div>
                                                         </div>
-                                                        <div class="row">
-                                                            <div class="col-md-12" data-ng-show="userHasAuthorization">
+                                                        <div class="row" data-ng-show="userHasAuthorization">
+                                                            <div class="col-md-12">
                                                                 <div class="pull-right">
-                                                                    <button class="btn btn-success btn-xs" data-ng-click="selectBenefitType(type)">Edit</button>
+                                                                    <button class="btn btn-sm btn-success" data-ng-click="selectBenefitGroupForm(selectedBenefitGroup, 'edit')">Edit</button>
                                                                 </div>
                                                             </div>
                                                         </div>
                                                     </fieldset>
                                                 </form>
                                             </div>
-                                            <div data-ng-switch-when="edit">
-                                                <form class="form" name="editBenefitTypeForm" novalidate>
+                                            <div ng-switch-when="edit">
+                                                <form name="editBenefitGroupForm" novalidate>
                                                     <fieldset>
                                                         <div class="row">
-                                                            <div class="col-md-12 form-group">
-                                                                <input id="" name="benefitTypeNameEdit" type="text" class="form-control" data-ng-model="type.name" required>
-                                                                    <span data-ng-show="editBenefitTypeForm.benefitTypeNameEdit.$error.required">
+                                                            <div class="col-md-7 form-group">
+                                                                <label for="benefitGroupNameEdit" class="control-label">Group name</label>
+                                                                <input id="benefitGroupNameEdit" name="benefitGroupNameEdit" type="text" class="form-control" data-ng-model="selectedBenefitGroup.name" required>
+                                                                    <span data-ng-show="editBenefitGroupForm.benefitGroupNameEdit.$error.required">
                                                                         <em style="color: red">Name is required</em>
                                                                     </span>
                                                             </div>
                                                         </div>
                                                         <div class="row">
                                                             <div class="col-md-12 form-group">
-                                                                <textarea id="" data-ng-model="type.description" class="form-control" placeholder="Enter description"></textarea>
+                                                                <label for="benefitGroupDescriptionEdit" class="control-label">Group description</label>
+                                                                <textarea id="benefitGroupDescriptionEdit" data-ng-model="selectedBenefitGroup.description" class="form-control" placeholder="No description yet"></textarea>
                                                             </div>
                                                         </div>
                                                         <div class="row">
                                                             <div class="col-md-12">
                                                                 <div class="pull-right">
-                                                                    <button type="button" class="btn btn-xs btn-success" data-ng-click="updateBenefitType(type)" data-ng-disabled="editBenefitTypeForm.$invalid">
+                                                                    <button type="button" class="btn btn-sm btn-success" data-ng-click="updateBenefitGroup(selectedBenefitGroup)" data-ng-disabled="editBenefitGroupForm.$invalid">
                                                                         Save
                                                                     </button>
-                                                                    <button type="button" class="btn btn-xs btn-danger" data-ng-click="removeBenefitType(selectedBenefitGroup, type)">
-                                                                        Delete
+                                                                    <button type="button" class="btn btn-sm btn-danger" data-ng-click="removeBenefitGroup(selectedBenefitGroup)">
+                                                                        Delete Category Group
                                                                     </button>
-                                                                    <button type="button" class="btn btn-xs btn-info" data-ng-click="cancelEditBenefitType(type)">
+                                                                    <button type="button" class="btn btn-sm btn-info" data-ng-click="cancelEditBenefitGroup(selectedBenefitGroup)">
                                                                         Cancel
                                                                     </button>
                                                                     <div data-ng-show="error" class="text-danger">
@@ -407,9 +328,63 @@
                                             </div>
                                         </div>
                                     </div>
-                                </div>
-                                <div class="alert alert-warning text-center" data-ng-hide="!group.benefitTypes.$resolved || group.benefitTypes.length">
-                                    No benefit types yet
+                                    <div data-ng-show="benefitGroupDetails === 'benefitTypes'">
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                <button class="btn btn-sm btn-success" data-ng-click="createBenefitType(selectedBenefitGroup)"
+                                                        data-ng-show="userHasAuthorization">
+                                                    New benefit type
+                                                </button>
+                                            </div>
+                                        </div>
+                                        <hr style="margin: 10px">
+                                        <div class="row" style="min-height: 370px; max-height: 370px; overflow-y: auto;">
+                                            <div class="col-md-4" data-ng-repeat="type in selectedBenefitGroup.benefitTypes track by $index">
+                                                <div class="panel panel-default panel-body" data-ng-switch="switchBenefitTypeForm[type._id]">
+                                                    <div data-ng-switch-default="view">
+                                                        <form class="form">
+                                                            <div class="form-group">
+                                                                <input disabled id="" type="text" class="form-control" data-ng-model="type.name">
+                                                            </div>
+                                                            <div class="form-group">
+                                                                <textarea disabled id="" data-ng-model="type.description" class="form-control" placeholder="Enter description"></textarea>
+                                                            </div>
+                                                            <div class="pull-right" data-ng-show="userHasAuthorization">
+                                                                <button class="btn btn-success btn-xs" data-ng-click="selectBenefitType(type)">Edit</button>
+                                                            </div>
+                                                        </form>
+                                                    </div>
+                                                    <div data-ng-switch-when="edit">
+                                                        <form class="form" name="editBenefitTypeForm" novalidate>
+                                                            <div class="form-group">
+                                                                <input id="" name="benefitTypeNameEdit" type="text" class="form-control" data-ng-model="type.name" required>
+                                                                    <span data-ng-show="editBenefitTypeForm.benefitTypeNameEdit.$error.required">
+                                                                        <em style="color: red">Name is required</em>
+                                                                    </span>
+                                                            </div>
+                                                            <div class="form-group">
+                                                                <textarea id="" data-ng-model="type.description" class="form-control" placeholder="Enter description"></textarea>
+                                                            </div>
+                                                            <div class="pull-right">
+                                                                <button type="button" class="btn btn-xs btn-success" data-ng-click="updateBenefitType(type)" data-ng-disabled="editBenefitTypeForm.$invalid">
+                                                                    Save
+                                                                </button>
+                                                                <button type="button" class="btn btn-xs btn-danger" data-ng-click="removeBenefitType(selectedBenefitGroup, type)">
+                                                                    Delete
+                                                                </button>
+                                                                <button type="button" class="btn btn-xs btn-info" data-ng-click="cancelEditBenefitType(type)">
+                                                                    Cancel
+                                                                </button>
+                                                            </div>
+                                                        </form>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="alert alert-warning text-center" data-ng-hide="!group.benefitTypes.$resolved || group.benefitTypes.length">
+                                            No benefit types yet
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>

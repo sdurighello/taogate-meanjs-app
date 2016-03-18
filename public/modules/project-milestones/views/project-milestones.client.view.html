@@ -11,12 +11,15 @@
             </div>
         </div>
     </div>
-    <div data-ng-show="initError" class="text-danger">
-        <strong data-ng-bind="initError"></strong>
+    <div data-ng-show="initErrors" class="text-danger">
+        <strong data-ng-repeat="initError in initErrors" data-ng-bind="initError"></strong>
+    </div>
+    <div data-ng-show="error" class="text-danger">
+        <strong data-ng-bind="error"></strong>
     </div>
     <div class="row">
         <div class="col-md-3">
-            <project-list projects="projects" select-project="selectProject" portfolios="portfolios" gate-processes="gateProcesses"></project-list>
+            <project-list projects="projects" select-project="selectProject" portfolios="portfolios" gate-processes="gateProcesses" is-resolving="isResolving"></project-list>
         </div>
         <div class="col-md-9">
             <div class="row">
@@ -39,7 +42,10 @@
                                         <li data-ng-repeat="reviewObjectPill in projectMilestoneList track by $index"
                                             data-ng-class="{'active' : reviewObject === reviewObjectPill}" style="margin-bottom: 2px">
                                             <div class="nav-wedge" data-ng-hide="$index === 0"></div>
-                                            <a class="btn-link" data-ng-click="setReviewObject(reviewObjectPill)">{{reviewObjectPill.gate.name}}</a>
+                                            <a class="btn-link" data-ng-click="setReviewObject(reviewObjectPill)"
+                                                    data-ng-disabled="isResolving">
+                                                {{reviewObjectPill.gate.name}}
+                                            </a>
                                             <div class="nav-arrow" data-ng-hide="$index === projectMilestoneList.length-1"></div>
                                         </li>
                                     </ul>
@@ -72,11 +78,12 @@
                                                 </div>
                                                 <hr>
                                                 <div class="form-group-sm pull-right">
-                                                    <button class="btn btn-success btn-xs" data-ng-click="createNewProjectMilestone(selectedProject, reviewObject.gate); showNewProjectMilestoneForm = false;"
-                                                            data-ng-disabled="newProjectMilestoneForm.$invalid">
+                                                    <button class="btn btn-success btn-xs" data-ng-click="createNewProjectMilestone(selectedProject, reviewObject.gate)"
+                                                            data-ng-disabled="newProjectMilestoneForm.$invalid || isResolving">
                                                         Save
                                                     </button>
-                                                    <button class="btn btn-info btn-xs" data-ng-click="cancelNewProjectMilestone(); showNewProjectMilestoneForm = false;">
+                                                    <button class="btn btn-info btn-xs" data-ng-click="cancelNewProjectMilestone()"
+                                                            data-ng-disabled="isResolving">
                                                         Cancel
                                                     </button>
                                                 </div>
@@ -94,10 +101,13 @@
                                         <div class="panel-heading">
                                             <h6 class="panel-title text-center">Milestones</h6>
                                         </div>
-                                        <div class="panel-body">
+                                        <div class="panel-body" style="min-height: 410px;">
                                             <div class="row">
                                                 <div class="col-md-12 text-center">
-                                                    <button class="btn btn-xs btn-success" data-ng-click="showNewProjectMilestoneForm = true">New milestone</button>
+                                                    <button class="btn btn-xs btn-success" data-ng-click="showNewProjectMilestoneForm = true"
+                                                            data-ng-show="userHasAuthorization('edit', user, selectedProject)">
+                                                        New milestone
+                                                    </button>
                                                 </div>
                                             </div>
                                             <hr style="margin: 10px">
@@ -112,15 +122,18 @@
                                                             data-ng-repeat="projectMilestone in reviewObject.projectMilestones | orderBy: sortProjectMilestones : false"
                                                             data-ng-click="selectProjectMilestone(projectMilestone)"
                                                             class="btn btn-sm center-block btn-block" style="overflow: hidden;"
-                                                            data-ng-class="{'btn-default' : projectMilestone.statusReview.currentRecord.completed, 'btn-info' : !projectMilestone.statusReview.currentRecord.completed}">
+                                                            data-ng-class="{
+                                                            'btn-default' : projectMilestone.statusReview.currentRecord.completed,
+                                                            'btn-info' : !projectMilestone.statusReview.currentRecord.completed }"
+                                                            data-ng-disabled="isResolving">
+                                                        <span class="small">{{projectMilestone.name}}</span>
+                                                        <br>
                                                         <span class="small" data-ng-show="projectMilestone.statusReview.currentRecord.estimateDeliveryDate">
                                                             {{projectMilestone.statusReview.currentRecord.estimateDeliveryDate | date:'EEE d, MMM yyyy'}}
                                                         </span>
                                                         <span class="small" data-ng-hide="projectMilestone.statusReview.currentRecord.estimateDeliveryDate">
                                                             - No delivery date -
                                                         </span>
-                                                        <br>
-                                                        <span class="small">{{projectMilestone.name}}</span>
                                                     </button>
                                                 </div>
                                             </div>
@@ -184,7 +197,7 @@
                                                             </div>
                                                         </div>
                                                         <hr>
-                                                        <div class="form-group-sm pull-right" data-ng-show="userHasAuthorization && !selectedProjectMilestone.final">
+                                                        <div class="form-group-sm pull-right" data-ng-show="userHasAuthorization('edit', user, selectedProject)">
                                                             <button class="btn btn-success btn-xs" data-ng-click="editHeader(selectedProjectMilestone)">
                                                                 Edit
                                                             </button>
@@ -224,13 +237,16 @@
                                                         </div>
                                                         <hr>
                                                         <div class="form-group-sm pull-right">
-                                                            <button class="btn btn-success btn-xs" data-ng-click="saveEditHeader(selectedProjectMilestone)" data-ng-disabled="editProjectMilestoneForm.$invalid">
+                                                            <button class="btn btn-success btn-xs" data-ng-click="saveEditHeader(selectedProjectMilestone)"
+                                                                    data-ng-disabled="editProjectMilestoneForm.$invalid || isResolving">
                                                                 Save
                                                             </button>
-                                                            <button class="btn btn-danger btn-xs" data-ng-click="deleteProjectMilestone(reviewObject, selectedProjectMilestone)">
+                                                            <button class="btn btn-danger btn-xs" data-ng-click="deleteProjectMilestone(reviewObject, selectedProjectMilestone)"
+                                                                    data-ng-disabled="isResolving">
                                                                 Delete milestone
                                                             </button>
-                                                            <button class="btn btn-info btn-xs" data-ng-click="cancelEditHeader(selectedProjectMilestone)">
+                                                            <button class="btn btn-info btn-xs" data-ng-click="cancelEditHeader(selectedProjectMilestone)"
+                                                                    data-ng-disabled="isResolving">
                                                                 Cancel
                                                             </button>
                                                         </div>
@@ -277,7 +293,7 @@
                                                             </div>
                                                         </div>
                                                         <hr>
-                                                        <div class="pull-right" data-ng-show="userHasAuthorization">
+                                                        <div class="pull-right" data-ng-show="userHasAuthorization('edit', user, selectedProject)">
                                                             <button class="btn btn-success btn-xs" data-ng-click="editStatus(selectedProjectMilestone)">
                                                                 Edit
                                                             </button>
@@ -341,10 +357,12 @@
                                                         </div>
                                                         <hr>
                                                         <div class="pull-right">
-                                                            <button class="btn btn-success btn-xs" data-ng-click="saveEditStatus(selectedProjectMilestone)">
+                                                            <button class="btn btn-success btn-xs" data-ng-click="saveEditStatus(selectedProjectMilestone)"
+                                                                    data-ng-disabled="isResolving">
                                                                 Save
                                                             </button>
-                                                            <button class="btn btn-info btn-xs" data-ng-click="cancelEditStatus(selectedProjectMilestone)">
+                                                            <button class="btn btn-info btn-xs" data-ng-click="cancelEditStatus(selectedProjectMilestone)"
+                                                                    data-ng-disabled="isResolving">
                                                                 Cancel
                                                             </button>
                                                         </div>

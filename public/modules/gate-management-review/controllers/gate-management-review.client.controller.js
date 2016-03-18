@@ -55,7 +55,7 @@ angular.module('gate-management-review').controller('GateManagementReviewControl
 
             var userIsSuperhero, userIsProjectManager, userIsPortfolioManager;
 
-            if(action === 'edit' && project){
+            if((action === 'edit') && user && project){
                 userIsSuperhero = !!_.some(user.roles, function(role){
                     return role === 'superAdmin' || role === 'admin' || role === 'pmo';
                 });
@@ -67,7 +67,7 @@ angular.module('gate-management-review').controller('GateManagementReviewControl
                 return userIsSuperhero || userIsProjectManager || userIsPortfolioManager;
             }
 
-            if(action === 'approve' && project){
+            if((action === 'approve') && user && project){
                 userIsSuperhero = !!_.some(user.roles, function(role){
                     return role === 'superAdmin' || role === 'admin' || role === 'pmo';
                 });

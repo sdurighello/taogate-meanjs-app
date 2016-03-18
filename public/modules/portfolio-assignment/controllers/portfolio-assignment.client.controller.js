@@ -6,6 +6,8 @@ angular.module('portfolio-assignment').controller('PortfolioAssignmentController
 
 		// ----------- INIT ---------------
 
+		$scope.isResolving = false;
+
 		$scope.initError = [];
 
 		$scope.init = function(){
@@ -54,7 +56,7 @@ angular.module('portfolio-assignment').controller('PortfolioAssignmentController
 		d.promise.then(function(data){
 			var obj = _.clone(data);
 			$scope.userHasAuthorization = _.some(obj.user.roles, function(role){
-				return role === 'superAdmin' || role === 'admin' || role === 'pmo';
+				return role === 'superAdmin' || role === 'admin' || role === 'pmo' || role === 'portfolioManager';
 			});
 		});
 
@@ -93,6 +95,7 @@ angular.module('portfolio-assignment').controller('PortfolioAssignmentController
 		// ------------------- PROJECTS FOR NODE ------------
 
 		$scope.selectNode = function(node){
+            $scope.error = null;
 			$scope.selectedNode = node;
 		};
 
@@ -104,15 +107,21 @@ angular.module('portfolio-assignment').controller('PortfolioAssignmentController
                 var movedProjectFromAssigned = eventObj.source.itemScope.project;
                 var originalPortfolio = movedProjectFromAssigned.portfolio;
                 movedProjectFromAssigned.portfolio = null;
-                Projects.updatePortfolioAssignment(movedProjectFromAssigned, function(res){
-                    $scope.error = null;
-                }, function(err){
-                    $scope.error = err.data.message;
-                    // put back project in case of failure
-                    movedProjectFromAssigned.portfolio = originalPortfolio;
-                    eventObj.dest.sortableScope.removeItem(eventObj.dest.index);
-                    eventObj.source.itemScope.sortableScope.insertItem(eventObj.source.index, movedProjectFromAssigned);
-                });
+                $scope.error = null;
+                $scope.isResolving = true;
+                Projects.updatePortfolioAssignment(movedProjectFromAssigned,
+                    function(res){
+                        $scope.isResolving = false;
+                    },
+                    function(err){
+                        $scope.isResolving = false;
+                        $scope.error = err.data.message;
+                        // put back project in case of failure
+                         movedProjectFromAssigned.portfolio = originalPortfolio;
+                        eventObj.dest.sortableScope.removeItem(eventObj.dest.index);
+                        eventObj.source.itemScope.sortableScope.insertItem(eventObj.source.index, movedProjectFromAssigned);
+                    }
+                );
 			}
 		};
 
@@ -120,15 +129,21 @@ angular.module('portfolio-assignment').controller('PortfolioAssignmentController
             itemMoved: function (eventObj) {
                 var movedProjectFromUnassigned = eventObj.source.itemScope.project;
                 movedProjectFromUnassigned.portfolio = $scope.selectedNode;
-                Projects.updatePortfolioAssignment(movedProjectFromUnassigned, function(res){
-                    $scope.error = null;
-                }, function(err){
-                    $scope.error = err.data.message;
-                    // put back project in case of failure
-                    movedProjectFromUnassigned.portfolio = null;
-                    eventObj.dest.sortableScope.removeItem(eventObj.dest.index);
-                    eventObj.source.itemScope.sortableScope.insertItem(eventObj.source.index, movedProjectFromUnassigned);
-                });
+                $scope.error = null;
+                $scope.isResolving = true;
+                Projects.updatePortfolioAssignment(movedProjectFromUnassigned,
+                    function(res){
+                        $scope.isResolving = false;
+                    },
+                    function(err){
+                        $scope.isResolving = false;
+                        $scope.error = err.data.message;
+                        // put back project in case of failure
+                        movedProjectFromUnassigned.portfolio = null;
+                        eventObj.dest.sortableScope.removeItem(eventObj.dest.index);
+                        eventObj.source.itemScope.sortableScope.insertItem(eventObj.source.index, movedProjectFromUnassigned);
+                    }
+                );
             }
         };
 

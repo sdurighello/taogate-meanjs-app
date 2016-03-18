@@ -29,7 +29,8 @@
 					</div>
 					<script type="text/ng-template" id="portfolioTree">
 						<button class="btn btn-default btn-sm" data-ng-click="selectNode(tree.node);"
-                                style="overflow: hidden; margin: 2%;">
+                                style="overflow: hidden; margin: 2%;"
+                                data-ng-disabled="isResolving">
                             <span data-ng-bind="tree.node.name"></span> &nbsp;
                             <span class="badge" data-ng-bind="selectedAssignments.assignedProjects[tree.node._id].length"></span>
 						</button>
@@ -60,7 +61,14 @@
                         <div class="col-md-6" >
                             <div class="panel panel-success">
                                 <div class="panel-heading">
-                                    <h6 class="panel-title text-center">Assigned projects</h6>
+                                    <h6 class="panel-title text-center">
+                                        Assigned projects&nbsp;
+                                        <a href="" tooltip="Drag and Drop between the assigned and unassigned columns"
+                                           tooltip-trigger="focus"
+                                                data-ng-show="userHasAuthorization">
+                                            <span class="glyphicon glyphicon-info-sign"></span>
+                                        </a>
+                                    </h6>
                                 </div>
                                 <div class="panel-body">
                                     <div data-ng-show="selectedNode">
@@ -74,6 +82,7 @@
                                             <div class="col-md-12">
                                                 <div class="panel panel-default">
                                                     <div class="panel-body" data-as-sortable="dragControlListenersAssigned" data-ng-model="selectedAssignments.assignedProjects[selectedNode._id]"
+                                                         is-disabled="isResolving || !userHasAuthorization"
                                                          style="overflow-y: auto; max-height: 330px; min-height: 330px;">
                                                         <div data-ng-show="selectedAssignments.assignedProjects[selectedNode._id].length === 0" class="alert alert-warning text-center">
                                                             No assigned projects yet
@@ -109,6 +118,7 @@
                                             <div class="col-md-12">
                                                 <div class="panel panel-default">
                                                     <div class="panel-body" data-as-sortable="dragControlListenersUnassigned" data-ng-model="selectedAssignments.unassignedProjects"
+                                                         is-disabled="isResolving || !userHasAuthorization"
                                                          style="overflow-y: auto; max-height: 330px; min-height: 330px;">
                                                         <div data-ng-show="selectedAssignments.unassignedProjects.length === 0" class="alert alert-warning text-center">
                                                             No unassigned projects yet

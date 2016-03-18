@@ -7,12 +7,12 @@ module.exports = function(app) {
 	// Project milestones Routes
 	app.route('/project-milestones')
 		.get(users.requiresLogin, projectMilestones.list)
-		.post(users.requiresLogin, projectMilestones.hasAuthorization, projectMilestones.create);
+		.post(users.requiresLogin, projectMilestones.hasCreateAuthorization, projectMilestones.create);
 
 	app.route('/project-milestones/:projectMilestoneId')
 		.get(users.requiresLogin, projectMilestones.read)
-		.put(users.requiresLogin, projectMilestones.hasAuthorization, projectMilestones.update)
-		.delete(users.requiresLogin, projectMilestones.hasAuthorization, projectMilestones.delete);
+		.put(users.requiresLogin, projectMilestones.hasEditAuthorization, projectMilestones.update)
+		.delete(users.requiresLogin, projectMilestones.hasEditAuthorization, projectMilestones.delete);
 
     // Milestones for a project
     app.route('/project-milestones-milestonesForProject')
@@ -20,11 +20,11 @@ module.exports = function(app) {
 
 	// Header
 	app.route('/project-milestones/:projectMilestoneId/header')
-		.put(users.requiresLogin, projectMilestones.hasAuthorization, projectMilestones.updateHeader);
+		.put(users.requiresLogin, projectMilestones.hasEditAuthorization, projectMilestones.updateHeader);
 
 	// Status
 	app.route('/project-milestones/:projectMilestoneId/status')
-		.put(users.requiresLogin, projectMilestones.hasAuthorization, projectMilestones.updateStatus);
+		.put(users.requiresLogin, projectMilestones.hasEditAuthorization, projectMilestones.updateStatus);
 
 
 	// Finish by binding the Project milestone middleware

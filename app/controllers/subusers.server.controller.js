@@ -162,7 +162,10 @@ exports.delete = function(req, res) {
  * List of Subusers
  */
 exports.list = function(req, res) {
-	User.find({'tenantId': req.user.tenantId, isSuperAdmin: false}).sort('-lastName').populate('user', 'displayName').exec(function(err, subusers) {
+	User.find(
+		{'tenantId': req.user.tenantId, isSuperAdmin: false},
+		{password: 0, salt: 0, resetPasswordToken: 0, resetPasswordExpires: 0}
+	).sort('-lastName').populate('user', 'displayName').exec(function(err, subusers) {
 		if (err) {
 			return res.status(400).send({
 				message: errorHandler.getErrorMessage(err)
