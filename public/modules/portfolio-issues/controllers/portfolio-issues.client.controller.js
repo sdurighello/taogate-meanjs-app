@@ -9,49 +9,53 @@ angular.module('portfolio-issues').controller('PortfolioIssuesController', ['$sc
 
         var vm = this;
 
+		vm.isResolving = false;
+
 		// ------------- INIT -------------
 
-		vm.initError = [];
+		vm.initErrors = [];
 
 		vm.init = function () {
+
+            vm.user = Authentication.user;
 
 			Projects.query({'selection.selectedForDelivery': true}, function (projects) {
 				vm.projects = _.filter(projects, function (project) {
 					return project.process !== null;
 				});
 			}, function (err) {
-				vm.initError.push(err.data.message);
+				vm.initErrors.push(err.data.message);
 			});
 
 			Portfolios.query(function(portfolios){
 				vm.portfolios = portfolios;
 				vm.portfolioTrees = createNodeTrees(portfolios);
 			}, function(err){
-				vm.initError.push(err.data.message);
+				vm.initErrors.push(err.data.message);
 			});
 
 			GateProcesses.query(function (gateProcesses) {
 				vm.gateProcesses = gateProcesses;
 			}, function (err) {
-				vm.initError.push(err.data.message);
+				vm.initErrors.push(err.data.message);
 			});
 
 			LogReasons.query(function (res) {
 				vm.logReasons = res;
 			}, function (err) {
-				vm.initError.push(err.data.message);
+				vm.initErrors.push(err.data.message);
 			});
 
 			IssueStates.query(function (res) {
 				vm.issueStates = res;
 			}, function (err) {
-				vm.initError.push(err.data.message);
+				vm.initErrors.push(err.data.message);
 			});
 
             IssueActionStates.query(function (res) {
                 vm.issueActionStates = res;
             }, function (err) {
-                vm.initError.push(err.data.message);
+                vm.initErrors.push(err.data.message);
             });
 
 			LogPriorities.query(function (res) {
@@ -74,17 +78,22 @@ angular.module('portfolio-issues').controller('PortfolioIssuesController', ['$sc
 
 		};
 
-		// ------- ROLES FOR BUTTONS ------
+        // -------------- AUTHORIZATION FOR BUTTONS -----------------
 
-		var d = $q.defer();
-		d.resolve(Authentication);
+        vm.userHasAuthorization = function(action, user, portfolio){
 
-		d.promise.then(function (data) {
-			var obj = _.clone(data);
-			vm.userHasAuthorization = _.some(obj.user.roles, function (role) {
-				return role === 'superAdmin' || role === 'admin' || role === 'pmo';
-			});
-		});
+            var userIsSuperhero, userIsPortfolioManager;
+
+            if((action === 'edit') && user && portfolio){
+                userIsSuperhero = !!_.some(user.roles, function(role){
+                    return role === 'superAdmin' || role === 'admin' || role === 'pmo';
+                });
+                userIsPortfolioManager = (user._id === portfolio.portfolioManager) || (user._id === portfolio.backupPortfolioManager);
+
+
+                return userIsSuperhero || userIsPortfolioManager;
+            }
+        };
 
 		// ------ TREE RECURSIONS -----------
 
@@ -139,27 +148,23 @@ angular.module('portfolio-issues').controller('PortfolioIssuesController', ['$sc
 		// ------------- SELECT VIEW PORTFOLIO ------------
 
 		vm.selectPortfolio = function (portfolio) {
-			vm.error = {};
-			vm.selectedPortfolio = null;
 			vm.portfolioIssues = null;
 			vm.selectedPortfolioIssue = null;
 
 			vm.selectedPortfolio = portfolio;
 
+            vm.error = null;
+            vm.isResolving = true;
+
 			PortfolioIssues.query({
 				portfolio: portfolio._id
 			}, function (res) {
+                vm.isResolving = false;
 				vm.portfolioIssues = res;
 			}, function (err) {
+                vm.isResolving = false;
 				vm.error = err.data.message;
 			});
-		};
-
-		vm.cancelViewPortfolio = function () {
-			vm.error = null;
-			vm.selectedPortfolio = null;
-			vm.portfolioIssues = null;
-
 		};
 
 
@@ -168,6 +173,8 @@ angular.module('portfolio-issues').controller('PortfolioIssuesController', ['$sc
 
 
 		// ------------- NEW ISSUE ------------
+
+        vm.showNewPortfolioIssueForm = false;
 
 		vm.newPortfolioIssueRaisedOnDateOpened = {};
 
@@ -185,7 +192,12 @@ angular.module('portfolio-issues').controller('PortfolioIssuesController', ['$sc
 				raisedOnDate: vm.newPortfolioIssue.raisedOnDate,
 				title: vm.newPortfolioIssue.title
 			});
+
+            vm.error = null;
+            vm.isResolving = true;
+
 			newPortfolioIssue.$save(function (res) {
+                vm.isResolving = false;
 				// Refresh the list of gate reviews after populating portfolio
 				res.portfolio = _.cloneDeep(portfolio);
 				vm.portfolioIssues.push(res);
@@ -193,14 +205,18 @@ angular.module('portfolio-issues').controller('PortfolioIssuesController', ['$sc
 				vm.newPortfolioIssue = {};
 				// Select in view mode the new review
 				vm.selectPortfolioIssue(_.find(vm.portfolioIssues, _.matchesProperty('_id', res._id)), portfolio);
-				// Close new review form done directly in the view's html
+				// Close new review form html
+                vm.showNewPortfolioIssueForm = false;
 			}, function (err) {
+                vm.isResolving = false;
 				vm.error = err.data.message;
 			});
 		};
 
 		vm.cancelNewPortfolioIssue = function () {
+            vm.error = null;
 			vm.newPortfolioIssue = {};
+            vm.showNewPortfolioIssueForm = false;
 		};
 
 
@@ -212,7 +228,9 @@ angular.module('portfolio-issues').controller('PortfolioIssuesController', ['$sc
 
 			var modalInstance = $modal.open({
 				templateUrl: 'modules/portfolio-issues/views/edit-portfolio-issue.client.view.html',
-				controller: function ($scope, $modalInstance, issue, availableProjectIssues, availableProjects) {
+				controller: function ($scope, $modalInstance, issue, portfolio, availableProjectIssues, availableProjects) {
+
+                    $scope.selectedPortfolio = portfolio;
 
 					$scope.originalPortfolioIssue = _.cloneDeep(issue);
 					$scope.selectedPortfolioIssue = issue;
@@ -220,30 +238,39 @@ angular.module('portfolio-issues').controller('PortfolioIssuesController', ['$sc
                     $scope.availableProjects = availableProjects;
 
                     $scope.associateProjectIssue = function(portfolioIssue, projectIssue){
+                        $scope.error = null;
+                        $scope.isResolving = true;
                         PortfolioIssues.addProjectIssue({
                             portfolioIssueId : portfolioIssue._id,
                             projectIssueId : projectIssue._id
                         }, portfolioIssue, function(res){
+                            $scope.isResolving = false;
                             portfolioIssue.associatedProjectIssues.push(projectIssue);
                             $scope.availableProjectIssues = _.without($scope.availableProjectIssues, projectIssue);
                         }, function(err){
+                            $scope.isResolving = false;
                             $scope.error = err.data.message;
                         });
                     };
 
                     $scope.disassociateProjectIssue = function(portfolioIssue, projectIssue){
+                        $scope.error = null;
+                        $scope.isResolving = true;
                         PortfolioIssues.removeProjectIssue({
                             portfolioIssueId : portfolioIssue._id,
                             projectIssueId : projectIssue._id
                         }, portfolioIssue, function(res){
+                            $scope.isResolving = false;
                             portfolioIssue.associatedProjectIssues = _.without(portfolioIssue.associatedProjectIssues, projectIssue);
                             $scope.availableProjectIssues.push(projectIssue);
                         }, function(err){
+                            $scope.isResolving = false;
                             $scope.error = err.data.message;
                         });
                     };
 
 					$scope.cancelModal = function () {
+                        $scope.error = null;
 						$modalInstance.dismiss();
 					};
 				},
@@ -252,6 +279,9 @@ angular.module('portfolio-issues').controller('PortfolioIssuesController', ['$sc
 					issue: function () {
 						return issue;
 					},
+                    portfolio: function () {
+                        return portfolio;
+                    },
                     availableProjectIssues: function(PortfolioIssues){
                         return PortfolioIssues.getAvailableProjectIssues(
                             { portfolioId : portfolio._id, portfolioIssueId: issue._id},
@@ -274,6 +304,7 @@ angular.module('portfolio-issues').controller('PortfolioIssuesController', ['$sc
 		};
 
 		vm.selectPortfolioIssue = function(issue, portfolio){
+            vm.issue = null;
             modalUpdateIssue('lg', issue, portfolio);
 		};
 
@@ -320,11 +351,14 @@ angular.module('portfolio-issues').controller('PortfolioIssuesController', ['$sc
 			copyPortfolioIssue.state = allowNull(copyPortfolioIssue.state);
 			copyPortfolioIssue.statusReview.currentRecord.status = allowNull(copyPortfolioIssue.statusReview.currentRecord.status);
 			// Update server header
+            vm.error = null;
+            vm.isResolving = true;
 			PortfolioIssues.updateHeader(
 				{
 					portfolioIssueId: copyPortfolioIssue._id
 				}, copyPortfolioIssue,
 				function (res) {
+                    vm.isResolving = false;
 					// Update details pane view with new saved details
 					originalPortfolioIssue.raisedOnDate = portfolioIssue.raisedOnDate;
 					originalPortfolioIssue.title = portfolioIssue.title;
@@ -336,12 +370,14 @@ angular.module('portfolio-issues').controller('PortfolioIssuesController', ['$sc
 					vm.selectHeaderForm('view');
 				},
 				function (err) {
+                    vm.isResolving = false;
 					vm.error = err.data.message;
 				}
 			);
 		};
 
 		vm.cancelEditHeader = function (portfolioIssue, originalPortfolioIssue) {
+            vm.error = null;
 			portfolioIssue.gate = originalPortfolioIssue.gate;
 			portfolioIssue.raisedOnDate = originalPortfolioIssue.raisedOnDate;
 			portfolioIssue.title = originalPortfolioIssue.title;
@@ -354,9 +390,13 @@ angular.module('portfolio-issues').controller('PortfolioIssuesController', ['$sc
 
 
 		vm.deletePortfolioIssue = function (portfolioIssue) {
+            vm.error = null;
+            vm.isResolving = true;
 			PortfolioIssues.remove({portfolioIssueId: portfolioIssue._id}, portfolioIssue, function (res) {
+                vm.isResolving = false;
 				vm.portfolioIssues = _.without(vm.portfolioIssues, portfolioIssue);
 			}, function (err) {
+                vm.isResolving = false;
 				vm.error = err.data.message;
 			});
 		};
@@ -395,8 +435,11 @@ angular.module('portfolio-issues').controller('PortfolioIssuesController', ['$sc
 			copyPortfolioIssue.state = allowNull(copyPortfolioIssue.state);
 			copyPortfolioIssue.statusReview.currentRecord.status = allowNull(copyPortfolioIssue.statusReview.currentRecord.status);
 			// Update server header
+            vm.error = null;
+            vm.isResolving = true;
 			PortfolioIssues.updateStatus({portfolioIssueId: copyPortfolioIssue._id}, copyPortfolioIssue,
 				function (res) {
+                    vm.isResolving = false;
 					// Change the selected CR
 					originalPortfolioIssue.statusReview.currentRecord.baselineDeliveryDate = portfolioIssue.statusReview.currentRecord.baselineDeliveryDate;
 					originalPortfolioIssue.statusReview.currentRecord.estimateDeliveryDate = portfolioIssue.statusReview.currentRecord.estimateDeliveryDate;
@@ -407,12 +450,14 @@ angular.module('portfolio-issues').controller('PortfolioIssuesController', ['$sc
 					vm.selectStatusForm('view');
 				},
 				function (err) {
+                    vm.isResolving = false;
 					vm.error = err.data.message;
 				}
 			);
 		};
 
 		vm.cancelEditStatus = function (portfolioIssue, originalPortfolioIssue) {
+            vm.error = null;
 			portfolioIssue.statusReview.currentRecord.baselineDeliveryDate = originalPortfolioIssue.statusReview.currentRecord.baselineDeliveryDate;
 			portfolioIssue.statusReview.currentRecord.estimateDeliveryDate = originalPortfolioIssue.statusReview.currentRecord.estimateDeliveryDate;
 			portfolioIssue.statusReview.currentRecord.actualDeliveryDate = originalPortfolioIssue.statusReview.currentRecord.actualDeliveryDate;
@@ -436,13 +481,17 @@ angular.module('portfolio-issues').controller('PortfolioIssuesController', ['$sc
                 raisedOnDate: Date.now(),
                 title: 'New action title'
             };
+            vm.error = null;
+            vm.isResolving = true;
             PortfolioIssues.createAction(
                 { portfolioIssueId : portfolioIssue._id}, newAction,
                 function(res){
+                    vm.isResolving = false;
                     portfolioIssue.escalationActions.push(res);
                     vm.selectAction(_.find(portfolioIssue.escalationActions, _.matchesProperty('_id', res._id)));
                 },
                 function(err){
+                    vm.isResolving = false;
                     vm.error = err.data.message;
                 }
             );
@@ -504,12 +553,15 @@ angular.module('portfolio-issues').controller('PortfolioIssuesController', ['$sc
             copyAction.state = allowNull(copyAction.state);
             copyAction.statusReview.currentRecord.status = allowNull(copyAction.statusReview.currentRecord.status);
             // Update server header
+            vm.error = null;
+            vm.isResolving = true;
             PortfolioIssues.updateActionHeader(
                 {
                     portfolioIssueId: issue._id,
                     escalationActionId: action._id
                 }, copyAction,
                 function (res) {
+                    vm.isResolving = false;
                     // Update details pane view with new saved details
                     originalAction.raisedOnDate = action.raisedOnDate;
                     originalAction.title = action.title;
@@ -521,12 +573,14 @@ angular.module('portfolio-issues').controller('PortfolioIssuesController', ['$sc
                     vm.selectActionHeaderForm('view', action);
                 },
                 function (err) {
+                    vm.isResolving = false;
                     vm.error = err.data.message;
                 }
             );
         };
 
         vm.cancelEditActionHeader = function (action, originalAction) {
+            vm.error = null;
             action.raisedOnDate = originalAction.raisedOnDate;
             action.title = originalAction.title;
             action.description = originalAction.description;
@@ -538,14 +592,18 @@ angular.module('portfolio-issues').controller('PortfolioIssuesController', ['$sc
 
 
         vm.deleteAction = function (issue, action) {
+            vm.error = null;
+            vm.isResolving = true;
             PortfolioIssues.deleteAction({
                 portfolioIssueId: issue._id,
                 escalationActionId: action._id
             }, action, function (res) {
+                vm.isResolving = false;
                 issue.escalationActions = _.without(issue.escalationActions, action);
                 vm.originalAction = null;
                 vm.selectedAction = null;
             }, function (err) {
+                vm.isResolving = false;
                 vm.error = err.data.message;
             });
         };
@@ -587,11 +645,14 @@ angular.module('portfolio-issues').controller('PortfolioIssuesController', ['$sc
             copyAction.state = allowNull(copyAction.state);
             copyAction.statusReview.currentRecord.status = allowNull(copyAction.statusReview.currentRecord.status);
             // Update server header
+            vm.error = null;
+            vm.isResolving = true;
             PortfolioIssues.updateActionStatus({
                     portfolioIssueId: issue._id,
                     escalationActionId: action._id
                 }, copyAction,
                 function (res) {
+                    vm.isResolving = false;
                     // Change the selected action
                     originalAction.statusReview.currentRecord.baselineDeliveryDate = issue.statusReview.currentRecord.baselineDeliveryDate;
                     originalAction.statusReview.currentRecord.estimateDeliveryDate = issue.statusReview.currentRecord.estimateDeliveryDate;
@@ -602,12 +663,14 @@ angular.module('portfolio-issues').controller('PortfolioIssuesController', ['$sc
                     vm.selectActionStatusForm('view', action);
                 },
                 function (err) {
+                    vm.isResolving = false;
                     vm.error = err.data.message;
                 }
             );
         };
 
         vm.cancelEditActionStatus = function (action, originalAction) {
+            vm.error = null;
             action.statusReview.currentRecord.baselineDeliveryDate = originalAction.statusReview.currentRecord.baselineDeliveryDate;
             action.statusReview.currentRecord.estimateDeliveryDate = originalAction.statusReview.currentRecord.estimateDeliveryDate;
             action.statusReview.currentRecord.actualDeliveryDate = originalAction.statusReview.currentRecord.actualDeliveryDate;
@@ -616,11 +679,6 @@ angular.module('portfolio-issues').controller('PortfolioIssuesController', ['$sc
             action.statusReview.currentRecord.statusComment = originalAction.statusReview.currentRecord.statusComment;
             vm.selectActionStatusForm('view', action);
         };
-
-
-// ******************************************************* ASSOCIATE PROJECT ISSUES *****************************************************
-
-
 
 
 

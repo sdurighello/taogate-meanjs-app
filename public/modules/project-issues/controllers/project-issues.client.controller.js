@@ -118,6 +118,9 @@ angular.module('project-issues').controller('ProjectIssuesController', ['$scope'
         // ------------- SELECT VIEW PROJECT ------------
 
         $scope.selectProject = function (project) {
+
+            $scope.cancelNewProjectIssue();
+
             $scope.selectedProject = null;
             $scope.projectIssues = null;
             $scope.selectedProjectIssue = null;

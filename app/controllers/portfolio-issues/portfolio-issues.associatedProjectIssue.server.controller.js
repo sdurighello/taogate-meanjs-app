@@ -45,6 +45,7 @@ exports.availableProjectIssues = function(req, res) {
         }
     ], function(err, availableProjectIssues){
         if (err) {
+            console.log(err);
             return res.status(400).send({
                 message: errorHandler.getErrorMessage(err)
             });
@@ -58,11 +59,11 @@ exports.availableProjectIssues = function(req, res) {
 
 
 exports.addProjectIssue = function(req, res) {
-    console.log(req);
     var portfolioIssue = req.portfolioIssue;
     portfolioIssue.associatedProjectIssues.push(req.params.projectIssueId);
     portfolioIssue.save(function(err){
         if (err) {
+            console.log(err);
             return res.status(400).send({
                 message: errorHandler.getErrorMessage(err)
             });
@@ -78,6 +79,7 @@ exports.removeProjectIssue = function(req, res) {
     portfolioIssue.associatedProjectIssues.splice(portfolioIssue.associatedProjectIssues.indexOf(req.params.projectIssueId), 1);
     portfolioIssue.save(function(err){
         if (err) {
+            console.log(err);
             return res.status(400).send({
                 message: errorHandler.getErrorMessage(err)
             });

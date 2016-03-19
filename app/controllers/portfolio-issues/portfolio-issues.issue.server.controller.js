@@ -67,6 +67,7 @@ exports.create = function(req, res) {
         }
     ], function(err){
         if (err) {
+            console.log(err);
             return res.status(400).send({
                 message: errorHandler.getErrorMessage(err)
             });
@@ -88,6 +89,7 @@ exports.update = function(req, res) {
 
     portfolioIssue.save(function(err) {
         if (err) {
+            console.log(err);
             return res.status(400).send({
                 message: errorHandler.getErrorMessage(err)
             });
@@ -115,6 +117,7 @@ exports.updateHeader = function(req, res) {
 
     portfolioIssue.save(function(err) {
         if (err) {
+            console.log(err);
             return res.status(400).send({
                 message: errorHandler.getErrorMessage(err)
             });
@@ -151,6 +154,7 @@ exports.updateStatus = function(req, res) {
 
     portfolioIssue.save(function(err) {
         if (err) {
+            console.log(err);
             return res.status(400).send({
                 message: errorHandler.getErrorMessage(err)
             });
@@ -170,6 +174,7 @@ exports.delete = function(req, res) {
 
     portfolioIssue.remove(function(err) {
         if (err) {
+            console.log(err);
             return res.status(400).send({
                 message: errorHandler.getErrorMessage(err)
             });
@@ -190,6 +195,7 @@ exports.list = function(req, res) {
         'associatedProjectIssues'
     ]).populate('user', 'displayName').exec(function(err, portfolioIssues) {
         if (err) {
+            console.log(err);
             return res.status(400).send({
                 message: errorHandler.getErrorMessage(err)
             });

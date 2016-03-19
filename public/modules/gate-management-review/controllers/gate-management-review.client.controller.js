@@ -214,6 +214,9 @@ angular.module('gate-management-review').controller('GateManagementReviewControl
         var originalGateReview = {};
 
         $scope.selectProject = function(project) {
+
+            $scope.cancelNewGateReview();
+
             $scope.error = null;
             $scope.selectedProject = null;
             $scope.gateReviewList = null;

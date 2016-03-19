@@ -11,12 +11,15 @@
             </div>
         </div>
     </div>
-    <div data-ng-show="parentCtrl.initError" class="text-danger">
-        <strong data-ng-bind="parentCtrl.initError"></strong>
+    <div data-ng-show="parentCtrl.initErrors" class="text-danger">
+        <strong data-ng-repeat="initError in parentCtrl.initErrors" data-ng-bind="initError"></strong>
+    </div>
+    <div data-ng-show="parentCtrl.error" class="text-danger">
+        <strong data-ng-bind="parentCtrl.error"></strong>
     </div>
     <div class="row">
         <div class="col-sm-3"><!-- PORTFOLIO LIST -->
-            <portfolio-tree portfolios="parentCtrl.portfolios" portfolio-trees="parentCtrl.portfolioTrees" select-portfolio="parentCtrl.selectPortfolio"></portfolio-tree>
+            <portfolio-tree portfolios="parentCtrl.portfolios" portfolio-trees="parentCtrl.portfolioTrees" select-portfolio="parentCtrl.selectPortfolio" is-resolving="parentCtrl.isResolving"></portfolio-tree>
         </div>
         <div class="col-md-9">
             <div class="row" data-ng-hide="parentCtrl.selectedPortfolio || parentCtrl.portfolios.length === 0" >
@@ -35,7 +38,7 @@
                             </h6>
                         </div>
                         <div class="panel-body">
-                            <div class="row" data-ng-show="showNewPortfolioMilestoneForm">
+                            <div class="row" data-ng-show="parentCtrl.showNewPortfolioMilestoneForm">
                                 <div class="col-md-12">
                                     <div class="panel panel-default">
                                         <div class="panel-heading">
@@ -47,24 +50,26 @@
                                             <form class="form" name="newPortfolioMilestoneForm">
                                                 <div class="row">
                                                     <div class="form-group-sm col-md-4">
-                                                        <label for="">Type</label>
-                                                        <select id="" class="form-control" data-ng-model = "parentCtrl.newPortfolioMilestone.type"
+                                                        <label for="newType">Type</label>
+                                                        <select id="newType" class="form-control" data-ng-model = "parentCtrl.newPortfolioMilestone.type"
                                                                 ng-options="type._id as type.name for type in parentCtrl.portfolioMilestoneTypes" required>
                                                             <option value="">-choose type</option>
                                                         </select>
                                                     </div>
                                                     <div class="form-group-sm col-md-6">
                                                         <label for="nameNew">Name</label>
-                                                        <input id="nameNew" name="nameNew" class="form-control" type="text" placeholder="Enter milestone name"
+                                                        <input id="nameNew" class="form-control" type="text" placeholder="Enter milestone name"
                                                                data-ng-model="parentCtrl.newPortfolioMilestone.name" required>
                                                     </div>
                                                 </div>
                                                 <hr>
                                                 <div class="form-group-sm pull-right">
-                                                    <button class="btn btn-success btn-xs" data-ng-click="parentCtrl.createNewPortfolioMilestone(parentCtrl.selectedPortfolio); showNewPortfolioMilestoneForm = false;">
+                                                    <button class="btn btn-success btn-xs" data-ng-click="parentCtrl.createNewPortfolioMilestone(parentCtrl.selectedPortfolio)"
+                                                            data-ng-disabled="newPortfolioMilestoneForm.$invalid || parentCtrl.isResolving">
                                                         Save
                                                     </button>
-                                                    <button class="btn btn-info btn-xs" data-ng-click="parentCtrl.cancelNewPortfolioMilestone(); showNewPortfolioMilestoneForm = false;">
+                                                    <button class="btn btn-info btn-xs" data-ng-click="parentCtrl.cancelNewPortfolioMilestone()"
+                                                            data-ng-disabled="parentCtrl.isResolving">
                                                         Cancel
                                                     </button>
                                                 </div>
@@ -73,16 +78,21 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="row" data-ng-show="!showNewPortfolioMilestoneForm && parentCtrl.selectedPortfolio">
+                            <div class="row" data-ng-show="!parentCtrl.showNewPortfolioMilestoneForm && parentCtrl.selectedPortfolio">
                                 <div class="col-md-3">
                                     <div class="panel panel-default">
                                         <div class="panel-heading">
                                             <h6 class="panel-title text-center">Milestones</h6>
                                         </div>
-                                        <div class="panel-body" style="min-height: 440px">
+                                        <div class="panel-body" style="min-height: 445px">
                                             <div class="row">
                                                 <div class="col-md-12 text-center">
-                                                    <button class="btn btn-xs btn-success" data-ng-click="showNewPortfolioMilestoneForm = true">New milestone</button>
+                                                    <button class="btn btn-xs btn-success"
+                                                            data-ng-click="parentCtrl.showNewPortfolioMilestoneForm = true"
+                                                            data-ng-disabled="parentCtrl.isResolving"
+                                                            data-ng-show="parentCtrl.userHasAuthorization('edit', parentCtrl.user, parentCtrl.selectedPortfolio)">
+                                                        New milestone
+                                                    </button>
                                                 </div>
                                             </div>
                                             <hr style="margin: 5px">
@@ -185,8 +195,10 @@
                                                                     </div>
                                                                 </div>
                                                                 <hr>
-                                                                <div class="form-group-sm pull-right" data-ng-show="parentCtrl.userHasAuthorization">
-                                                                    <button class="btn btn-success btn-xs" data-ng-click="parentCtrl.editHeader(parentCtrl.selectedPortfolioMilestone)">
+                                                                <div class="form-group-sm pull-right">
+                                                                    <button class="btn btn-success btn-xs"
+                                                                            data-ng-click="parentCtrl.editHeader(parentCtrl.selectedPortfolioMilestone)"
+                                                                            data-ng-show="parentCtrl.userHasAuthorization('edit', parentCtrl.user, parentCtrl.selectedPortfolio)">
                                                                         Edit
                                                                     </button>
                                                                 </div>
@@ -225,13 +237,19 @@
                                                                 </div>
                                                                 <hr>
                                                                 <div class="form-group-sm pull-right">
-                                                                    <button class="btn btn-success btn-xs" data-ng-click="parentCtrl.saveEditHeader(parentCtrl.selectedPortfolioMilestone)">
+                                                                    <button class="btn btn-success btn-xs"
+                                                                            data-ng-click="parentCtrl.saveEditHeader(parentCtrl.selectedPortfolioMilestone)"
+                                                                            data-ng-disabled="parentCtrl.isResolving">
                                                                         Save
                                                                     </button>
-                                                                    <button class="btn btn-danger btn-xs" data-ng-click="parentCtrl.deletePortfolioMilestone(parentCtrl.selectedPortfolioMilestone)">
+                                                                    <button class="btn btn-danger btn-xs"
+                                                                            data-ng-click="parentCtrl.deletePortfolioMilestone(parentCtrl.selectedPortfolioMilestone)"
+                                                                            data-ng-disabled="parentCtrl.isResolving">
                                                                         Delete milestone
                                                                     </button>
-                                                                    <button class="btn btn-info btn-xs" data-ng-click="parentCtrl.cancelEditHeader(parentCtrl.selectedPortfolioMilestone)">
+                                                                    <button class="btn btn-info btn-xs"
+                                                                            data-ng-click="parentCtrl.cancelEditHeader(parentCtrl.selectedPortfolioMilestone)"
+                                                                            data-ng-disabled="parentCtrl.isResolving">
                                                                         Cancel
                                                                     </button>
                                                                 </div>
@@ -278,8 +296,10 @@
                                                                     </div>
                                                                 </div>
                                                                 <hr>
-                                                                <div class="pull-right" data-ng-show="parentCtrl.userHasAuthorization">
-                                                                    <button class="btn btn-success btn-xs" data-ng-click="parentCtrl.editStatus(parentCtrl.selectedPortfolioMilestone)">
+                                                                <div class="pull-right">
+                                                                    <button class="btn btn-success btn-xs"
+                                                                            data-ng-click="parentCtrl.editStatus(parentCtrl.selectedPortfolioMilestone)"
+                                                                            data-ng-show="parentCtrl.userHasAuthorization('edit', parentCtrl.user, parentCtrl.selectedPortfolio)">
                                                                         Edit
                                                                     </button>
                                                                 </div>
@@ -342,10 +362,14 @@
                                                                 </div>
                                                                 <hr>
                                                                 <div class="pull-right">
-                                                                    <button class="btn btn-success btn-xs" data-ng-click="parentCtrl.saveEditStatus(parentCtrl.selectedPortfolioMilestone)">
+                                                                    <button class="btn btn-success btn-xs"
+                                                                            data-ng-click="parentCtrl.saveEditStatus(parentCtrl.selectedPortfolioMilestone)"
+                                                                            data-ng-disabled="parentCtrl.isResolving">
                                                                         Save
                                                                     </button>
-                                                                    <button class="btn btn-info btn-xs" data-ng-click="parentCtrl.cancelEditStatus(parentCtrl.selectedPortfolioMilestone)">
+                                                                    <button class="btn btn-info btn-xs"
+                                                                            data-ng-click="parentCtrl.cancelEditStatus(parentCtrl.selectedPortfolioMilestone)"
+                                                                            data-ng-disabled="parentCtrl.isResolving">
                                                                         Cancel
                                                                     </button>
                                                                 </div>
@@ -432,8 +456,10 @@
                                                                                                     </button>
                                                                                                 </div>
                                                                                                 <div class="btn-group" style="width: 20%">
-                                                                                                    <button type="button" class="btn btn-success btn-sm" data-ng-click="parentCtrl.addProjectMilestone(parentCtrl.selectedPortfolioMilestone, projectMilestone)"
-                                                                                                            data-ng-show="parentCtrl.userHasAuthorization">
+                                                                                                    <button type="button" class="btn btn-success btn-sm"
+                                                                                                            data-ng-click="parentCtrl.addProjectMilestone(parentCtrl.selectedPortfolioMilestone, projectMilestone)"
+                                                                                                            data-ng-show="parentCtrl.userHasAuthorization('edit', parentCtrl.user, parentCtrl.selectedPortfolio)"
+                                                                                                            data-ng-disabled="parentCtrl.isResolving">
                                                                                                         <span class="glyphicon glyphicon-plus"></span>
                                                                                                     </button>
                                                                                                 </div>
@@ -524,8 +550,10 @@
                                                                                                     </button>
                                                                                                 </div>
                                                                                                 <div class="btn-group" style="width: 20%">
-                                                                                                    <button type="button" class="btn btn-danger btn-sm" data-ng-click="parentCtrl.removeProjectMilestone(parentCtrl.selectedPortfolioMilestone, associatedProjectMilestone)"
-                                                                                                            data-ng-show="parentCtrl.userHasAuthorization">
+                                                                                                    <button type="button" class="btn btn-danger btn-sm"
+                                                                                                            data-ng-click="parentCtrl.removeProjectMilestone(parentCtrl.selectedPortfolioMilestone, associatedProjectMilestone)"
+                                                                                                            data-ng-show="parentCtrl.userHasAuthorization('edit', parentCtrl.user, parentCtrl.selectedPortfolio)"
+                                                                                                            data-ng-disabled="parentCtrl.isResolving">
                                                                                                         <span class="glyphicon glyphicon-remove"></span>
                                                                                                     </button>
                                                                                                 </div>

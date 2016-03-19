@@ -45,7 +45,7 @@
 
 <body class="ng-cloak">
 
-	<div ng-hide="stateIsLoading">
+	<div>
 		<header data-ng-include="'/modules/core/views/header.client.view.html'" class="navbar navbar-fixed-top navbar-default"></header>
 		<section class="content">
 			<section class="container">
@@ -54,18 +54,18 @@
 		</section>
 	</div>
 
-	<div ng-show="stateIsLoading">
-		<div class="container-fluid">
-			<br>
-			<div class="row">
-				<div class="col-md-4 col-md-offset-4">
-					<progressbar class="progress-striped active" max="200" value="200">
-						<i>Please wait while loading your data ...</i>
-					</progressbar>
-				</div>
-			</div>
-		</div>
-	</div>
+	<!--<div ng-show="stateIsLoading">-->
+		<!--<div class="container-fluid">-->
+			<!--<br>-->
+			<!--<div class="row">-->
+				<!--<div class="col-md-4 col-md-offset-4">-->
+					<!--<progressbar class="progress-striped active" max="200" value="200">-->
+						<!--<i>Please wait while loading your data ...</i>-->
+					<!--</progressbar>-->
+				<!--</div>-->
+			<!--</div>-->
+		<!--</div>-->
+	<!--</div>-->
 
 	<!--section goes here-->
 

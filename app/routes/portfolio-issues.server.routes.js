@@ -8,7 +8,7 @@ module.exports = function(app) {
 
 	app.route('/portfolio-issues')
 		.get(users.requiresLogin, portfolioIssues.list)
-		.post(users.requiresLogin, portfolioIssues.hasAuthorization, portfolioIssues.create);
+		.post(users.requiresLogin, portfolioIssues.hasCreateAuthorization, portfolioIssues.create);
 
 	app.route('/portfolio-issues/:portfolioIssueId')
 		.get(users.requiresLogin, portfolioIssues.read)

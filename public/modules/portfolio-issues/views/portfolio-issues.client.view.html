@@ -11,12 +11,15 @@
 			</div>
 		</div>
 	</div>
-	<div data-ng-show="initError" class="text-danger">
-		<strong data-ng-bind="initError"></strong>
+	<div data-ng-show="parentCtrl.initErrors" class="text-danger">
+		<strong data-ng-repeat="initError in parentCtrl.initErrors" data-ng-bind="initError"></strong>
 	</div>
+    <div data-ng-show="parentCtrl.error" class="text-danger">
+        <strong data-ng-bind="parentCtrl.error"></strong>
+    </div>
 	<div class="row">
 		<div class="col-sm-3"><!-- PORTFOLIO LIST -->
-			<portfolio-tree portfolios="parentCtrl.portfolios" portfolio-trees="parentCtrl.portfolioTrees" select-portfolio="parentCtrl.selectPortfolio"></portfolio-tree>
+			<portfolio-tree portfolios="parentCtrl.portfolios" portfolio-trees="parentCtrl.portfolioTrees" select-portfolio="parentCtrl.selectPortfolio" is-resolving="parentCtrl.isResolving"></portfolio-tree>
 		</div>
 		<div class="col-md-9">
 			<div class="row" data-ng-hide="parentCtrl.selectedPortfolio || parentCtrl.portfolios.length === 0">
@@ -35,7 +38,7 @@
 							</h6>
 						</div>
 						<div class="panel-body" style="max-height: 528px; min-height: 528px; overflow-y: auto">
-							<div class="row" data-ng-show="showNewPortfolioIssueForm">
+							<div class="row" data-ng-show="parentCtrl.showNewPortfolioIssueForm">
 								<div class="col-md-12">
 									<div class="panel panel-default">
 										<div class="panel-heading">
@@ -64,11 +67,12 @@
 												</div>
 												<hr>
 												<div class="form-group-sm pull-right">
-													<button class="btn btn-success btn-xs" data-ng-click="parentCtrl.createNewPortfolioIssue(parentCtrl.selectedPortfolio); showNewPortfolioIssueForm = false;"
-															data-ng-disabled="newPortfolioIssueForm.$invalid">
+													<button class="btn btn-success btn-xs" data-ng-click="parentCtrl.createNewPortfolioIssue(parentCtrl.selectedPortfolio)"
+															data-ng-disabled="newPortfolioIssueForm.$invalid || parentCtrl.isResolving">
 														Save
 													</button>
-													<button class="btn btn-info btn-xs" data-ng-click="parentCtrl.cancelNewPortfolioIssue(); showNewPortfolioIssueForm = false;">
+													<button class="btn btn-info btn-xs" data-ng-click="parentCtrl.cancelNewPortfolioIssue()"
+															data-ng-disabled="parentCtrl.isResolving">
 														Cancel
 													</button>
 												</div>
@@ -77,10 +81,11 @@
 									</div>
 								</div>
 							</div>
-							<div data-ng-show="!showNewPortfolioIssueForm">
+							<div data-ng-show="!parentCtrl.showNewPortfolioIssueForm">
 								<div class="row">
 									<div class="col-md-5 form-group-sm center-block">
-										<button class="btn btn-success btn-sm" data-ng-click="showNewPortfolioIssueForm = true">
+										<button class="btn btn-success btn-sm" data-ng-click="parentCtrl.showNewPortfolioIssueForm = true"
+                                                data-ng-show="parentCtrl.userHasAuthorization('edit', parentCtrl.user, parentCtrl.selectedPortfolio)">
 											New portfolio issue
 										</button>
 									</div>
@@ -201,7 +206,9 @@
 														<button class="btn btn-success btn-xs" data-ng-click="parentCtrl.selectPortfolioIssue(portfolioIssue, parentCtrl.selectedPortfolio)">
 															<span class="glyphicon glyphicon-pencil"></span>
 														</button>
-														<button class="btn btn-danger btn-xs" data-ng-click="parentCtrl.deletePortfolioIssue(portfolioIssue)">
+														<button class="btn btn-danger btn-xs" data-ng-click="parentCtrl.deletePortfolioIssue(portfolioIssue)"
+                                                                data-ng-disabled="parentCtrl.isResolving"
+                                                                data-ng-show="parentCtrl.userHasAuthorization('edit', parentCtrl.user, parentCtrl.selectedPortfolio)">
 															<span class="glyphicon glyphicon-trash"></span>
 														</button>
 													</td>

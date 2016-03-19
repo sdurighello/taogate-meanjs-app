@@ -21,17 +21,17 @@ angular.module(ApplicationConfiguration.applicationModuleName).config(['cfpLoadi
 
 angular.module(ApplicationConfiguration.applicationModuleName).run(function($rootScope){
 
-	$rootScope.$on('$stateChangeStart',
-		function(event, toState, toParams, fromState, fromParams){
-			$rootScope.stateIsLoading = true; // Show progress bar while loading data
-		}
-	);
-
-	$rootScope.$on('$stateChangeSuccess',
-		function(event, toState, toParams, fromState, fromParams){
-			$rootScope.stateIsLoading = false;
-		}
-	);
+	//$rootScope.$on('$stateChangeStart',
+	//	function(event, toState, toParams, fromState, fromParams){
+	//		$rootScope.stateIsLoading = true; // Show progress bar while loading data
+	//	}
+	//);
+    //
+	//$rootScope.$on('$stateChangeSuccess',
+	//	function(event, toState, toParams, fromState, fromParams){
+	//		$rootScope.stateIsLoading = false;
+	//	}
+	//);
 
 });
 

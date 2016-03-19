@@ -188,6 +188,7 @@ exports.availableProjectMilestones = function(req, res) {
         }
     ], function(err, availableProjectMilestones){
         if (err) {
+            console.log(err);
             return res.status(400).send({
                 message: errorHandler.getErrorMessage(err)
             });
@@ -206,6 +207,7 @@ exports.addProjectMilestone = function(req, res) {
     portfolioMilestone.associatedProjectMilestones.push(req.params.projectMilestoneId);
     portfolioMilestone.save(function(err){
         if (err) {
+            console.log(err);
             return res.status(400).send({
                 message: errorHandler.getErrorMessage(err)
             });
@@ -221,6 +223,7 @@ exports.removeProjectMilestone = function(req, res) {
     portfolioMilestone.associatedProjectMilestones.splice(portfolioMilestone.associatedProjectMilestones.indexOf(req.params.projectMilestoneId), 1);
     portfolioMilestone.save(function(err){
         if (err) {
+            console.log(err);
             return res.status(400).send({
                 message: errorHandler.getErrorMessage(err)
             });
@@ -252,15 +255,91 @@ exports.portfolioMilestoneByID = function(req, res, next, id) {
 /**
  * Portfolio milestone authorization middleware
  */
+
+
+exports.hasCreateAuthorization = function(req, res, next) {
+    var Portfolio = mongoose.mtModel(req.user.tenantId + '.' + 'Portfolio');
+
+    var authObj = {
+        isPortfolioManager : false,
+        isSuperhero : false
+    };
+
+    async.waterfall([
+        // isPortfolioManager
+        function(callback) {
+            Portfolio.findById(req.body.portfolio).exec(function(err, portfolio) {
+                if(err){
+                    return callback(err);
+                }
+                authObj.isPortfolioManager = (!!portfolio.portfolioManager && portfolio.portfolioManager.equals(req.user._id)) ||
+                    (!!portfolio.backupPortfolioManager && portfolio.backupPortfolioManager.equals(req.user._id));
+
+                callback(null);
+            });
+        },
+        // isSuperhero
+        function(callback) {
+            authObj.isSuperhero = !!_.find(req.user.roles, function(role){
+                return (role === 'superAdmin' || role === 'admin' || role === 'pmo');
+            });
+            callback(null);
+        }
+    ], function (err) {
+        if(err){
+            return res.status(400).send({
+                message: errorHandler.getErrorMessage(err)
+            });
+        }
+        if(!(authObj.isPortfolioManager || authObj.isSuperhero)){
+            return res.status(403).send({
+                message: 'User is not authorized'
+            });
+        }
+        next();
+    });
+};
+
+
 exports.hasAuthorization = function(req, res, next) {
-    // User role check
-    if(!_.find(req.user.roles, function(role){
-            return (role === 'superAdmin' || role === 'admin' || role === 'pmo');
-        })
-    ){
-        return res.status(403).send({
-            message: 'User is not authorized'
-        });
-    }
-    next();
+    var Portfolio = mongoose.mtModel(req.user.tenantId + '.' + 'Portfolio');
+
+    var authObj = {
+        isPortfolioManager : false,
+        isSuperhero : false
+    };
+
+    async.waterfall([
+        // isPortfolioManager
+        function(callback) {
+            Portfolio.findById(req.portfolioMilestone.portfolio).exec(function(err, portfolio) {
+                if(err){
+                    return callback(err);
+                }
+                authObj.isPortfolioManager = (!!portfolio.portfolioManager && portfolio.portfolioManager.equals(req.user._id)) ||
+                    (!!portfolio.backupPortfolioManager && portfolio.backupPortfolioManager.equals(req.user._id));
+
+                callback(null);
+            });
+        },
+        // isSuperhero
+        function(callback) {
+            authObj.isSuperhero = !!_.find(req.user.roles, function(role){
+                return (role === 'superAdmin' || role === 'admin' || role === 'pmo');
+            });
+            callback(null);
+        }
+    ], function (err) {
+        if(err){
+            return res.status(400).send({
+                message: errorHandler.getErrorMessage(err)
+            });
+        }
+        if(!(authObj.isPortfolioManager || authObj.isSuperhero)){
+            return res.status(403).send({
+                message: 'User is not authorized'
+            });
+        }
+        next();
+    });
 };

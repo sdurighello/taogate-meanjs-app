@@ -191,6 +191,9 @@ angular.module('portfolio-change-requests').controller('PortfolioChangeRequestsC
 		var originalPortfolioChangeRequest = {};
 
 		vm.selectPortfolio = function(portfolio) {
+
+            vm.cancelNewPortfolioChangeRequest();
+
 			vm.selectedPortfolio = null;
 			vm.portfolioChangeRequests = null;
 

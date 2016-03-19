@@ -23,6 +23,12 @@
             </div>
         </div>
         <div class="panel-body">
+            <div data-ng-show="parentCtrl.error" class="text-danger">
+                <strong data-ng-bind="parentCtrl.error"></strong>
+            </div>
+            <div data-ng-show="error" class="text-danger">
+                <strong data-ng-bind="error"></strong>
+            </div>
             <div data-ng-show="parentCtrl.portfolioIssueDetails === 'header'">
                 <div data-ng-switch="parentCtrl.switchHeaderForm">
                     <form data-ng-switch-default="view">
@@ -66,8 +72,9 @@
                             </div>
                         </div>
                         <hr>
-                        <div class="form-group-sm pull-right" data-ng-show="parentCtrl.userHasAuthorization">
-                            <button class="btn btn-success btn-xs" data-ng-click="parentCtrl.editHeader()">
+                        <div class="form-group-sm pull-right">
+                            <button class="btn btn-success btn-xs" data-ng-click="parentCtrl.editHeader()"
+                                    data-ng-show="parentCtrl.userHasAuthorization('edit', parentCtrl.user, selectedPortfolio)">
                                 Edit
                             </button>
                         </div>
@@ -124,10 +131,11 @@
                         <hr>
                         <div class="form-group-sm pull-right">
                             <button class="btn btn-success btn-xs" data-ng-click="parentCtrl.saveEditHeader(selectedPortfolioIssue, originalPortfolioIssue)"
-                                    data-ng-disabled="editPortfolioIssueForm.$invalid">
+                                    data-ng-disabled="editPortfolioIssueForm.$invalid || parentCtrl.isResolving">
                                 Save
                             </button>
-                            <button class="btn btn-info btn-xs" data-ng-click="parentCtrl.cancelEditHeader(selectedPortfolioIssue, originalPortfolioIssue)">
+                            <button class="btn btn-info btn-xs" data-ng-click="parentCtrl.cancelEditHeader(selectedPortfolioIssue, originalPortfolioIssue)"
+                                    data-ng-disabled="parentCtrl.isResolving">
                                 Cancel
                             </button>
                         </div>
@@ -173,8 +181,9 @@
                             </div>
                         </div>
                         <hr>
-                        <div class="pull-right" data-ng-show="parentCtrl.userHasAuthorization">
-                            <button class="btn btn-success btn-xs" data-ng-click="parentCtrl.editStatus()">
+                        <div class="pull-right">
+                            <button class="btn btn-success btn-xs" data-ng-click="parentCtrl.editStatus()"
+                                    data-ng-show="parentCtrl.userHasAuthorization('edit', parentCtrl.user, selectedPortfolio)">
                                 Edit
                             </button>
                         </div>
@@ -237,10 +246,12 @@
                         </div>
                         <hr>
                         <div class="pull-right">
-                            <button class="btn btn-success btn-xs" data-ng-click="parentCtrl.saveEditStatus(selectedPortfolioIssue, originalPortfolioIssue)">
+                            <button class="btn btn-success btn-xs" data-ng-click="parentCtrl.saveEditStatus(selectedPortfolioIssue, originalPortfolioIssue)"
+                                    data-ng-disabled="parentCtrl.isResolving">
                                 Save
                             </button>
-                            <button class="btn btn-info btn-xs" data-ng-click="parentCtrl.cancelEditStatus(selectedPortfolioIssue, originalPortfolioIssue)">
+                            <button class="btn btn-info btn-xs" data-ng-click="parentCtrl.cancelEditStatus(selectedPortfolioIssue, originalPortfolioIssue)"
+                                    data-ng-disabled="parentCtrl.isResolving">
                                 Cancel
                             </button>
                         </div>
@@ -255,7 +266,8 @@
                                 <h5 class="list-group-item-heading">
                                     Escalation actions
                                     <button class="btn btn-xs btn-primary pull-right" data-ng-click="parentCtrl.addNewAction(selectedPortfolioIssue)"
-                                            data-ng-show="parentCtrl.userHasAuthorization">
+                                            data-ng-show="parentCtrl.userHasAuthorization('edit', parentCtrl.user, selectedPortfolio)"
+                                            data-ng-disabled="parentCtrl.isResolving">
                                         Add new action
                                     </button>
                                 </h5>
@@ -336,8 +348,9 @@
                                                 </div>
                                             </div>
                                             <hr>
-                                            <div class="form-group-sm pull-right" data-ng-show="parentCtrl.userHasAuthorization">
-                                                <button class="btn btn-success btn-xs" data-ng-click="parentCtrl.editActionHeader(parentCtrl.selectedAction)">
+                                            <div class="form-group-sm pull-right">
+                                                <button class="btn btn-success btn-xs" data-ng-click="parentCtrl.editActionHeader(parentCtrl.selectedAction)"
+                                                        data-ng-show="parentCtrl.userHasAuthorization('edit', parentCtrl.user, selectedPortfolio)">
                                                     Edit
                                                 </button>
                                             </div>
@@ -393,14 +406,17 @@
                                             </div>
                                             <hr>
                                             <div class="form-group-sm pull-right">
-                                                <button class="btn btn-success btn-xs" data-ng-click="parentCtrl.saveEditActionHeader(selectedPortfolioIssue, parentCtrl.selectedAction, parentCtrl.originalAction)"
-                                                        data-ng-disabled="editActionHeaderForm.$invalid">
+                                                <button class="btn btn-success btn-xs"
+                                                        data-ng-click="parentCtrl.saveEditActionHeader(selectedPortfolioIssue, parentCtrl.selectedAction, parentCtrl.originalAction)"
+                                                        data-ng-disabled="editActionHeaderForm.$invalid || parentCtrl.isResolving">
                                                     Save
                                                 </button>
-                                                <button class="btn btn-danger btn-xs" data-ng-click="parentCtrl.deleteAction(selectedPortfolioIssue, parentCtrl.selectedAction)">
+                                                <button class="btn btn-danger btn-xs" data-ng-click="parentCtrl.deleteAction(selectedPortfolioIssue, parentCtrl.selectedAction)"
+                                                        data-ng-disabled="parentCtrl.isResolving">
                                                     Delete action
                                                 </button>
-                                                <button class="btn btn-info btn-xs" data-ng-click="parentCtrl.cancelEditActionHeader(parentCtrl.selectedAction, parentCtrl.originalAction)">
+                                                <button class="btn btn-info btn-xs" data-ng-click="parentCtrl.cancelEditActionHeader(parentCtrl.selectedAction, parentCtrl.originalAction)"
+                                                        data-ng-disabled="parentCtrl.isResolving">
                                                     Cancel
                                                 </button>
                                             </div>
@@ -446,8 +462,9 @@
                                                 </div>
                                             </div>
                                             <hr>
-                                            <div class="pull-right" data-ng-show="parentCtrl.userHasAuthorization">
-                                                <button class="btn btn-success btn-xs" data-ng-click="parentCtrl.editActionStatus(parentCtrl.selectedAction)">
+                                            <div class="pull-right">
+                                                <button class="btn btn-success btn-xs" data-ng-click="parentCtrl.editActionStatus(parentCtrl.selectedAction)"
+                                                        data-ng-show="parentCtrl.userHasAuthorization('edit', parentCtrl.user, selectedPortfolio)">
                                                     Edit
                                                 </button>
                                             </div>
@@ -510,10 +527,13 @@
                                             </div>
                                             <hr>
                                             <div class="pull-right">
-                                                <button class="btn btn-success btn-xs" data-ng-click="parentCtrl.saveEditActionStatus(selectedPortfolioIssue, parentCtrl.selectedAction, parentCtrl.originalAction)">
+                                                <button class="btn btn-success btn-xs"
+                                                        data-ng-click="parentCtrl.saveEditActionStatus(selectedPortfolioIssue, parentCtrl.selectedAction, parentCtrl.originalAction)"
+                                                        data-ng-disabled="parentCtrl.isResolving">
                                                     Save
                                                 </button>
-                                                <button class="btn btn-info btn-xs" data-ng-click="parentCtrl.cancelEditActionStatus(parentCtrl.selectedAction, parentCtrl.originalAction)">
+                                                <button class="btn btn-info btn-xs" data-ng-click="parentCtrl.cancelEditActionStatus(parentCtrl.selectedAction, parentCtrl.originalAction)"
+                                                        data-ng-disabled="parentCtrl.isResolving">
                                                     Cancel
                                                 </button>
                                             </div>
@@ -631,8 +651,10 @@
                                                             <span data-ng-show="!projectIssue.statusReview.currentRecord.status">No status</span>
                                                         </td>
                                                         <td class="text-center">
-                                                            <button class="btn btn-success btn-xs" data-ng-click="associateProjectIssue(selectedPortfolioIssue, projectIssue)"
-                                                                    data-ng-show="parentCtrl.userHasAuthorization">
+                                                            <button class="btn btn-success btn-xs"
+                                                                    data-ng-click="associateProjectIssue(selectedPortfolioIssue, projectIssue)"
+                                                                    data-ng-show="parentCtrl.userHasAuthorization('edit', parentCtrl.user, selectedPortfolio)"
+                                                                    data-ng-disabled="isResolving">
                                                                 <span class="glyphicon glyphicon-plus"></span>
                                                             </button>
                                                         </td>
@@ -750,8 +772,10 @@
                                                             <span data-ng-show="!associatedProjectIssue.statusReview.currentRecord.status">No status</span>
                                                         </td>
                                                         <td class="text-center">
-                                                            <button class="btn btn-danger btn-xs" data-ng-click="disassociateProjectIssue(selectedPortfolioIssue, associatedProjectIssue)"
-                                                                    data-ng-show="parentCtrl.userHasAuthorization">
+                                                            <button class="btn btn-danger btn-xs"
+                                                                    data-ng-click="disassociateProjectIssue(selectedPortfolioIssue, associatedProjectIssue)"
+                                                                    data-ng-show="parentCtrl.userHasAuthorization('edit', parentCtrl.user, selectedPortfolio)"
+                                                                    data-ng-disabled="isResolving">
                                                                 <span class="glyphicon glyphicon-remove"></span>
                                                             </button>
                                                         </td>
@@ -771,7 +795,11 @@
     </div>
     <div class="row">
         <div class="center-block text-center">
-            <button class="btn btn-primary btn-sm" data-ng-click="parentCtrl.cancelEditStatus(selectedPortfolioIssue, originalPortfolioIssue); parentCtrl.cancelEditHeader(selectedPortfolioIssue, originalPortfolioIssue); cancelModal()">
+            <button class="btn btn-primary btn-sm"
+                    data-ng-click="parentCtrl.cancelEditStatus(selectedPortfolioIssue, originalPortfolioIssue);
+                    parentCtrl.cancelEditHeader(selectedPortfolioIssue, originalPortfolioIssue);
+                    cancelModal();"
+                    data-ng-disabled="parentCtrl.isResolving || isResolving">
                 Close
             </button>
         </div>

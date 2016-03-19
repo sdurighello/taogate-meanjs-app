@@ -68,6 +68,7 @@ exports.createAction = function(req, res) {
         }
     ], function(err){
         if (err) {
+            console.log(err);
             return res.status(400).send({
                 message: errorHandler.getErrorMessage(err)
             });
@@ -95,6 +96,7 @@ exports.updateActionHeader = function(req, res) {
 
     portfolioIssue.save(function(err) {
         if (err) {
+            console.log(err);
             return res.status(400).send({
                 message: errorHandler.getErrorMessage(err)
             });
@@ -132,6 +134,7 @@ exports.updateActionStatus = function(req, res) {
 
     portfolioIssue.save(function(err) {
         if (err) {
+            console.log(err);
             return res.status(400).send({
                 message: errorHandler.getErrorMessage(err)
             });
@@ -149,6 +152,7 @@ exports.deleteAction = function(req, res) {
 
     portfolioIssue.save(function(err) {
         if (err) {
+            console.log(err);
             return res.status(400).send({
                 message: errorHandler.getErrorMessage(err)
             });

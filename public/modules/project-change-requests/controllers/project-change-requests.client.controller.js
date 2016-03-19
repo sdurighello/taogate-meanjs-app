@@ -190,6 +190,7 @@ angular.module('project-change-requests').controller('ProjectChangeRequestContro
         // -------------- SELECT GATE ---------------------
 
         $scope.setReviewObject = function(reviewObj){
+            $scope.cancelNewProjectChangeRequest();
             $scope.error = null;
             $scope.selectedProjectChangeRequest = null;
             $scope.reviewObject = reviewObj;
@@ -201,6 +202,9 @@ angular.module('project-change-requests').controller('ProjectChangeRequestContro
 		var originalProjectChangeRequest = {};
 
 		$scope.selectProject = function(project) {
+
+			$scope.cancelNewProjectChangeRequest();
+
 			$scope.error = null;
 			$scope.selectedProject = null;
 			$scope.projectChangeRequestList = null;

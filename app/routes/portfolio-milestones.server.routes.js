@@ -7,7 +7,7 @@ module.exports = function(app) {
 	// Portfolio milestones Routes
 	app.route('/portfolio-milestones')
 		.get(users.requiresLogin, portfolioMilestones.list)
-		.post(users.requiresLogin, portfolioMilestones.hasAuthorization, portfolioMilestones.create);
+		.post(users.requiresLogin, portfolioMilestones.hasCreateAuthorization, portfolioMilestones.create);
 
 	app.route('/portfolio-milestones/:portfolioMilestoneId')
 		.get(users.requiresLogin, portfolioMilestones.read)

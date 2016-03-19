@@ -129,8 +129,7 @@ angular.module('project-milestones').controller('ProjectMilestoneController', ['
 			$scope.projectMilestoneList = null;
             $scope.reviewObject = null;
 
-            $scope.showNewProjectMilestoneForm = false;
-            $scope.newProjectMilestone = {};
+            $scope.cancelNewProjectMilestone();
 
 			$scope.selectedProjectMilestone = null;
 			originalProjectMilestone = {};
@@ -166,8 +165,7 @@ angular.module('project-milestones').controller('ProjectMilestoneController', ['
             $scope.selectedProjectMilestone = null;
             $scope.reviewObject = reviewObj;
 
-            $scope.showNewProjectMilestoneForm = false;
-            $scope.newProjectMilestone = {};
+            $scope.cancelNewProjectMilestone();
         };
 
 
