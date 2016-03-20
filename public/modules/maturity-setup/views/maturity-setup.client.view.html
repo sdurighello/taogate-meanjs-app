@@ -1,0 +1,210 @@
+<section data-ng-controller="MaturitySetupController" data-ng-init="init()">
+	<br>
+	<div class="row">
+		<div class="col-sm-12">
+			<div class="panel-heading">
+				<ol class="breadcrumb">
+					<li>Setup</li>
+					<li>Improvement</li>
+					<li class="active">Maturity models</li>
+				</ol>
+			</div>
+		</div>
+	</div>
+	<div data-ng-show="error" class="text-danger">
+		<strong data-ng-bind="error"></strong>
+	</div>
+	<div class="row">
+
+		<!-- LIST OF MODELS -->
+
+		<div class="col-sm-4">
+			<div class="panel panel-default">
+				<div class="panel-heading">
+					<h6 class="panel-title text-center">Maturity models</h6>
+				</div>
+				<div class="panel-body" style="min-height: 500px">
+					<div class="row">
+						<div class="col-md-12">
+							<button class="btn btn-sm btn-success" data-ng-click="createMaturityModel()"
+									data-ng-show="userHasAuthorization" data-ng-disabled="isResolving">
+								New maturity model
+							</button>
+						</div>
+					</div>
+					<hr style="margin: 10px">
+					<div class="alert alert-warning text-center" data-ng-show="maturityModels.length === 0">
+						There are no maturity models created yet
+					</div>
+					<div class="row" style="min-height: 400px; max-height: 400px; overflow-y: scroll">
+						<div class="col-md-12">
+							<button class="btn btn-default btn-block"
+									data-ng-repeat="model in maturityModels track by $index"
+									data-ng-click="selectMaturityModel(model)"
+									data-ng-bind="model.name"
+                                    data-ng-disabled="isResolving"
+                                    style="overflow: hidden">
+							</button>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<!-- MODEL DETAILS -->
+
+		<div class="col-sm-8">
+			<div class="alert alert-warning text-center" data-ng-show="!selectedMaturityModel && maturityModels.length">
+				Select a maturity model to see the details
+			</div>
+			<div class="panel panel-default" data-ng-show="selectedMaturityModel">
+				<div class="panel-heading">
+					<h6 class="panel-title text-center" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: normal; width: 100%;">
+						{{selectedMaturityModel.name}}
+					</h6>
+				</div>
+				<div class="row">
+					<div class="col-md-12 btn-group btn-group-xs btn-group-justified">
+						<label class="btn btn-info btn-xs" data-ng-model="maturityModelDetails" btn-radio="'header'">
+							Header
+						</label>
+						<label class="btn btn-info btn-xs" data-ng-model="maturityModelDetails" btn-radio="'levels'">
+							Levels
+						</label>
+						<label class="btn btn-info btn-xs" data-ng-model="maturityModelDetails" btn-radio="'domains'">
+							Domains
+						</label>
+					</div>
+				</div>
+				<div class="panel-body" style="min-height: 475px">
+                    <div data-ng-show="maturityModelDetails === 'header'">
+                        <div class="row">
+                            <div class="col-xs-12">
+                                <form name="editMaturityModelForm" novalidate>
+                                    <div class="form-group">
+                                        <label for="groupNameEdit" class="control-label">Model name</label>
+                                        <input id="groupNameEdit" type="text" class="form-control"
+                                               data-ng-model="selectedMaturityModel.name"
+                                               data-ng-disabled="!maturityModelEdit[selectedMaturityModel._id]" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="groupDescription" class="control-label">Model description</label>
+                                        <textarea id="groupDescription" class="form-control" placeholder="No description yet"
+                                          data-ng-model="selectedMaturityModel.description"
+                                          data-ng-disabled="!maturityModelEdit[selectedMaturityModel._id]">
+                                        </textarea>
+                                    </div>
+                                    <div class="form-group pull-right" data-ng-show="!maturityModelEdit[selectedMaturityModel._id] && userHasAuthorization">
+                                        <button class="btn btn-sm btn-success" data-ng-click="maturityModelEdit[selectedMaturityModel._id] = true">
+                                            Edit
+                                        </button>
+                                    </div>
+                                    <div class="form-group pull-right" data-ng-show="maturityModelEdit[selectedMaturityModel._id]">
+                                        <button type="button" class="btn btn-sm btn-success" data-ng-click="saveEditMaturityModel(selectedMaturityModel)"
+                                                data-ng-disabled="editMaturityModelForm.$invalid || isResolving">
+                                            Save
+                                        </button>
+                                        <button type="button" class="btn btn-sm btn-danger" data-ng-click="deleteMaturityModel(selectedMaturityModel)"
+                                                data-ng-disabled="isResolving">
+                                            Delete maturity model
+                                        </button>
+                                        <button type="button" class="btn btn-sm btn-info" data-ng-click="cancelEditMaturityModel(selectedMaturityModel)"
+                                                data-ng-disabled="isResolving">
+                                            Cancel
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+					<div data-ng-show="maturityModelDetails === 'levels'">
+                        <div class="row">
+							<div class="col-xs-6">
+                                <div class="panel panel-default">
+                                    <div class="panel-heading">
+                                        <h6 class="panel-title text-center" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: normal; width: 100%;">
+                                            Levels
+                                        </h6>
+                                    </div>
+                                    <div class="panel-body">
+                                        <div class="row">
+                                            <div class="col-xs-12 text-center">
+                                                <button class="btn btn-xs btn-success" data-ng-click="createLevel(selectedMaturityModel)"
+                                                        data-ng-show="userHasAuthorization" data-ng-disabled="isResolving">
+                                                    New level
+                                                </button>
+                                            </div>
+                                        </div>
+                                        <hr style="margin: 10px">
+                                        <div class="row" style="min-height: 390px; max-height: 390px; overflow-y: auto;">
+                                            <div class="col-md-12">
+                                                <button class="btn btn-default btn-block"
+                                                        data-ng-repeat="level in selectedMaturityModel.levels track by level._id"
+                                                        data-ng-click="selectLevel(level)"
+                                                        data-ng-disabled="isResolving"
+                                                        style="overflow: hidden">
+                                                    <span class="badge">{{$index + 1}}</span>&nbsp;<span>{{level.name}}</span>
+                                                </button>
+                                                <div class="alert alert-warning text-center" data-ng-hide="!levels.$resolved || levels.length">
+                                                    No levels yet
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+							</div>
+                            <div class="col-xs-6">
+                                <div class="alert alert-warning text-center" data-ng-show="!selectedLevel && selectedMaturityModel.levels.length">
+                                    Select a maturity level to see its details
+                                </div>
+                                <div class="panel panel-default" data-ng-show="selectedLevel">
+                                    <div class="panel-heading">
+                                        <h6 class="panel-title text-center" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: normal; width: 100%;">
+                                            {{selectedLevel.name}}
+                                        </h6>
+                                    </div>
+                                    <div class="panel-body">
+                                        <form name="editLevelForm" novalidate>
+                                            <div class="form-group">
+                                                <label for="levelNameEdit" class="control-label">Name</label>
+                                                <input id="levelNameEdit" type="text" class="form-control" data-ng-model="selectedLevel.name"
+                                                       data-ng-disabled="!levelEdit[selectedLevel._id]" required>
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="levelDescription" class="control-label">Description</label>
+                                                <textarea id="levelDescription" class="form-control" placeholder="No description yet"
+                                                          data-ng-model="selectedLevel.description" data-ng-disabled="!levelEdit[selectedLevel._id]"></textarea>
+                                            </div>
+                                            <div class="form-group pull-right" data-ng-show="userHasAuthorization && !levelEdit[selectedLevel._id]">
+                                                <button class="btn btn-success btn-sm" data-ng-click="levelEdit[selectedLevel._id] = true">
+                                                    Edit
+                                                </button>
+                                            </div>
+                                            <div class="form-group pull-right" data-ng-show="levelEdit[selectedLevel._id]">
+                                                <button type="button" class="btn btn-sm btn-success" data-ng-click="saveEditLevel(selectedMaturityModel, selectedLevel)"
+                                                        data-ng-disabled="editLevelForm.$invalid || isResolving">
+                                                    Save
+                                                </button>
+                                                <button type="button" class="btn btn-sm btn-danger" data-ng-click="deleteLevel(selectedMaturityModel, selectedLevel)"
+                                                        data-ng-disabled="isResolving">
+                                                    Delete Level
+                                                </button>
+                                                <button type="button" class="btn btn-sm btn-info" data-ng-click="cancelEditLevel(selectedLevel)"
+                                                        data-ng-disabled="isResolving">
+                                                    Cancel
+                                                </button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+						</div>
+					</div>
+					<div data-ng-show="maturityModelDetails === 'domains'">
+
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</section>

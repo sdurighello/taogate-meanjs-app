@@ -57,7 +57,7 @@ exports.createAction = function(req, res) {
                     return callback(err);
                 }
                 if(!issue){
-                    return callback(new Error('Failed to portfolio issue ' + req.params.portfolioIssueId));
+                    return callback(new Error('Failed to load portfolio issue ' + req.params.portfolioIssueId));
                 }
                 newAction = issue.escalationActions.create(newAction);
                 issue.escalationActions.push(newAction);
