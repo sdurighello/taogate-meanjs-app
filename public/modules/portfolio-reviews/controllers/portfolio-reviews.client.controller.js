@@ -1,13 +1,16 @@
 'use strict';
 
 // Portfolio reviews controller
-angular.module('portfolio-reviews').controller('PortfolioReviewsController', ['$scope','$stateParams', '$location',
+angular.module('portfolio-reviews').controller('PortfolioReviewsController', ['$rootScope', '$scope','$stateParams', '$location',
 	'Authentication', 'Projects', 'Portfolios','$q', '_',
 	'PortfolioReviewTemplates', 'ProjectReviewScores', 'PortfolioReviewTypes','PortfolioReviews',
 	'PeoplePortfolioGroups', 'PeoplePortfolioRoles',
-	function($scope, $stateParams, $location, Authentication, Projects, Portfolios, $q, _,
+	function($rootScope, $scope, $stateParams, $location, Authentication, Projects, Portfolios, $q, _,
 			 PortfolioReviewTemplates, ProjectReviewScores, PortfolioReviewTypes, PortfolioReviews,
 			 PeoplePortfolioGroups, PeoplePortfolioRoles) {
+
+
+		$rootScope.staticMenu = false;
 
 		// ------------- INIT -------------
 

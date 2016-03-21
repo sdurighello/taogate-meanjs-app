@@ -1,11 +1,13 @@
 'use strict';
 
-angular.module('people-setup').controller('PeopleSetupController', ['$scope', '$stateParams', '$location',
+angular.module('people-setup').controller('PeopleSetupController', ['$rootScope', '$scope', '$stateParams', '$location',
 	'Authentication','People', 'PeoplePortfolioGroups', 'PeopleProjectGroups',
     'PeopleProjectRoles', 'PeoplePortfolioRoles', 'PeopleCategories', 'PeopleCategoryValues', '$q','_',
-	function($scope, $stateParams, $location, Authentication, People, PeoplePortfolioGroups, PeopleProjectGroups,
+	function($rootScope, $scope, $stateParams, $location, Authentication, People, PeoplePortfolioGroups, PeopleProjectGroups,
              PeopleProjectRoles, PeoplePortfolioRoles, PeopleCategories, PeopleCategoryValues, $q, _) {
 
+
+        $rootScope.staticMenu = false;
 
 		// ------------- INIT -------------
 

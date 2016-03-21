@@ -1,9 +1,11 @@
 'use strict';
 
-angular.module('people-portfolio-analysis').controller('PeoplePortfolioAnalysisController', ['$scope','$stateParams', '$location', 'Authentication',
+angular.module('people-portfolio-analysis').controller('PeoplePortfolioAnalysisController', ['$rootScope', '$scope','$stateParams', '$location', 'Authentication',
 	'Portfolios','PeoplePortfolioGroups', 'PeoplePortfolioRoles', 'PeopleCategories','PeopleCategoryValues', 'People', '_','$q',
-	function($scope, $stateParams, $location, Authentication, Portfolios,
+	function($rootScope, $scope, $stateParams, $location, Authentication, Portfolios,
 			 PeoplePortfolioGroups, PeoplePortfolioRoles, PeopleCategories, PeopleCategoryValues, People, _ , $q) {
+
+		$rootScope.staticMenu = false;
 
 		// ----------- INIT ---------------
 

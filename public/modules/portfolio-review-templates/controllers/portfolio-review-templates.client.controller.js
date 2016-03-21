@@ -1,8 +1,10 @@
 'use strict';
 
-angular.module('portfolio-review-templates').controller('PortfolioReviewTemplatesController', ['$scope', '$stateParams', '$location', 'Authentication',
+angular.module('portfolio-review-templates').controller('PortfolioReviewTemplatesController', ['$rootScope', '$scope', '$stateParams', '$location', 'Authentication',
 	'PortfolioReviewTemplates', 'PortfolioReviewTypes', 'PeoplePortfolioGroups', '$q','_',
-	function($scope, $stateParams, $location, Authentication, PortfolioReviewTemplates, PortfolioReviewTypes, PeoplePortfolioGroups, $q, _) {
+	function($rootScope, $scope, $stateParams, $location, Authentication, PortfolioReviewTemplates, PortfolioReviewTypes, PeoplePortfolioGroups, $q, _) {
+
+		$rootScope.staticMenu = false;
 
 		// ------------- INIT -------------
 

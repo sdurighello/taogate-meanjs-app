@@ -1,10 +1,12 @@
 'use strict';
 
-angular.module('portfolio-change-requests').controller('PortfolioChangeRequestsController', ['$scope', '$stateParams', '$location', '$q', '_', 'Authentication',
+angular.module('portfolio-change-requests').controller('PortfolioChangeRequestsController', ['$rootScope', '$scope', '$stateParams', '$location', '$q', '_', 'Authentication',
 	'Portfolios', 'PortfolioTypes', 'Projects', 'ProjectChangeRequests', 'PortfolioChangeRequests', 'GateProcesses', 'LogReasons', 'ChangeRequestStates', 'LogPriorities', 'LogStatusIndicators',
 	'People', '$modal', '$log',
-	function($scope, $stateParams, $location, $q, _, Authentication,
+	function($rootScope, $scope, $stateParams, $location, $q, _, Authentication,
 			 Portfolios, PortfolioTypes, Projects, ProjectChangeRequests, PortfolioChangeRequests, GateProcesses, LogReasons, ChangeRequestStates, LogPriorities, LogStatusIndicators, People, $modal, $log) {
+
+        $rootScope.staticMenu = false;
 
 		var vm = this;
 

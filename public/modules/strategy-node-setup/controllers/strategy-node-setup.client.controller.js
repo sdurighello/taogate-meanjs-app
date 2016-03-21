@@ -1,8 +1,10 @@
 'use strict';
 
-angular.module('strategy-node-setup').controller('StrategyNodeSetupController', ['$scope', '$stateParams', '$location', 'Authentication',
+angular.module('strategy-node-setup').controller('StrategyNodeSetupController', ['$rootScope', '$scope', '$stateParams', '$location', 'Authentication',
 	'StrategyNodes','StrategyNodeTypes','Subusers','_','$q',
-	function($scope, $stateParams, $location, Authentication, StrategyNodes, StrategyNodeTypes, Subusers, _ , $q) {
+	function($rootScope, $scope, $stateParams, $location, Authentication, StrategyNodes, StrategyNodeTypes, Subusers, _ , $q) {
+
+		$rootScope.staticMenu = false;
 
 		// ----------- INIT ---------------
 

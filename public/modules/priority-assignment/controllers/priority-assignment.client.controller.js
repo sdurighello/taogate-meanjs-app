@@ -1,8 +1,10 @@
 'use strict';
 
-angular.module('priority-assignment').controller('PriorityAssignmentController', ['$scope', '$stateParams', '$location', 'Authentication',
+angular.module('priority-assignment').controller('PriorityAssignmentController', ['$rootScope', '$scope', '$stateParams', '$location', 'Authentication',
 	'Projects','PriorityGroups', 'Priorities', 'PriorityValues', '_','$q',
-	function($scope, $stateParams, $location, Authentication, Projects, PriorityGroups, Priorities, PriorityValues, _ , $q) {
+	function($rootScope, $scope, $stateParams, $location, Authentication, Projects, PriorityGroups, Priorities, PriorityValues, _ , $q) {
+
+		$rootScope.staticMenu = false;
 
 		// ----------- INIT ---------------
 

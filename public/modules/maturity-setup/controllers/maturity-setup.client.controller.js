@@ -1,8 +1,10 @@
 'use strict';
 
-angular.module('maturity-setup').controller('MaturitySetupController', ['$scope', '$stateParams', '$location', 'Authentication',
+angular.module('maturity-setup').controller('MaturitySetupController', ['$rootScope', '$scope', '$stateParams', '$location', 'Authentication',
 	'MaturityModels','$q','_',
-	function($scope, $stateParams, $location, Authentication, MaturityModels, $q, _) {
+	function($rootScope, $scope, $stateParams, $location, Authentication, MaturityModels, $q, _) {
+
+        $rootScope.staticMenu = false;
 
 		// ------------- INIT -------------
 
@@ -30,17 +32,6 @@ angular.module('maturity-setup').controller('MaturitySetupController', ['$scope'
 			});
 		});
 
-		// ------------------- FORMS VIEW -> EDIT ---------------------
-
-		$scope.maturityModelEdit = {};
-
-		$scope.levelEdit = {};
-
-		$scope.domainEdit = {};
-
-		$scope.maturityModelDetails = 'header';
-
-
 
 		// ------------------ MATURITY MODEL ----------------
 
@@ -51,7 +42,7 @@ angular.module('maturity-setup').controller('MaturitySetupController', ['$scope'
 
 			var maturityModel = new MaturityModels ({
 				name: 'New maturity model',
-				domains: [],
+				areas: [],
                 levels: [],
                 dimensions : []
 			});
@@ -62,7 +53,7 @@ angular.module('maturity-setup').controller('MaturitySetupController', ['$scope'
             maturityModel.$save(function(res) {
                 $scope.isResolving = false;
                 $scope.maturityModels.push(res);
-
+                $scope.selectMaturityModel(res);
 			}, function(err) {
 				$scope.error = err.data.message;
 			});
@@ -70,6 +61,10 @@ angular.module('maturity-setup').controller('MaturitySetupController', ['$scope'
 
 
 		// Edit
+
+        $scope.maturityModelEdit = {};
+
+        $scope.maturityModelDetails = 'header';
 
 		var originalMaturityModel = {};
 
@@ -122,24 +117,25 @@ angular.module('maturity-setup').controller('MaturitySetupController', ['$scope'
 		};
 
 
-        // ------------------  DOMAIN ----------------
+        // ------------------  AREA ----------------
 
 
         // Create
 
-        $scope.createDomain = function(model) {
+        $scope.createArea = function(model) {
 
-            var newDomain = {
-                name: 'New maturity domain'
+            var newArea = {
+                name: 'New maturity area'
             };
 
             $scope.error = null;
             $scope.isResolving = true;
 
-            MaturityModels.createDomain({ maturityModelId: model._id }, newDomain,
+            MaturityModels.createArea({ maturityModelId: model._id }, newArea,
                 function (res) {
                     $scope.isResolving = false;
-                    model.domains.push(res);
+                    model.areas.push(res);
+                    $scope.selectArea(res);
                 },
                 function (err) {
                     $scope.isResolving = false;
@@ -151,51 +147,53 @@ angular.module('maturity-setup').controller('MaturitySetupController', ['$scope'
 
         // Edit
 
-        var originalDomain = {};
+        $scope.areaEdit = {};
 
-        $scope.selectDomain = function(domain){
-            originalDomain[domain._id] = _.cloneDeep(domain);
-            $scope.selectedDomain = domain;
-            $scope.domainEdit[domain._id] = false;
+        var originalArea = {};
+
+        $scope.selectArea = function(area){
+            originalArea[area._id] = _.cloneDeep(area);
+            $scope.selectedArea = area;
+            $scope.areaEdit[area._id] = false;
         };
 
-        $scope.saveEditDomain = function(model, domain) {
+        $scope.saveEditArea = function(model, area) {
             $scope.error = null;
             $scope.isResolving = true;
-            MaturityModels.updateDomain({
+            MaturityModels.updateArea({
                 maturityModelId: model._id,
-                domainId: domain._id
-            }, domain, function(res){
+                areaId: area._id
+            }, area, function(res){
                 $scope.isResolving = false;
-                originalDomain[domain._id].name = domain.name;
-                originalDomain[domain._id].description = domain.description;
-                $scope.domainEdit[domain._id] = false;
+                originalArea[area._id].name = area.name;
+                originalArea[area._id].description = area.description;
+                $scope.areaEdit[area._id] = false;
             },function(err){
                 $scope.isResolving = false;
                 $scope.error = err.data.message;
             });
         };
 
-        $scope.cancelEditDomain = function(domain){
+        $scope.cancelEditArea = function(area){
             $scope.error = null;
-            domain.name = originalDomain[domain._id].name;
-            domain.description = originalDomain[domain._id].description;
-            $scope.domainEdit[domain._id] = false;
+            area.name = originalArea[area._id].name;
+            area.description = originalArea[area._id].description;
+            $scope.areaEdit[area._id] = false;
         };
 
 
         // Delete
 
-        $scope.deleteDomain = function(model, domain) {
+        $scope.deleteArea = function(model, area) {
             $scope.error = null;
             $scope.isResolving = true;
-            MaturityModels.deleteDomain({
+            MaturityModels.deleteArea({
                 maturityModelId: model._id,
-                domainId: domain._id
-            }, domain, function(res){
+                areaId: area._id
+            }, area, function(res){
                 $scope.isResolving = false;
-                $scope.selectedDomain = null;
-                model.domains = _.without(model.domains, domain);
+                $scope.selectedArea = null;
+                model.areas = _.without(model.areas, area);
             },function(err){
                 $scope.isResolving = false;
                 $scope.error = err.data.message;
@@ -222,6 +220,7 @@ angular.module('maturity-setup').controller('MaturitySetupController', ['$scope'
                 function (res) {
                     $scope.isResolving = false;
                     model.levels.push(res);
+                    $scope.selectLevel(res);
                 },
                 function (err) {
                     $scope.isResolving = false;
@@ -232,6 +231,8 @@ angular.module('maturity-setup').controller('MaturitySetupController', ['$scope'
 
 
         // Edit
+
+        $scope.levelEdit = {};
 
         var originalLevel = {};
 
@@ -284,6 +285,118 @@ angular.module('maturity-setup').controller('MaturitySetupController', ['$scope'
             });
         };
 
+
+
+        // ------------------  DIMENSIONS ----------------
+
+
+        // Create
+
+        $scope.showNewDimensionForm = false;
+
+        $scope.newDimensionFormObj = {};
+
+        $scope.saveNewDimension = function(model) {
+
+            var newDimension = {
+                level: $scope.newDimensionFormObj[model._id].level._id,
+                area: $scope.newDimensionFormObj[model._id].area._id,
+                name: $scope.newDimensionFormObj[model._id].name,
+                description: $scope.newDimensionFormObj[model._id].description,
+                improvementActivities: []
+            };
+
+            $scope.error = null;
+            $scope.isResolving = true;
+
+            MaturityModels.createDimension({ maturityModelId: model._id }, newDimension,
+                function (res) {
+                    $scope.isResolving = false;
+                    model.dimensions.push(res);
+                    // Reset new dimension form
+                    //$scope.newDimensionFormObj[model._id].level = null; // So its easier to create multiple new dimensions
+                    //$scope.newDimensionFormObj[model._id].area = null;
+                    $scope.newDimensionFormObj[model._id].name = null;
+                    $scope.newDimensionFormObj[model._id].description = null;
+                    // Close form
+                    $scope.showNewDimensionForm = false;
+                    // Select newly created dimension
+                    $scope.selectDimension(res);
+                },
+                function (err) {
+                    $scope.isResolving = false;
+                    $scope.error = err.data.message;
+                }
+            );
+        };
+
+        $scope.cancelNewDimension = function(model){
+            // Reset new dimension form
+            if($scope.newDimensionFormObj[model._id]){
+                $scope.newDimensionFormObj[model._id].level = null;
+                $scope.newDimensionFormObj[model._id].area = null;
+                $scope.newDimensionFormObj[model._id].name = null;
+                $scope.newDimensionFormObj[model._id].description = null;
+            }
+            // Close form
+            $scope.showNewDimensionForm = false;
+        };
+
+
+        // Edit
+
+        $scope.dimensionEdit = {};
+
+        var originalDimension = {};
+
+        $scope.selectDimension = function(dimension){
+            originalDimension[dimension._id] = _.cloneDeep(dimension);
+            $scope.selectedDimension = dimension;
+            $scope.dimensionEdit[dimension._id] = false;
+        };
+
+        $scope.saveEditDimension = function(model, dimension) {
+            $scope.error = null;
+            $scope.isResolving = true;
+            MaturityModels.updateDimension({
+                maturityModelId: model._id,
+                dimensionId: dimension._id
+            }, dimension, function(res){
+                $scope.isResolving = false;
+                originalDimension[dimension._id].name = dimension.name;
+                originalDimension[dimension._id].description = dimension.description;
+                $scope.dimensionEdit[dimension._id] = false;
+            },function(err){
+                $scope.isResolving = false;
+                $scope.error = err.data.message;
+            });
+        };
+
+        $scope.cancelEditDimension = function(dimension){
+            $scope.error = null;
+            dimension.name = originalDimension[dimension._id].name;
+            dimension.description = originalDimension[dimension._id].description;
+            $scope.dimensionEdit[dimension._id] = false;
+        };
+
+
+        // Delete
+
+        $scope.deleteDimension = function(model, dimension) {
+            $scope.error = null;
+            $scope.isResolving = true;
+            MaturityModels.deleteDimension({
+                maturityModelId: model._id,
+                dimensionId: dimension._id
+            }, dimension, function(res){
+                $scope.isResolving = false;
+                $scope.selectedDimension = null;
+                model.dimensions = _.without(model.dimensions, dimension);
+            },function(err){
+                $scope.isResolving = false;
+                $scope.error = err.data.message;
+            });
+        };
 
 
 

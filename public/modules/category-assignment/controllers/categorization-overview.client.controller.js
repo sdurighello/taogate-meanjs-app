@@ -1,9 +1,11 @@
 'use strict';
 
 // Definition dashboards controller
-angular.module('category-assignment').controller('CategorizationOverviewController', ['$scope', '$stateParams', '$location', 'Authentication',
+angular.module('category-assignment').controller('CategorizationOverviewController', ['$rootScope', '$scope', '$stateParams', '$location', 'Authentication',
 	'CategoryAssignment','CategoryGroups', 'Categories', 'Portfolios', '_','$q', '$sce',
-	function($scope, $stateParams, $location, Authentication, CategoryAssignment, CategoryGroups, Categories, Portfolios, _, $q, $sce) {
+	function($rootScope, $scope, $stateParams, $location, Authentication, CategoryAssignment, CategoryGroups, Categories, Portfolios, _, $q, $sce) {
+
+		$rootScope.staticMenu = false;
 
 		// ----------- INIT ---------------
 

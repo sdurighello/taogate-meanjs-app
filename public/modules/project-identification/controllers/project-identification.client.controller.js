@@ -1,8 +1,10 @@
 'use strict';
 
-angular.module('project-identification').controller('ProjectIdentificationController', ['$scope','$stateParams', '$location', 'Authentication',
+angular.module('project-identification').controller('ProjectIdentificationController', ['$rootScope', '$scope','$stateParams', '$location', 'Authentication',
 	'Projects', 'Portfolios', 'GateProcesses', 'Subusers', '_','$q',
-	function($scope, $stateParams, $location, Authentication, Projects, Portfolios, GateProcesses, Subusers, _ , $q) {
+	function($rootScope, $scope, $stateParams, $location, Authentication, Projects, Portfolios, GateProcesses, Subusers, _ , $q) {
+
+        $rootScope.staticMenu = false;
 
 		// ----------- INIT ---------------
 

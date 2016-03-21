@@ -1,8 +1,10 @@
 'use strict';
 
-angular.module('review-summaries').controller('ReviewSummariesController', ['$scope', '$stateParams', '$location', 'Authentication',
+angular.module('review-summaries').controller('ReviewSummariesController', ['$rootScope', '$scope', '$stateParams', '$location', 'Authentication',
 	'ReviewSummaries','Projects','Portfolios', 'GateProcesses', '_','$q','$modal',
-	function($scope, $stateParams, $location, Authentication, ReviewSummaries, Projects, Portfolios, GateProcesses, _, $q, $modal) {
+	function($rootScope, $scope, $stateParams, $location, Authentication, ReviewSummaries, Projects, Portfolios, GateProcesses, _, $q, $modal) {
+
+		$rootScope.staticMenu = false;
 
 		var vm = this;
 

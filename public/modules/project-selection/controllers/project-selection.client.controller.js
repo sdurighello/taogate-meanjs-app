@@ -1,8 +1,10 @@
 'use strict';
 
-angular.module('project-selection').controller('ProjectSelectionController', ['$scope','$stateParams', '$location', 'Authentication',
+angular.module('project-selection').controller('ProjectSelectionController', ['$rootScope', '$scope','$stateParams', '$location', 'Authentication',
 	'Projects','Portfolios', 'StrategyNodes', 'CategoryGroups', 'PriorityGroups', 'PriorityValues', '_','$q',
-	function($scope, $stateParams, $location, Authentication, Projects, Portfolios, StrategyNodes, CategoryGroups, PriorityGroups, PriorityValues, _ , $q) {
+	function($rootScope, $scope, $stateParams, $location, Authentication, Projects, Portfolios, StrategyNodes, CategoryGroups, PriorityGroups, PriorityValues, _ , $q) {
+
+        $rootScope.staticMenu = false;
 
 		// ----------- INIT ---------------
 

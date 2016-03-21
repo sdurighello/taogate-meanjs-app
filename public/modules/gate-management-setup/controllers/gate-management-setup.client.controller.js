@@ -1,8 +1,10 @@
 'use strict';
 
-angular.module('gate-management-setup').controller('GateManagementSetupController', ['$scope', '$stateParams', '$location', 'Authentication',
+angular.module('gate-management-setup').controller('GateManagementSetupController', ['$rootScope', '$scope', '$stateParams', '$location', 'Authentication',
 	'GateProcesses','Gates','GateOutcomes','$q','_',
-	function($scope, $stateParams, $location, Authentication, GateProcesses, Gates, GateOutcomes, $q, _) {
+	function($rootScope, $scope, $stateParams, $location, Authentication, GateProcesses, Gates, GateOutcomes, $q, _) {
+
+		$rootScope.staticMenu = false;
 
 		// ------------- INIT -------------
 

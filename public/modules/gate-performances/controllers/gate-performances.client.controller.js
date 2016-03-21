@@ -1,9 +1,11 @@
 'use strict';
 
 // Definition dashboards controller
-angular.module('gate-performances').controller('GatePerformancesController', ['$scope', '$stateParams', '$location', 'Authentication',
+angular.module('gate-performances').controller('GatePerformancesController', ['$rootScope', '$scope', '$stateParams', '$location', 'Authentication',
 	'GatePerformances','Projects','Portfolios', 'GateProcesses', '_','$q',
-	function($scope, $stateParams, $location, Authentication, GatePerformances, Projects, Portfolios, GateProcesses, _, $q) {
+	function($rootScope, $scope, $stateParams, $location, Authentication, GatePerformances, Projects, Portfolios, GateProcesses, _, $q) {
+
+        $rootScope.staticMenu = false;
 
 		// ----------- INIT ---------------
 

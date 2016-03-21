@@ -1,8 +1,10 @@
 'use strict';
 
-angular.module('portfolio-ranking-assignment').controller('PortfolioRankingAssignmentController', ['$scope','$stateParams', '$location', 'Authentication',
+angular.module('portfolio-ranking-assignment').controller('PortfolioRankingAssignmentController', ['$rootScope', '$scope','$stateParams', '$location', 'Authentication',
 	'Portfolios','Projects', 'PortfolioRankings', 'OverallRankings', '_','$q',
-	function($scope, $stateParams, $location, Authentication, Portfolios, Projects, PortfolioRankings, OverallRankings, _ , $q) {
+	function($rootScope, $scope, $stateParams, $location, Authentication, Portfolios, Projects, PortfolioRankings, OverallRankings, _ , $q) {
+
+        $rootScope.staticMenu = false;
 
 		// ----------- INIT ---------------
 

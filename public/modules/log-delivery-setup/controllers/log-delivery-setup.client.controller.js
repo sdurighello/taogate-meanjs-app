@@ -1,8 +1,10 @@
 'use strict';
 
-angular.module('log-delivery-setup').controller('LogDeliverySetupController', ['$scope','$stateParams', '$location', 'Authentication',
+angular.module('log-delivery-setup').controller('LogDeliverySetupController', ['$rootScope', '$scope','$stateParams', '$location', 'Authentication',
 	'IssueStates', 'IssueActionStates', 'ChangeRequestStates', 'LogPriorities', 'LogReasons', '_','$q',
-	function($scope, $stateParams, $location, Authentication, IssueStates, IssueActionStates, ChangeRequestStates, LogPriorities, LogReasons, _ , $q) {
+	function($rootScope, $scope, $stateParams, $location, Authentication, IssueStates, IssueActionStates, ChangeRequestStates, LogPriorities, LogReasons, _ , $q) {
+
+        $rootScope.staticMenu = false;
 
 		// ----------- INIT ---------------
 

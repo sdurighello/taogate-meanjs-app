@@ -1,9 +1,11 @@
 'use strict';
 
-angular.module('risk-analysis-setup').controller('RiskAnalysisSetupController', ['$scope', '$stateParams', '$location',
+angular.module('risk-analysis-setup').controller('RiskAnalysisSetupController', ['$rootScope', '$scope', '$stateParams', '$location',
 	'Authentication','RiskCategories','RiskImpacts','RiskProbabilities','RiskSeverities','RiskSeverityAssignments', 'Risks', '$q', '_',
-	function($scope, $stateParams, $location, Authentication, RiskCategories, RiskImpacts, RiskProbabilities, RiskSeverities,
+	function($rootScope, $scope, $stateParams, $location, Authentication, RiskCategories, RiskImpacts, RiskProbabilities, RiskSeverities,
 			 RiskSeverityAssignments, Risks, $q, _) {
+
+        $rootScope.staticMenu = false;
 
 		// ------------- INIT -------------
 

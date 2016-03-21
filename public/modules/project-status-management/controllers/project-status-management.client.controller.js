@@ -1,10 +1,12 @@
 'use strict';
 
-angular.module('project-status-management').controller('ProjectStatusManagementController', ['$scope','$stateParams', '$location',
+angular.module('project-status-management').controller('ProjectStatusManagementController', ['$rootScope', '$scope','$stateParams', '$location',
 	'Authentication', 'Projects', 'Portfolios','$q', '_',
 	'GateProcesses', 'ProjectStatusUpdates','LogStatusIndicators',
-	function($scope, $stateParams, $location, Authentication, Projects, Portfolios, $q, _,
+	function($rootScope, $scope, $stateParams, $location, Authentication, Projects, Portfolios, $q, _,
 			 GateProcesses, ProjectStatusUpdates, LogStatusIndicators) {
+
+		$rootScope.staticMenu = false;
 
 		// ------------- INIT -------------
 

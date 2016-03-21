@@ -30,16 +30,28 @@ module.exports = function(app) {
         .put(users.requiresLogin, maturityModels.hasAuthorization, maturityModels.deleteLevel);
 
 
-    // Domains
+    // Areas
 
-    app.route('/maturity-models/:maturityModelId/createDomain')
-        .put(users.requiresLogin, maturityModels.hasAuthorization, maturityModels.createDomain);
+    app.route('/maturity-models/:maturityModelId/createArea')
+        .put(users.requiresLogin, maturityModels.hasAuthorization, maturityModels.createArea);
 
-    app.route('/maturity-models/:maturityModelId/updateDomain/:domainId')
-        .put(users.requiresLogin, maturityModels.hasAuthorization, maturityModels.updateDomain);
+    app.route('/maturity-models/:maturityModelId/updateArea/:areaId')
+        .put(users.requiresLogin, maturityModels.hasAuthorization, maturityModels.updateArea);
 
-    app.route('/maturity-models/:maturityModelId/deleteDomain/:domainId')
-        .put(users.requiresLogin, maturityModels.hasAuthorization, maturityModels.deleteDomain);
+    app.route('/maturity-models/:maturityModelId/deleteArea/:areaId')
+        .put(users.requiresLogin, maturityModels.hasAuthorization, maturityModels.deleteArea);
+
+
+    // Dimensions
+
+    app.route('/maturity-models/:maturityModelId/createDimension')
+        .put(users.requiresLogin, maturityModels.hasAuthorization, maturityModels.createDimension);
+
+    app.route('/maturity-models/:maturityModelId/updateDimension/:dimensionId')
+        .put(users.requiresLogin, maturityModels.hasAuthorization, maturityModels.updateDimension);
+
+    app.route('/maturity-models/:maturityModelId/deleteDimension/:dimensionId')
+        .put(users.requiresLogin, maturityModels.hasAuthorization, maturityModels.deleteDimension);
 
 
 

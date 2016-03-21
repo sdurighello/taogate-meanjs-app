@@ -1,12 +1,14 @@
 'use strict';
 
-angular.module('project-reviews').controller('ProjectReviewsController', ['$scope','$stateParams', '$location',
+angular.module('project-reviews').controller('ProjectReviewsController', ['$rootScope', '$scope','$stateParams', '$location',
 	'Authentication', 'Projects', 'Portfolios','$q', '_',
 	'ProjectReviewTemplates', 'ProjectReviewScores', 'ProjectReviewTypes','ProjectReviews',
     'PeopleProjectGroups', 'PeopleProjectRoles',
-	function($scope, $stateParams, $location, Authentication, Projects, Portfolios, $q, _,
+	function($rootScope, $scope, $stateParams, $location, Authentication, Projects, Portfolios, $q, _,
 			 ProjectReviewTemplates, ProjectReviewScores, ProjectReviewTypes, ProjectReviews,
              PeopleProjectGroups, PeopleProjectRoles) {
+
+        $rootScope.staticMenu = false;
 
 		// ------------- INIT -------------
 

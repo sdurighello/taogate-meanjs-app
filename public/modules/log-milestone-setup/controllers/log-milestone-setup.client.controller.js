@@ -1,8 +1,10 @@
 'use strict';
 
-angular.module('log-milestone-setup').controller('LogMilestoneSetupController', ['$scope','$stateParams', '$location', 'Authentication',
+angular.module('log-milestone-setup').controller('LogMilestoneSetupController', ['$rootScope', '$scope','$stateParams', '$location', 'Authentication',
 	'MilestoneStates', 'ProjectMilestoneTypes', 'PortfolioMilestoneTypes', '_','$q',
-	function($scope, $stateParams, $location, Authentication, MilestoneStates, ProjectMilestoneTypes, PortfolioMilestoneTypes, _ , $q) {
+	function($rootScope, $scope, $stateParams, $location, Authentication, MilestoneStates, ProjectMilestoneTypes, PortfolioMilestoneTypes, _ , $q) {
+
+		$rootScope.staticMenu = false;
 
 		// ----------- INIT ---------------
 

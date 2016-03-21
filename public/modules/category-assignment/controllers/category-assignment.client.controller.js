@@ -1,8 +1,10 @@
 'use strict';
 
-angular.module('category-assignment').controller('CategoryAssignmentController', ['$scope','$stateParams', '$location', 'Authentication',
+angular.module('category-assignment').controller('CategoryAssignmentController', ['$rootScope', '$scope','$stateParams', '$location', 'Authentication',
 	'Projects','Portfolios', 'GateProcesses', 'CategoryGroups', 'Categories', 'CategoryValues', '_','$q',
-	function($scope, $stateParams, $location, Authentication, Projects, Portfolios, GateProcesses, CategoryGroups, Categories, CategoryValues, _ , $q) {
+	function($rootScope, $scope, $stateParams, $location, Authentication, Projects, Portfolios, GateProcesses, CategoryGroups, Categories, CategoryValues, _ , $q) {
+
+		$rootScope.staticMenu = false;
 
 		// ----------- INIT ---------------
 

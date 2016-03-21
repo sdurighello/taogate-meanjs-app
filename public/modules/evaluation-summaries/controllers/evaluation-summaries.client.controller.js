@@ -1,8 +1,10 @@
 'use strict';
 
-angular.module('evaluation-summaries').controller('EvaluationSummaryController', ['$scope', '$stateParams', '$location', 'Authentication',
+angular.module('evaluation-summaries').controller('EvaluationSummaryController', ['$rootScope', '$scope', '$stateParams', '$location', 'Authentication',
 	'EvaluationSummaries','Projects','Portfolios', 'GateProcesses', '_','$q','$modal',
-	function($scope, $stateParams, $location, Authentication, EvaluationSummaries, Projects, Portfolios, GateProcesses, _, $q, $modal) {
+	function($rootScope, $scope, $stateParams, $location, Authentication, EvaluationSummaries, Projects, Portfolios, GateProcesses, _, $q, $modal) {
+
+        $rootScope.staticMenu = false;
 
         var vm = this;
 

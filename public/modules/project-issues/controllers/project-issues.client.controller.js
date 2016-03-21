@@ -1,11 +1,13 @@
 'use strict';
 
 // Project issues controller
-angular.module('project-issues').controller('ProjectIssuesController', ['$scope', '$stateParams', '$location', '$q', '$modal', '$log', '_', 'Authentication',
+angular.module('project-issues').controller('ProjectIssuesController', ['$rootScope', '$scope', '$stateParams', '$location', '$q', '$modal', '$log', '_', 'Authentication',
     'Portfolios', 'Projects', 'ProjectIssues', 'GateProcesses', 'LogReasons', 'IssueStates', 'LogPriorities', 'LogStatusIndicators',
-    function($scope, $stateParams, $location, $q, $modal, $log, _, Authentication,
+    function($rootScope, $scope, $stateParams, $location, $q, $modal, $log, _, Authentication,
              Portfolios, Projects, ProjectIssues, GateProcesses, LogReasons, IssueStates, LogPriorities, LogStatusIndicators) {
 
+        $rootScope.staticMenu = false;
+        
         // ------------- INIT -------------
 
         $scope.isResolving = false;

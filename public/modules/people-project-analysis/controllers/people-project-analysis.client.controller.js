@@ -1,9 +1,11 @@
 'use strict';
 
-angular.module('people-project-analysis').controller('PeopleProjectAnalysisController', ['$scope', '$stateParams', '$location', 'Authentication',
+angular.module('people-project-analysis').controller('PeopleProjectAnalysisController', ['$rootScope', '$scope', '$stateParams', '$location', 'Authentication',
 	'Projects','PeopleProjectGroups', 'PeopleProjectRoles', 'PeopleCategories','PeopleCategoryValues', 'People', '_','$q',
-	function($scope, $stateParams, $location, Authentication, Projects,
+	function($rootScope, $scope, $stateParams, $location, Authentication, Projects,
 			 PeopleProjectGroups, PeopleProjectRoles, PeopleCategories, PeopleCategoryValues, People, _ , $q) {
+
+		$rootScope.staticMenu = false;
 
 		// ----------- INIT ---------------
 

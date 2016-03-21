@@ -1,8 +1,10 @@
 'use strict';
 
-angular.module('strategy-alignment').controller('StrategyAlignmentController', ['$scope','$stateParams', '$location', 'Authentication',
+angular.module('strategy-alignment').controller('StrategyAlignmentController', ['$rootScope', '$scope','$stateParams', '$location', 'Authentication',
 	'StrategyNodes','Projects', '_','$q',
-	function($scope, $stateParams, $location, Authentication, StrategyNodes, Projects, _ , $q) {
+	function($rootScope, $scope, $stateParams, $location, Authentication, StrategyNodes, Projects, _ , $q) {
+
+        $rootScope.staticMenu = false;
 
 		// ----------- INIT ---------------
 

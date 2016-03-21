@@ -1,9 +1,11 @@
 'use strict';
 
-angular.module('qualitative-analysis').controller('QualitativeAnalysisController', ['$scope','$stateParams', '$location', 'Authentication',
+angular.module('qualitative-analysis').controller('QualitativeAnalysisController', ['$rootScope', '$scope','$stateParams', '$location', 'Authentication',
 	'Projects','QualitativeImpactGroups', 'QualitativeImpacts', 'QualitativeImpactScores', '_','$q',
-	function($scope, $stateParams, $location, Authentication, Projects,
+	function($rootScope, $scope, $stateParams, $location, Authentication, Projects,
              QualitativeImpactGroups, QualitativeImpacts, QualitativeImpactScores, _ , $q) {
+
+		$rootScope.staticMenu = false;
 
 		// ----------- INIT ---------------
 

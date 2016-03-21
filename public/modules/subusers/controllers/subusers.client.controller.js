@@ -1,8 +1,11 @@
 'use strict';
 
 // Subusers controller
-angular.module('subusers').controller('SubusersController', ['$http','$scope', '$stateParams', '$location', 'Authentication', 'Subusers','$q','_',
-	function($http, $scope, $stateParams, $location, Authentication, Subusers, $q, _) {
+angular.module('subusers').controller('SubusersController', ['$rootScope', '$http','$scope', '$stateParams', '$location', 'Authentication', 'Subusers','$q','_',
+	function($rootScope, $http, $scope, $stateParams, $location, Authentication, Subusers, $q, _) {
+
+
+		$rootScope.staticMenu = false;
 
 		// ------- ROLES FOR BUTTONS ------
 

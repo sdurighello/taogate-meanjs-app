@@ -14,7 +14,7 @@ var mongoose = require('mongoose'),
 exports.create = function(req, res) {
     var MaturityModel = mongoose.mtModel(req.user.tenantId + '.' + 'MaturityModel');
     var maturityModel = new MaturityModel(req.body);
-	maturityModel.user = req.user;
+	maturityModel.user = req.user._id;
 
 	maturityModel.save(function(err) {
 		if (err) {
@@ -39,7 +39,7 @@ exports.read = function(req, res) {
  */
 exports.update = function(req, res) {
 	var maturityModel = req.maturityModel ;
-    maturityModel.user = req.user;
+    maturityModel.user = req.user._id;
     maturityModel.created = Date.now();
 	maturityModel = _.extend(maturityModel , req.body);
 
@@ -94,7 +94,7 @@ exports.createLevel = function(req, res){
     var MaturityModel = mongoose.mtModel(req.user.tenantId + '.' + 'MaturityModel');
 
     var newLevel = req.body;
-    newLevel.user = req.user;
+    newLevel.user = req.user._id;
 
     MaturityModel.findById(req.params.maturityModelId).exec(function(err, maturityModel){
         if(err){
@@ -127,11 +127,10 @@ exports.updateLevel = function(req, res){
     var maturityModel = req.maturityModel;
     var level = maturityModel.levels.id(req.params.levelId);
 
-    level.user = req.user;
+    level.user = req.user._id;
     level.created = Date.now();
 
-    level.name = req.body.name;
-    level.description = req.body.description;
+    level = _.extend(level , req.body);
 
     maturityModel.save(function(err) {
         if (err) {
@@ -149,7 +148,7 @@ exports.updateLevel = function(req, res){
 exports.deleteLevel = function(req, res){
 
     var maturityModel = req.maturityModel;
-    maturityModel.user = req.user;
+    maturityModel.user = req.user._id;
     maturityModel.created = Date.now();
 
     var removedLevel = maturityModel.levels.id(req.params.levelId).remove();
@@ -171,7 +170,7 @@ exports.deleteLevel = function(req, res){
 exports.sortLevels = function(req, res){
 
     var maturityModel = req.maturityModel;
-    maturityModel.user = req.user;
+    maturityModel.user = req.user._id;
     maturityModel.created = Date.now();
 
     maturityModel.levels = req.body.levels;
@@ -191,14 +190,14 @@ exports.sortLevels = function(req, res){
 
 
 
-// --------------------------------------- DOMAINS -----------------------------------
+// --------------------------------------- AREAS -----------------------------------
 
 
-exports.createDomain = function(req, res){
+exports.createArea = function(req, res){
     var MaturityModel = mongoose.mtModel(req.user.tenantId + '.' + 'MaturityModel');
 
-    var newDomain = req.body;
-    newDomain.user = req.user;
+    var newArea = req.body;
+    newArea.user = req.user._id;
 
     MaturityModel.findById(req.params.maturityModelId).exec(function(err, maturityModel){
         if(err){
@@ -211,31 +210,30 @@ exports.createDomain = function(req, res){
                 message: errorHandler.getErrorMessage(new Error('Failed to load maturity model ' + req.params.maturityModelId))
             });
         }
-        newDomain = maturityModel.domains.create(newDomain);
-        maturityModel.domains.push(newDomain);
+        newArea = maturityModel.areas.create(newArea);
+        maturityModel.areas.push(newArea);
         maturityModel.save(function(err){
             if (err) {
                 return res.status(400).send({
                     message: errorHandler.getErrorMessage(err)
                 });
             } else {
-                res.jsonp(newDomain);
+                res.jsonp(newArea);
             }
         });
     });
 
 };
 
-exports.updateDomain = function(req, res){
+exports.updateArea = function(req, res){
 
     var maturityModel = req.maturityModel;
-    var domain = maturityModel.domains.id(req.params.domainId);
+    var area = maturityModel.areas.id(req.params.areaId);
 
-    domain.user = req.user;
-    domain.created = Date.now();
+    area.user = req.user._id;
+    area.created = Date.now();
 
-    domain.name = req.body.name;
-    domain.description = req.body.description;
+    area = _.extend(area , req.body);
 
     maturityModel.save(function(err) {
         if (err) {
@@ -244,19 +242,19 @@ exports.updateDomain = function(req, res){
                 message: errorHandler.getErrorMessage(err)
             });
         } else {
-            res.jsonp(domain);
+            res.jsonp(area);
         }
     });
 
 };
 
-exports.deleteDomain = function(req, res){
+exports.deleteArea = function(req, res){
 
     var maturityModel = req.maturityModel;
-    maturityModel.user = req.user;
+    maturityModel.user = req.user._id;
     maturityModel.created = Date.now();
 
-    var removedDomain = maturityModel.domains.id(req.params.domainId).remove();
+    var removedArea = maturityModel.areas.id(req.params.areaId).remove();
 
     maturityModel.save(function(err) {
         if (err) {
@@ -265,7 +263,7 @@ exports.deleteDomain = function(req, res){
                 message: errorHandler.getErrorMessage(err)
             });
         } else {
-            res.jsonp(removedDomain);
+            res.jsonp(removedArea);
         }
     });
 
@@ -273,7 +271,88 @@ exports.deleteDomain = function(req, res){
 
 
 
+// --------------------------------------- DIMENSIONS -----------------------------------
 
+
+exports.createDimension = function(req, res){
+    var MaturityModel = mongoose.mtModel(req.user.tenantId + '.' + 'MaturityModel');
+
+    var newDimension = req.body;
+    newDimension.user = req.user._id;
+
+    MaturityModel.findById(req.params.maturityModelId).exec(function(err, maturityModel){
+        if(err){
+            return res.status(400).send({
+                message: errorHandler.getErrorMessage(err)
+            });
+        }
+        if(!maturityModel){
+            return res.status(400).send({
+                message: errorHandler.getErrorMessage(new Error('Failed to load maturity model ' + req.params.maturityModelId))
+            });
+        }
+        newDimension = maturityModel.dimensions.create(newDimension);
+        maturityModel.dimensions.push(newDimension);
+        maturityModel.save(function(err){
+            if (err) {
+                console.log(err);
+                return res.status(400).send({
+                    message: errorHandler.getErrorMessage(err)
+                });
+            } else {
+                res.jsonp(newDimension);
+            }
+        });
+    });
+
+};
+
+exports.updateDimension = function(req, res){
+
+    var maturityModel = req.maturityModel;
+    var dimension = maturityModel.dimensions.id(req.params.dimensionId);
+
+    dimension.user = req.user._id;
+    dimension.created = Date.now();
+
+    dimension = _.extend(dimension , req.body);
+
+    maturityModel.save(function(err) {
+        if (err) {
+            console.log(err);
+            return res.status(400).send({
+                message: errorHandler.getErrorMessage(err)
+            });
+        } else {
+            res.jsonp(dimension);
+        }
+    });
+
+};
+
+exports.deleteDimension = function(req, res){
+
+    var maturityModel = req.maturityModel;
+    maturityModel.user = req.user._id;
+    maturityModel.created = Date.now();
+
+    var removedDimension = maturityModel.dimensions.id(req.params.dimensionId).remove();
+
+    maturityModel.save(function(err) {
+        if (err) {
+            console.log(err);
+            return res.status(400).send({
+                message: errorHandler.getErrorMessage(err)
+            });
+        } else {
+            res.jsonp(removedDimension);
+        }
+    });
+
+};
+
+
+// ***************************************************************************************
 
 
 /**

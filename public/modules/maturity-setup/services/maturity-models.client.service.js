@@ -27,52 +27,52 @@ angular.module('maturity-setup').factory('MaturityModels', ['$resource',
                 url: 'maturity-models/:maturityModelId/deleteLevel/:levelId'
             },
 
-            // ----- Domains -----
-            createDomain: {
+            // ----- Areas -----
+            createArea: {
                 method: 'PUT',
-                url: 'maturity-models/:maturityModelId/createDomain'
+                url: 'maturity-models/:maturityModelId/createArea'
             },
-            updateDomain: {
+            updateArea: {
                 method: 'PUT',
-                url: 'maturity-models/:maturityModelId/updateDomain/:domainId'
+                url: 'maturity-models/:maturityModelId/updateArea/:areaId'
             },
-            deleteDomain: {
+            deleteArea: {
                 method: 'PUT',
-                url: 'maturity-models/:maturityModelId/deleteDomain/:domainId'
+                url: 'maturity-models/:maturityModelId/deleteArea/:areaId'
             },
 
             // ----- Dimensions -----
             createDimension: {
                 method: 'PUT',
-                url: 'maturity-models/:maturityModelId/createDimension/:levelId/:domainId'
+                url: 'maturity-models/:maturityModelId/createDimension'
             },
             updateDimension: {
                 method: 'PUT',
-                url: 'maturity-models/:maturityModelId/updateDimension/:levelId/:domainId/:dimensionId'
+                url: 'maturity-models/:maturityModelId/updateDimension/:dimensionId'
             },
             deleteDimension: {
                 method: 'PUT',
-                url: 'maturity-models/:maturityModelId/deleteDomain/:levelId/:domainId/:dimensionId'
+                url: 'maturity-models/:maturityModelId/deleteDimension/:dimensionId'
             },
 
             // ----- Maturity Score -----
             updateMaturityScore: {
                 method: 'PUT',
-                url: 'maturity-models/:maturityModelId/createActivity/:levelId/:domainId/:dimensionId'
+                url: 'maturity-models/:maturityModelId/updateMaturityScore/:dimensionId'
             },
 
             // ----- Activities -----
             createActivity: {
                 method: 'PUT',
-                url: 'maturity-models/:maturityModelId/createActivity/:levelId/:domainId/:dimensionId'
+                url: 'maturity-models/:maturityModelId/createActivity/:dimensionId'
             },
             updateActivity: {
                 method: 'PUT',
-                url: 'maturity-models/:maturityModelId/updateActivity/:levelId/:domainId/:dimensionId/:activityId'
+                url: 'maturity-models/:maturityModelId/updateActivity/:dimensionId/:activityId'
             },
             deleteActivity: {
                 method: 'PUT',
-                url: 'maturity-models/:maturityModelId/deleteActivity/:levelId/:domainId/:dimensionId/:activityId'
+                url: 'maturity-models/:maturityModelId/deleteActivity/:dimensionId/:activityId'
             }
 
 		});

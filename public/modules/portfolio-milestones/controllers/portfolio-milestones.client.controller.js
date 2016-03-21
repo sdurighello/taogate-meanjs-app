@@ -1,12 +1,14 @@
 'use strict';
 
-angular.module('portfolio-milestones').controller('PortfolioMilestonesController', ['$scope', '$stateParams', '$location', '$q', '_', 'Authentication',
+angular.module('portfolio-milestones').controller('PortfolioMilestonesController', ['$rootScope', '$scope', '$stateParams', '$location', '$q', '_', 'Authentication',
 	'Portfolios', 'Projects', 'ProjectMilestones', 'PortfolioMilestones', 'GateProcesses',
 	'MilestoneStates', 'PortfolioMilestoneTypes', 'ProjectMilestoneTypes', 'LogStatusIndicators',
 	'$modal', '$log',
-	function($scope, $stateParams, $location, $q, _, Authentication,
+	function($rootScope, $scope, $stateParams, $location, $q, _, Authentication,
 			 Portfolios, Projects, ProjectMilestones, PortfolioMilestones, GateProcesses,
              MilestoneStates, PortfolioMilestoneTypes, ProjectMilestoneTypes, LogStatusIndicators, $modal, $log) {
+
+		$rootScope.staticMenu = false;
 
 		var vm = this;
 

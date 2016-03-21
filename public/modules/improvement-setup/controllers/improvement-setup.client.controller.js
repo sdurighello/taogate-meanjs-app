@@ -1,8 +1,10 @@
 'use strict';
 
-angular.module('improvement-setup').controller('ImprovementSetupController', ['$scope','$stateParams', '$location', 'Authentication',
+angular.module('improvement-setup').controller('ImprovementSetupController', ['$rootScope', '$scope','$stateParams', '$location', 'Authentication',
 	'ImprovementStates', 'ImprovementTypes', 'ImprovementReasons', '_','$q',
-	function($scope, $stateParams, $location, Authentication, ImprovementStates, ImprovementTypes, ImprovementReasons, _ , $q) {
+	function($rootScope, $scope, $stateParams, $location, Authentication, ImprovementStates, ImprovementTypes, ImprovementReasons, _ , $q) {
+
+		$rootScope.staticMenu = false;
 
 		// ----------- INIT ---------------
 

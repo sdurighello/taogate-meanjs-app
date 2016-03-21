@@ -1,10 +1,12 @@
 'use strict';
 
-angular.module('gate-management-assignment').controller('GateManagementAssignmentController', ['$scope','$stateParams', '$location',
+angular.module('gate-management-assignment').controller('GateManagementAssignmentController', ['$rootScope', '$scope','$stateParams', '$location',
 	'Authentication', 'Projects','Portfolios', 'GateProcesses', 'StrategyNodes',
 	'CategoryGroups', 'PriorityGroups', 'PriorityValues', '_','$q',
-	function($scope, $stateParams, $location, Authentication, Projects, Portfolios, GateProcesses, StrategyNodes,
+	function($rootScope, $scope, $stateParams, $location, Authentication, Projects, Portfolios, GateProcesses, StrategyNodes,
 			 CategoryGroups, PriorityGroups, PriorityValues, _ , $q) {
+
+		$rootScope.staticMenu = false;
 
 		// ----------- INIT ---------------
 

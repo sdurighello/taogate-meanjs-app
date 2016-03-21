@@ -1,11 +1,13 @@
 'use strict';
 
 // IMPROVEMENT ACTIVITIES controller
-angular.module('improvement-activities').controller('ImprovementActivitiesController', ['$scope', '$stateParams', '$location', '$q', '_', 'Authentication',
+angular.module('improvement-activities').controller('ImprovementActivitiesController', ['$rootScope', '$scope', '$stateParams', '$location', '$q', '_', 'Authentication',
 	'Portfolios', 'ImprovementActivities', 'ImprovementTypes', 'ImprovementReasons', 'ImprovementStates', 'LogPriorities', 'LogStatusIndicators',
 	'People', '$modal', '$log',
-	function($scope, $stateParams, $location, $q, _, Authentication,
+	function($rootScope, $scope, $stateParams, $location, $q, _, Authentication,
 			 Portfolios, ImprovementActivities, ImprovementTypes, ImprovementReasons, ImprovementStates, LogPriorities, LogStatusIndicators, People, $modal, $log) {
+
+		$rootScope.staticMenu = false;
 
 		var vm = this;
 

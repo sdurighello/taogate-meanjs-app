@@ -20,11 +20,11 @@ var MaturityLevelSchema = new Schema({
     user: {type: Schema.ObjectId, ref: 'User'}
 });
 
-// -------------------- MATURITY DOMAIN SCHEMA -------------------
+// -------------------- MATURITY AREA SCHEMA -------------------
 
-var MaturityDomainSchema = new Schema({
+var MaturityAreaSchema = new Schema({
 
-    name: {type: String, default: '', required: 'Maturity domain name is required', trim: true},
+    name: {type: String, default: '', required: 'Maturity area name is required', trim: true},
     description: {type: String, default: '', trim: true},
 
     created: {type: Date, default: Date.now},
@@ -81,8 +81,8 @@ var maturityReviewRecord = {
 
 var MaturityDimensionSchema = new Schema({
 
-    level : {type: Schema.Types.ObjectId, ref: 'MaturityModel.levels', default:null, required: 'Maturity level ref is required', $tenant:true},
-    domain : {type: Schema.Types.ObjectId, ref: 'MaturityModel.domains', default:null, required: 'Maturity domain ref is required', $tenant:true},
+    level : {type: Schema.Types.ObjectId, ref: 'MaturityModel.levels', default:null, required: 'Maturity level ref is required'},
+    area : {type: Schema.Types.ObjectId, ref: 'MaturityModel.areas', default:null, required: 'Maturity area ref is required'},
 
     name: {type: String, default: '', required: 'Maturity dimension name is required', trim: true},
     description: {type: String, default: '', trim: true},
@@ -107,7 +107,7 @@ var MaturityModelSchema = new Schema({
     description:{type: String, default: '', trim: true},
 
     levels : [MaturityLevelSchema],
-    domains : [MaturityDomainSchema],
+    areas : [MaturityAreaSchema],
     dimensions : [MaturityDimensionSchema],
 
     created: {type: Date, default: Date.now},

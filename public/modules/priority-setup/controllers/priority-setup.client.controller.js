@@ -1,8 +1,10 @@
 'use strict';
 
-angular.module('priority-setup').controller('PrioritySetupController', ['$scope', '$stateParams', '$location', 'Authentication',
+angular.module('priority-setup').controller('PrioritySetupController', ['$rootScope', '$scope', '$stateParams', '$location', 'Authentication',
 	'PriorityValues', 'PriorityGroups', 'Priorities', '$q', '_',
-	function($scope, $stateParams, $location, Authentication, PriorityValues, PriorityGroups, Priorities, $q, _) {
+	function($rootScope, $scope, $stateParams, $location, Authentication, PriorityValues, PriorityGroups, Priorities, $q, _) {
+
+		$rootScope.staticMenu = false;
 
 		// ------------- INIT -------------
 

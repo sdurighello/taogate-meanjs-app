@@ -1,8 +1,10 @@
 'use strict';
 
-angular.module('category-setup').controller('CategorySetupController', ['$scope', '$stateParams', '$location', 'Authentication',
+angular.module('category-setup').controller('CategorySetupController', ['$rootScope', '$scope', '$stateParams', '$location', 'Authentication',
     'CategoryGroups','Categories','CategoryValues','$q','_',
-    function($scope, $stateParams, $location, Authentication, CategoryGroups, Categories, CategoryValues, $q, _) {
+    function($rootScope, $scope, $stateParams, $location, Authentication, CategoryGroups, Categories, CategoryValues, $q, _) {
+
+        $rootScope.staticMenu = false;
 
         // ------------- INIT -------------
 

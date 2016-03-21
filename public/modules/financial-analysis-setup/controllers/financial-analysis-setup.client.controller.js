@@ -1,9 +1,11 @@
 'use strict';
 
-angular.module('financial-analysis-setup').controller('FinancialAnalysisSetupController', ['$scope', '$stateParams', '$location',
+angular.module('financial-analysis-setup').controller('FinancialAnalysisSetupController', ['$rootScope', '$scope', '$stateParams', '$location',
     'Authentication','FinancialBenefitGroups','FinancialBenefitTypes','FinancialCostGroups','FinancialCostTypes','$q', '_',
-	function($scope, $stateParams, $location, Authentication, FinancialBenefitGroups, FinancialBenefitTypes, FinancialCostGroups,
+	function($rootScope, $scope, $stateParams, $location, Authentication, FinancialBenefitGroups, FinancialBenefitTypes, FinancialCostGroups,
              FinancialCostTypes, $q, _) {
+
+        $rootScope.staticMenu = false;
 
 		// ------------- INIT -------------
 

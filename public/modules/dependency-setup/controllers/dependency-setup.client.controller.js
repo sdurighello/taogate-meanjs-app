@@ -1,8 +1,10 @@
 'use strict';
 
-angular.module('dependency-setup').controller('DependencySetupController', ['$scope','$stateParams', '$location', 'Authentication',
+angular.module('dependency-setup').controller('DependencySetupController', ['$rootScope', '$scope','$stateParams', '$location', 'Authentication',
 	'DependencyImpacts', 'DependencyTypes', 'DependencyStates', '$q', '_',
-	function($scope, $stateParams, $location, Authentication, DependencyImpacts, DependencyTypes, DependencyStates, $q, _) {
+	function($rootScope, $scope, $stateParams, $location, Authentication, DependencyImpacts, DependencyTypes, DependencyStates, $q, _) {
+
+		$rootScope.staticMenu = false;
 
 		// ------------- INIT -------------
 

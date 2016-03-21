@@ -1,8 +1,10 @@
 'use strict';
 
-angular.module('status-report-setup').controller('StatusReportSetupController', ['$scope','$stateParams', '$location', 'Authentication',
+angular.module('status-report-setup').controller('StatusReportSetupController', ['$rootScope', '$scope','$stateParams', '$location', 'Authentication',
 	'LogStatusIndicators', 'LogStatusAreas', '_','$q',
-	function($scope, $stateParams, $location, Authentication, LogStatusIndicators, LogStatusAreas, _ , $q) {
+	function($rootScope, $scope, $stateParams, $location, Authentication, LogStatusIndicators, LogStatusAreas, _ , $q) {
+
+		$rootScope.staticMenu = false;
 
 		// ----------- INIT ---------------
 

@@ -1,10 +1,12 @@
 'use strict';
 
-angular.module('project-milestones').controller('ProjectMilestoneController', ['$scope','$stateParams', '$location',
+angular.module('project-milestones').controller('ProjectMilestoneController', ['$rootScope', '$scope','$stateParams', '$location',
 	'Authentication', 'Projects', 'Portfolios','$q', '_',
 	'GateProcesses', 'ProjectMilestones', 'ProjectMilestoneTypes', 'MilestoneStates', 'LogStatusIndicators',
-	function($scope, $stateParams, $location, Authentication, Projects, Portfolios, $q, _,
+	function($rootScope, $scope, $stateParams, $location, Authentication, Projects, Portfolios, $q, _,
 			 GateProcesses, ProjectMilestones, ProjectMilestoneTypes, MilestoneStates, LogStatusIndicators) {
+
+		$rootScope.staticMenu = false;
 
 		// ------------- INIT -------------
 

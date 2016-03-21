@@ -1,8 +1,10 @@
 'use strict';
 
-angular.module('portfolio-assignment').controller('PortfolioAssignmentController', ['$scope','$stateParams', '$location', 'Authentication',
+angular.module('portfolio-assignment').controller('PortfolioAssignmentController', ['$rootScope', '$scope','$stateParams', '$location', 'Authentication',
 	'Portfolios','Projects', '_','$q',
-	function($scope, $stateParams, $location, Authentication, Portfolios, Projects, _ , $q) {
+	function($rootScope, $scope, $stateParams, $location, Authentication, Portfolios, Projects, _ , $q) {
+
+		$rootScope.staticMenu = false;
 
 		// ----------- INIT ---------------
 

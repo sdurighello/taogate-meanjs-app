@@ -1,9 +1,11 @@
 'use strict';
 
 // Definition dashboards controller
-angular.module('priority-assignment').controller('PrioritizationOverviewController', ['$scope', '$stateParams', '$location', 'Authentication',
+angular.module('priority-assignment').controller('PrioritizationOverviewController', ['$rootScope', '$scope', '$stateParams', '$location', 'Authentication',
 	'PriorityAssignment','PriorityGroups', 'Priorities', 'PriorityValues', 'Portfolios', '_','$q', '$sce',
-	function($scope, $stateParams, $location, Authentication, PriorityAssignment, PriorityGroups, Priorities, PriorityValues, Portfolios, _, $q, $sce) {
+	function($rootScope, $scope, $stateParams, $location, Authentication, PriorityAssignment, PriorityGroups, Priorities, PriorityValues, Portfolios, _, $q, $sce) {
+
+		$rootScope.staticMenu = false;
 
 		// ----------- INIT ---------------
 

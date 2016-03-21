@@ -1,10 +1,12 @@
 'use strict';
 
-angular.module('gate-management-review').controller('GateManagementReviewController', ['$scope','$stateParams', '$location',
+angular.module('gate-management-review').controller('GateManagementReviewController', ['$rootScope', '$scope','$stateParams', '$location',
     'Authentication', 'Projects', 'Portfolios','$q', '_',
     'GateProcesses', 'GateReviews', 'GateOutcomeScores', 'GateStatuses',
-    function($scope, $stateParams, $location, Authentication, Projects, Portfolios, $q, _,
+    function($rootScope, $scope, $stateParams, $location, Authentication, Projects, Portfolios, $q, _,
              GateProcesses, GateReviews, GateOutcomeScores, GateStatuses) {
+
+        $rootScope.staticMenu = false;
 
         // ------------- INIT -------------
 

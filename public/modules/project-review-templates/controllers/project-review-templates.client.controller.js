@@ -1,8 +1,10 @@
 'use strict';
 
-angular.module('project-review-templates').controller('ProjectReviewTemplatesController', ['$scope', '$stateParams', '$location', 'Authentication',
+angular.module('project-review-templates').controller('ProjectReviewTemplatesController', ['$rootScope', '$scope', '$stateParams', '$location', 'Authentication',
 	'ProjectReviewTemplates', 'ProjectReviewTypes', 'PeopleProjectGroups', '$q','_',
-	function($scope, $stateParams, $location, Authentication, ProjectReviewTemplates, ProjectReviewTypes, PeopleProjectGroups, $q, _) {
+	function($rootScope, $scope, $stateParams, $location, Authentication, ProjectReviewTemplates, ProjectReviewTypes, PeopleProjectGroups, $q, _) {
+
+        $rootScope.staticMenu = false;
 
 		// ------------- INIT -------------
 

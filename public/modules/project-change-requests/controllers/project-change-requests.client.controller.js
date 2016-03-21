@@ -1,10 +1,12 @@
 'use strict';
 
-angular.module('project-change-requests').controller('ProjectChangeRequestController', ['$scope','$stateParams', '$location',
+angular.module('project-change-requests').controller('ProjectChangeRequestController', ['$rootScope', '$scope','$stateParams', '$location',
 	'Authentication', 'Projects', 'Portfolios','$q', '_',
 	'GateProcesses', 'ProjectChangeRequests', 'LogReasons', 'ChangeRequestStates', 'LogPriorities','LogStatusIndicators',
-	function($scope, $stateParams, $location, Authentication, Projects, Portfolios, $q, _,
+	function($rootScope, $scope, $stateParams, $location, Authentication, Projects, Portfolios, $q, _,
 			 GateProcesses, ProjectChangeRequests, LogReasons, ChangeRequestStates, LogPriorities, LogStatusIndicators) {
+
+		$rootScope.staticMenu = false;
 
 		// ------------- INIT -------------
 
