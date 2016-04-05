@@ -151,6 +151,18 @@ exports.deleteLevel = function(req, res){
     maturityModel.user = req.user._id;
     maturityModel.created = Date.now();
 
+    // Delete all dimensions associated to this level
+    if(maturityModel.dimensions && maturityModel.dimensions.length > 0){
+        var dimensionsToBeRemoved = _.filter(maturityModel.dimensions, function(dimension){
+            return dimension.level.equals(req.params.levelId);
+        });
+        if(dimensionsToBeRemoved){
+            _.each(dimensionsToBeRemoved, function(dimension){
+                maturityModel.dimensions.id(dimension._id).remove();
+            });
+        }
+    }
+
     var removedLevel = maturityModel.levels.id(req.params.levelId).remove();
 
     maturityModel.save(function(err) {
@@ -173,7 +185,7 @@ exports.sortLevels = function(req, res){
     maturityModel.user = req.user._id;
     maturityModel.created = Date.now();
 
-    maturityModel.levels = req.body.levels;
+    maturityModel.levels = req.body;
 
     maturityModel.save(function(err) {
         if (err) {
@@ -254,8 +266,22 @@ exports.deleteArea = function(req, res){
     maturityModel.user = req.user._id;
     maturityModel.created = Date.now();
 
+    // Delete all dimensions associated to this area
+    if(maturityModel.dimensions && maturityModel.dimensions.length > 0){
+        var dimensionsToBeRemoved = _.filter(maturityModel.dimensions, function(dimension){
+            return dimension.area.equals(req.params.areaId);
+        });
+        if(dimensionsToBeRemoved){
+            _.each(dimensionsToBeRemoved, function(dimension){
+                maturityModel.dimensions.id(dimension._id).remove();
+            });
+        }
+    }
+
+    // Delete area
     var removedArea = maturityModel.areas.id(req.params.areaId).remove();
 
+    // Save parent object
     maturityModel.save(function(err) {
         if (err) {
             console.log(err);

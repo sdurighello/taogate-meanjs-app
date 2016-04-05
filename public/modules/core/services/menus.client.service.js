@@ -362,7 +362,7 @@ angular.module('core').service('Menus', [
 		this.addSubMenuItem('topbar', 'evaluation', 'Improvement', 'menuTitle','menuTitle',false,
 			['superAdmin','admin','pmo','projectManager','portfolioManager','executive'],15);
 		        // Maturity evaluation
-		this.addSubMenuItem('topbar', 'evaluation', 'Maturity evaluation', 'maturity-models','maturity-models',false,
+		this.addSubMenuItem('topbar', 'evaluation', 'Maturity evaluation', 'maturity-management','maturity-management',false,
 			['superAdmin','admin','pmo','projectManager','portfolioManager','executive'],16);
                 // Improvement activities
         this.addSubMenuItem('topbar', 'evaluation', 'Improvement activities', 'improvement-activities','improvement-activities',false,

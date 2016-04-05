@@ -69,6 +69,24 @@ angular.module('maturity-setup').controller('MaturitySetupController', ['$rootSc
 		var originalMaturityModel = {};
 
 		$scope.selectMaturityModel = function(model){
+            // Flush any changes to current selected objects
+            if($scope.selectedMaturityModel){
+                $scope.cancelEditMaturityModel($scope.selectedMaturityModel);
+            }
+            if($scope.selectedArea){
+                $scope.cancelEditArea($scope.selectedArea);
+            }
+            if($scope.selectedLevel){
+                $scope.cancelEditLevel($scope.selectedLevel);
+            }
+            if($scope.selectedDimension){
+                $scope.cancelEditDimension($scope.selectedDimension);
+            }
+            // Reset the selected objects
+            $scope.selectedArea = null;
+            $scope.selectedLevel = null;
+            $scope.selectedDimension = null;
+            // Select the current model
             originalMaturityModel[model._id] = _.cloneDeep(model);
 			$scope.selectedMaturityModel = model;
             $scope.maturityModelEdit[model._id] = false;
@@ -152,6 +170,10 @@ angular.module('maturity-setup').controller('MaturitySetupController', ['$rootSc
         var originalArea = {};
 
         $scope.selectArea = function(area){
+            // Flush any changes to current selectedArea
+            if($scope.selectedArea){
+                $scope.cancelEditArea($scope.selectedArea);
+            }
             originalArea[area._id] = _.cloneDeep(area);
             $scope.selectedArea = area;
             $scope.areaEdit[area._id] = false;
@@ -194,6 +216,14 @@ angular.module('maturity-setup').controller('MaturitySetupController', ['$rootSc
                 $scope.isResolving = false;
                 $scope.selectedArea = null;
                 model.areas = _.without(model.areas, area);
+                // Sync dimensions
+                if($scope.selectedDimension){
+                    $scope.cancelEditDimension($scope.selectedDimension);
+                    $scope.selectedDimension = null;
+                }
+                model.dimensions = _.filter(model.dimensions, function(dimension){
+                    return dimension.area !== area._id;
+                });
             },function(err){
                 $scope.isResolving = false;
                 $scope.error = err.data.message;
@@ -229,6 +259,38 @@ angular.module('maturity-setup').controller('MaturitySetupController', ['$rootSc
             );
         };
 
+        // Sort
+
+        var originalLevels;
+
+        $scope.dragControlListeners = {
+            accept: function (sourceItemHandleScope, destSortableScope) {
+               //override to determine drag is allowed or not. default is true.
+               return !$scope.isResolving;
+            },
+            dragStart : function(event){
+                originalLevels = _.cloneDeep($scope.selectedMaturityModel.levels);
+            },
+            orderChanged: function(event) {
+
+                $scope.error = null;
+                $scope.isResolving = true;
+                
+                MaturityModels.sortLevels({ maturityModelId: $scope.selectedMaturityModel._id },
+                    event.source.sortableScope.modelValue,
+                    function (res) {
+                        $scope.isResolving = false;
+                    },
+                    function (err) {
+                        // Put back the original order
+                        $scope.selectedMaturityModel.levels = originalLevels;
+                        $scope.isResolving = false;
+                        $scope.error = err.data.message;
+                    }
+                );
+            }
+        };
+
 
         // Edit
 
@@ -237,9 +299,18 @@ angular.module('maturity-setup').controller('MaturitySetupController', ['$rootSc
         var originalLevel = {};
 
         $scope.selectLevel = function(level){
+            // Flush any changes to current selectedLevel
+            if($scope.selectedLevel){
+                $scope.cancelEditLevel($scope.selectedLevel);
+            }
+
             originalLevel[level._id] = _.cloneDeep(level);
             $scope.selectedLevel = level;
             $scope.levelEdit[level._id] = false;
+        };
+        
+        $scope.editLevel = function(level){
+            $scope.levelEdit[level._id] = true;
         };
 
         $scope.saveEditLevel = function(model, level) {
@@ -279,6 +350,14 @@ angular.module('maturity-setup').controller('MaturitySetupController', ['$rootSc
                 $scope.isResolving = false;
                 $scope.selectedLevel = null;
                 model.levels = _.without(model.levels, level);
+                // Sync dimensions
+                if($scope.selectedDimension){
+                    $scope.cancelEditDimension($scope.selectedDimension);
+                    $scope.selectedDimension = null;
+                }
+                model.dimensions = _.filter(model.dimensions, function(dimension){
+                    return dimension.level !== level._id;
+                });
             },function(err){
                 $scope.isResolving = false;
                 $scope.error = err.data.message;
@@ -350,6 +429,10 @@ angular.module('maturity-setup').controller('MaturitySetupController', ['$rootSc
         var originalDimension = {};
 
         $scope.selectDimension = function(dimension){
+            // Flush any changes to current selectedDimension
+            if($scope.selectedDimension){
+                $scope.cancelEditDimension($scope.selectedDimension);
+            }
             originalDimension[dimension._id] = _.cloneDeep(dimension);
             $scope.selectedDimension = dimension;
             $scope.dimensionEdit[dimension._id] = false;

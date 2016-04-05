@@ -139,19 +139,27 @@
                                             </div>
                                         </div>
                                         <hr style="margin: 10px">
-                                        <div class="row" style="min-height: 310px; max-height: 310px; overflow-y: auto;">
-                                            <div class="col-md-12">
-                                                <button class="btn btn-default btn-block"
-                                                        data-ng-repeat="level in selectedMaturityModel.levels track by level._id"
-                                                        data-ng-click="selectLevel(level)"
-                                                        data-ng-disabled="isResolving"
-                                                        style="overflow: hidden">
-                                                    <span class="badge">{{$index + 1}}</span>&nbsp;<span>{{level.name}}</span>
-                                                </button>
-                                                <div class="alert alert-warning text-center" data-ng-hide="selectedMaturityModel.levels.length">
-                                                    No levels yet
-                                                </div>
+                                        <div class="panel-body" data-as-sortable="dragControlListeners" data-ng-model="selectedMaturityModel.levels"
+                                             style="overflow-y: auto; max-height: 312px; min-height: 312px;">
+                                            <a href="" tooltip="Drag values up and down to define sequence. Top comes first." tooltip-trigger="focus">
+                                                <span class="glyphicon glyphicon-info-sign"></span>
+                                            </a> &nbsp;
+                                            <div class="alert alert-warning text-center" data-ng-hide="selectedMaturityModel.levels.length">
+                                                No levels yet
                                             </div>
+                                            <button data-ng-repeat="level in selectedMaturityModel.levels track by level._id"
+                                                    data-as-sortable-item
+                                                    data-ng-click="selectLevel(level)"
+                                                    class="btn btn-default btn-block center-block" style="overflow: hidden;">
+                                                <div data-as-sortable-item-handle>
+                                                    <div class="row">
+                                                        <div class="col-md-2">
+                                                            <span class="badge" data-ng-bind="$index + 1"></span>
+                                                        </div>
+                                                        <div class="col-md-10 text-center" data-ng-bind="level.name" style="overflow: hidden"></div>
+                                                    </div>
+                                                </div>
+                                            </button>
                                         </div>
                                     </div>
                                 </div>
@@ -179,7 +187,7 @@
                                                           data-ng-model="selectedLevel.description" data-ng-disabled="!levelEdit[selectedLevel._id]"></textarea>
                                             </div>
                                             <div class="form-group pull-right" data-ng-show="userHasAuthorization && !levelEdit[selectedLevel._id]">
-                                                <button class="btn btn-success btn-sm" data-ng-click="levelEdit[selectedLevel._id] = true">
+                                                <button class="btn btn-success btn-sm" data-ng-click="editLevel(selectedLevel)">
                                                     Edit
                                                 </button>
                                             </div>

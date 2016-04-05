@@ -1,3 +1,169 @@
-<section data-ng-controller="MaturityManagementController">
-	This is the Maturity management view
+<section data-ng-controller="MaturityManagementController as parentCtrl" data-ng-init="parentCtrl.init()">
+    <br>
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="panel-heading">
+                <ol class="breadcrumb">
+                    <li>Evaluation</li>
+                    <li>Maturity</li>
+                    <li class="active">Maturity management</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+    <div data-ng-show="parentCtrl.error" class="text-danger">
+        <strong data-ng-bind="parentCtrl.error"></strong>
+    </div>
+    <div class="row">
+        <div class="col-xs-4">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h6 class="panel-title text-center" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: normal; width: 100%;">
+                        Dimensions
+                    </h6>
+                </div>
+                <div class="panel-body">
+                    <div class="row">
+                        <div class="col-xs-12" style="margin-bottom: 1px">
+                            <select class="form-control input-sm" data-ng-model = "parentCtrl.selectedMaturityModel"
+                                    data-ng-options="model as model.name for model in parentCtrl.maturityModels">
+                                <option value="">--Select maturity model</option>
+                            </select>
+                        </div>
+                    </div>
+                    <hr style="margin: 5px">
+                    <div class="row">
+                        <div class="col-xs-12" style="margin-bottom: 1px">
+                            <select class="form-control input-sm" data-ng-model = "parentCtrl.dimensionFilter.level"
+                                    data-ng-options="level._id as level.name for level in parentCtrl.selectedMaturityModel.levels">
+                                <option value="">--filter by level</option>
+                            </select>
+                        </div>
+                        <div class="col-xs-12" style="margin-bottom: 1px">
+                            <select class="form-control input-sm" data-ng-model = "parentCtrl.dimensionFilter.area"
+                                    data-ng-options="area._id as area.name for area in parentCtrl.selectedMaturityModel.areas">
+                                <option value="">--filter by area</option>
+                            </select>
+                        </div>
+                    </div>
+                    <hr style="margin: 5px">
+                    <div class="row" style="min-height: 250px; max-height: 250px; overflow-y: auto;">
+                        <div class="col-md-12">
+                            <button class="btn btn-default btn-block text-center"
+                                    data-ng-repeat="dimension in parentCtrl.selectedMaturityModel.dimensions | filter: {level: (!!parentCtrl.dimensionFilter.level || undefined) && parentCtrl.dimensionFilter.level, area: (!!parentCtrl.dimensionFilter.area || undefined) && parentCtrl.dimensionFilter.area}"
+                                    data-ng-click="parentCtrl.selectDimension(dimension)"
+                                    data-ng-disabled="parentCtrl.isResolving"
+                                    style="overflow: hidden">
+                                <span>{{dimension.name}}</span>
+                            </button>
+                            <div class="alert alert-warning text-center" data-ng-hide="parentCtrl.selectedMaturityModel.dimensions.length">
+                                No dimensions yet
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xs-8">
+            <div class="alert alert-warning text-center" data-ng-show="!selectedDimension && !showNewDimensionForm && selectedMaturityModel.dimensions.length">
+                Select a maturity dimension to see its details
+            </div>
+            <div class="panel panel-default" data-ng-show="showNewDimensionForm">
+                <div class="panel-heading">
+                    <h6 class="panel-title text-center">
+                        New maturity dimension
+                    </h6>
+                </div>
+                <div class="panel-body" style="min-height: 385px">
+                    <form name="newDimensionForm" novalidate>
+                        <div class="form-group">
+                            <label for="dimensionLevelNew">Level</label>
+                            <select id="dimensionLevelNew" class="form-control" data-ng-model="newDimensionFormObj[selectedMaturityModel._id].level"
+                                    data-ng-options="level.name for level in selectedMaturityModel.levels" required>
+                                <option value="">--maturity level</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="dimensionLevelNew">Area</label>
+                            <select id="dimensionLevelNew" class="form-control" data-ng-model="newDimensionFormObj[selectedMaturityModel._id].area"
+                                    data-ng-options="area.name for area in selectedMaturityModel.areas" required>
+                                <option value="">--maturity area</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="dimensionNameNew" class="control-label">Name</label>
+                            <input id="dimensionNameNew" type="text" class="form-control" data-ng-model="newDimensionFormObj[selectedMaturityModel._id].name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="dimensionDescriptionNew" class="control-label">Description</label>
+                                                <textarea id="dimensionDescriptionNew" class="form-control" placeholder="No description yet"
+                                                          data-ng-model="newDimensionFormObj[selectedMaturityModel._id].description"></textarea>
+                        </div>
+                        <div class="pull-right">
+                            <button type="button" class="btn btn-sm btn-success" data-ng-click="saveNewDimension(selectedMaturityModel)"
+                                    data-ng-disabled="newDimensionForm.$invalid || isResolving">
+                                Save
+                            </button>
+                            <button type="button" class="btn btn-sm btn-info" data-ng-click="cancelNewDimension(selectedMaturityModel)"
+                                    data-ng-disabled="isResolving">
+                                Cancel
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <div class="panel panel-default" data-ng-show="selectedDimension && !showNewDimensionForm">
+                <div class="panel-heading">
+                    <h6 class="panel-title text-center" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: normal; width: 100%;">
+                        {{selectedDimension.name}}
+                    </h6>
+                </div>
+                <div class="panel-body" style="min-height: 385px">
+                    <form name="editDimensionForm" novalidate>
+                        <div class="form-group">
+                            <label for="dimensionLevelEdit">Level</label>
+                            <select id="dimensionLevelEdit" class="form-control" data-ng-model="selectedDimension.level"
+                                    data-ng-options="level._id as level.name for level in selectedMaturityModel.levels" disabled>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="dimensionAreaEdit">Area</label>
+                            <select id="dimensionAreaEdit" class="form-control" data-ng-model="selectedDimension.area"
+                                    data-ng-options="area._id as area.name for area in selectedMaturityModel.areas" disabled>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="dimensionNameEdit" class="control-label">Name</label>
+                            <input id="dimensionNameEdit" type="text" class="form-control" data-ng-model="selectedDimension.name"
+                                   data-ng-disabled="!dimensionEdit[selectedDimension._id]" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="dimensionDescription" class="control-label">Description</label>
+                                                <textarea id="dimensionDescription" class="form-control" placeholder="No description yet"
+                                                          data-ng-model="selectedDimension.description" data-ng-disabled="!dimensionEdit[selectedDimension._id]"></textarea>
+                        </div>
+                        <div class=" pull-right" data-ng-show="userHasAuthorization && !dimensionEdit[selectedDimension._id]">
+                            <button class="btn btn-success btn-sm" data-ng-click="dimensionEdit[selectedDimension._id] = true">
+                                Edit
+                            </button>
+                        </div>
+                        <div class=" pull-right" data-ng-show="dimensionEdit[selectedDimension._id]">
+                            <button type="button" class="btn btn-sm btn-success" data-ng-click="saveEditDimension(selectedMaturityModel, selectedDimension)"
+                                    data-ng-disabled="editDimensionForm.$invalid || isResolving">
+                                Save
+                            </button>
+                            <button type="button" class="btn btn-sm btn-danger" data-ng-click="deleteDimension(selectedMaturityModel, selectedDimension)"
+                                    data-ng-disabled="isResolving">
+                                Delete dimension
+                            </button>
+                            <button type="button" class="btn btn-sm btn-info" data-ng-click="cancelEditDimension(selectedDimension)"
+                                    data-ng-disabled="isResolving">
+                                Cancel
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
 </section>
