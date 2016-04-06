@@ -377,6 +377,33 @@ exports.deleteDimension = function(req, res){
 
 };
 
+exports.updateMaturityReview = function(req, res){
+
+    var maturityModel = req.maturityModel;
+    var dimension = maturityModel.dimensions.id(req.params.dimensionId);
+
+    dimension.user = req.user._id;
+    dimension.created = Date.now();
+
+    dimension.maturityReview.history.push(dimension.maturityReview.currentRecord);
+    dimension.maturityReview.currentRecord.score = req.body.score;
+    dimension.maturityReview.currentRecord.comment = req.body.comment;
+    dimension.maturityReview.currentRecord.date = Date.now();
+    dimension.maturityReview.currentRecord.user = req.user._id;
+
+    maturityModel.save(function(err) {
+        if (err) {
+            console.log(err);
+            return res.status(400).send({
+                message: errorHandler.getErrorMessage(err)
+            });
+        } else {
+            res.jsonp(dimension);
+        }
+    });
+
+};
+
 
 // ***************************************************************************************
 

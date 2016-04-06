@@ -53,6 +53,9 @@ module.exports = function(app) {
     app.route('/maturity-models/:maturityModelId/deleteDimension/:dimensionId')
         .put(users.requiresLogin, maturityModels.hasAuthorization, maturityModels.deleteDimension);
 
+    app.route('/maturity-models/:maturityModelId/updateMaturityReview/:dimensionId')
+        .put(users.requiresLogin, maturityModels.hasAuthorization, maturityModels.updateMaturityReview);
+
 
 
     // Finish by binding the Maturity model middleware

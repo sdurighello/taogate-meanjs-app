@@ -55,10 +55,10 @@ angular.module('maturity-setup').factory('MaturityModels', ['$resource',
                 url: 'maturity-models/:maturityModelId/deleteDimension/:dimensionId'
             },
 
-            // ----- Maturity Score -----
-            updateMaturityScore: {
+            // ----- Maturity Review -----
+            updateMaturityReview: {
                 method: 'PUT',
-                url: 'maturity-models/:maturityModelId/updateMaturityScore/:dimensionId'
+                url: 'maturity-models/:maturityModelId/updateMaturityReview/:dimensionId'
             },
 
             // ----- Activities -----

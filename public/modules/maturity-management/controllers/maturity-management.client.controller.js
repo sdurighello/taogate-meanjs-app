@@ -2,15 +2,18 @@
 
 angular.module('maturity-management').controller('MaturityManagementController', ['$rootScope', '$scope', '$stateParams', '$location', '$q', '_', 'Authentication',
 	'Portfolios', 'ImprovementActivities', 'ImprovementTypes', 'ImprovementReasons', 'ImprovementStates', 'LogPriorities', 'LogStatusIndicators',
-	'People', '$modal', '$log','MaturityModels',
+	'People', '$modal', '$log','MaturityModels','ProjectReviewScores',
 	function($rootScope, $scope, $stateParams, $location, $q, _, Authentication,
-			 Portfolios, ImprovementActivities, ImprovementTypes, ImprovementReasons, ImprovementStates, LogPriorities, LogStatusIndicators, People, $modal, $log, MaturityModels) {
+			 Portfolios, ImprovementActivities, ImprovementTypes, ImprovementReasons, ImprovementStates, LogPriorities, LogStatusIndicators,
+             People, $modal, $log, MaturityModels, ProjectReviewScores) {
 
 		$rootScope.staticMenu = false;
 
 		var vm = this;
 
 		// ------------- INIT -------------
+
+        vm.isResolving = false;
 
 		vm.initError = [];
 
@@ -73,39 +76,47 @@ angular.module('maturity-management').controller('MaturityManagementController',
 				vm.initError.push(err.data.message);
 			});
 
+            ProjectReviewScores.query(function (res) {
+                vm.projectReviewScores = res;
+            }, function (err) {
+                vm.initError.push(err.data.message);
+            });
+
 		};
 
 		// -------------- AUTHORIZATION FOR BUTTONS -----------------
 
-		vm.userHasAuthorization = function(action, userData, improvementActivity){
-			var userIsSuperhero, userIsOwner, userIsPortfolioManager;
+		// vm.userHasAuthorization = function(action, userData, improvementActivity){
+		// 	var userIsSuperhero, userIsOwner, userIsPortfolioManager;
+         //
+		// 	if(action === 'new'){
+         //
+		// 		userIsSuperhero = !!_.some(userData.roles, function(role){
+		// 			return role === 'superAdmin' || role === 'admin' || role === 'pmo';
+		// 		});
+         //
+		// 		return userIsSuperhero;
+		// 	}
+         //
+		// 	if(action === 'edit'){
+         //
+		// 		userIsSuperhero = !!_.some(userData.roles, function(role){
+		// 			return role === 'superAdmin' || role === 'admin' || role === 'pmo';
+		// 		});
+         //
+		// 		if(improvementActivity.assignedTo){
+		// 			userIsOwner = userData._id === improvementActivity.assignedTo.assignedUser;
+		// 		}
+         //
+		// 		if(improvementActivity.portfolio){
+		// 			userIsPortfolioManager = (userData._id === improvementActivity.portfolio.portfolioManager) || (userData._id === improvementActivity.portfolio.backupPortfolioManager);
+		// 		}
+         //
+		// 		return userIsSuperhero || userIsOwner || userIsPortfolioManager;
+		// 	}
+		// };
 
-			if(action === 'new'){
-
-				userIsSuperhero = !!_.some(userData.roles, function(role){
-					return role === 'superAdmin' || role === 'admin' || role === 'pmo';
-				});
-
-				return userIsSuperhero;
-			}
-
-			if(action === 'edit'){
-
-				userIsSuperhero = !!_.some(userData.roles, function(role){
-					return role === 'superAdmin' || role === 'admin' || role === 'pmo';
-				});
-
-				if(improvementActivity.assignedTo){
-					userIsOwner = userData._id === improvementActivity.assignedTo.assignedUser;
-				}
-
-				if(improvementActivity.portfolio){
-					userIsPortfolioManager = (userData._id === improvementActivity.portfolio.portfolioManager) || (userData._id === improvementActivity.portfolio.backupPortfolioManager);
-				}
-
-				return userIsSuperhero || userIsOwner || userIsPortfolioManager;
-			}
-		};
+        vm.userHasAuthorization = true;
 
 		// ------ TREE RECURSIONS -----------
 
@@ -139,6 +150,7 @@ angular.module('maturity-management').controller('MaturityManagementController',
 
 		// ------------------- UTILITIES ---------------------
 
+
 		var allowNull = function (obj) {
 			if (obj) {
 				return obj._id;
@@ -156,14 +168,63 @@ angular.module('maturity-management').controller('MaturityManagementController',
 			{name : 'Not completed', flag : false}
 		];
 
+// ******************************************************* SELECT DIMENSION *******************************************************
 
-// ******************************************************* DIMENSIONS & SCORING *******************************************************
-		
-		
-		
-		
-		
-		
+        vm.dimensionDetails = 'reviews';
+
+        var originalDimension = {};
+
+        vm.selectDimension = function(dimension){
+            originalDimension[dimension._id] = _.cloneDeep(dimension);
+            vm.selectedDimension = dimension;
+        };
+
+
+
+// ******************************************************* MATURITY REVIEWS *******************************************************
+
+        vm.showHistoryComment = {};
+
+        // -- New review --
+        
+
+        vm.showNewMaturityReviewForm = false;
+
+        vm.newMaturityReview = {
+            score : null,
+            comment : null
+        };
+
+        vm.createNewMaturityReview = function (model, dimension) {
+
+            vm.error = null;
+            vm.isResolving = true;
+
+            MaturityModels.updateMaturityReview({
+                maturityModelId: model._id,
+                dimensionId: dimension._id
+            }, vm.newMaturityReview, function(res){
+                vm.isResolving = false;
+                vm.newMaturityReview = {};
+                vm.showNewMaturityReviewForm = false;
+                
+            },function(err){
+                vm.isResolving = false;
+                vm.error = err.data.message;
+            });
+            
+        };
+
+        vm.cancelNewMaturityReview = function () {
+            vm.error = null;
+            vm.newMaturityReview = {};
+            vm.showNewMaturityReviewForm = false;
+        };
+
+
+
+
+
 
 // ******************************************************* IMPROVEMENT ACTIVITY *******************************************************
 
