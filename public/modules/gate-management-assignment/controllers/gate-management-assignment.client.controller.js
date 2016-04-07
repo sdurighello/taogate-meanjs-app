@@ -95,11 +95,18 @@ angular.module('gate-management-assignment').controller('GateManagementAssignmen
 
         // ------------- EDIT PROJECT ------------
 
+        var allowNull = function(obj){
+            if(obj){
+                return obj._id;
+            }
+            return null;
+        };
+
         $scope.saveEditProject = function(project){
             // Save the project to the server
             Projects.updateProcessAssignment(
                 {projectId: project._id},
-                {processId: project.process._id},
+                {processId: allowNull(project.process)},
                 function(res) {
                     $scope.showEditProjectForm[project._id] = false;
                 }, function(err) {

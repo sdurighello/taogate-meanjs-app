@@ -76,7 +76,11 @@ exports.delete = function(req, res) {
  */
 exports.list = function(req, res) {
     var MaturityModel = mongoose.mtModel(req.user.tenantId + '.' + 'MaturityModel');
-    MaturityModel.find(req.query).populate('user', 'displayName').exec(function(err, maturityModels) {
+    MaturityModel.find(req.query)
+        .populate('user', 'displayName')
+        .populate('dimensions.maturityReview.currentRecord.user', 'displayName')
+        .populate('dimensions.maturityReview.history.user', 'displayName')
+        .exec(function(err, maturityModels) {
 		if (err) {
 			return res.status(400).send({
 				message: errorHandler.getErrorMessage(err)
@@ -385,11 +389,19 @@ exports.updateMaturityReview = function(req, res){
     dimension.user = req.user._id;
     dimension.created = Date.now();
 
-    dimension.maturityReview.history.push(dimension.maturityReview.currentRecord);
-    dimension.maturityReview.currentRecord.score = req.body.score;
-    dimension.maturityReview.currentRecord.comment = req.body.comment;
+    if(dimension.maturityReview.currentRecord.score){
+        dimension.maturityReview.history.push({
+            score : dimension.maturityReview.currentRecord.score,
+            comment : dimension.maturityReview.currentRecord.comment,
+            created : dimension.maturityReview.currentRecord.created,
+            user : dimension.maturityReview.currentRecord.user
+        });
+    }
+
+    dimension.maturityReview.currentRecord.score = req.body.maturityReview.currentRecord.score;
+    dimension.maturityReview.currentRecord.comment = req.body.maturityReview.currentRecord.comment;
     dimension.maturityReview.currentRecord.date = Date.now();
-    dimension.maturityReview.currentRecord.user = req.user._id;
+    dimension.maturityReview.currentRecord.user = req.user;
 
     maturityModel.save(function(err) {
         if (err) {
@@ -413,7 +425,11 @@ exports.updateMaturityReview = function(req, res){
  */
 exports.maturityModelByID = function(req, res, next, id) {
     var MaturityModel = mongoose.mtModel(req.user.tenantId + '.' + 'MaturityModel');
-    MaturityModel.findById(id).populate('user', 'displayName').exec(function(err, maturityModel) {
+    MaturityModel.findById(id)
+        .populate('user', 'displayName')
+        .populate('dimensions.maturityReview.currentRecord.user', 'displayName')
+        .populate('dimensions.maturityReview.history.user', 'displayName')
+        .exec(function(err, maturityModel) {
 		if (err) return next(err);
 		if (! maturityModel) return next(new Error('Failed to load Maturity model ' + id));
 		req.maturityModel = maturityModel ;
