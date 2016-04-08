@@ -5,8 +5,8 @@
             <div class="panel-heading">
                 <ol class="breadcrumb">
                     <li>Evaluation</li>
-                    <li>Maturity</li>
-                    <li class="active">Maturity management</li>
+                    <li>Review and Improvement</li>
+                    <li class="active">Maturity review</li>
                 </ol>
             </div>
         </div>
@@ -56,8 +56,11 @@
                                     style="overflow: hidden">
                                 <span>{{dimension.name}}</span>
                             </button>
-                            <div class="alert alert-warning text-center" data-ng-hide="parentCtrl.selectedMaturityModel.dimensions.length">
-                                No dimensions yet
+                            <div class="alert alert-warning text-center" data-ng-show="!parentCtrl.selectedMaturityModel">
+                                <span>Select a maturity model to see its dimensions</span>
+                            </div>
+                            <div class="alert alert-warning text-center" data-ng-show="parentCtrl.selectedMaturityModel && !parentCtrl.selectedMaturityModel.dimensions.length">
+                                <span>No dimensions for this maturity model</span>
                             </div>
                         </div>
                     </div>
@@ -78,9 +81,7 @@
                     <div class="row">
                         <div class="col-xs-12">
                             <div class="panel panel-default">
-                                <div class="panel-heading text-center">
-                                    <span>Current record</span>
-                                </div>
+
                                 <div class="panel-body">
                                     <form class="form" novalidate>
                                         <div class="row">

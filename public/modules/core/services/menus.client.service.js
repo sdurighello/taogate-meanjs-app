@@ -176,7 +176,7 @@ angular.module('core').service('Menus', [
                 // Strategy nodes
         this.addSubMenuItem('topbar', 'setup', 'Strategy nodes', 'strategy-node-setup','strategy-node-setup',false,
             ['superAdmin','admin','pmo','projectManager','portfolioManager','executive'],1);
-				// Portfolios
+        		// Portfolios
 		this.addSubMenuItem('topbar', 'setup', 'Portfolios', 'portfolio-setup','portfolio-setup',false,
 			['superAdmin','admin','pmo','projectManager','portfolioManager','executive'],2);
 				// Priorities
@@ -203,63 +203,51 @@ angular.module('core').service('Menus', [
 				// Dependencies
 		this.addSubMenuItem('topbar', 'setup', 'Dependencies', 'dependency-setup','dependency-setup',false,
 			['superAdmin','admin','pmo','projectManager','portfolioManager','executive'],10);
-
-            // Stakeholders management
-        this.addSubMenuItem('topbar', 'setup', '', 'divider','divider',false,
-            ['superAdmin','admin','pmo','projectManager','portfolioManager','executive'],11);
-        this.addSubMenuItem('topbar', 'setup', 'Stakeholders management', 'menuTitle','menuTitle',false,
-            ['superAdmin','admin','pmo','projectManager','portfolioManager','executive'],12);
                 // Stakeholders
         this.addSubMenuItem('topbar', 'setup', 'Stakeholders', 'people-setup','people-setup',false,
-            ['superAdmin','admin','pmo','projectManager','portfolioManager','executive'],13);
+            ['superAdmin','admin','pmo','projectManager','portfolioManager','executive'],11);
 
-            // Review
+            // Review and Improvement
         this.addSubMenuItem('topbar', 'setup', '', 'divider','divider',false,
-            ['superAdmin','admin','pmo','projectManager','portfolioManager','executive'],14);
-        this.addSubMenuItem('topbar', 'setup', 'Review', 'menuTitle','menuTitle',false,
-            ['superAdmin','admin','pmo','projectManager','portfolioManager','executive'],15);
+            ['superAdmin','admin','pmo','projectManager','portfolioManager','executive'],12);
+        this.addSubMenuItem('topbar', 'setup', 'Review and Improvement', 'menuTitle','menuTitle',false,
+            ['superAdmin','admin','pmo','projectManager','portfolioManager','executive'],13);
                 // Review setup
         this.addSubMenuItem('topbar', 'setup', 'Review setup', 'project-review-setup','project-review-setup',false,
-            ['superAdmin','admin','pmo','projectManager','portfolioManager','executive'],16);
+            ['superAdmin','admin','pmo','projectManager','portfolioManager','executive'],14);
                 // Project Review
         this.addSubMenuItem('topbar', 'setup', 'Project review', 'project-review-templates','project-review-templates',false,
-            ['superAdmin','admin','pmo','projectManager','portfolioManager','executive'],17);
+            ['superAdmin','admin','pmo','projectManager','portfolioManager','executive'],15);
                 // Portfolio Review
         this.addSubMenuItem('topbar', 'setup', 'Portfolio review', 'portfolio-review-templates','portfolio-review-templates',false,
-            ['superAdmin','admin','pmo','projectManager','portfolioManager','executive'],18);
-
-            // Improvement
-        this.addSubMenuItem('topbar', 'setup', '', 'divider','divider',false,
-            ['superAdmin','admin','pmo','projectManager','portfolioManager','executive'],19);
-        this.addSubMenuItem('topbar', 'setup', 'Improvement', 'menuTitle','menuTitle',false,
-            ['superAdmin','admin','pmo','projectManager','portfolioManager','executive'],20);
+            ['superAdmin','admin','pmo','projectManager','portfolioManager','executive'],16);
                 // Maturity model
         this.addSubMenuItem('topbar', 'setup', 'Maturity model', 'maturity-setup','maturity-setup',false,
-            ['superAdmin','admin','pmo','projectManager','portfolioManager','executive'],21);
+            ['superAdmin','admin','pmo','projectManager','portfolioManager','executive'],17);
                 // Improvement activities
         this.addSubMenuItem('topbar', 'setup', 'Improvement activity', 'improvement-setup','improvement-setup',false,
-            ['superAdmin','admin','pmo','projectManager','portfolioManager','executive'],22);
+            ['superAdmin','admin','pmo','projectManager','portfolioManager','executive'],18);
 
             // Portfolio Delivery
         this.addSubMenuItem('topbar', 'setup', '', 'divider','divider',false,
-            ['superAdmin','admin','pmo','projectManager','portfolioManager','executive'],23);
+            ['superAdmin','admin','pmo','projectManager','portfolioManager','executive'],19);
         this.addSubMenuItem('topbar', 'setup', 'Portfolio delivery', 'menuTitle','menuTitle',false,
-            ['superAdmin','admin','pmo','projectManager','portfolioManager','executive'],24);
+            ['superAdmin','admin','pmo','projectManager','portfolioManager','executive'],20);
                 // Gate Process
         this.addSubMenuItem('topbar', 'setup', 'Gate process', 'gate-management-setup','gate-management-setup',false,
-            ['superAdmin','admin','pmo','projectManager','portfolioManager','executive'],25);
+            ['superAdmin','admin','pmo','projectManager','portfolioManager','executive'],21);
                 // Gate Review
         this.addSubMenuItem('topbar', 'setup', 'Gate review', 'gate-review-setup','gate-review-setup',false,
-            ['superAdmin','admin','pmo','projectManager','portfolioManager','executive'],26);
+            ['superAdmin','admin','pmo','projectManager','portfolioManager','executive'],22);
                 // Issues & Changes
         this.addSubMenuItem('topbar', 'setup', 'Issues & Changes', 'log-delivery-setup','log-delivery-setup',false,
-            ['superAdmin','admin','pmo','projectManager','portfolioManager','executive'],27);
+            ['superAdmin','admin','pmo','projectManager','portfolioManager','executive'],23);
                 // Milestone log
         this.addSubMenuItem('topbar', 'setup', 'Milestones', 'log-milestone-setup','log-milestone-setup',false,
-            ['superAdmin','admin','pmo','projectManager','portfolioManager','executive'],28);
+            ['superAdmin','admin','pmo','projectManager','portfolioManager','executive'],24);
 			    // Status Report
 		this.addSubMenuItem('topbar', 'setup', 'Status report', 'status-report-setup','status-report-setup',false,
-			['superAdmin','admin','pmo','projectManager','portfolioManager','executive'],29);
+			['superAdmin','admin','pmo','projectManager','portfolioManager','executive'],25);
 
 
         // DEFINITION
@@ -342,7 +330,7 @@ angular.module('core').service('Menus', [
                 // Portfolio Stakeholders analysis
         this.addSubMenuItem('topbar', 'evaluation', 'Portfolio stakeholders analysis', 'people-portfolio-analysis','people-portfolio-analysis',false,
             ['superAdmin','admin','pmo','projectManager','portfolioManager','executive'],8);
-            // Review
+            // Review and Improvement
         this.addSubMenuItem('topbar', 'evaluation', '', 'divider','divider',false,
             ['superAdmin','admin','pmo','projectManager','portfolioManager','executive'],9);
         this.addSubMenuItem('topbar', 'evaluation', 'Review and Improvement', 'menuTitle','menuTitle',false,
@@ -354,7 +342,7 @@ angular.module('core').service('Menus', [
         this.addSubMenuItem('topbar', 'evaluation', 'Portfolio reviews', 'portfolio-reviews','portfolio-reviews',false,
             ['superAdmin','admin','pmo','projectManager','portfolioManager','executive'],12);
                 // Maturity Reviews
-        this.addSubMenuItem('topbar', 'evaluation', 'Maturity evaluation', 'maturity-management','maturity-management',false,
+        this.addSubMenuItem('topbar', 'evaluation', 'Maturity reviews', 'maturity-management','maturity-management',false,
             ['superAdmin','admin','pmo','projectManager','portfolioManager','executive'],13);
                 // Reviews summary
         this.addSubMenuItem('topbar', 'evaluation', 'Reviews summary', 'review-summaries','review-summaries',false,

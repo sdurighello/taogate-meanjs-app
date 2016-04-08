@@ -70,7 +70,6 @@ angular.module('maturity-management').controller('MaturityManagementController',
                 maturityModelId: model._id,
                 dimensionId: dimension._id
             }, dimension, function(res){
-                console.log(res);
                 vm.isResolving = false;
                 dimension.maturityReview = res.maturityReview;
                 originalDimension[dimension._id].maturityReview = res.maturityReview;
@@ -86,8 +85,19 @@ angular.module('maturity-management').controller('MaturityManagementController',
             dimension.maturityReview = originalDimension[dimension._id].maturityReview;
             vm.dimensionEdit[dimension._id] = false;
         };
-        
 
+
+        $scope.$watch(function(){return vm.selectedMaturityModel;}, function(newValue, oldValue){
+            if(newValue !== oldValue){
+                // At every maturity model change flush selected dimensions data
+                if(vm.selectedDimension){
+                    vm.cancelEditDimension(vm.selectedDimension);
+                    vm.selectedDimension = null;
+                }
+                // Flush the filters from previous model selection
+                vm.dimensionFilter = {};
+            }
+        });
 
 
 

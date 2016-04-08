@@ -1,4 +1,4 @@
-<section data-ng-controller="MytaoController">
+<section data-ng-controller="MytaoController as parentCtrl">
 
     <!-- BREADCRUMB -->
     <br>
@@ -6,185 +6,198 @@
         <div class="col-sm-12">
             <div class="panel-heading">
                 <ol class="breadcrumb">
-                    <li class="active">My taoApp</li>
+                    <li class="active">My taoPortfolio</li>
                 </ol>
             </div>
         </div>
     </div>
 
-    <canvas id="line" class="chart chart-line" chart-data="data" chart-labels="labels"
-            chart-legend="true" chart-series="series" chart-click="onClick"></canvas>
-
-
     <div class="row">
-			<div class="col-md-6">
-				<div class="panel panel-default">
-					<div class="panel-heading">
-						<h6 class="panel-title text-center">My Account</h6>
-					</div>
-					<div class="panel-body" style="overflow-y: auto; max-height: 250px; min-height: 250px">
-						<div class="row">
-							<div class="col-md-4">
-								<p class="thumbnail">
-									<img src="http://placehold.it/250x250">
-								</p>
-							</div>
-							<div class="col-md-8">
-								<table>
-									<tr>
-										<th>First name: &nbsp </th>
-										<td>{{currentUser.userData.firstName}}</td>
-									</tr>
-									<tr>
-										<th>Last name: &nbsp </th>
-										<td>{{currentUser.userData.lastName}}</td>
-									</tr>
-									<tr>
-										<th>Job title: &nbsp </th>
-										<td>{{currentUser.userData.jobTitle}}</td>
-									</tr>
-									<tr>
-										<th>Email: &nbsp </th>
-										<td>{{currentUser.userData.email}}</td>
-									</tr>
-								</table>
-							</div>
-						</div>
-						<div class="row">
-							<div class="col-md-12 form-group-sm">
-								<label>Server token</label>
-								<p>{{currentUser.token}}</p>
-							</div>
-						</div>
-					</div>
-				</div>
-			</div>
-			<div class="col-md-6">
-				<div class="panel panel-default">
-					<div class="panel-heading">
-						<h6 class="panel-title text-center">Portfolio Definition</h6>
-					</div>
-					<div class="panel-body" style="overflow-y: auto; max-height: 250px; min-height: 250px">
-						<div class="row">
-							<div class="col-md-12">
-								<table class="table table-responsive small">
-									<caption>Top 3 portfolios</caption>
-									<tr>
-										<th>Portfolio</th>
-										<th>Total project funds</th>
-										<th>Portfolio funds</th>
-										<th>Funds difference</th>
-									</tr>
-									<tr>
-										<td>{{topDefinitionPortfolios[0].nodeName}}</td>
-										<td>{{topDefinitionPortfolios[0].totalProjectEarmarkedFunds | currency:currentUser.userData.currency+"&nbsp":0}}</td>
-										<td>{{topDefinitionPortfolios[0].portfolioFunds | currency:currentUser.userData.currency+"&nbsp":0}}</td>
-										<td>{{topDefinitionPortfolios[0].fundsDifference | currency:currentUser.userData.currency+"&nbsp":0}}</td>
-									</tr>
-									<tr>
-										<td>{{topDefinitionPortfolios[1].nodeName}}</td>
-										<td>{{topDefinitionPortfolios[1].totalProjectEarmarkedFunds | currency:currentUser.userData.currency+"&nbsp":0}}</td>
-										<td>{{topDefinitionPortfolios[1].portfolioFunds | currency:currentUser.userData.currency+"&nbsp":0}}</td>
-										<td>{{topDefinitionPortfolios[1].fundsDifference | currency:currentUser.userData.currency+"&nbsp":0}}</td>
-									</tr>
-									<tr>
-										<td>{{topDefinitionPortfolios[2].nodeName}}</td>
-										<td>{{topDefinitionPortfolios[2].totalProjectEarmarkedFunds | currency:currentUser.userData.currency+"&nbsp":0}}</td>
-										<td>{{topDefinitionPortfolios[2].portfolioFunds | currency:currentUser.userData.currency+"&nbsp":0}}</td>
-										<td>{{topDefinitionPortfolios[2].fundsDifference | currency:currentUser.userData.currency+"&nbsp":0}}</td>
-									</tr>
-								</table>
-							</div>
-						</div>
-					</div>
-				</div>
-			</div>
-		</div>
-	<div class="row">
-			<div class="col-md-6">
-				<div class="panel panel-default">
-					<div class="panel-heading">
-						<h6 class="panel-title text-center">Portfolio Evaluation</h6>
-					</div>
-					<div class="panel-body" style="overflow-y: auto; max-height: 250px; min-height: 250px">
-						<div class="row">
-							<div class="col-md-12">
-								<table class="table table-responsive small">
-									<caption>Top 3 largest projects - business case</caption>
-									<tr>
-										<th>Project</th>
-										<th>Costs</th>
-										<th>Benefits</th>
-										<th>NPV</th>
-										<th>Benefit/Cost Ratio</th>
-									</tr>
-									<tr>
-										<td>{{topEvaluationProjects[0].identificationData.projectName}}</td>
-										<td>{{topEvaluationProjects[0].totalCosts | currency:currentUser.userData.currency+"&nbsp":0}}</td>
-										<td>{{topEvaluationProjects[0].totalBenefits | currency:currentUser.userData.currency+"&nbsp":0}}</td>
-										<td>{{topEvaluationProjects[0].NPV}}</td>
-										<td>{{topEvaluationProjects[0].BCR}}</td>
-									</tr>
-									<tr>
-										<td>{{topEvaluationProjects[1].identificationData.projectName}}</td>
-										<td>{{topEvaluationProjects[1].totalCosts | currency:currentUser.userData.currency+"&nbsp":0}}</td>
-										<td>{{topEvaluationProjects[1].totalBenefits | currency:currentUser.userData.currency+"&nbsp":0}}</td>
-										<td>{{topEvaluationProjects[1].NPV}}</td>
-										<td>{{topEvaluationProjects[1].BCR}}</td>
-									</tr>
-									<tr>
-										<td>{{topEvaluationProjects[2].identificationData.projectName}}</td>
-										<td>{{topEvaluationProjects[2].totalCosts | currency:currentUser.userData.currency+"&nbsp":0}}</td>
-										<td>{{topEvaluationProjects[2].totalBenefits | currency:currentUser.userData.currency+"&nbsp":0}}</td>
-										<td>{{topEvaluationProjects[2].NPV}}</td>
-										<td>{{topEvaluationProjects[2].BCR}}</td>
-									</tr>
-								</table>
-							</div>
-						</div>
-					</div>
-				</div>
-			</div>
-			<div class="col-md-6">
-				<div class="panel panel-default">
-					<div class="panel-heading">
-						<h6 class="panel-title text-center">Portfolio Delivery</h6>
-					</div>
-					<div class="panel-body" style="overflow-y: auto; max-height: 250px; min-height: 250px">
-						<div class="row">
-							<div class="col-md-12">
-								<table class="table table-responsive small">
-									<caption>Top 3 largest projects - delivery status</caption>
-									<tr>
-										<th> </th>
-										<td><i>{{topEvaluationProjects[0].identificationData.projectName}}</i></td>
-										<td><i>{{topEvaluationProjects[1].identificationData.projectName}}</i></td>
-										<td><i>{{topEvaluationProjects[2].identificationData.projectName}}</i></td>
-									</tr>
-									<tr>
-										<td>Gate:&nbsp</td>
-										<td>{{createDeliveryDataForProject(topEvaluationProjects[0]).currentGate.gateName}}</td>
-										<td>{{createDeliveryDataForProject(topEvaluationProjects[1]).currentGate.gateName}}</td>
-										<td>{{createDeliveryDataForProject(topEvaluationProjects[2]).currentGate.gateName}}</td>
-									</tr>
-									<tr>
-										<td>End date:&nbsp</td>
-										<td>{{displayDate(createDeliveryDataForProject(topEvaluationProjects[0]).estimatedEndDate)}}</td>
-										<td>{{displayDate(createDeliveryDataForProject(topEvaluationProjects[1]).estimatedEndDate)}}</td>
-										<td>{{displayDate(createDeliveryDataForProject(topEvaluationProjects[2]).estimatedEndDate)}}</td>
-									</tr>
-									<tr>
-										<td>Status:&nbsp</td>
-										<td>{{createDeliveryDataForProject(topEvaluationProjects[0]).currentStatus.overallIndicator.indicatorName}}</td>
-										<td>{{createDeliveryDataForProject(topEvaluationProjects[1]).currentStatus.overallIndicator.indicatorName}}</td>
-										<td>{{createDeliveryDataForProject(topEvaluationProjects[2]).currentStatus.overallIndicator.indicatorName}}</td>
-									</tr>
-								</table>
-							</div>
-						</div>
-					</div>
-				</div>
-			</div>
-		</div>
+        <div class="col-xs-12">
+            <tabset>
+                <tab heading="My work">
+                    <br>
+                    <div class="row">
+                        <div class="col-xs-4">
+                            <div class="panel panel-default">
+                                <div class="panel-heading">
+                                    <h6 class="panel-title text-center">User data</h6>
+                                </div>
+                                <div class="panel-body" style="min-height: 200px; max-height: 200px; overflow-y: auto;">
+                                    <div class="row">
+                                        <div class="col-xs-2">
+                                            <i class="fa fa-user  fa-2x"></i>
+                                        </div>
+                                        <div class="col-xs-10">
+                                            <div class="form-group">
+                                                <label>Name:</label>&nbsp;
+                                                <a href="/#!/settings/profile">{{parentCtrl.userData.displayName}}</a>
+                                            </div>
+                                            <div class="form-group">
+                                                <label>Username:</label>&nbsp;
+                                                <span>{{parentCtrl.userData.username}}</span>
+                                            </div>
+                                            <div class="form-group">
+                                                <label>Email:</label>&nbsp;
+                                                <span>{{parentCtrl.userData.email}}</span>
+                                            </div>
+                                            <div class="form-group">
+                                                <label>Roles:</label>&nbsp;
+                                                <span data-ng-repeat="role in parentCtrl.userData.roles">
+                                                    <span data-ng-show="role === 'superAdmin'">| Super administrator | </span>
+                                                    <span data-ng-show="role === 'admin'">| Administrator | </span>
+                                                    <span data-ng-show="role === 'pmo'">| PMO | </span>
+                                                    <span data-ng-show="role === 'projectManager'">| Project Manager | </span>
+                                                    <span data-ng-show="role === 'portfolioManager'">| Portfolio Manager | </span>
+                                                    <span data-ng-show="role === 'executive'">| Executive | </span>
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xs-4">
+                            <div class="panel panel-default">
+                                <div class="panel-heading">
+                                    <h6 class="panel-title text-center">My portfolios</h6>
+                                </div>
+                                <div class="panel-body" style="min-height: 200px; max-height: 200px; overflow-y: auto;">
+                                    <div class="row" data-ng-show="!parentCtrl.userPortfolios.length && parentCtrl.userPortfolios.$resolved">
+                                        <div class="col-xs-12">
+                                            <div class="alert alert-warning text-center">
+                                                <span>You have no portfolios to manage</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-xs-12">
+                                            <div class="progress" data-ng-show="!parentCtrl.userPortfolios.$resolved">
+                                                <div class="progress-bar progress-bar-striped active" role="progressbar" style="width: 100%"></div>
+                                            </div>
+                                            <table class="table" data-ng-show="parentCtrl.userPortfolios.length">
+                                                <thead>
+                                                <tr>
+                                                    <th>Portfolio</th>
+                                                    <th>Funds</th>
+                                                </tr>
+                                                </thead>
+                                                <tbody>
+                                                <tr data-ng-repeat="portfolio in parentCtrl.userPortfolios">
+                                                    <td><a href="/#!/portfolio-assignment">{{portfolio.name}}</a></td>
+                                                    <td>{{portfolio.funds | number:0}}</td>
+                                                </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xs-4">
+                            <div class="panel panel-default">
+                                <div class="panel-heading">
+                                    <h6 class="panel-title text-center">My projects</h6>
+                                </div>
+                                <div class="panel-body" style="min-height: 200px; max-height: 200px; overflow-y: auto;">
+                                    <div class="row" data-ng-show="!parentCtrl.userProjects.length && parentCtrl.userProjects.$resolved">
+                                        <div class="col-xs-12">
+                                            <div class="alert alert-warning text-center">
+                                                <span>You have no projects to manage</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-xs-12">
+                                            <div class="progress" data-ng-show="!parentCtrl.userProjects.$resolved">
+                                                <div class="progress-bar progress-bar-striped active" role="progressbar" style="width: 100%"></div>
+                                            </div>
+                                            <table class="table table-responsive small" data-ng-show="parentCtrl.userProjects.length">
+                                                <thead>
+                                                <tr>
+                                                    <th>Project</th>
+                                                    <th>Funds</th>
+                                                    <th>Start</th>
+                                                    <th>End</th>
+                                                </tr>
+                                                </thead>
+                                                <tbody>
+                                                <tr data-ng-repeat="project in parentCtrl.userProjects">
+                                                    <td><a href="/#!/project-identification">{{project.identification.name}}</a></td>
+                                                    <td>{{project.identification.earmarkedFunds | number:0}}</td>
+                                                    <td>{{project.identification.reqStartDate | date:'dd/MMM/yyyy'}}</td>
+                                                    <td>{{project.identification.reqEndDate | date:'dd/MMM/yyyy'}}</td>
+                                                </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-xs-4">
+                            <div class="panel panel-default">
+                                <div class="panel-heading">
+                                    <h6 class="panel-title text-center">My project reviews</h6>
+                                </div>
+                                <div class="panel-body" style="min-height: 200px">
+
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xs-4">
+                            <div class="panel panel-default">
+                                <div class="panel-heading">
+                                    <h6 class="panel-title text-center">My portfolio reviews</h6>
+                                </div>
+                                <div class="panel-body" style="min-height: 200px">
+
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xs-4">
+                            <div class="panel panel-default">
+                                <div class="panel-heading">
+                                    <h6 class="panel-title text-center">My improvement activities</h6>
+                                </div>
+                                <div class="panel-body" style="min-height: 200px">
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </tab>
+                <tab heading="Portfolios">
+                    <br>
+
+                    <canvas id="line"
+                            class="chart chart-line"
+                            chart-data="parentCtrl.data"
+                            chart-labels="parentCtrl.labels"
+                            chart-legend="true"
+                            chart-series="parentCtrl.series"
+                            chart-click="parentCtrl.onClick">
+                    </canvas>
+
+
+                </tab>
+                <tab heading="Projects">
+                    <br>
+
+                    <canvas id="line"
+                            class="chart chart-bar"
+                            chart-data="parentCtrl.data"
+                            chart-labels="parentCtrl.labels"
+                            chart-legend="parentCtrl.true"
+                            chart-series="parentCtrl.series"
+                            chart-click="parentCtrl.onClick">
+                    </canvas>
+
+                </tab>
+            </tabset>
+        </div>
+    </div>
 
 </section>
