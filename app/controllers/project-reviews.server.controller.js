@@ -340,6 +340,69 @@ exports.complete = function(req, res){
  * Project review authorization middleware
  */
 
+exports.hasCreateAuthorization = function(req, res, next) {
+    var Portfolio = mongoose.mtModel(req.user.tenantId + '.' + 'Portfolio');
+    var Project = mongoose.mtModel(req.user.tenantId + '.' + 'Project');
+
+    var authArray = [];
+
+    async.waterfall([
+        // Set flag if "project manager" or "backup project manager" of this project
+        function(callback) {
+            Project.findById(req.body.project).exec(function(err, project){
+                if(err){
+                    callback(err);
+                } else {
+                    authArray.push(!!project.identification.projectManager && project.identification.projectManager.equals(req.user._id));
+                    authArray.push(!!project.identification.backupProjectManager && project.identification.backupProjectManager.equals(req.user._id));
+                    callback(null, project);
+                }
+            });
+        },
+        function(project, callback) {
+            // Set flag if "portfolio manager" or "backup portfolio manager" of the project's portfolio
+            if(project.portfolio){
+                Portfolio.findById(project.portfolio).exec(function(err, portfolio) {
+                    if(err){
+                        return callback(err);
+                    }
+                    authArray.push(!!portfolio.portfolioManager && portfolio.portfolioManager.equals(req.user._id));
+                    authArray.push(!!portfolio.backupPortfolioManager && portfolio.backupPortfolioManager.equals(req.user._id));
+                    callback(null);
+                });
+            } else {
+                callback(null);
+            }
+        },
+        // Set flag if user role is "super-hero"
+        function(callback) {
+            authArray.push(!!_.find(req.user.roles, function(role){
+                return (role === 'superAdmin' || role === 'admin' || role === 'pmo');
+            }));
+            callback(null);
+        }
+    ], function (err) {
+        if(err){
+            return res.status(400).send({
+                message: errorHandler.getErrorMessage(err)
+            });
+        }
+        if(
+            !_.some(authArray, function(elem){
+                return elem === true;
+            })
+        ){
+            return res.status(403).send({
+                message: 'User is not authorized'
+            });
+        }
+
+        next();
+
+    });
+};
+
+
 exports.hasManagementAuthorization = function(req, res, next) {
     var Portfolio = mongoose.mtModel(req.user.tenantId + '.' + 'Portfolio');
     var Project = mongoose.mtModel(req.user.tenantId + '.' + 'Project');

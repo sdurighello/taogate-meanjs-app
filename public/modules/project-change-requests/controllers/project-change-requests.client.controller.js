@@ -20,6 +20,15 @@ angular.module('project-change-requests').controller('ProjectChangeRequestContro
 
 			Projects.query({'selection.active': true, 'selection.selectedForDelivery': true}, function(projects){
 				$scope.projects = _.filter(projects, function(project){return project.process !== null;});
+                // Form myTao
+                if($stateParams.projectId){
+                    var foundProject = _.find($scope.projects, _.matchesProperty('_id', $stateParams.projectId));
+                    if(foundProject){
+                        $scope.selectProject(foundProject);
+                    } else {
+                        $scope.error = 'Cannot find project ' + $stateParams.projectId;
+                    }
+                }
 			}, function(err){
 				$scope.initError.push(err.data.message);
 			});
@@ -223,13 +232,29 @@ angular.module('project-change-requests').controller('ProjectChangeRequestContro
 			}, function (res) {
                 $scope.isResolving = false;
 				$scope.projectChangeRequestList = res;
+                // myTao
+                if($stateParams.gateId && $scope.projectChangeRequestList){
+                    var foundReviewObject = _.find($scope.projectChangeRequestList, _.matchesProperty('gate._id', $stateParams.gateId));
+                    if(foundReviewObject){
+                        $scope.setReviewObject(foundReviewObject);
+                        if($stateParams.projectChangeRequestId && foundReviewObject.projectChangeRequests){
+                            var foundCR = _.find(foundReviewObject.projectChangeRequests, _.matchesProperty('_id', $stateParams.projectChangeRequestId));
+                            if(foundCR){
+                                $scope.selectProjectChangeRequest(foundCR);
+                            } else {
+                                $scope.error = 'Cannot find change request ' + $stateParams.projectChangeRequestId;
+                            }
+                        }
+                    } else {
+                        $scope.error = 'Cannot find gate ' + $stateParams.gateId;
+                    }
+                }
 			}, function (err) {
                 $scope.isResolving = false;
 				$scope.error = err.data.message;
 			});
 
 		};
-
 
 
 		// ------------- NEW PROJECT CHANGE REQUEST ------------

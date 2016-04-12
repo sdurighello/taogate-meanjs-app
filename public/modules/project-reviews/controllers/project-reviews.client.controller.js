@@ -13,7 +13,6 @@ angular.module('project-reviews').controller('ProjectReviewsController', ['$root
 		// ------------- INIT -------------
 
 		$scope.initError = [];
-        $scope.error = {};
 
 		$scope.init = function(){
 
@@ -21,6 +20,16 @@ angular.module('project-reviews').controller('ProjectReviewsController', ['$root
 
 			Projects.query({'selection.active': true, 'selection.selectedForEvaluation': true}, function(res){
 				$scope.projects = res;
+                // From myTao page
+                if($stateParams.projectId){
+                    var foundProject = _.find(res, _.matchesProperty('_id', $stateParams.projectId));
+                    if(foundProject){
+                        $scope.selectProject(foundProject);
+                    } else {
+                        $scope.error = 'Cannot find project' + $stateParams.projectId;
+                        $stateParams.projectReviewId = null;
+                    }
+                }
 			}, function(err){
 				$scope.initError.push({message: err.data.message});
 			});
@@ -155,7 +164,7 @@ angular.module('project-reviews').controller('ProjectReviewsController', ['$root
 		var originalProjectReview = {};
 
 		$scope.selectProject = function(project) {
-            $scope.error.projectReviews = null;
+            $scope.error = null;
 			$scope.selectedProject = null;
 			$scope.projectReviews = null;
 
@@ -168,13 +177,22 @@ angular.module('project-reviews').controller('ProjectReviewsController', ['$root
 				project: project._id
 			}, function (res) {
 				$scope.projectReviews = res;
+                // From myTao page, triggered from Projects.query in init()
+                if($stateParams.projectReviewId){
+                    var foundProjectReview = _.find($scope.projectReviews, _.matchesProperty('_id', $stateParams.projectReviewId));
+                    if(foundProjectReview){
+                        $scope.selectProjectReview(foundProjectReview);
+                    } else {
+                        $scope.error = 'Cannot find project review' + $stateParams.projectReviewId;
+                    }
+                }
 			}, function (err) {
-				$scope.error.projectReviews = err.data.message;
+				$scope.error = err.data.message;
 			});
 		};
 
 		$scope.cancelViewProject = function(){
-			$scope.error.projectReviews = null;
+			$scope.error = null;
 			$scope.selectedProject = null;
 			$scope.projectReviews = null;
 
@@ -205,7 +223,7 @@ angular.module('project-reviews').controller('ProjectReviewsController', ['$root
         };
 
 		$scope.createNewProjectReview = function(project){
-            $scope.error.newReview = null;
+            $scope.error = null;
 			var newProjectReview = new ProjectReviews({
 				project: project._id,
                 name : $scope.newProjectReview.name,
@@ -223,12 +241,12 @@ angular.module('project-reviews').controller('ProjectReviewsController', ['$root
 				$scope.selectProjectReview(res);
 				// Close new review form done directly in the view's html
 			}, function(err) {
-				$scope.error.newReview = err.data.message;
+				$scope.error = err.data.message;
 			});
 		};
 
 		$scope.cancelNewProjectReview = function(){
-            $scope.error.newReview = null;
+            $scope.error = null;
 			$scope.newProjectReview = {};
 		};
 
@@ -237,7 +255,7 @@ angular.module('project-reviews').controller('ProjectReviewsController', ['$root
 
 
 		$scope.selectProjectReview = function(projectReview){
-            $scope.error.editReview = null;
+            $scope.error = null;
             $scope.selectedProjectReview = projectReview;
             originalProjectReview[projectReview._id] = _.cloneDeep(projectReview);
 		};
@@ -278,13 +296,13 @@ angular.module('project-reviews').controller('ProjectReviewsController', ['$root
 					$scope.selectHeaderForm('view', projectReview);
 				},
 				function(err){
-                    $scope.error.editReview = err.data.message;
+                    $scope.error = err.data.message;
                 }
 			);
 		};
 
 		$scope.cancelEditHeader = function(projectReview){
-            $scope.error.editReview = null;
+            $scope.error = null;
 			projectReview.name = originalProjectReview[projectReview._id].name;
             projectReview.startDate = originalProjectReview[projectReview._id].startDate;
             projectReview.endDate = originalProjectReview[projectReview._id].endDate;
@@ -315,7 +333,7 @@ angular.module('project-reviews').controller('ProjectReviewsController', ['$root
         var originalPeopleReview = {};
 
         $scope.editPeopleReview = function(peopleReview){
-            $scope.error.editPeopleReview = null;
+            $scope.error = null;
             $scope.selectPeopleReviewForm('edit', peopleReview);
             originalPeopleReview[peopleReview._id] = _.cloneDeep(peopleReview);
         };
@@ -338,7 +356,7 @@ angular.module('project-reviews').controller('ProjectReviewsController', ['$root
                     $scope.selectPeopleReviewForm('view', peopleReview);
                 },
                 function(err){
-                    $scope.error.editPeopleReview = err.data.message;
+                    $scope.error = err.data.message;
                 }
             );
         };
@@ -346,12 +364,12 @@ angular.module('project-reviews').controller('ProjectReviewsController', ['$root
         $scope.cancelEditPeopleReview = function(peopleReview){
             peopleReview.score = originalPeopleReview[peopleReview._id].score;
             peopleReview.comment = originalPeopleReview[peopleReview._id].comment;
-            $scope.error.editPeopleReview = null;
+            $scope.error = null;
             $scope.selectPeopleReviewForm('view', peopleReview);
         };
 
         $scope.submitPeopleReview = function(projectReview, reviewGroup, reviewItem, peopleReview){
-            $scope.error.editPeopleReview = null;
+            $scope.error = null;
             // Clean-up deepPopulate
             var copyPeopleReview = _.cloneDeep(peopleReview);
             copyPeopleReview.person = copyPeopleReview.person._id;
@@ -369,7 +387,7 @@ angular.module('project-reviews').controller('ProjectReviewsController', ['$root
                     $scope.selectPeopleReviewForm('view', peopleReview);
                 },
                 function(err){
-                    $scope.error.editPeopleReview = err.data.message;
+                    $scope.error = err.data.message;
                 }
             );
         };
@@ -381,7 +399,7 @@ angular.module('project-reviews').controller('ProjectReviewsController', ['$root
 
 
 		$scope.submit = function(projectReview){
-            $scope.error.approval = null;
+            $scope.error = null;
 			ProjectReviews.submit(
 				{
 					projectReviewId : projectReview._id
@@ -389,12 +407,12 @@ angular.module('project-reviews').controller('ProjectReviewsController', ['$root
 				function(res){
                     projectReview.approval = res.approval;
 				},
-				function(err){$scope.error.approval = err.data.message;}
+				function(err){$scope.error = err.data.message;}
 			);
 		};
 
 		$scope.complete = function(projectReview){
-            $scope.error.approval = null;
+            $scope.error = null;
             ProjectReviews.complete(
                 {
                     projectReviewId : projectReview._id
@@ -402,12 +420,12 @@ angular.module('project-reviews').controller('ProjectReviewsController', ['$root
                 function(res){
                     projectReview.approval = res.approval;
                 },
-                function(err){$scope.error.approval = err.data.message;}
+                function(err){$scope.error = err.data.message;}
             );
 		};
 
 		$scope.draft = function(projectReview){
-            $scope.error.approval = null;
+            $scope.error = null;
             ProjectReviews.draft(
                 {
                     projectReviewId : projectReview._id
@@ -415,7 +433,7 @@ angular.module('project-reviews').controller('ProjectReviewsController', ['$root
                 function(res){
                     projectReview.approval = res.approval;
                 },
-                function(err){$scope.error.approval = err.data.message;}
+                function(err){$scope.error = err.data.message;}
             );
 		};
 

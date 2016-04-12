@@ -1,13 +1,10 @@
-<section data-ng-controller="ImprovementActivitiesController as parentCtrl" data-ng-init="parentCtrl.init()">
+<section data-ng-controller="ImprovementActivitiesController as parentCtrl">
     <div class="panel panel-default">
         <div class="panel-heading">
             <h6 class="panel-title text-center"
                 style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: normal; width: 100%;">
                 #{{selectedImprovementActivity.idNumber}} - {{selectedImprovementActivity.title}}
             </h6>
-        </div>
-        <div data-ng-show="parentCtrl.error" class="text-danger">
-            <strong data-ng-bind="parentCtrl.error"></strong>
         </div>
         <div class="row">
             <div class="col-md-12 btn-group btn-group-xs btn-group-justified">
@@ -39,19 +36,19 @@
                             <div class="form-group-sm col-md-4">
                                 <label for="">Type</label>
                                 <select id="" class="form-control" data-ng-model = "selectedImprovementActivity.type"
-                                        ng-options="type as type.name for type in parentCtrl.improvementTypes track by type._id" disabled>
+                                        ng-options="type as type.name for type in improvementTypes track by type._id" disabled>
                                 </select>
                             </div>
                             <div class="form-group-sm col-md-4">
                                 <label for="">Portfolio</label>
                                 <select id="" class="form-control" data-ng-model = "selectedImprovementActivity.portfolio"
-                                        ng-options="portfolio as portfolio.name for portfolio in parentCtrl.portfolios track by portfolio._id" disabled>
+                                        ng-options="portfolio as portfolio.name for portfolio in portfolios track by portfolio._id" disabled>
                                 </select>
                             </div>
                             <div class="form-group-sm col-md-4">
                                 <label for="">Assigned to</label>
                                 <select id="" class="form-control" data-ng-model = "selectedImprovementActivity.assignedTo"
-                                        ng-options="person as person.name for person in parentCtrl.people track by person._id" disabled>
+                                        ng-options="person as person.name for person in people track by person._id" disabled>
                                 </select>
                             </div>
                         </div>
@@ -60,19 +57,19 @@
                             <div class="form-group-sm col-md-4">
                                 <label for="">Reason</label>
                                 <select id="" class="form-control" data-ng-model = "selectedImprovementActivity.reason"
-                                        ng-options="reason as reason.name for reason in parentCtrl.improvementReasons track by reason._id" disabled>
+                                        ng-options="reason as reason.name for reason in improvementReasons track by reason._id" disabled>
                                 </select>
                             </div>
                             <div class="form-group-sm col-md-4">
                                 <label for="">Priority</label>
                                 <select id="" class="form-control" data-ng-model = "selectedImprovementActivity.priority"
-                                        ng-options="priority as priority.name for priority in parentCtrl.logPriorities track by priority._id" disabled>
+                                        ng-options="priority as priority.name for priority in logPriorities track by priority._id" disabled>
                                 </select>
                             </div>
                             <div class="form-group-sm col-md-4">
                                 <label for="">State</label>
                                 <select id="" class="form-control" data-ng-model = "selectedImprovementActivity.state"
-                                        ng-options="state as state.name for state in parentCtrl.improvementStates track by state._id" disabled>
+                                        ng-options="state as state.name for state in improvementStates track by state._id" disabled>
                                 </select>
                             </div>
                         </div>
@@ -84,7 +81,7 @@
                             </div>
                         </div>
                         <hr>
-                        <div class="form-group-sm pull-right" data-ng-show="parentCtrl.userHasAuthorization('edit', parentCtrl.userData, selectedImprovementActivity)">
+                        <div class="form-group-sm pull-right" data-ng-show="parentCtrl.userHasAuthorization('edit', userData, selectedImprovementActivity)">
                             <button class="btn btn-success btn-xs" data-ng-click="parentCtrl.editHeader()">
                                 Edit
                             </button>
@@ -113,21 +110,21 @@
                             <div class="form-group-sm col-md-4">
                                 <label for="">Type</label>
                                 <select id="" class="form-control" data-ng-model = "selectedImprovementActivity.type"
-                                        ng-options="type as type.name for type in parentCtrl.improvementTypes track by type._id" >
+                                        ng-options="type as type.name for type in improvementTypes track by type._id" >
                                     <option value="">--choose type</option>
                                 </select>
                             </div>
                             <div class="form-group-sm col-md-4">
                                 <label for="">Portfolio</label>
                                 <select id="" class="form-control" data-ng-model = "selectedImprovementActivity.portfolio"
-                                        ng-options="portfolio as portfolio.name for portfolio in parentCtrl.portfolios track by portfolio._id" >
+                                        ng-options="portfolio as portfolio.name for portfolio in portfolios track by portfolio._id" >
                                     <option value="">--choose portfolio</option>
                                 </select>
                             </div>
                             <div class="form-group-sm col-md-4">
                                 <label for="">Assigned to</label>
                                 <select id="" class="form-control" data-ng-model = "selectedImprovementActivity.assignedTo"
-                                        ng-options="person as person.name for person in parentCtrl.people track by person._id" >
+                                        ng-options="person as person.name for person in people track by person._id" >
                                     <option value="">--choose person</option>
                                 </select>
                             </div>
@@ -137,21 +134,21 @@
                             <div class="form-group-sm col-md-4">
                                 <label for="">Reason</label>
                                 <select id="" class="form-control" data-ng-model = "selectedImprovementActivity.reason"
-                                        ng-options="reason as reason.name for reason in parentCtrl.improvementReasons track by reason._id" >
+                                        ng-options="reason as reason.name for reason in improvementReasons track by reason._id" >
                                     <option value="">--choose reason</option>
                                 </select>
                             </div>
                             <div class="form-group-sm col-md-4">
                                 <label for="">Priority</label>
                                 <select id="" class="form-control" data-ng-model = "selectedImprovementActivity.priority"
-                                        ng-options="priority as priority.name for priority in parentCtrl.logPriorities track by priority._id" >
+                                        ng-options="priority as priority.name for priority in logPriorities track by priority._id" >
                                     <option value="">--choose priority</option>
                                 </select>
                             </div>
                             <div class="form-group-sm col-md-4">
                                 <label for="">State</label>
                                 <select id="" class="form-control" data-ng-model = "selectedImprovementActivity.state"
-                                        ng-options="state as state.name for state in parentCtrl.improvementStates track by state._id" >
+                                        ng-options="state as state.name for state in improvementStates track by state._id" >
                                     <option value="">--choose state</option>
                                 </select>
                             </div>
@@ -198,7 +195,7 @@
                             <div class="form-group-sm col-md-4">
                                 <label for="">Status</label>
                                 <select id="" class="form-control" data-ng-model = "selectedImprovementActivity.statusReview.currentRecord.status"
-                                        ng-options="status as status.name for status in parentCtrl.logStatuses track by status._id" disabled>
+                                        ng-options="status as status.name for status in logStatuses track by status._id" disabled>
                                 </select>
                             </div>
                             <div class="form-group-sm col-md-4">
@@ -215,7 +212,7 @@
                             </div>
                         </div>
                         <hr>
-                        <div class="pull-right" data-ng-show="parentCtrl.userHasAuthorization('edit', parentCtrl.userData, selectedImprovementActivity)">
+                        <div class="pull-right" data-ng-show="parentCtrl.userHasAuthorization('edit', userData, selectedImprovementActivity)">
                             <button class="btn btn-success btn-xs" data-ng-click="parentCtrl.editStatus()">
                                 Edit
                             </button>
@@ -259,7 +256,7 @@
                             <div class="form-group-sm col-md-4">
                                 <label for="">Status</label>
                                 <select id="" class="form-control" data-ng-model = "selectedImprovementActivity.statusReview.currentRecord.status"
-                                        data-ng-options="status as status.name for status in parentCtrl.logStatuses track by status._id" >
+                                        data-ng-options="status as status.name for status in logStatuses track by status._id" >
                                     <option value="">--choose status</option>
                                 </select>
                             </div>

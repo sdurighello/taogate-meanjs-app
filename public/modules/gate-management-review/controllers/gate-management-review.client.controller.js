@@ -20,6 +20,15 @@ angular.module('gate-management-review').controller('GateManagementReviewControl
 
             Projects.query({'selection.active': true, 'selection.selectedForDelivery': true}, function(projects){
                 $scope.projects = _.filter(projects, function(project){return project.process !== null;});
+                // Form myTao
+                if($stateParams.projectId){
+                    var foundProject = _.find($scope.projects, _.matchesProperty('_id', $stateParams.projectId));
+                    if(foundProject){
+                        $scope.selectProject(foundProject);
+                    } else {
+                        $scope.error = 'Cannot find project ' + $stateParams.projectId;
+                    }
+                }
             }, function(err){
                 $scope.initError.push(err.data.message);
             });
@@ -235,6 +244,23 @@ angular.module('gate-management-review').controller('GateManagementReviewControl
             }, function (res) {
                 $scope.isResolving = false;
                 $scope.gateReviewList = res;
+                // myTao
+                if($stateParams.gateId && $scope.gateReviewList){
+                    var foundReviewObject = _.find($scope.gateReviewList, _.matchesProperty('gate._id', $stateParams.gateId));
+                    if(foundReviewObject){
+                        $scope.setReviewObject(foundReviewObject);
+                        if($stateParams.gateReviewId && foundReviewObject.gateReviews){
+                            var foundGateReview = _.find(foundReviewObject.gateReviews, _.matchesProperty('_id', $stateParams.gateReviewId));
+                            if(foundGateReview){
+                                $scope.selectGateReview(foundGateReview);
+                            } else {
+                                $scope.error = 'Cannot find gate review ' + $stateParams.gateReviewId;
+                            }
+                        }
+                    } else {
+                        $scope.error = 'Cannot find gate ' + $stateParams.gateId;
+                    }
+                }
             }, function (err) {
                 $scope.isResolving = false;
                 $scope.error = err.data.message;

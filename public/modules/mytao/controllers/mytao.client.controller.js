@@ -11,30 +11,81 @@ angular.module('mytao').controller('MytaoController', ['$scope','$rootScope', '$
 
         // No need for init() before rendering
         
-        vm.initError = [];
+        vm.error = {};
 
         Mytao.userProjects(function(res){
             vm.userProjects = res;
         }, function(err){
-            vm.initError.push(err.data.message);
+            vm.error.userProjects = err.data.message;
         });
 
         Mytao.userPortfolios(function(res){
             vm.userPortfolios = res;
         }, function(err){
-            vm.initError.push(err.data.message);
+            vm.error.userPortfolios = err.data.message;
+        });
+
+        Mytao.userProjectReviews(function(res){
+            vm.userProjectReviews = res;
+        }, function(err){
+            vm.error.userProjectReviews = err.data.message;
+        });
+
+        Mytao.userPortfolioReviews(function(res){
+            vm.userPortfolioReviews = res;
+        }, function(err){
+            vm.error.userPortfolioReviews = err.data.message;
+        });
+
+        Mytao.userImprovementActivities(function(res){
+            vm.userImprovementActivities = res;
+        }, function(err){
+            vm.error.userImprovementActivities = err.data.message;
+        });
+
+        Mytao.userProjectChangeRequests(function(res){
+            vm.userProjectChangeRequests = res;
+        }, function(err){
+            vm.error.userProjectChangeRequests = err.data.message;
+        });
+
+        Mytao.userProjectStatusUpdates(function(res){
+            vm.userProjectStatusUpdates = res;
+        }, function(err){
+            vm.error.userProjectStatusUpdates = err.data.message;
+        });
+
+        Mytao.userPortfolioChangeRequests(function(res){
+            vm.userPortfolioChangeRequests = res;
+        }, function(err){
+            vm.error.userPortfolioChangeRequests = err.data.message;
+        });
+
+        Mytao.userGateReviews(function(res){
+            vm.userGateReviews = res;
+        }, function(err){
+            vm.error.userGateReviews = err.data.message;
         });
 
         
-        // If this was the homepage, the user would be re-directed to log-in if not logged in already
+        // ------ Authentication ----
+
         var d = $q.defer();
         d.resolve(Authentication);
         d.promise.then(function(data){
             vm.userData = data.user;
+
+            // If this was the homepage, the user would be re-directed to log-in if not logged in already
             if(!data.user){
                 $location.path('/signin');
                 $rootScope.staticMenu = true;
             }
+
+            // --- showIfSuperhero for Gate Reviews
+            vm.showIfSuperhero = !!_.find(data.user.roles, function(role){
+                return (role === 'superAdmin' || role === 'admin' || role === 'pmo');
+            });
+
         });
 
 

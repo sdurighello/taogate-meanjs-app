@@ -17,65 +17,105 @@ angular.module('improvement-activities').controller('ImprovementActivitiesContro
 
 		vm.init = function () {
 
-			vm.userData = Authentication.user;
 
-			Portfolios.query(function(portfolios){
-				vm.portfolios = portfolios;
-				vm.portfolioTrees = createNodeTrees(portfolios);
-			}, function(err){
-				vm.initError.push(err.data.message);
-			});
 
-			ImprovementActivities.query(function (res) {
-				vm.improvementActivities = res;
-			}, function (err) {
-				vm.initError.push(err.data.message);
-			});
-
-			ImprovementTypes.query(function (res) {
-				vm.improvementTypes = res;
-			}, function (err) {
-				vm.initError.push(err.data.message);
-			});
-
-			ImprovementReasons.query(function (res) {
-				vm.improvementReasons = res;
-			}, function (err) {
-				vm.initError.push(err.data.message);
-			});
-
-			ImprovementStates.query(function (res) {
-				vm.improvementStates = res;
-			}, function (err) {
-				vm.initError.push(err.data.message);
-			});
-
-			LogPriorities.query(function (res) {
-				vm.logPriorities = res;
-			}, function (err) {
-				vm.initError.push(err.data.message);
-			});
-
-			LogStatusIndicators.query(function (res) {
-				vm.logStatuses = res;
-			}, function (err) {
-				vm.initError.push(err.data.message);
-			});
-
-			People.query(function (res) {
-				vm.people = res;
-			}, function (err) {
-				vm.initError.push(err.data.message);
-			});
+			// Portfolios.query(function(portfolios){
+			// 	vm.portfolios = portfolios;
+			// 	vm.portfolioTrees = createNodeTrees(portfolios);
+			// }, function(err){
+			// 	vm.initError.push(err.data.message);
+			// });
+            //
+			// ImprovementActivities.query(function (res) {
+			// 	vm.improvementActivities = res;
+			// }, function (err) {
+			// 	vm.initError.push(err.data.message);
+			// });
+            //
+			// ImprovementTypes.query(function (res) {
+			// 	vm.improvementTypes = res;
+			// }, function (err) {
+			// 	vm.initError.push(err.data.message);
+			// });
+            //
+			// ImprovementReasons.query(function (res) {
+			// 	vm.improvementReasons = res;
+			// }, function (err) {
+			// 	vm.initError.push(err.data.message);
+			// });
+            //
+			// ImprovementStates.query(function (res) {
+			// 	vm.improvementStates = res;
+			// }, function (err) {
+			// 	vm.initError.push(err.data.message);
+			// });
+            //
+			// LogPriorities.query(function (res) {
+			// 	vm.logPriorities = res;
+			// }, function (err) {
+			// 	vm.initError.push(err.data.message);
+			// });
+            //
+			// LogStatusIndicators.query(function (res) {
+			// 	vm.logStatuses = res;
+			// }, function (err) {
+			// 	vm.initError.push(err.data.message);
+			// });
+            //
+			// People.query(function (res) {
+			// 	vm.people = res;
+			// }, function (err) {
+			// 	vm.initError.push(err.data.message);
+			// });
 
 		};
+
+        vm.userData = Authentication.user;
+
+        $q.all([
+            Portfolios.query().$promise,
+            ImprovementActivities.query().$promise,
+            ImprovementTypes.query().$promise,
+            ImprovementReasons.query().$promise,
+            ImprovementStates.query().$promise,
+            LogPriorities.query().$promise,
+            LogStatusIndicators.query().$promise,
+            People.query().$promise
+        ]).then(function(data) {
+            vm.portfolios = data[0];
+            vm.portfolioTrees = createNodeTrees(data[0]);
+
+            vm.improvementActivities = data[1];
+            vm.improvementTypes = data[2];
+            vm.improvementReasons = data[3];
+            vm.improvementStates = data[4];
+            vm.logPriorities = data[5];
+            vm.logStatuses = data[6];
+            vm.people = data[7];
+
+        }, function(err){
+            vm.initError.push(err);
+        });
+
+        // This is called multiple times in an infinite loop so no called
+        var processParams = function(improvementActivities){
+            if($stateParams.activityId){
+                var foundActivity = _.find(improvementActivities, _.matchesProperty('_id', $stateParams.activityId));
+                if(foundActivity){
+                    vm.selectImprovementActivity(foundActivity);
+                } else {
+                    vm.error = 'Cannot find activity ' + $stateParams.activityId;
+                }
+            }
+        };
+
 
         // -------------- AUTHORIZATION FOR BUTTONS -----------------
 
         vm.userHasAuthorization = function(action, userData, improvementActivity){
             var userIsSuperhero, userIsOwner, userIsPortfolioManager;
 
-            if(action === 'new'){
+            if(action === 'new' && userData){
 
                 userIsSuperhero = !!_.some(userData.roles, function(role){
                     return role === 'superAdmin' || role === 'admin' || role === 'pmo';
@@ -84,7 +124,7 @@ angular.module('improvement-activities').controller('ImprovementActivitiesContro
                 return userIsSuperhero;
             }
 
-            if(action === 'edit'){
+            if(action === 'edit' && userData && improvementActivity){
 
                 userIsSuperhero = !!_.some(userData.roles, function(role){
                     return role === 'superAdmin' || role === 'admin' || role === 'pmo';
@@ -194,14 +234,23 @@ angular.module('improvement-activities').controller('ImprovementActivitiesContro
 		// ------------- EDIT ACTIVITY ------------
 
 
-		var modalUpdateActivity = function (size, activity) {
+		var modalUpdateActivity = function (size, activity, userData, portfolios, improvementTypes, improvementReasons, improvementStates, logPriorities, logStatuses, people) {
 
 			var modalInstance = $modal.open({
 				templateUrl: 'modules/improvement-activities/views/edit-improvement-activity.client.view.html',
-				controller: function ($scope, $modalInstance, activity) {
+				controller: function ($scope, $modalInstance, activity, userData, portfolios, improvementTypes, improvementReasons, improvementStates, logPriorities, logStatuses, people) {
 
+                    $scope.userData = userData;
 					$scope.originalImprovementActivity = _.cloneDeep(activity);
 					$scope.selectedImprovementActivity = activity;
+
+                    $scope.portfolios = portfolios;
+                    $scope.improvementTypes = improvementTypes;
+                    $scope.improvementReasons = improvementReasons;
+                    $scope.improvementStates = improvementStates;
+                    $scope.logPriorities = logPriorities;
+                    $scope.logStatuses = logStatuses;
+                    $scope.people = people;
 
 					$scope.cancelModal = function () {
 						$modalInstance.dismiss();
@@ -211,7 +260,31 @@ angular.module('improvement-activities').controller('ImprovementActivitiesContro
 				resolve: {
 					activity: function () {
 						return activity;
-					}
+					},
+                    userData: function () {
+                        return userData;
+                    },
+                    portfolios: function () {
+                        return portfolios;
+                    },
+                    improvementTypes: function () {
+                        return improvementTypes;
+                    },
+                    improvementReasons: function () {
+                        return improvementReasons;
+                    },
+                    improvementStates: function () {
+                        return improvementStates;
+                    },
+                    logPriorities: function () {
+                        return logPriorities;
+                    },
+                    logStatuses: function () {
+                        return logStatuses;
+                    },
+                    people: function () {
+                        return people;
+                    }
 				},
 				backdrop: 'static',
 				keyboard: false
@@ -220,7 +293,7 @@ angular.module('improvement-activities').controller('ImprovementActivitiesContro
 		};
 
 		vm.selectImprovementActivity = function(activity){
-			modalUpdateActivity('lg', activity);
+			modalUpdateActivity('lg', activity, vm.userData, vm.portfolios, vm.improvementTypes, vm.improvementReasons, vm.improvementStates, vm.logPriorities, vm.logStatuses, vm.people);
 		};
 
 		// ------------------- NG-SWITCH ---------------------

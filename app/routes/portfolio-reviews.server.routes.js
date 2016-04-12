@@ -7,7 +7,7 @@ module.exports = function(app) {
 	// Portfolio reviews Routes
 	app.route('/portfolio-reviews')
 		.get(portfolioReviews.list)
-		.post(users.requiresLogin, portfolioReviews.hasManagementAuthorization, users.requiresLogin, portfolioReviews.create);
+		.post(users.requiresLogin, portfolioReviews.hasCreateAuthorization, users.requiresLogin, portfolioReviews.create);
 
 	app.route('/portfolio-reviews/:portfolioReviewId')
 		.get(users.requiresLogin, portfolioReviews.read)

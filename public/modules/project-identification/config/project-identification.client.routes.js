@@ -8,6 +8,10 @@ angular.module('project-identification').config(['$stateProvider',
 		state('project-identification', {
 			url: '/project-identification',
 			templateUrl: 'modules/project-identification/views/project-identification.client.view.html'
-		});
+		})
+        .state('project-identification-id', {
+            url: '/projects/:projectId',
+            templateUrl: 'modules/project-identification/views/project-identification.client.view.html'
+        });
 	}
 ]);

@@ -9,14 +9,14 @@ var mongoose = require('mongoose'),
 require('mongoose-multitenant');
 
 /**
- * Portfolio issue Schema
+ * Improvement activity Schema
  */
 
 var statusReviewRecord = {
 	baselineDeliveryDate : {type: Date, default: null},
 	estimateDeliveryDate : {type: Date, default: null},
 	actualDeliveryDate : {type: Date, default: null},
-	completed : {type: Boolean, default: false, required:'Issue completed flag is required'},
+	completed : {type: Boolean, default: false, required:'Activity completed flag is required'},
 	status: {type: Schema.Types.ObjectId, default: null, ref: 'LogStatusIndicator', $tenant:true},
 	statusComment : {type: String, default:'', trim: true},
 	created: { type: Date, default: Date.now },

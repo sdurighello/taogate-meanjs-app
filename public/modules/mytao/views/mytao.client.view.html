@@ -57,25 +57,28 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="col-xs-4">
+                        <div class="col-xs-8">
                             <div class="panel panel-default">
                                 <div class="panel-heading">
-                                    <h6 class="panel-title text-center">My portfolios</h6>
+                                    <h6 class="panel-title text-center">Managed portfolios</h6>
                                 </div>
                                 <div class="panel-body" style="min-height: 200px; max-height: 200px; overflow-y: auto;">
-                                    <div class="row" data-ng-show="!parentCtrl.userPortfolios.length && parentCtrl.userPortfolios.$resolved">
+                                    <div class="row">
                                         <div class="col-xs-12">
-                                            <div class="alert alert-warning text-center">
+                                            <div class="alert alert-warning text-center" data-ng-show="!parentCtrl.userPortfolios.length && parentCtrl.userPortfolios.$resolved && !parentCtrl.error.userPortfolios">
                                                 <span>You have no portfolios to manage</span>
+                                            </div>
+                                            <div class="alert alert-warning text-center" data-ng-show="parentCtrl.error.userPortfolios">
+                                                <span>{{parentCtrl.error.userPortfolios}}</span>
                                             </div>
                                         </div>
                                     </div>
                                     <div class="row">
                                         <div class="col-xs-12">
-                                            <div class="progress" data-ng-show="!parentCtrl.userPortfolios.$resolved">
+                                            <div class="progress" data-ng-show="!parentCtrl.userPortfolios.$resolved && !parentCtrl.error.userPortfolios">
                                                 <div class="progress-bar progress-bar-striped active" role="progressbar" style="width: 100%"></div>
                                             </div>
-                                            <table class="table" data-ng-show="parentCtrl.userPortfolios.length">
+                                            <table class="table table-responsive small" data-ng-show="parentCtrl.userPortfolios.length">
                                                 <thead>
                                                 <tr>
                                                     <th>Portfolio</th>
@@ -94,22 +97,25 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="col-xs-4">
+                        <div class="col-xs-8">
                             <div class="panel panel-default">
                                 <div class="panel-heading">
-                                    <h6 class="panel-title text-center">My projects</h6>
+                                    <h6 class="panel-title text-center">Managed projects</h6>
                                 </div>
                                 <div class="panel-body" style="min-height: 200px; max-height: 200px; overflow-y: auto;">
-                                    <div class="row" data-ng-show="!parentCtrl.userProjects.length && parentCtrl.userProjects.$resolved">
+                                    <div class="row" data-ng-show="!parentCtrl.userProjects.length && parentCtrl.userProjects.$resolved && !parentCtrl.error.userProjects">
                                         <div class="col-xs-12">
                                             <div class="alert alert-warning text-center">
                                                 <span>You have no projects to manage</span>
+                                            </div>
+                                            <div class="alert alert-warning text-center" data-ng-show="parentCtrl.error.userProjects">
+                                                <span>{{parentCtrl.error.userProjects}}</span>
                                             </div>
                                         </div>
                                     </div>
                                     <div class="row">
                                         <div class="col-xs-12">
-                                            <div class="progress" data-ng-show="!parentCtrl.userProjects.$resolved">
+                                            <div class="progress" data-ng-show="!parentCtrl.userProjects.$resolved && !parentCtrl.error.userProjects">
                                                 <div class="progress-bar progress-bar-striped active" role="progressbar" style="width: 100%"></div>
                                             </div>
                                             <table class="table table-responsive small" data-ng-show="parentCtrl.userProjects.length">
@@ -123,7 +129,7 @@
                                                 </thead>
                                                 <tbody>
                                                 <tr data-ng-repeat="project in parentCtrl.userProjects">
-                                                    <td><a href="/#!/project-identification">{{project.identification.name}}</a></td>
+                                                    <td><a href="/#!/projects/{{project._id}}">{{project.identification.name}}</a></td>
                                                     <td>{{project.identification.earmarkedFunds | number:0}}</td>
                                                     <td>{{project.identification.reqStartDate | date:'dd/MMM/yyyy'}}</td>
                                                     <td>{{project.identification.reqEndDate | date:'dd/MMM/yyyy'}}</td>
@@ -135,35 +141,285 @@
                                 </div>
                             </div>
                         </div>
-                    </div>
-                    <div class="row">
                         <div class="col-xs-4">
                             <div class="panel panel-default">
                                 <div class="panel-heading">
-                                    <h6 class="panel-title text-center">My project reviews</h6>
+                                    <h6 class="panel-title text-center">Project reviews to submit</h6>
                                 </div>
-                                <div class="panel-body" style="min-height: 200px">
-
+                                <div class="panel-body" style="min-height: 200px; max-height: 200px; overflow-y: auto;">
+                                    <div class="row">
+                                        <div class="col-xs-12">
+                                            <div class="alert alert-warning text-center" data-ng-show="!parentCtrl.userProjectReviews.length && parentCtrl.userProjectReviews.$resolved && !parentCtr.error.userProjectReviews">
+                                                <span>You have no project reviews to submit</span>
+                                            </div>
+                                            <div class="alert alert-warning text-center" data-ng-show="parentCtrl.error.userProjectReviews">
+                                                <span>{{parentCtrl.error.userProjectReviews}}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-xs-12">
+                                            <div class="progress" data-ng-show="!parentCtrl.userProjectReviews.$resolved && !parentCtrl.error.userProjectReviews">
+                                                <div class="progress-bar progress-bar-striped active" role="progressbar" style="width: 100%"></div>
+                                            </div>
+                                            <table class="table table-responsive small" data-ng-show="parentCtrl.userProjectReviews.length">
+                                                <thead>
+                                                <tr>
+                                                    <th>Review</th>
+                                                    <th>Project</th>
+                                                </tr>
+                                                </thead>
+                                                <tbody>
+                                                <tr data-ng-repeat="review in parentCtrl.userProjectReviews">
+                                                    <td><a href="/#!/project-reviews/{{review._id}}/projects/{{review.project._id}}">{{review.name}}</a></td>
+                                                    <td>{{review.project.identification.name}}</td>
+                                                </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                         <div class="col-xs-4">
                             <div class="panel panel-default">
                                 <div class="panel-heading">
-                                    <h6 class="panel-title text-center">My portfolio reviews</h6>
+                                    <h6 class="panel-title text-center">Portfolio reviews to submit</h6>
                                 </div>
-                                <div class="panel-body" style="min-height: 200px">
-
+                                <div class="panel-body" style="min-height: 200px; max-height: 200px; overflow-y: auto;">
+                                    <div class="row">
+                                        <div class="col-xs-12">
+                                            <div class="alert alert-warning text-center" data-ng-show="!parentCtrl.userPortfolioReviews.length && parentCtrl.userPortfolioReviews.$resolved && !parentCtr.error.userPortfolioReviews">
+                                                <span>You have no portfolio reviews to submit</span>
+                                            </div>
+                                            <div class="alert alert-warning text-center" data-ng-show="parentCtrl.error.userPortfolioReviews">
+                                                <span>{{parentCtrl.error.userPortfolioReviews}}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-xs-12">
+                                            <div class="progress" data-ng-show="!parentCtrl.userPortfolioReviews.$resolved && !parentCtrl.error.userPortfolioReviews">
+                                                <div class="progress-bar progress-bar-striped active" role="progressbar" style="width: 100%"></div>
+                                            </div>
+                                            <table class="table table-responsive small" data-ng-show="parentCtrl.userPortfolioReviews.length">
+                                                <thead>
+                                                <tr>
+                                                    <th>Review</th>
+                                                    <th>Portfolio</th>
+                                                </tr>
+                                                </thead>
+                                                <tbody>
+                                                <tr data-ng-repeat="review in parentCtrl.userPortfolioReviews">
+                                                    <td><a href="/#!/portfolio-reviews/{{review._id}}/portfolios/{{review.portfolio._id}}">{{review.name}}</a></td>
+                                                    <td>{{review.portfolio.name}}</td>
+                                                </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                        <div class="col-xs-4">
+                        <div class="col-xs-8">
                             <div class="panel panel-default">
                                 <div class="panel-heading">
-                                    <h6 class="panel-title text-center">My improvement activities</h6>
+                                    <h6 class="panel-title text-center">Improvement activities to do</h6>
                                 </div>
-                                <div class="panel-body" style="min-height: 200px">
-
+                                <div class="panel-body" style="min-height: 200px; max-height: 200px; overflow-y: auto;">
+                                    <div class="row">
+                                        <div class="col-xs-12">
+                                            <div class="alert alert-warning text-center" data-ng-show="!parentCtrl.userImprovementActivities.length && parentCtrl.userImprovementActivities.$resolved && !parentCtr.error.userImprovementActivities">
+                                                <span>You have no improvement activities to complete</span>
+                                            </div>
+                                            <div class="alert alert-warning text-center" data-ng-show="parentCtrl.error.userImprovementActivities">
+                                                <span>{{parentCtrl.error.userImprovementActivities}}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-xs-12">
+                                            <div class="progress" data-ng-show="!parentCtrl.userImprovementActivities.$resolved && !parentCtrl.error.userImprovementActivities">
+                                                <div class="progress-bar progress-bar-striped active" role="progressbar" style="width: 100%"></div>
+                                            </div>
+                                            <table class="table table-responsive small" data-ng-show="parentCtrl.userImprovementActivities.length">
+                                                <thead>
+                                                <tr>
+                                                    <th>Activity</th>
+                                                    <th>Portfolio</th>
+                                                </tr>
+                                                </thead>
+                                                <tbody>
+                                                <tr data-ng-repeat="activity in parentCtrl.userImprovementActivities">
+                                                    <td><a href="/#!/improvement-activities/{{activity._id}}">{{activity.title}}</a></td>
+                                                    <td>{{activity.portfolio.name}}</td>
+                                                </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xs-6">
+                            <div class="panel panel-default">
+                                <div class="panel-heading">
+                                    <h6 class="panel-title text-center">Project change requests to approve</h6>
+                                </div>
+                                <div class="panel-body" style="min-height: 200px; max-height: 200px; overflow-y: auto;">
+                                    <div class="row">
+                                        <div class="col-xs-12">
+                                            <div class="alert alert-warning text-center" data-ng-show="!parentCtrl.userProjectChangeRequests.length && parentCtrl.userProjectChangeRequests.$resolved && !parentCtr.error.userProjectChangeRequests">
+                                                <span>You have no project change requests to approve</span>
+                                            </div>
+                                            <div class="alert alert-warning text-center" data-ng-show="parentCtrl.error.userProjectChangeRequests">
+                                                <span>{{parentCtrl.error.userProjectChangeRequests}}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-xs-12">
+                                            <div class="progress" data-ng-show="!parentCtrl.userProjectChangeRequests.$resolved && !parentCtrl.error.userProjectChangeRequests">
+                                                <div class="progress-bar progress-bar-striped active" role="progressbar" style="width: 100%"></div>
+                                            </div>
+                                            <table class="table table-responsive small" data-ng-show="parentCtrl.userProjectChangeRequests.length">
+                                                <thead>
+                                                <tr>
+                                                    <th>Change request</th>
+                                                    <th>Project</th>
+                                                </tr>
+                                                </thead>
+                                                <tbody>
+                                                <tr data-ng-repeat="change in parentCtrl.userProjectChangeRequests">
+                                                    <td><a href="/#!/project-change-requests/{{change._id}}/projects/{{change.project._id}}/gates/{{change.gate}}">{{change.title}}</a></td>
+                                                    <td>{{change.project.identification.name}}</td>
+                                                </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xs-6">
+                            <div class="panel panel-default">
+                                <div class="panel-heading">
+                                    <h6 class="panel-title text-center">Project status updates to approve</h6>
+                                </div>
+                                <div class="panel-body" style="min-height: 200px; max-height: 200px; overflow-y: auto;">
+                                    <div class="row">
+                                        <div class="col-xs-12">
+                                            <div class="alert alert-warning text-center" data-ng-show="!parentCtrl.userProjectStatusUpdates.length && parentCtrl.userProjectStatusUpdates.$resolved && !parentCtr.error.userProjectStatusUpdates">
+                                                <span>You have no project status updates to approve</span>
+                                            </div>
+                                            <div class="alert alert-warning text-center" data-ng-show="parentCtrl.error.userProjectStatusUpdates">
+                                                <span>{{parentCtrl.error.userProjectStatusUpdates}}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-xs-12">
+                                            <div class="progress" data-ng-show="!parentCtrl.userProjectStatusUpdates.$resolved && !parentCtrl.error.userProjectStatusUpdates">
+                                                <div class="progress-bar progress-bar-striped active" role="progressbar" style="width: 100%"></div>
+                                            </div>
+                                            <table class="table table-responsive small" data-ng-show="parentCtrl.userProjectStatusUpdates.length">
+                                                <thead>
+                                                <tr>
+                                                    <th>Status update</th>
+                                                    <th>Project</th>
+                                                </tr>
+                                                </thead>
+                                                <tbody>
+                                                <tr data-ng-repeat="statusUpdate in parentCtrl.userProjectStatusUpdates">
+                                                    <td><a href="/#!/project-status-management/{{statusUpdate._id}}/projects/{{statusUpdate.project._id}}/gates/{{statusUpdate.gate}}">{{statusUpdate.title}}</a></td>
+                                                    <td>{{statusUpdate.project.identification.name}}</td>
+                                                </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xs-6" data-ng-show="parentCtrl.showIfSuperhero">
+                            <div class="panel panel-default">
+                                <div class="panel-heading">
+                                    <h6 class="panel-title text-center">Portfolio change requests to approve</h6>
+                                </div>
+                                <div class="panel-body" style="min-height: 200px; max-height: 200px; overflow-y: auto;">
+                                    <div class="row">
+                                        <div class="col-xs-12">
+                                            <div class="alert alert-warning text-center" data-ng-show="!parentCtrl.userPortfolioChangeRequests.length && parentCtrl.userPortfolioChangeRequests.$resolved && !parentCtr.error.userPortfolioChangeRequests">
+                                                <span>You have no portfolio change requests to approve</span>
+                                            </div>
+                                            <div class="alert alert-warning text-center" data-ng-show="parentCtrl.error.userPortfolioChangeRequests">
+                                                <span>{{parentCtrl.error.userPortfolioChangeRequests}}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-xs-12">
+                                            <div class="progress" data-ng-show="!parentCtrl.userPortfolioChangeRequests.$resolved && !parentCtrl.error.userPortfolioChangeRequests">
+                                                <div class="progress-bar progress-bar-striped active" role="progressbar" style="width: 100%"></div>
+                                            </div>
+                                            <table class="table table-responsive small" data-ng-show="parentCtrl.userPortfolioChangeRequests.length">
+                                                <thead>
+                                                <tr>
+                                                    <th>Change request</th>
+                                                    <th>Portfolio</th>
+                                                </tr>
+                                                </thead>
+                                                <tbody>
+                                                <tr data-ng-repeat="change in parentCtrl.userPortfolioChangeRequests">
+                                                    <td><a href="/#!/portfolio-change-requests/{{change._id}}/portfolios/{{change.portfolio._id}}">{{change.title}}</a></td>
+                                                    <td>{{change.portfolio.name}}</td>
+                                                </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xs-6" data-ng-show="parentCtrl.showIfSuperhero">
+                            <div class="panel panel-default">
+                                <div class="panel-heading">
+                                    <h6 class="panel-title text-center">Gate reviews to approve</h6>
+                                </div>
+                                <div class="panel-body" style="min-height: 200px; max-height: 200px; overflow-y: auto;">
+                                    <div class="row">
+                                        <div class="col-xs-12">
+                                            <div class="alert alert-warning text-center" data-ng-show="!parentCtrl.userGateReviews.length && parentCtrl.userGateReviews.$resolved && !parentCtr.error.userGateReviews">
+                                                <span>You have no gate reviews to approve</span>
+                                            </div>
+                                            <div class="alert alert-warning text-center" data-ng-show="parentCtrl.error.userGateReviews">
+                                                <span>{{parentCtrl.error.userGateReviews}}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-xs-12">
+                                            <div class="progress" data-ng-show="!parentCtrl.userGateReviews.$resolved && !parentCtrl.error.userGateReviews">
+                                                <div class="progress-bar progress-bar-striped active" role="progressbar" style="width: 100%"></div>
+                                            </div>
+                                            <table class="table table-responsive small" data-ng-show="parentCtrl.userGateReviews.length">
+                                                <thead>
+                                                <tr>
+                                                    <th>Gate review</th>
+                                                    <th>Project</th>
+                                                    <th>Gate</th>
+                                                </tr>
+                                                </thead>
+                                                <tbody>
+                                                <tr data-ng-repeat="review in parentCtrl.userGateReviews">
+                                                    <td><a href="/#!/gate-management-review/{{review._id}}/projects/{{review.project._id}}/gates/{{review.gate._id}}">{{review.title}}</a></td>
+                                                    <td>{{review.project.identification.name}}</td>
+                                                    <td>{{review.gate.name}}</td>
+                                                </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>

@@ -15,7 +15,6 @@ angular.module('portfolio-reviews').controller('PortfolioReviewsController', ['$
 		// ------------- INIT -------------
 
 		$scope.initError = [];
-		$scope.error = {};
 
 		$scope.init = function(){
 
@@ -27,9 +26,19 @@ angular.module('portfolio-reviews').controller('PortfolioReviewsController', ['$
 				$scope.initError.push({message: err.data.message});
 			});
 
-			Portfolios.query(function(portfolios){
-				$scope.portfolios = portfolios;
-				$scope.portfolioTrees = createNodeTrees(portfolios);
+			Portfolios.query(function(res){
+				$scope.portfolios = res;
+				$scope.portfolioTrees = createNodeTrees(res);
+                // From myTao page
+                if($stateParams.portfolioId){
+                    var foundPortfolio = _.find(res, _.matchesProperty('_id', $stateParams.portfolioId));
+                    if(foundPortfolio){
+                        $scope.selectPortfolio(foundPortfolio);
+                    } else {
+                        $scope.error = 'Cannot find portfolio' + $stateParams.portfolioId;
+                        $stateParams.portfolioReviewId = null;
+                    }
+                }
 			}, function(err){
 				$scope.initError.push({message: err.data.message});
 			});
@@ -188,7 +197,7 @@ angular.module('portfolio-reviews').controller('PortfolioReviewsController', ['$
 		var originalPortfolioReview = {};
 
 		$scope.selectPortfolio = function(portfolio) {
-			$scope.error.portfolioReviews = null;
+			$scope.error = null;
 			$scope.selectedPortfolio = null;
 			$scope.portfolioReviews = null;
 
@@ -201,13 +210,22 @@ angular.module('portfolio-reviews').controller('PortfolioReviewsController', ['$
 				portfolio: portfolio._id
 			}, function (res) {
 				$scope.portfolioReviews = res;
+                // From myTao page, triggered from Portfolios.query in init()
+                if($stateParams.portfolioReviewId){
+                    var foundPortfolioReview = _.find($scope.portfolioReviews, _.matchesProperty('_id', $stateParams.portfolioReviewId));
+                    if(foundPortfolioReview){
+                        $scope.selectPortfolioReview(foundPortfolioReview);
+                    } else {
+                        $scope.error = 'Cannot find portfolio review' + $stateParams.portfolioReviewId;
+                    }
+                }
 			}, function (err) {
-				$scope.error.portfolioReviews = err.data.message;
+				$scope.error = err.data.message;
 			});
 		};
 
 		$scope.cancelViewPortfolio = function(){
-			$scope.error.portfolioReviews = null;
+			$scope.error = null;
 			$scope.selectedPortfolio = null;
 			$scope.portfolioReviews = null;
 
@@ -238,7 +256,7 @@ angular.module('portfolio-reviews').controller('PortfolioReviewsController', ['$
 		};
 
 		$scope.createNewPortfolioReview = function(portfolio){
-			$scope.error.newReview = null;
+			$scope.error = null;
 			var newPortfolioReview = new PortfolioReviews({
 				portfolio: portfolio._id,
 				name : $scope.newPortfolioReview.name,
@@ -256,12 +274,12 @@ angular.module('portfolio-reviews').controller('PortfolioReviewsController', ['$
 				$scope.selectPortfolioReview(res);
 				// Close new review form done directly in the view's html
 			}, function(err) {
-				$scope.error.newReview = err.data.message;
+				$scope.error = err.data.message;
 			});
 		};
 
 		$scope.cancelNewPortfolioReview = function(){
-			$scope.error.newReview = null;
+			$scope.error = null;
 			$scope.newPortfolioReview = {};
 		};
 
@@ -270,7 +288,7 @@ angular.module('portfolio-reviews').controller('PortfolioReviewsController', ['$
 
 
 		$scope.selectPortfolioReview = function(portfolioReview){
-			$scope.error.editReview = null;
+			$scope.error = null;
 			$scope.selectedPortfolioReview = portfolioReview;
 			originalPortfolioReview[portfolioReview._id] = _.cloneDeep(portfolioReview);
 		};
@@ -311,13 +329,13 @@ angular.module('portfolio-reviews').controller('PortfolioReviewsController', ['$
 					$scope.selectHeaderForm('view', portfolioReview);
 				},
 				function(err){
-					$scope.error.editReview = err.data.message;
+					$scope.error = err.data.message;
 				}
 			);
 		};
 
 		$scope.cancelEditHeader = function(portfolioReview){
-			$scope.error.editReview = null;
+			$scope.error = null;
 			portfolioReview.name = originalPortfolioReview[portfolioReview._id].name;
 			portfolioReview.startDate = originalPortfolioReview[portfolioReview._id].startDate;
 			portfolioReview.endDate = originalPortfolioReview[portfolioReview._id].endDate;
@@ -348,7 +366,7 @@ angular.module('portfolio-reviews').controller('PortfolioReviewsController', ['$
 		var originalPeopleReview = {};
 
 		$scope.editPeopleReview = function(peopleReview){
-			$scope.error.editPeopleReview = null;
+			$scope.error = null;
 			$scope.selectPeopleReviewForm('edit', peopleReview);
 			originalPeopleReview[peopleReview._id] = _.cloneDeep(peopleReview);
 		};
@@ -371,7 +389,7 @@ angular.module('portfolio-reviews').controller('PortfolioReviewsController', ['$
 					$scope.selectPeopleReviewForm('view', peopleReview);
 				},
 				function(err){
-					$scope.error.editPeopleReview = err.data.message;
+					$scope.error = err.data.message;
 				}
 			);
 		};
@@ -379,12 +397,12 @@ angular.module('portfolio-reviews').controller('PortfolioReviewsController', ['$
 		$scope.cancelEditPeopleReview = function(peopleReview){
 			peopleReview.score = originalPeopleReview[peopleReview._id].score;
 			peopleReview.comment = originalPeopleReview[peopleReview._id].comment;
-			$scope.error.editPeopleReview = null;
+			$scope.error = null;
 			$scope.selectPeopleReviewForm('view', peopleReview);
 		};
 
 		$scope.submitPeopleReview = function(portfolioReview, reviewGroup, reviewItem, peopleReview){
-			$scope.error.editPeopleReview = null;
+			$scope.error = null;
 			// Clean-up deepPopulate
 			var copyPeopleReview = _.cloneDeep(peopleReview);
 			copyPeopleReview.person = copyPeopleReview.person._id;
@@ -402,7 +420,7 @@ angular.module('portfolio-reviews').controller('PortfolioReviewsController', ['$
 					$scope.selectPeopleReviewForm('view', peopleReview);
 				},
 				function(err){
-					$scope.error.editPeopleReview = err.data.message;
+					$scope.error = err.data.message;
 				}
 			);
 		};
@@ -414,7 +432,7 @@ angular.module('portfolio-reviews').controller('PortfolioReviewsController', ['$
 
 
 		$scope.submit = function(portfolioReview){
-			$scope.error.approval = null;
+			$scope.error = null;
 			PortfolioReviews.submit(
 				{
 					portfolioReviewId : portfolioReview._id
@@ -422,12 +440,12 @@ angular.module('portfolio-reviews').controller('PortfolioReviewsController', ['$
 				function(res){
 					portfolioReview.approval = res.approval;
 				},
-				function(err){$scope.error.approval = err.data.message;}
+				function(err){$scope.error = err.data.message;}
 			);
 		};
 
 		$scope.complete = function(portfolioReview){
-			$scope.error.approval = null;
+			$scope.error = null;
 			PortfolioReviews.complete(
 				{
 					portfolioReviewId : portfolioReview._id
@@ -435,12 +453,12 @@ angular.module('portfolio-reviews').controller('PortfolioReviewsController', ['$
 				function(res){
 					portfolioReview.approval = res.approval;
 				},
-				function(err){$scope.error.approval = err.data.message;}
+				function(err){$scope.error = err.data.message;}
 			);
 		};
 
 		$scope.draft = function(portfolioReview){
-			$scope.error.approval = null;
+			$scope.error = null;
 			PortfolioReviews.draft(
 				{
 					portfolioReviewId : portfolioReview._id
@@ -448,7 +466,7 @@ angular.module('portfolio-reviews').controller('PortfolioReviewsController', ['$
 				function(res){
 					portfolioReview.approval = res.approval;
 				},
-				function(err){$scope.error.approval = err.data.message;}
+				function(err){$scope.error = err.data.message;}
 			);
 		};
 

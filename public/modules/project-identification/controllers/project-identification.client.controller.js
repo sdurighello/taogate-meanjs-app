@@ -27,7 +27,16 @@ angular.module('project-identification').controller('ProjectIdentificationContro
 
 			Projects.query({'selection.active': true}, function(projects){
 				$scope.projects = projects;
-			}, function(err){
+                // If there is a stateParam _id , then select a project
+                if($stateParams.projectId){
+                    var requestedProject = _.find($scope.projects, _.matchesProperty('_id', $stateParams.projectId));
+                    if(requestedProject){
+                        $scope.selectProject(requestedProject);
+                    } else {
+                        $scope.error = 'Project not found';
+                    }
+                }
+            }, function(err){
 				$scope.initErrors.push(err.data.message);
 			});
 
@@ -176,11 +185,13 @@ angular.module('project-identification').controller('ProjectIdentificationContro
 
         // ------------- SELECT VIEW PROJECT ------------
 
+
         var originalProject = {};
         $scope.selectProject = function(project){
-                originalProject[project._id] = _.cloneDeep(project);
-                $scope.selectedProject = project;
-                $scope.selectProjectForm('view');
+            $scope.error = null;
+            originalProject[project._id] = _.cloneDeep(project);
+            $scope.selectedProject = project;
+            $scope.selectProjectForm('view');
         };
 
         $scope.cancelViewProject = function(){

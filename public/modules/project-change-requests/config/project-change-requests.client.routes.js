@@ -8,6 +8,10 @@ angular.module('project-change-requests').config(['$stateProvider',
 		state('ProjectChangeRequests', {
 			url: '/project-change-requests',
 			templateUrl: 'modules/project-change-requests/views/project-change-requests.client.view.html'
-		});
+		})
+        .state('project-change-requests-id', {
+            url: '/project-change-requests/:projectChangeRequestId/projects/:projectId/gates/:gateId',
+            templateUrl: 'modules/project-change-requests/views/project-change-requests.client.view.html'
+        });
 	}
 ]);

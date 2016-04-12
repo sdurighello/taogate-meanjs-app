@@ -20,6 +20,15 @@ angular.module('project-status-management').controller('ProjectStatusManagementC
 
 			Projects.query({'selection.active': true, 'selection.selectedForDelivery': true}, function(projects){
 				$scope.projects = _.filter(projects, function(project){return project.process !== null;});
+                // Form myTao
+                if($stateParams.projectId){
+                    var foundProject = _.find($scope.projects, _.matchesProperty('_id', $stateParams.projectId));
+                    if(foundProject){
+                        $scope.selectProject(foundProject);
+                    } else {
+                        $scope.error = 'Cannot find project ' + $stateParams.projectId;
+                    }
+                }
 			}, function(err){
 				$scope.initError.push(err.data.message);
 			});
@@ -210,6 +219,23 @@ angular.module('project-status-management').controller('ProjectStatusManagementC
 					})
 					.sortBy('gate.position')
 					.value();
+                // myTao
+                if($stateParams.gateId && $scope.projectStatusUpdateList){
+                    var foundReviewObject = _.find($scope.projectStatusUpdateList, _.matchesProperty('gate._id', $stateParams.gateId));
+                    if(foundReviewObject){
+                        $scope.setReviewObject(foundReviewObject);
+                        if($stateParams.projectStatusUpdateId && foundReviewObject.projectStatusUpdates){
+                            var foundUpdate = _.find(foundReviewObject.projectStatusUpdates, _.matchesProperty('_id', $stateParams.projectStatusUpdateId));
+                            if(foundUpdate){
+                                $scope.selectProjectStatusUpdate(foundUpdate);
+                            } else {
+                                $scope.error = 'Cannot find status update ' + $stateParams.projectStatusUpdateId;
+                            }
+                        }
+                    } else {
+                        $scope.error = 'Cannot find gate ' + $stateParams.gateId;
+                    }
+                }
 			}, function (err) {
                 $scope.isResolving = false;
 				$scope.error = err.data.message;
