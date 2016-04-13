@@ -41,7 +41,7 @@ exports.getUserPortfolios = function(req, res) {
 
     Portfolio.find({
         $or: [ { portfolioManager: req.user._id }, { backupPortfolioManager: req.user._id } ]
-    }).populate('user', 'displayName').exec(function(err, portfolios) {
+    }).populate('type').populate('parent').exec(function(err, portfolios) {
         if (err) {
             return res.status(400).send({
                 message: errorHandler.getErrorMessage(err)
@@ -383,3 +383,4 @@ exports.getUserPortfolioChangeRequests = function(req, res) {
     });
 
 };
+

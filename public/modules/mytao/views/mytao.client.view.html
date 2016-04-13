@@ -12,6 +12,12 @@
         </div>
     </div>
 
+    <button class="btn btn-large btn-primary" data-ng-click="parentCtrl.seed()">Seed</button>
+    <span data-ng-show="parentCtrl.seedRes">{{parentCtrl.seedRes}}</span>
+    <span data-ng-show="parentCtrl.seedErr">{{parentCtrl.seedErr}}</span>
+
+
+
     <div class="row">
         <div class="col-xs-12">
             <tabset>
@@ -38,8 +44,8 @@
                                                 <span>{{parentCtrl.userData.username}}</span>
                                             </div>
                                             <div class="form-group">
-                                                <label>Email:</label>&nbsp;
-                                                <span>{{parentCtrl.userData.email}}</span>
+                                                <label>Organization:</label>&nbsp;
+                                                <span>{{parentCtrl.userData.organization}}</span>
                                             </div>
                                             <div class="form-group">
                                                 <label>Roles:</label>&nbsp;
@@ -82,12 +88,16 @@
                                                 <thead>
                                                 <tr>
                                                     <th>Portfolio</th>
+                                                    <th>Type</th>
+                                                    <th>Parent</th>
                                                     <th>Funds</th>
                                                 </tr>
                                                 </thead>
                                                 <tbody>
                                                 <tr data-ng-repeat="portfolio in parentCtrl.userPortfolios">
                                                     <td><a href="/#!/portfolio-assignment">{{portfolio.name}}</a></td>
+                                                    <td>{{portfolio.type.name}}</td>
+                                                    <td>{{portfolio.parent.name}}</td>
                                                     <td>{{portfolio.funds | number:0}}</td>
                                                 </tr>
                                                 </tbody>

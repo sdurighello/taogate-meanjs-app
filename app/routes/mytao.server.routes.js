@@ -4,6 +4,8 @@ module.exports = function(app) {
     var users = require('../../app/controllers/users.server.controller');
     var mytao = require('../../app/controllers/mytao.server.controller');
 
+    var seed = require('../../app/controllers/seed-data.server.controller');
+
     app.route('/mytao/user-projects').get(users.requiresLogin, mytao.getUserProjects);
 
     app.route('/mytao/user-portfolios').get(users.requiresLogin, mytao.getUserPortfolios);
@@ -21,6 +23,9 @@ module.exports = function(app) {
     app.route('/mytao/user-portfolio-change-requests').get(users.requiresLogin, mytao.getUserPortfolioChangeRequests);
 
     app.route('/mytao/user-gate-reviews').get(users.requiresLogin, mytao.getUserGateReviews);
+
+
+    app.route('/mytao/seed').post(users.requiresLogin, seed.seed);
 
 
 };

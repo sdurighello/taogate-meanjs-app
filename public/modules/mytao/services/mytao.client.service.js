@@ -48,7 +48,16 @@ angular.module('mytao').factory('Mytao', ['$resource',
                 method: 'GET',
                 isArray: true,
                 url: 'mytao/user-gate-reviews'
+            },
+
+
+            seed: {
+                method: 'POST',
+                isArray: true,
+                url: 'mytao/seed'
             }
+            
+            
         });
 	}
 ]);

@@ -6,6 +6,20 @@ angular.module('mytao').controller('MytaoController', ['$scope','$rootScope', '$
 		$rootScope.staticMenu = false;
         
         var vm = this;
+        
+        
+        
+        vm.seed = function () {
+            Mytao.seed(function(res){
+                vm.seedRes = res;
+            }, function(err){
+                vm.seedErr = err.data.message;
+            });  
+        };
+        
+        
+        
+        
 
         // ----------- INIT ---------------
 
