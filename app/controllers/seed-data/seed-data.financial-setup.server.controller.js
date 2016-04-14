@@ -35,7 +35,7 @@ exports.getFinancialCostGroups = function(req){
         {
             _id: cost1,
             name: 'CAPEX',
-            description:'funds or assumption of a liability in order to obtain physical assets ' +
+            description:'Funds or assumption of a liability in order to obtain physical assets ' +
             'that are to be used for productive purposes for at least one year',
             costTypes: [cost11, cost12, cost13],
             user:req.user._id,
@@ -73,6 +73,42 @@ exports.getFinancialCostTypes = function(req){
             _id: cost13,
             name: 'Property',
             description:'Property',
+            user:req.user._id,
+            created: Date.now()
+        },
+        // --
+        {
+            _id: cost21,
+            name: 'Software licences',
+            description:'Software licences',
+            user:req.user._id,
+            created: Date.now()
+        },
+        {
+            _id: cost22,
+            name: 'Internal labour',
+            description:'Internal labour',
+            user:req.user._id,
+            created: Date.now()
+        },
+        {
+            _id: cost23,
+            name: 'External contractors',
+            description:'External contractors',
+            user:req.user._id,
+            created: Date.now()
+        },
+        {
+            _id: cost24,
+            name: 'Consulting services',
+            description:'Consulting services',
+            user:req.user._id,
+            created: Date.now()
+        },
+        {
+            _id: cost25,
+            name: 'External support and maintenance services',
+            description:'External support and maintenance services',
             user:req.user._id,
             created: Date.now()
         }
@@ -157,6 +193,7 @@ exports.getFinancialBenefitTypes = function(req){
             user:req.user._id,
             created: Date.now()
         },
+        // --
         {
             _id: benefit21,
             name: 'Staff efficiency increase',
@@ -178,6 +215,7 @@ exports.getFinancialBenefitTypes = function(req){
             user:req.user._id,
             created: Date.now()
         },
+        // --
         {
             _id: benefit31,
             name: 'Increased brand awareness',

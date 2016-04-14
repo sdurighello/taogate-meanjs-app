@@ -37,7 +37,7 @@
 							</div>
 							<div class="panel-body" style="min-height: 535px; max-height: 535px;">
 								<div class="row">
-									<div class=" form-group-sm col-md-3">
+									<div class=" form-group-sm col-md-6">
 										<select id="selectSourcePortfolio" class="form-control input-sm" data-ng-model="filterStakeholders.group"
 												data-ng-options="group.name for group in groups">
 											<option value="">--Filter by stakeholder group</option>
@@ -72,7 +72,7 @@
 																	</div>
 																</div>
 																<br>
-																<button class="btn-link" data-ng-click="showPeopleCategories = !showPeopleCategories">Categories</button>
+																<button class="btn-link" data-ng-click="showPeopleCategories = !showPeopleCategories">Evaluation categories</button>
 																<div class="row" data-ng-repeat="assignedCategory in assignedRole.categorization track by assignedCategory._id" data-ng-show="showPeopleCategories">
 																	<div class="form-group-sm col-md-12">
 																		<label class="small" data-ng-bind="assignedCategory.category.name"></label>
@@ -109,7 +109,7 @@
 																	</div>
 																</div>
 																<br>
-																<button class="btn-link">Categories</button>
+																<button class="btn-link">Evaluation categories</button>
 																<div class="row" data-ng-repeat="assignedCategory in assignedRole.categorization track by assignedCategory._id">
 																	<div class="form-group-sm col-md-12">
 																		<label class="small" data-ng-bind="assignedCategory.category.name"></label>
