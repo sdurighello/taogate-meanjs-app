@@ -31,43 +31,6 @@ var MaturityAreaSchema = new Schema({
     user: {type: Schema.ObjectId, ref: 'User'}
 });
 
-
-// -------------------- IMPROVEMENT ACTIVITY SCHEMA-------------------
-
-var statusReviewRecord = {
-    baselineDeliveryDate : {type: Date, default: null},
-    estimateDeliveryDate : {type: Date, default: null},
-    actualDeliveryDate : {type: Date, default: null},
-    completed : {type: Boolean, default: false, required:'Completed flag is required'},
-    status: {type: Schema.Types.ObjectId, default: null, ref: 'LogStatusIndicator', $tenant:true},
-    statusComment : {type: String, default:'', trim: true},
-    created: { type: Date, default: Date.now },
-    user: { type: Schema.ObjectId, ref: 'User' }
-};
-
-var ImprovementActivitySchema = new Schema({
-
-    assignedTo: {type: Schema.Types.ObjectId, ref: 'Person', $tenant:true},
-    raisedOnDate : {type: Date, default: Date.now, required:'Raised on date required'},
-
-    idNumber: {type: Number, required:'Sequential idNumber for improvementActivity is required'},
-    title: {type: String, default: '', trim: true, required: 'Please fill improvement activity title'},
-    description: {type: String, default: '', trim: true},
-
-    type : {type: Schema.Types.ObjectId, default: null, ref: 'ImprovementType', $tenant:true},
-    reason : {type: Schema.Types.ObjectId, default: null, ref: 'ImprovementReason', $tenant:true},
-    state : {type: Schema.Types.ObjectId, default: null, ref: 'ImprovementState', $tenant:true},
-    priority : {type: Schema.Types.ObjectId, default: null, ref: 'LogPriority', $tenant:true},
-
-    statusReview : {
-        currentRecord : statusReviewRecord,
-        history : [statusReviewRecord]
-    },
-
-    created: {type: Date, default: Date.now},
-    user: {type: Schema.ObjectId, ref: 'User', default:null}
-});
-
 // -------------------- MATURITY REVIEW SCHEMA -------------------
 
 var maturityReviewRecord = {
@@ -86,8 +49,6 @@ var MaturityDimensionSchema = new Schema({
 
     name: {type: String, default: '', required: 'Maturity dimension name is required', trim: true},
     description: {type: String, default: '', trim: true},
-
-    improvementActivities : [ImprovementActivitySchema],
 
     maturityReview : {
         currentRecord : maturityReviewRecord,

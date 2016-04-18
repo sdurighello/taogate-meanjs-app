@@ -113,7 +113,9 @@ exports.seed = function(req, res) {
                         }
                     });
                 },
+
                 // --- Priority setup ---
+
                 function(callback){
                     var PriorityValue = mongoose.mtModel(req.user.tenantId + '.' + 'PriorityValue');
                     var seedArray = require('./seed-data/seed-data.priority-setup.server.controller.js').getPriorityValues(req);
@@ -159,7 +161,9 @@ exports.seed = function(req, res) {
                         }
                     });
                 },
+
                 // --- Financial setup ---
+
                 function(callback){
                     var FinancialCostGroup = mongoose.mtModel(req.user.tenantId + '.' + 'FinancialCostGroup');
                     var seedArray = require('./seed-data/seed-data.financial-setup.server.controller.js').getFinancialCostGroups(req);
@@ -220,7 +224,9 @@ exports.seed = function(req, res) {
                         }
                     });
                 },
+
                 // --- Risk setup ---
+
                 function(callback){
                     var RiskCategory = mongoose.mtModel(req.user.tenantId + '.' + 'RiskCategory');
                     var seedArray = require('./seed-data/seed-data.risk-setup.server.controller.js').getRiskCategories(req);
@@ -311,7 +317,9 @@ exports.seed = function(req, res) {
                         }
                     });
                 },
+
                 // --- Qualitative setup ---
+
                 function(callback){
                     var QualitativeImpactGroup = mongoose.mtModel(req.user.tenantId + '.' + 'QualitativeImpactGroup');
                     var seedArray = require('./seed-data/seed-data.qualitative-setup.server.controller.js').getQualitativeImpactGroups(req);
@@ -357,7 +365,9 @@ exports.seed = function(req, res) {
                         }
                     });
                 },
+
                 // --- Dependency setup ---
+
                 function(callback){
                     var DependencyType = mongoose.mtModel(req.user.tenantId + '.' + 'DependencyType');
                     var seedArray = require('./seed-data/seed-data.dependency-setup.server.controller.js').getDependencyTypes(req);
@@ -403,7 +413,9 @@ exports.seed = function(req, res) {
                         }
                     });
                 },
+
                 // --- Stakeholder categories setup ---
+
                 function(callback){
                     var PeopleCategory = mongoose.mtModel(req.user.tenantId + '.' + 'PeopleCategory');
                     var seedArray = require('./seed-data/seed-data.stakeholders-setup.server.controller.js').getPeopleCategories(req);
@@ -434,7 +446,9 @@ exports.seed = function(req, res) {
                         }
                     });
                 },
+
                 // --- Portfolio people setup ---
+
                 function(callback){
                     var PeoplePortfolioGroup = mongoose.mtModel(req.user.tenantId + '.' + 'PeoplePortfolioGroup');
                     var seedArray = require('./seed-data/seed-data.portfolio-people.server.controller').getPeoplePortfolioGroups(req);
@@ -465,7 +479,9 @@ exports.seed = function(req, res) {
                         }
                     });
                 },
+
                 // --- Project people setup ---
+
                 function(callback){
                     var PeopleProjectGroup = mongoose.mtModel(req.user.tenantId + '.' + 'PeopleProjectGroup');
                     var seedArray = require('./seed-data/seed-data.project-people.server.controller').getPeopleProjectGroups(req);
@@ -496,7 +512,282 @@ exports.seed = function(req, res) {
                         }
                     });
                 },
+
+                // --- Project review setup ---
+
+                function(callback){
+                    var ProjectReviewScore = mongoose.mtModel(req.user.tenantId + '.' + 'ProjectReviewScore');
+                    var seedArray = require('./seed-data/seed-data.review-setup.server.controller').getProjectReviewScores(req);
+                    async.each(seedArray, function(item, callbackEach) {
+                        ProjectReviewScore.create(item, function(err){
+                            callbackEach(err);
+                        });
+                    }, function(err){
+                        if( err ) {
+                            callback(err);
+                        } else {
+                            callback(null, {message: 'Seed project review scores created'});
+                        }
+                    });
+                },
+                function(callback){
+                    var ProjectReviewType = mongoose.mtModel(req.user.tenantId + '.' + 'ProjectReviewType');
+                    var seedArray = require('./seed-data/seed-data.project-review.server.controller').getProjectReviewTypes(req);
+                    async.each(seedArray, function(item, callbackEach) {
+                        ProjectReviewType.create(item, function(err){
+                            callbackEach(err);
+                        });
+                    }, function(err){
+                        if( err ) {
+                            callback(err);
+                        } else {
+                            callback(null, {message: 'Seed project review types created'});
+                        }
+                    });
+                },
+                function(callback){
+                    var ProjectReviewTemplate = mongoose.mtModel(req.user.tenantId + '.' + 'ProjectReviewTemplate');
+                    var seedArray = require('./seed-data/seed-data.project-review.server.controller').getProjectReviewTemplates(req);
+                    async.each(seedArray, function(item, callbackEach) {
+                        ProjectReviewTemplate.create(item, function(err){
+                            callbackEach(err);
+                        });
+                    }, function(err){
+                        if( err ) {
+                            callback(err);
+                        } else {
+                            callback(null, {message: 'Seed project review templates created'});
+                        }
+                    });
+                },
+
+                // --- Portfolio Review ---
+
+                function(callback){
+                    var PortfolioReviewType = mongoose.mtModel(req.user.tenantId + '.' + 'PortfolioReviewType');
+                    var seedArray = require('./seed-data/seed-data.portfolio-review.server.controller').getPortfolioReviewTypes(req);
+                    async.each(seedArray, function(item, callbackEach) {
+                        PortfolioReviewType.create(item, function(err){
+                            callbackEach(err);
+                        });
+                    }, function(err){
+                        if( err ) {
+                            callback(err);
+                        } else {
+                            callback(null, {message: 'Seed portfolio review types created'});
+                        }
+                    });
+                },
+                function(callback){
+                    var PortfolioReviewTemplate = mongoose.mtModel(req.user.tenantId + '.' + 'PortfolioReviewTemplate');
+                    var seedArray = require('./seed-data/seed-data.portfolio-review.server.controller').getPortfolioReviewTemplates(req);
+                    async.each(seedArray, function(item, callbackEach) {
+                        PortfolioReviewTemplate.create(item, function(err){
+                            callbackEach(err);
+                        });
+                    }, function(err){
+                        if( err ) {
+                            callback(err);
+                        } else {
+                            callback(null, {message: 'Seed portfolio review templates created'});
+                        }
+                    });
+                },
+
+                // --- Maturity Models ---
+
+                function(callback){
+                    var MaturityModel = mongoose.mtModel(req.user.tenantId + '.' + 'MaturityModel');
+                    var seedArray = require('./seed-data/seed-data.maturity-setup.server.controller').getMaturityModels(req);
+                    async.each(seedArray, function(item, callbackEach) {
+                        MaturityModel.create(item, function(err){
+                            callbackEach(err);
+                        });
+                    }, function(err){
+                        if( err ) {
+                            callback(err);
+                        } else {
+                            callback(null, {message: 'Seed maturity models created'});
+                        }
+                    });
+                },
+
+                // --- Improvement Setup ---
+
+                function(callback){
+                    var ImprovementReason = mongoose.mtModel(req.user.tenantId + '.' + 'ImprovementReason');
+                    var seedArray = require('./seed-data/seed-data.improvement-setup.server.controller').getImprovementReasons(req);
+                    async.each(seedArray, function(item, callbackEach) {
+                        ImprovementReason.create(item, function(err){
+                            callbackEach(err);
+                        });
+                    }, function(err){
+                        if( err ) {
+                            callback(err);
+                        } else {
+                            callback(null, {message: 'Seed improvement reasons created'});
+                        }
+                    });
+                },
+                function(callback){
+                    var ImprovementState = mongoose.mtModel(req.user.tenantId + '.' + 'ImprovementState');
+                    var seedArray = require('./seed-data/seed-data.improvement-setup.server.controller').getImprovementStates(req);
+                    async.each(seedArray, function(item, callbackEach) {
+                        ImprovementState.create(item, function(err){
+                            callbackEach(err);
+                        });
+                    }, function(err){
+                        if( err ) {
+                            callback(err);
+                        } else {
+                            callback(null, {message: 'Seed improvement states created'});
+                        }
+                    });
+                },
+                function(callback){
+                    var ImprovementType = mongoose.mtModel(req.user.tenantId + '.' + 'ImprovementType');
+                    var seedArray = require('./seed-data/seed-data.improvement-setup.server.controller').getImprovementTypes(req);
+                    async.each(seedArray, function(item, callbackEach) {
+                        ImprovementType.create(item, function(err){
+                            callbackEach(err);
+                        });
+                    }, function(err){
+                        if( err ) {
+                            callback(err);
+                        } else {
+                            callback(null, {message: 'Seed improvement types created'});
+                        }
+                    });
+                },
+
+                // --- Log Setup ---
+
+                function(callback){
+                    var LogPriority = mongoose.mtModel(req.user.tenantId + '.' + 'LogPriority');
+                    var seedArray = require('./seed-data/seed-data.log-setup.server.controller').getLogPriorities(req);
+                    async.each(seedArray, function(item, callbackEach) {
+                        LogPriority.create(item, function(err){
+                            callbackEach(err);
+                        });
+                    }, function(err){
+                        if( err ) {
+                            callback(err);
+                        } else {
+                            callback(null, {message: 'Seed log priorities created'});
+                        }
+                    });
+                },
+                function(callback){
+                    var LogReason = mongoose.mtModel(req.user.tenantId + '.' + 'LogReason');
+                    var seedArray = require('./seed-data/seed-data.log-setup.server.controller').getLogReasons(req);
+                    async.each(seedArray, function(item, callbackEach) {
+                        LogReason.create(item, function(err){
+                            callbackEach(err);
+                        });
+                    }, function(err){
+                        if( err ) {
+                            callback(err);
+                        } else {
+                            callback(null, {message: 'Seed log reasons created'});
+                        }
+                    });
+                },
+                function(callback){
+                    var IssueState = mongoose.mtModel(req.user.tenantId + '.' + 'IssueState');
+                    var seedArray = require('./seed-data/seed-data.log-setup.server.controller').getIssueStates(req);
+                    async.each(seedArray, function(item, callbackEach) {
+                        IssueState.create(item, function(err){
+                            callbackEach(err);
+                        });
+                    }, function(err){
+                        if( err ) {
+                            callback(err);
+                        } else {
+                            callback(null, {message: 'Seed issue states created'});
+                        }
+                    });
+                },
+                function(callback){
+                    var IssueActionState = mongoose.mtModel(req.user.tenantId + '.' + 'IssueActionState');
+                    var seedArray = require('./seed-data/seed-data.log-setup.server.controller').getIssueActionStates(req);
+                    async.each(seedArray, function(item, callbackEach) {
+                        IssueActionState.create(item, function(err){
+                            callbackEach(err);
+                        });
+                    }, function(err){
+                        if( err ) {
+                            callback(err);
+                        } else {
+                            callback(null, {message: 'Seed action states created'});
+                        }
+                    });
+                },
+                function(callback){
+                    var ChangeRequestState = mongoose.mtModel(req.user.tenantId + '.' + 'ChangeRequestState');
+                    var seedArray = require('./seed-data/seed-data.log-setup.server.controller').getChangeRequestStates(req);
+                    async.each(seedArray, function(item, callbackEach) {
+                        ChangeRequestState.create(item, function(err){
+                            callbackEach(err);
+                        });
+                    }, function(err){
+                        if( err ) {
+                            callback(err);
+                        } else {
+                            callback(null, {message: 'Seed change states created'});
+                        }
+                    });
+                },
+
+                // --- Milestone Setup ---
+
+                function(callback){
+                    var MilestoneState = mongoose.mtModel(req.user.tenantId + '.' + 'MilestoneState');
+                    var seedArray = require('./seed-data/seed-data.milestone-setup.server.controller').getMilestoneStates(req);
+                    async.each(seedArray, function(item, callbackEach) {
+                        MilestoneState.create(item, function(err){
+                            callbackEach(err);
+                        });
+                    }, function(err){
+                        if( err ) {
+                            callback(err);
+                        } else {
+                            callback(null, {message: 'Seed milestone states created'});
+                        }
+                    });
+                },
+                function(callback){
+                    var ProjectMilestoneType = mongoose.mtModel(req.user.tenantId + '.' + 'ProjectMilestoneType');
+                    var seedArray = require('./seed-data/seed-data.milestone-setup.server.controller').getProjectMilestoneTypes(req);
+                    async.each(seedArray, function(item, callbackEach) {
+                        ProjectMilestoneType.create(item, function(err){
+                            callbackEach(err);
+                        });
+                    }, function(err){
+                        if( err ) {
+                            callback(err);
+                        } else {
+                            callback(null, {message: 'Seed project milestone types created'});
+                        }
+                    });
+                },
+                function(callback){
+                    var PortfolioMilestoneType = mongoose.mtModel(req.user.tenantId + '.' + 'PortfolioMilestoneType');
+                    var seedArray = require('./seed-data/seed-data.milestone-setup.server.controller').getPortfolioMilestoneTypes(req);
+                    async.each(seedArray, function(item, callbackEach) {
+                        PortfolioMilestoneType.create(item, function(err){
+                            callbackEach(err);
+                        });
+                    }, function(err){
+                        if( err ) {
+                            callback(err);
+                        } else {
+                            callback(null, {message: 'Seed portfolio milestone types created'});
+                        }
+                    });
+                },
+
                 // --- Process setup ---
+
                 function(callback){
                     var GateProcess = mongoose.mtModel(req.user.tenantId + '.' + 'GateProcess');
                     var seedArray = require('./seed-data/seed-data.process-setup.server.controller.js').getGateProcesses(req);

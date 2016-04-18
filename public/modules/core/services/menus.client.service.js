@@ -341,8 +341,8 @@ angular.module('core').service('Menus', [
                 // Portfolio Reviews
         this.addSubMenuItem('topbar', 'evaluation', 'Portfolio reviews', 'portfolio-reviews','portfolio-reviews',false,
             ['superAdmin','admin','pmo','projectManager','portfolioManager','executive'],12);
-                // Maturity Reviews
-        this.addSubMenuItem('topbar', 'evaluation', 'Maturity reviews', 'maturity-management','maturity-management',false,
+                // Maturity Assessments
+        this.addSubMenuItem('topbar', 'evaluation', 'Maturity assessments', 'maturity-management','maturity-management',false,
             ['superAdmin','admin','pmo','projectManager','portfolioManager','executive'],13);
                 // Reviews summary
         this.addSubMenuItem('topbar', 'evaluation', 'Reviews summary', 'review-summaries','review-summaries',false,

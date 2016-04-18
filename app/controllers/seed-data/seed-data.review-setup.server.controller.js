@@ -1,7 +1,7 @@
 'use strict';
 
 /**
- * SEED - REVIEW SETUP
+ * SEED - REVIEW SCORES SETUP
  */
 
 var _ = require('lodash'),
@@ -19,7 +19,7 @@ var score3 = mongoose.Types.ObjectId();
 var score4 = mongoose.Types.ObjectId();
 var score5 = mongoose.Types.ObjectId();
 
-exports.getReviewScores = function(req){
+exports.getProjectReviewScores = function(req){
     return [
         {
             _id: score1,
@@ -63,31 +63,3 @@ exports.getReviewScores = function(req){
         }
     ];
 };
-
-
-// Project Review Types
-
-var pReviewType1 = mongoose.Types.ObjectId();
-var pReviewType2 = mongoose.Types.ObjectId();
-
-exports.getReviewScores = function(req){
-    return [
-        {
-            _id: pReviewType1,
-            name: 'Post Implementation Review',
-            description:'Stakeholder satisfaction survey to be run at end of project',
-            user:req.user._id,
-            created: Date.now()
-        },
-        {
-            _id: pReviewType2,
-            name: 'End of Stage Review',
-            description:'Stakeholder satisfaction survey to be run at end of a stage',
-            user:req.user._id,
-            created: Date.now()
-        }
-    ];
-};
-
-// Project Review templates
-
