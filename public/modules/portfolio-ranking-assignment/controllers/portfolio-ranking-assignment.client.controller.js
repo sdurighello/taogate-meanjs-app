@@ -145,7 +145,7 @@ angular.module('portfolio-ranking-assignment').controller('PortfolioRankingAssig
                     $scope.selectedAssignment.unassignedProjects = [];
                     _.forEach($scope.projects, function(project){
                         //Check if project belongs to ranking portfolio
-                        if(project.portfolio._id === node._id){
+                        if(project.portfolio && (project.portfolio._id === node._id)){
                             // Check if the project has been already added to the ranking, if not then push it in the unassigned
                             if(!_.find(res.projects,'_id', project._id)){
                                 $scope.selectedAssignment.unassignedProjects.push({

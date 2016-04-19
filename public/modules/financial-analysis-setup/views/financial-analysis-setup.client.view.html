@@ -54,7 +54,7 @@
                             </div>
                         </div>
                         <div class="col-md-8">
-                            <div class="alert alert-warning text-center" data-ng-show="!selectedCostGroup">
+                            <div class="alert alert-warning text-center" data-ng-show="!selectedCostGroup && costGroups.length !== 0">
                                 Please select a cost group to see the details
                             </div>
                             <div class="panel panel-default" data-ng-show="selectedCostGroup">
@@ -240,7 +240,7 @@
                             </div>
                         </div>
                         <div class="col-md-8">
-                            <div class="alert alert-warning text-center" data-ng-show="!selectedBenefitGroup">
+                            <div class="alert alert-warning text-center" data-ng-show="!selectedBenefitGroup && benefitGroups.length !== 0">
                                 Please select a benefit group to see the details
                             </div>
                             <div class="panel panel-default" data-ng-show="selectedBenefitGroup">

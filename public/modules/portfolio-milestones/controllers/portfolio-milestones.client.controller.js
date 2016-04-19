@@ -23,7 +23,7 @@ angular.module('portfolio-milestones').controller('PortfolioMilestonesController
 			vm.user = Authentication.user;
 
 			Portfolios.query(function(portfolios){
-				//vm.portfolios = portfolios;
+				vm.portfolios = portfolios;
 				vm.portfolioTrees = createNodeTrees(portfolios);
 			}, function(err){
 				vm.initErrors.push(err.data.message);

@@ -7,16 +7,16 @@ module.exports = function(app) {
 	// Portfolios Routes
 	app.route('/portfolios')
 		.get(users.requiresLogin, portfolios.list)
-		.post(users.requiresLogin, portfolios.hasAuthorization, portfolios.create);
+		.post(users.requiresLogin, portfolios.hasCreateAuthorization, portfolios.create);
 
 	app.route('/portfolios/:portfolioId')
 		.get(users.requiresLogin, portfolios.read)
-		.put(users.requiresLogin, portfolios.hasAuthorization, portfolios.update)
-		.delete(users.requiresLogin, portfolios.hasAuthorization, portfolios.delete);
+		.put(users.requiresLogin, portfolios.hasEditAuthorization, portfolios.update)
+		.delete(users.requiresLogin, portfolios.hasEditAuthorization, portfolios.delete);
 
 	// Stakeholders
 	app.route('/portfolios/:portfolioId/stakeholders/:assignedGroupId/:assignedRoleId')
-		.put(users.requiresLogin, portfolios.hasAuthorization, portfolios.updatePeopleAssignment);
+		.put(users.requiresLogin, portfolios.hasEditAuthorization, portfolios.updatePeopleAssignment);
 
 	// Finish by binding the Portfolio middleware
 	app.param('portfolioId', portfolios.portfolioByID);

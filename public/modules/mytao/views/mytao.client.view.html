@@ -13,10 +13,11 @@
     </div>
 
     <button class="btn btn-large btn-primary" data-ng-click="parentCtrl.seed()">Seed</button><br>
-    <span data-ng-show="parentCtrl.seedRes">{{parentCtrl.seedRes}}</span>
-    <ul data-ng-show="parentCtrl.seedErr">
-        <li data-ng-repeat="err in parentCtrl.seedErr">{{err.message}}</li>
+    <ul data-ng-show="parentCtrl.seedRes">
+        <!--<li data-ng-repeat="res in parentCtrl.seedRes track by $index">{{res.message}}</li>-->
+        {{parentCtrl.seedRes}}
     </ul>
+    <span data-ng-show="parentCtrl.seedErr">{{parentCtrl.seedErr}}</span>
 
 
 

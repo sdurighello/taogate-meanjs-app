@@ -56,7 +56,10 @@
                                     style="overflow: hidden">
                                 <span>{{dimension.name}}</span>
                             </button>
-                            <div class="alert alert-warning text-center" data-ng-show="!parentCtrl.selectedMaturityModel">
+                            <div class="alert alert-warning text-center" data-ng-show="parentCtrl.maturityModels.length === 0">
+                                <span>There are no maturity models created yet</span>
+                            </div>
+                            <div class="alert alert-warning text-center" data-ng-show="!parentCtrl.selectedMaturityModel && parentCtrl.maturityModels.length !== 0">
                                 <span>Select a maturity model to see its dimensions</span>
                             </div>
                             <div class="alert alert-warning text-center" data-ng-show="parentCtrl.selectedMaturityModel && !parentCtrl.selectedMaturityModel.dimensions.length">
@@ -131,7 +134,7 @@
                                 <div class="panel-body">
                                     <div data-ng-repeat="review in parentCtrl.selectedDimension.maturityReview.history">
                                         <div class="row">
-                                            <div class="form-group col-xs-3">
+                                            <div class="form-group col-xs-5">
                                                 <select class="form-control input-sm" data-ng-model = "review.score"
                                                         data-ng-options="score._id as score.name for score in parentCtrl.projectReviewScores" disabled>
                                                     <option value="">No score</option>
@@ -145,7 +148,7 @@
                                                 <span><em>On:</em></span>&nbsp;
                                                 <span>{{review.created | date:'EEE d, MMM yyyy'}}</span>
                                             </div>
-                                            <div class="form-group col-xs-3">
+                                            <div class="form-group col-xs-1">
                                                 <button class="btn btn-info btn-xs"
                                                         data-ng-click="parentCtrl.showHistoryComment[review._id] = !parentCtrl.showHistoryComment[review._id]">
                                                     <span class="glyphicon glyphicon-info-sign"></span>

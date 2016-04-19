@@ -96,7 +96,7 @@
             </div>
         </div>
         <div class="col-md-8">
-            <div class="alert alert-warning text-center" data-ng-hide="selectedTemplate">
+            <div class="alert alert-warning text-center" data-ng-show="!selectedTemplate && templates.length !== 0">
                 Please select a template to see the details
             </div>
             <div data-ng-show="selectedTemplate">

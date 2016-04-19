@@ -20,7 +20,7 @@
 				<div class="alert alert-warning text-center" data-ng-hide="!portfolios.$resolved || portfolios.length">
 					No portfolios yet
 				</div>
-				<div class="row">
+				<div class="row" data-ng-show="portfolios.$resolved && portfolios.length !== 0">
 					<div class="col-md-12">
 						<button class="btn btn-default btn-sm btn-info" style="min-width:50px; max-width: 150px; overflow:hidden; margin: 2%;"
 								data-ng-click="selectPortfolio('all')">

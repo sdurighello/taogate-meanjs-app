@@ -327,12 +327,12 @@
 							<br>
 							<div class="row">
 								<div class="col-md-12">
+                                    <div class="text-center" data-ng-show="!impactScore && impactScores.length">
+                                        <em>Please select a impact score to see the details</em>
+                                    </div>
 									<div class="panel panel-default">
 										<div class="panel-heading">
 											<h6 class="panel-title" data-ng-bind="impactScore.name"></h6>
-											<div class="text-center" data-ng-hide="impactScore">
-												<em>Please select a impact score to see the details</em>
-											</div>
 										</div>
 										<div class="panel-body" data-ng-show="impactScore">
 											<div ng-switch-default="view">

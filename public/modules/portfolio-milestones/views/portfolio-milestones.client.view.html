@@ -22,7 +22,7 @@
             <portfolio-tree portfolios="parentCtrl.portfolios" portfolio-trees="parentCtrl.portfolioTrees" select-portfolio="parentCtrl.selectPortfolio" is-resolving="parentCtrl.isResolving"></portfolio-tree>
         </div>
         <div class="col-md-9">
-            <div class="row" data-ng-hide="parentCtrl.selectedPortfolio || parentCtrl.portfolios.length === 0" >
+            <div class="row" data-ng-show="!parentCtrl.selectedPortfolio && parentCtrl.portfolios.length !== 0" >
                 <div class="col-md-12">
                     <div class="alert alert-warning text-center">
                         Select a portfolio to see its details

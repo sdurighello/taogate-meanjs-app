@@ -10,49 +10,78 @@ var _ = require('lodash'),
     User = mongoose.model('User');
 
 
-// Portfolio Governance Board
-var portfolioGovernanceBoard = mongoose.Types.ObjectId();
-
-var businessExecutive = mongoose.Types.ObjectId();
-var sectorITManager = mongoose.Types.ObjectId();
-var portfolioManager = mongoose.Types.ObjectId();
-
-
-exports.getPeoplePortfolioGroups = function(req){
-    return [
-        {
-            _id: portfolioGovernanceBoard,
-            name: 'Portfolio governance board',
-            description:'Portfolio governance board',
-            roles: [businessExecutive, sectorITManager, portfolioManager],
-            user:req.user._id,
-            created: Date.now()
+var createObjects = function(schema, stringMsg, seedArray, callback){
+    async.each(seedArray, function(item, callbackEach) {
+        schema.findById(item._id).exec(function(err, itemReturned){
+            if(!itemReturned){
+                schema.create(item, function(err){
+                    callbackEach(err);
+                });
+            }
+        });
+    }, function(err){
+        if( err ) {
+            callback(err);
+        } else {
+            callback(null, stringMsg);
         }
-    ];
+    });
 };
 
-exports.getPeoplePortfolioRoles = function(req){
-    return [
-        {
-            _id: businessExecutive,
-            name: 'Business executive',
-            description:'Business executive',
-            user:req.user._id,
-            created: Date.now()
+exports.seedPortfolioPeople = function(req, callback){
+    // Portfolio Governance Board
+    var portfolioGovernanceBoard = mongoose.Types.ObjectId();
+
+    var businessExecutive = mongoose.Types.ObjectId();
+    var sectorITManager = mongoose.Types.ObjectId();
+    var portfolioManager = mongoose.Types.ObjectId();
+    async.series([
+        function(callback) {
+            var schema = mongoose.mtModel(req.user.tenantId + '.' + 'PeoplePortfolioGroup');
+            var seedArray =  [
+                {
+                    _id: portfolioGovernanceBoard,
+                    name: 'Portfolio governance board',
+                    description:'Portfolio governance board',
+                    roles: [businessExecutive, sectorITManager, portfolioManager],
+                    user:req.user._id,
+                    created: Date.now()
+                }
+            ];
+            createObjects(schema, 'PeoplePortfolioGroup', seedArray, callback);
         },
-        {
-            _id: sectorITManager,
-            name: 'Sector IT Manager',
-            description:'Sector IT Manager',
-            user:req.user._id,
-            created: Date.now()
-        },
-        {
-            _id: portfolioManager,
-            name: 'Portfolio Manager',
-            description:'Portfolio Manager',
-            user:req.user._id,
-            created: Date.now()
+        function(callback) {
+            var schema = mongoose.mtModel(req.user.tenantId + '.' + 'PeoplePortfolioRole');
+            var seedArray =  [
+                {
+                    _id: businessExecutive,
+                    name: 'Business executive',
+                    description:'Business executive',
+                    user:req.user._id,
+                    created: Date.now()
+                },
+                {
+                    _id: sectorITManager,
+                    name: 'Sector IT Manager',
+                    description:'Sector IT Manager',
+                    user:req.user._id,
+                    created: Date.now()
+                },
+                {
+                    _id: portfolioManager,
+                    name: 'Portfolio Manager',
+                    description:'Portfolio Manager',
+                    user:req.user._id,
+                    created: Date.now()
+                }
+            ];
+            createObjects(schema, 'PeoplePortfolioRole', seedArray, callback);
         }
-    ];
+    ], function (err, result) {
+        if( err ) {
+            callback(err);
+        } else {
+            callback(null, result);
+        }
+    });
 };

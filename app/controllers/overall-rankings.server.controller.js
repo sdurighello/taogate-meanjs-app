@@ -79,24 +79,34 @@ exports.list = function(req, res) {
 
     OverallRanking.find().populate('user', 'displayName').populate('projects')
         .exec(function(err, rankings){
+            if(err){
+                return res.status(400).send({
+                    message: errorHandler.getErrorMessage(err)
+                });
+            }
             // Remove the projects 'Not selected for prioritization' or 'Inactive'
-            async.each(rankings[0].projects, function(project, callback) {
-                if(project){
-                    if(project.selection.selectedForPrioritization === false || project.selection.active === false){
-                        rankings[0].projects.splice(rankings[0].projects.indexOf(project), 1);
-                        rankings[0].save();
+            if(rankings){
+                async.each(rankings[0].projects, function(project, callback) {
+                    if(project){
+                        if(project.selection.selectedForPrioritization === false || project.selection.active === false){
+                            rankings[0].projects.splice(rankings[0].projects.indexOf(project), 1);
+                            rankings[0].save();
+                        }
                     }
-                }
-                callback();
-            }, function(err){
-                if (err) {
-                    return res.status(400).send({
-                        message: errorHandler.getErrorMessage(err)
-                    });
-                } else {
-                    res.jsonp(rankings);
-                }
-            });
+                    callback();
+                }, function(err){
+                    if (err) {
+                        return res.status(400).send({
+                            message: errorHandler.getErrorMessage(err)
+                        });
+                    } else {
+                        res.jsonp(rankings);
+                    }
+                });
+            } else {
+                res.jsonp(rankings);
+            }
+
         });
 };
 

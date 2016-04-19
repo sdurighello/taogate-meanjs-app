@@ -306,7 +306,32 @@ exports.portfolioByID = function(req, res, next, id) {
  * Portfolio authorization middleware
  */
 
-exports.hasAuthorization = function(req, res, next) {
+exports.hasCreateAuthorization = function(req, res, next) {
+
+    var userIsPortfolioManager, userIsBackupPortfolioManager, userIsSuperhero;
+
+    if(req.body.portfolioManager){
+        userIsPortfolioManager = req.portfolio.portfolioManager.equals(req.user._id);
+    }
+
+    if(req.body.backupPortfolioManager){
+        userIsBackupPortfolioManager = req.portfolio.backupPortfolioManager.equals(req.user._id);
+    }
+
+    userIsSuperhero = !!_.find(req.user.roles, function(role) {
+        return (role === 'superAdmin' || role === 'admin' || role === 'pmo');
+    });
+
+    if(!(userIsPortfolioManager || userIsBackupPortfolioManager || userIsSuperhero)){
+        return res.status(403).send({
+            message: 'User is not authorized'
+        });
+    }
+
+    next();
+};
+
+exports.hasEditAuthorization = function(req, res, next) {
 
     var userIsPortfolioManager, userIsBackupPortfolioManager, userIsSuperhero;
 

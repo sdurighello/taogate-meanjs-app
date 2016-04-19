@@ -480,7 +480,7 @@
                                     <div class="panel panel-default">
                                         <div class="panel-heading">
                                             <h6 class="panel-title" data-ng-bind="severity.name"></h6>
-                                            <div class="text-center" data-ng-hide="severity">
+                                            <div class="text-center" data-ng-show="!severity && severities.length">
                                                 <em>Please select a severity to see the details</em>
                                             </div>
                                         </div>
