@@ -18,6 +18,8 @@ var createObjects = function(schema, stringMsg, seedArray, callback){
                 schema.create(item, function(err){
                     callbackEach(err);
                 });
+            } else {
+                callbackEach();
             }
         });
     }, function(err){
@@ -29,7 +31,7 @@ var createObjects = function(schema, stringMsg, seedArray, callback){
     });
 };
 
-exports.seedProjectReviews = function(req, callback){
+exports.seedProjectReviews = function(user, callback){
 
     // Project Review Types
 
@@ -43,31 +45,31 @@ exports.seedProjectReviews = function(req, callback){
 
     async.series([
         function(callback) {
-            var schema = mongoose.mtModel(req.user.tenantId + '.' + 'ProjectReviewType');
+            var schema = mongoose.mtModel(user.tenantId + '.' + 'ProjectReviewType');
             var seedArray =  [
                 {
                     _id: pReviewType1,
                     name: 'Stakeholders survey',
                     description:'Stakeholder satisfaction surveys',
-                    user:req.user._id,
+                    user:user._id,
                     created: Date.now()
                 },
                 {
                     _id: pReviewType2,
                     name: 'Governance review',
                     description:'Process effectiveness evaluations',
-                    user:req.user._id,
+                    user:user._id,
                     created: Date.now()
                 }
             ];
             createObjects(schema, 'ProjectReviewType', seedArray, callback);
         },
         function(callback) {
-            var schema = mongoose.mtModel(req.user.tenantId + '.' + 'ProjectReviewTemplate');
+            var schema = mongoose.mtModel(user.tenantId + '.' + 'ProjectReviewTemplate');
             var seedArray =  [
                 {
                     _id: pReviewTemp1,
-                    user:req.user._id,
+                    user:user._id,
                     created: Date.now(),
                     name: 'Post Implementation Review',
                     description:'Post Implementation Review',
@@ -75,7 +77,7 @@ exports.seedProjectReviews = function(req, callback){
                     groups:[
                         {
                             name:'Scope management',
-                            user:req.user._id,
+                            user:user._id,
                             created: Date.now(),
                             description:'How well was the scope identified',
                             weight: 20,
@@ -83,7 +85,7 @@ exports.seedProjectReviews = function(req, callback){
                             items :[
                                 {
                                     name:'How well were main requirements and edge cases identified early on?',
-                                    user:req.user._id,
+                                    user:user._id,
                                     created: Date.now(),
                                     description:'Requirements should have been collected in a structured manner by allowing stakeholders to productively brainstorm',
                                     weight: 20,
@@ -95,7 +97,7 @@ exports.seedProjectReviews = function(req, callback){
                 },
                 {
                     _id: pReviewTemp2,
-                    user:req.user._id,
+                    user:user._id,
                     created: Date.now(),
                     name: 'Project healthcheck',
                     description:'Assessment of project health in regards to application of best practices and fit for purpose governance setup',
@@ -103,7 +105,7 @@ exports.seedProjectReviews = function(req, callback){
                     groups:[
                         {
                             name:'Benefit management',
-                            user:req.user._id,
+                            user:user._id,
                             created: Date.now(),
                             description:'Evaluation of benefit management adoption by the project',
                             weight: 20,
@@ -111,7 +113,7 @@ exports.seedProjectReviews = function(req, callback){
                             items :[
                                 {
                                     name:'How well is benefit management implemented?',
-                                    user:req.user._id,
+                                    user:user._id,
                                     created: Date.now(),
                                     description:'A value tree should be present and a tracking process should be agreed with business management',
                                     weight: 20,

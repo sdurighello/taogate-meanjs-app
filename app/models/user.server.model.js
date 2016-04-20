@@ -32,6 +32,11 @@ var UserSchema = new Schema({
 		default: '',
 		validate: [validateLocalStrategyProperty, 'Please fill in the company name']
 	},
+    title: {
+        type: String,
+        trim: true,
+        default: ''
+    },
 	firstName: {
 		type: String,
 		trim: true,

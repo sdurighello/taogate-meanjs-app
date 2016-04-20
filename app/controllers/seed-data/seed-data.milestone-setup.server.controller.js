@@ -18,6 +18,8 @@ var createObjects = function(schema, stringMsg, seedArray, callback){
                 schema.create(item, function(err){
                     callbackEach(err);
                 });
+            } else {
+                callbackEach();
             }
         });
     }, function(err){
@@ -29,7 +31,7 @@ var createObjects = function(schema, stringMsg, seedArray, callback){
     });
 };
 
-exports.seedMilestones = function(req, callback){
+exports.seedMilestones = function(user, callback){
 
     // Milestone states
 
@@ -58,130 +60,130 @@ exports.seedMilestones = function(req, callback){
 
     async.series([
         function(callback) {
-            var schema = mongoose.mtModel(req.user.tenantId + '.' + 'MilestoneState');
+            var schema = mongoose.mtModel(user.tenantId + '.' + 'MilestoneState');
             var seedArray =  [
                 {
                     _id: state1,
                     name: 'Not started',
                     description:'Not started',
-                    user:req.user._id,
+                    user:user._id,
                     created: Date.now()
                 },
                 {
                     _id: state2,
                     name: 'In progress',
                     description:'In progress',
-                    user:req.user._id,
+                    user:user._id,
                     created: Date.now()
                 },
                 {
                     _id: state3,
                     name: 'On-hold',
                     description:'On-hold',
-                    user:req.user._id,
+                    user:user._id,
                     created: Date.now()
                 },
                 {
                     _id: state4,
                     name: 'Delayed',
                     description:'Delayed',
-                    user:req.user._id,
+                    user:user._id,
                     created: Date.now()
                 },
                 {
                     _id: state5,
                     name: 'Partially achieved',
                     description:'Partially achieved',
-                    user:req.user._id,
+                    user:user._id,
                     created: Date.now()
                 },
                 {
                     _id: state6,
                     name: 'Fully achieved',
                     description:'Fully achieved',
-                    user:req.user._id,
+                    user:user._id,
                     created: Date.now()
                 },
                 {
                     _id: state7,
                     name: 'Not achieved',
                     description:'Not achieved',
-                    user:req.user._id,
+                    user:user._id,
                     created: Date.now()
                 }
             ];
             createObjects(schema, 'MilestoneState', seedArray, callback);
         },
         function(callback) {
-            var schema = mongoose.mtModel(req.user.tenantId + '.' + 'ProjectMilestoneType');
+            var schema = mongoose.mtModel(user.tenantId + '.' + 'ProjectMilestoneType');
             var seedArray =  [
                 {
                     _id: projectMilType1,
                     name: 'Business justification',
                     description:'Business case or financial modelling',
-                    user:req.user._id,
+                    user:user._id,
                     created: Date.now()
                 },
                 {
                     _id: projectMilType2,
                     name: 'Business analysis',
                     description:'Business process analysis',
-                    user:req.user._id,
+                    user:user._id,
                     created: Date.now()
                 },
                 {
                     _id: projectMilType3,
                     name: 'Organizational change',
                     description:'Organizational change',
-                    user:req.user._id,
+                    user:user._id,
                     created: Date.now()
                 },
                 {
                     _id: projectMilType4,
                     name: 'System development',
                     description:'System development',
-                    user:req.user._id,
+                    user:user._id,
                     created: Date.now()
                 },
                 {
                     _id: projectMilType5,
                     name: 'Testing',
                     description:'Testing',
-                    user:req.user._id,
+                    user:user._id,
                     created: Date.now()
                 },
                 {
                     _id: projectMilType6,
                     name: 'Training',
                     description:'Training',
-                    user:req.user._id,
+                    user:user._id,
                     created: Date.now()
                 }
             ];
             createObjects(schema, 'ProjectMilestoneType', seedArray, callback);
         },
         function(callback) {
-            var schema = mongoose.mtModel(req.user.tenantId + '.' + 'PortfolioMilestoneType');
+            var schema = mongoose.mtModel(user.tenantId + '.' + 'PortfolioMilestoneType');
             var seedArray =  [
                 {
                     _id: portfolioMilType1,
                     name: 'Quick win',
                     description:'Quick win',
-                    user:req.user._id,
+                    user:user._id,
                     created: Date.now()
                 },
                 {
                     _id: portfolioMilType2,
                     name: 'Enabling',
                     description:'Enabling',
-                    user:req.user._id,
+                    user:user._id,
                     created: Date.now()
                 },
                 {
                     _id: portfolioMilType3,
                     name: 'Disrupting',
                     description:'Disrupting',
-                    user:req.user._id,
+                    user:user._id,
                     created: Date.now()
                 }
             ];

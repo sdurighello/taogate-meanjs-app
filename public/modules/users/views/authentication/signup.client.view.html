@@ -7,6 +7,10 @@
 					<label for="organization">Organization</label>
 					<input type="text" required id="organization" name="organization" class="form-control" data-ng-model="credentials.organization" placeholder="Organization">
 				</div>
+                <div class="form-group">
+                    <label for="organization">Title</label>
+                    <input type="text" id="title" name="title" class="form-control" data-ng-model="credentials.title" placeholder="Title">
+                </div>
 				<div class="form-group">
 					<label for="firstName">First Name</label>
 					<input type="text" required id="firstName" name="firstName" class="form-control" data-ng-model="credentials.firstName" placeholder="First Name">
@@ -27,6 +31,10 @@
 					<label for="password">Password</label>
 					<input type="password" id="password" name="password" class="form-control" data-ng-model="credentials.password" placeholder="Password">
 				</div>
+                <div class="form-group">
+                    <input type="checkbox" data-ng-model="credentials.seedData">
+                    <span> Include setup data <i>(Recommended)</i></span>
+                </div>
 				<div class="text-center form-group">
 					<button type="submit" class="btn btn-large btn-primary">Sign up</button>&nbsp; or&nbsp;
 					<a href="/#!/signin" class="show-signup">Sign in</a>

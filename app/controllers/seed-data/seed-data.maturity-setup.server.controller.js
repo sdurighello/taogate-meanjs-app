@@ -18,6 +18,8 @@ var createObjects = function(schema, stringMsg, seedArray, callback){
                 schema.create(item, function(err){
                     callbackEach(err);
                 });
+            } else {
+                callbackEach();
             }
         });
     }, function(err){
@@ -29,7 +31,7 @@ var createObjects = function(schema, stringMsg, seedArray, callback){
     });
 };
 
-exports.seedMaturityModels = function(req, callback){
+exports.seedMaturityModels = function(user, callback){
 
     // Maturity model
 
@@ -158,13 +160,13 @@ exports.seedMaturityModels = function(req, callback){
 
     async.series([
         function(callback) {
-            var schema = mongoose.mtModel(req.user.tenantId + '.' + 'MaturityModel');
+            var schema = mongoose.mtModel(user.tenantId + '.' + 'MaturityModel');
             var seedArray =  [
                 {
                     _id: model1,
                     name: 'CMMI Maturity Model',
                     description:'Maturity model based on the CMMI standard',
-                    user:req.user._id,
+                    user:user._id,
                     created: Date.now(),
                     levels: [
                         {
@@ -174,7 +176,7 @@ exports.seedMaturityModels = function(req, callback){
                             'The organization usually does not provide a stable environment. ' +
                             'Success in these organizations depends on the competence and heroics ' +
                             'of the people in the organization and not on the use of proven processes',
-                            user:req.user._id,
+                            user:user._id,
                             created: Date.now()
                         },
                         {
@@ -182,7 +184,7 @@ exports.seedMaturityModels = function(req, callback){
                             name: 'Managed',
                             description:'The projects of the organization have ensured that requirements ' +
                             'are managed and that processes are planned, performed, measured, and controlled',
-                            user:req.user._id,
+                            user:user._id,
                             created: Date.now()
                         },
                         {
@@ -190,7 +192,7 @@ exports.seedMaturityModels = function(req, callback){
                             name: 'Defined',
                             description:'processes are well characterized and understood, and are described in ' +
                             'standards, procedures, tools, and methods',
-                            user:req.user._id,
+                            user:user._id,
                             created: Date.now()
                         },
                         {
@@ -198,7 +200,7 @@ exports.seedMaturityModels = function(req, callback){
                             name: 'Quantitatively Managed',
                             description:'Quantitative objectives for quality and process performance are established and used ' +
                             'as criteria in managing processes. Processes are controlled using statistical and other quantitative techniques',
-                            user:req.user._id,
+                            user:user._id,
                             created: Date.now()
                         },
                         {
@@ -207,7 +209,7 @@ exports.seedMaturityModels = function(req, callback){
                             description:'Processes are continually improved based on a quantitative understanding of the common causes' +
                             ' of variation inherent in processes. Maturity level 5 focuses on continually improving process performance ' +
                             'through both incremental and innovative technological improvements',
-                            user:req.user._id,
+                            user:user._id,
                             created: Date.now()
                         }
                     ],
@@ -217,14 +219,14 @@ exports.seedMaturityModels = function(req, callback){
                             name: 'Requirements Management',
                             description:'Manage the requirements of the project\'s products and product components and to identify ' +
                             'inconsistencies between those requirements and the project\'s plans and work products.',
-                            user:req.user._id,
+                            user:user._id,
                             created: Date.now()
                         },
                         {
                             _id: area2,
                             name: 'Project Planning',
                             description:'Establish and maintain plans that define project activities',
-                            user:req.user._id,
+                            user:user._id,
                             created: Date.now()
                         },
                         {
@@ -232,7 +234,7 @@ exports.seedMaturityModels = function(req, callback){
                             name: 'Project Monitoring and Control',
                             description:'The purpose of Project Monitoring and Control (PMC) is to provide an understanding of the project\'s progress' +
                             ' so that appropriate corrective actions can be taken when the project\'s performance deviates significantly from the plan.',
-                            user:req.user._id,
+                            user:user._id,
                             created: Date.now()
                         },
                         {
@@ -240,7 +242,7 @@ exports.seedMaturityModels = function(req, callback){
                             name: 'Supplier Agreement Management',
                             description:'The purpose of Supplier Agreement Management (SAM) is to manage the acquisition of products from suppliers ' +
                             'for which there exists a formal agreement.',
-                            user:req.user._id,
+                            user:user._id,
                             created: Date.now()
                         },
                         {
@@ -248,7 +250,7 @@ exports.seedMaturityModels = function(req, callback){
                             name: 'Measurement and Analysis',
                             description:'The purpose of Measurement and Analysis (MA) is to develop and sustain a measurement capability ' +
                             'that is used to support management information needs.',
-                            user:req.user._id,
+                            user:user._id,
                             created: Date.now()
                         },
                         {
@@ -256,7 +258,7 @@ exports.seedMaturityModels = function(req, callback){
                             name: 'Process and Product Quality Assurance',
                             description:'The purpose of Process and Product Quality Assurance (PPQA) is to provide staff and management ' +
                             'with objective insight into processes and associated work products.',
-                            user:req.user._id,
+                            user:user._id,
                             created: Date.now()
                         },
                         {
@@ -264,14 +266,14 @@ exports.seedMaturityModels = function(req, callback){
                             name: 'Configuration Management',
                             description:'The purpose of Configuration Management (CM) is to establish and maintain the integrity of work products ' +
                             'using configuration identification, configuration control, configuration status accounting, and configuration audits.',
-                            user:req.user._id,
+                            user:user._id,
                             created: Date.now()
                         },
                         {
                             _id: area8,
                             name: 'Requirements Development',
                             description:'The purpose of Requirements Development (RD) is to produce and analyze customer, product, and product-component requirements.',
-                            user:req.user._id,
+                            user:user._id,
                             created: Date.now()
                         },
                         {
@@ -280,7 +282,7 @@ exports.seedMaturityModels = function(req, callback){
                             description:'The purpose of Technical Solution (TS) is to design, develop, and implement solutions to requirements. ' +
                             'Solutions, designs, and implementations encompass products, product components, and product-related life-cycle processes ' +
                             'either singly or in combination as appropriate.',
-                            user:req.user._id,
+                            user:user._id,
                             created: Date.now()
                         },
                         {
@@ -288,14 +290,14 @@ exports.seedMaturityModels = function(req, callback){
                             name: 'Product Integration',
                             description:'The purpose of Product Integration (PI) is to assemble the product from the product components, ' +
                             'ensure that the product, as integrated, functions properly, and deliver the product.',
-                            user:req.user._id,
+                            user:user._id,
                             created: Date.now()
                         },
                         {
                             _id: area11,
                             name: 'Verification',
                             description:'The purpose of Verification (VER) is to ensure that selected work products meet their specified requirements.',
-                            user:req.user._id,
+                            user:user._id,
                             created: Date.now()
                         },
                         {
@@ -303,7 +305,7 @@ exports.seedMaturityModels = function(req, callback){
                             name: 'Validation',
                             description:'The purpose of Validation (VAL) is to demonstrate that a product or product component fulfills its intended use ' +
                             'when placed in its intended environment.',
-                            user:req.user._id,
+                            user:user._id,
                             created: Date.now()
                         },
                         {
@@ -311,7 +313,7 @@ exports.seedMaturityModels = function(req, callback){
                             name: 'Organizational Process Focus',
                             description:'The purpose of Organizational Process Focus (OPF) is to plan and implement organizational process improvement ' +
                             'based on a thorough understanding of the current strengths and weaknesses of the organization\'s processes and process assets.',
-                            user:req.user._id,
+                            user:user._id,
                             created: Date.now()
                         },
                         {
@@ -319,7 +321,7 @@ exports.seedMaturityModels = function(req, callback){
                             name: 'Organizational Process Definition',
                             description:'TThe purpose of Organizational Process Definition +IPPD (OPD) is to establish and maintain a usable set of ' +
                             'organizational process assets.',
-                            user:req.user._id,
+                            user:user._id,
                             created: Date.now()
                         },
                         {
@@ -327,7 +329,7 @@ exports.seedMaturityModels = function(req, callback){
                             name: 'Organizational Training',
                             description:'The purpose of Organizational Training (OT) is to develop the skills and ' +
                             'knowledge of people so they can perform their roles effectively and efficiently',
-                            user:req.user._id,
+                            user:user._id,
                             created: Date.now()
                         },
                         {
@@ -335,7 +337,7 @@ exports.seedMaturityModels = function(req, callback){
                             name: 'Integrated Project Management',
                             description:'The purpose of Integrated Project Management is to establish and manage the project and the involvement of the relevant ' +
                             'stakeholders according to an integrated and defined process that is tailored from the organization\'s set of standard processes.',
-                            user:req.user._id,
+                            user:user._id,
                             created: Date.now()
                         },
                         {
@@ -343,7 +345,7 @@ exports.seedMaturityModels = function(req, callback){
                             name: 'Risk Management',
                             description:'The purpose of Risk Management (RSKM) is to identify potential problems before they occur so that risk-handling activities ' +
                             'can be planned and invoked as needed across the life of the product or project to mitigate adverse impacts on achieving objectives.',
-                            user:req.user._id,
+                            user:user._id,
                             created: Date.now()
                         },
                         {
@@ -351,7 +353,7 @@ exports.seedMaturityModels = function(req, callback){
                             name: 'Decision Analysis and Resolution',
                             description:'The purpose of Decision Analysis and Resolution (DAR) is to analyze possible decisions using a formal evaluation process ' +
                             'that evaluates identified alternatives against established criteria.',
-                            user:req.user._id,
+                            user:user._id,
                             created: Date.now()
                         },
                         {
@@ -360,7 +362,7 @@ exports.seedMaturityModels = function(req, callback){
                             description:'The purpose of Organizational Process Performance (OPP) is to establish and maintain a quantitative understanding of the performance ' +
                             'of the organization\'s set of standard processes in support of quality and process-performance objectives, and to provide the process performance data, ' +
                             'baselines, and models to quantitatively manage the organization\'s projects.',
-                            user:req.user._id,
+                            user:user._id,
                             created: Date.now()
                         },
                         {
@@ -368,7 +370,7 @@ exports.seedMaturityModels = function(req, callback){
                             name: 'Quantitative Project Management',
                             description:'The purpose of the Quantitative Project Management (QPM) process area is to quantitatively manage the project\'s defined process to achieve ' +
                             'the project\'s established quality and process-performance objectives.',
-                            user:req.user._id,
+                            user:user._id,
                             created: Date.now()
                         },
                         {
@@ -377,7 +379,7 @@ exports.seedMaturityModels = function(req, callback){
                             description:'The purpose of Organizational Innovation and Deployment (OID) is to select and deploy incremental and innovative improvements that measurably ' +
                             'improve the organization\'s processes and technologies. The improvements support the organization\'s quality and process-performance objectives as derived ' +
                             'from the organization\'s business objectives.',
-                            user:req.user._id,
+                            user:user._id,
                             created: Date.now()
                         },
                         {
@@ -385,7 +387,7 @@ exports.seedMaturityModels = function(req, callback){
                             name: 'Causal Analysis and Resolution',
                             description:'The purpose of Causal Analysis and Resolution (CAR) is to identify causes of defects and other problems ' +
                             'and take action to prevent them from occurring in the future.',
-                            user:req.user._id,
+                            user:user._id,
                             created: Date.now()
                         }
                     ],
@@ -402,7 +404,7 @@ exports.seedMaturityModels = function(req, callback){
                                     score: null,
                                     comment: '',
                                     created: Date.now(),
-                                    user: req.user._id
+                                    user: user._id
                                 },
                                 history: []
                             }
@@ -419,7 +421,7 @@ exports.seedMaturityModels = function(req, callback){
                                     score: null,
                                     comment: '',
                                     created: Date.now(),
-                                    user: req.user._id
+                                    user: user._id
                                 },
                                 history: []
                             }
@@ -437,7 +439,7 @@ exports.seedMaturityModels = function(req, callback){
                                     score: null,
                                     comment: '',
                                     created: Date.now(),
-                                    user: req.user._id
+                                    user: user._id
                                 },
                                 history: []
                             }
@@ -453,7 +455,7 @@ exports.seedMaturityModels = function(req, callback){
                                     score: null,
                                     comment: '',
                                     created: Date.now(),
-                                    user: req.user._id
+                                    user: user._id
                                 },
                                 history: []
                             }
@@ -470,7 +472,7 @@ exports.seedMaturityModels = function(req, callback){
                                     score: null,
                                     comment: '',
                                     created: Date.now(),
-                                    user: req.user._id
+                                    user: user._id
                                 },
                                 history: []
                             }
@@ -486,7 +488,7 @@ exports.seedMaturityModels = function(req, callback){
                                     score: null,
                                     comment: '',
                                     created: Date.now(),
-                                    user: req.user._id
+                                    user: user._id
                                 },
                                 history: []
                             }
@@ -502,7 +504,7 @@ exports.seedMaturityModels = function(req, callback){
                                     score: null,
                                     comment: '',
                                     created: Date.now(),
-                                    user: req.user._id
+                                    user: user._id
                                 },
                                 history: []
                             }
@@ -519,7 +521,7 @@ exports.seedMaturityModels = function(req, callback){
                                     score: null,
                                     comment: '',
                                     created: Date.now(),
-                                    user: req.user._id
+                                    user: user._id
                                 },
                                 history: []
                             }
@@ -536,7 +538,7 @@ exports.seedMaturityModels = function(req, callback){
                                     score: null,
                                     comment: '',
                                     created: Date.now(),
-                                    user: req.user._id
+                                    user: user._id
                                 },
                                 history: []
                             }
@@ -552,7 +554,7 @@ exports.seedMaturityModels = function(req, callback){
                                     score: null,
                                     comment: '',
                                     created: Date.now(),
-                                    user: req.user._id
+                                    user: user._id
                                 },
                                 history: []
                             }
@@ -568,7 +570,7 @@ exports.seedMaturityModels = function(req, callback){
                                     score: null,
                                     comment: '',
                                     created: Date.now(),
-                                    user: req.user._id
+                                    user: user._id
                                 },
                                 history: []
                             }
@@ -584,7 +586,7 @@ exports.seedMaturityModels = function(req, callback){
                                     score: null,
                                     comment: '',
                                     created: Date.now(),
-                                    user: req.user._id
+                                    user: user._id
                                 },
                                 history: []
                             }
@@ -600,7 +602,7 @@ exports.seedMaturityModels = function(req, callback){
                                     score: null,
                                     comment: '',
                                     created: Date.now(),
-                                    user: req.user._id
+                                    user: user._id
                                 },
                                 history: []
                             }
@@ -616,7 +618,7 @@ exports.seedMaturityModels = function(req, callback){
                                     score: null,
                                     comment: '',
                                     created: Date.now(),
-                                    user: req.user._id
+                                    user: user._id
                                 },
                                 history: []
                             }
@@ -632,7 +634,7 @@ exports.seedMaturityModels = function(req, callback){
                                     score: null,
                                     comment: '',
                                     created: Date.now(),
-                                    user: req.user._id
+                                    user: user._id
                                 },
                                 history: []
                             }
@@ -648,7 +650,7 @@ exports.seedMaturityModels = function(req, callback){
                                     score: null,
                                     comment: '',
                                     created: Date.now(),
-                                    user: req.user._id
+                                    user: user._id
                                 },
                                 history: []
                             }
@@ -664,7 +666,7 @@ exports.seedMaturityModels = function(req, callback){
                                     score: null,
                                     comment: '',
                                     created: Date.now(),
-                                    user: req.user._id
+                                    user: user._id
                                 },
                                 history: []
                             }
@@ -681,7 +683,7 @@ exports.seedMaturityModels = function(req, callback){
                                     score: null,
                                     comment: '',
                                     created: Date.now(),
-                                    user: req.user._id
+                                    user: user._id
                                 },
                                 history: []
                             }
@@ -697,7 +699,7 @@ exports.seedMaturityModels = function(req, callback){
                                     score: null,
                                     comment: '',
                                     created: Date.now(),
-                                    user: req.user._id
+                                    user: user._id
                                 },
                                 history: []
                             }
@@ -714,7 +716,7 @@ exports.seedMaturityModels = function(req, callback){
                                     score: null,
                                     comment: '',
                                     created: Date.now(),
-                                    user: req.user._id
+                                    user: user._id
                                 },
                                 history: []
                             }
@@ -730,7 +732,7 @@ exports.seedMaturityModels = function(req, callback){
                                     score: null,
                                     comment: '',
                                     created: Date.now(),
-                                    user: req.user._id
+                                    user: user._id
                                 },
                                 history: []
                             }
@@ -747,7 +749,7 @@ exports.seedMaturityModels = function(req, callback){
                                     score: null,
                                     comment: '',
                                     created: Date.now(),
-                                    user: req.user._id
+                                    user: user._id
                                 },
                                 history: []
                             }
@@ -763,7 +765,7 @@ exports.seedMaturityModels = function(req, callback){
                                     score: null,
                                     comment: '',
                                     created: Date.now(),
-                                    user: req.user._id
+                                    user: user._id
                                 },
                                 history: []
                             }
@@ -779,7 +781,7 @@ exports.seedMaturityModels = function(req, callback){
                                     score: null,
                                     comment: '',
                                     created: Date.now(),
-                                    user: req.user._id
+                                    user: user._id
                                 },
                                 history: []
                             }
@@ -796,7 +798,7 @@ exports.seedMaturityModels = function(req, callback){
                                     score: null,
                                     comment: '',
                                     created: Date.now(),
-                                    user: req.user._id
+                                    user: user._id
                                 },
                                 history: []
                             }
@@ -812,7 +814,7 @@ exports.seedMaturityModels = function(req, callback){
                                     score: null,
                                     comment: '',
                                     created: Date.now(),
-                                    user: req.user._id
+                                    user: user._id
                                 },
                                 history: []
                             }
@@ -828,7 +830,7 @@ exports.seedMaturityModels = function(req, callback){
                                     score: null,
                                     comment: '',
                                     created: Date.now(),
-                                    user: req.user._id
+                                    user: user._id
                                 },
                                 history: []
                             }
@@ -844,7 +846,7 @@ exports.seedMaturityModels = function(req, callback){
                                     score: null,
                                     comment: '',
                                     created: Date.now(),
-                                    user: req.user._id
+                                    user: user._id
                                 },
                                 history: []
                             }
@@ -860,7 +862,7 @@ exports.seedMaturityModels = function(req, callback){
                                     score: null,
                                     comment: '',
                                     created: Date.now(),
-                                    user: req.user._id
+                                    user: user._id
                                 },
                                 history: []
                             }
@@ -877,7 +879,7 @@ exports.seedMaturityModels = function(req, callback){
                                     score: null,
                                     comment: '',
                                     created: Date.now(),
-                                    user: req.user._id
+                                    user: user._id
                                 },
                                 history: []
                             }
@@ -893,7 +895,7 @@ exports.seedMaturityModels = function(req, callback){
                                     score: null,
                                     comment: '',
                                     created: Date.now(),
-                                    user: req.user._id
+                                    user: user._id
                                 },
                                 history: []
                             }
@@ -910,7 +912,7 @@ exports.seedMaturityModels = function(req, callback){
                                     score: null,
                                     comment: '',
                                     created: Date.now(),
-                                    user: req.user._id
+                                    user: user._id
                                 },
                                 history: []
                             }
@@ -928,7 +930,7 @@ exports.seedMaturityModels = function(req, callback){
                                     score: null,
                                     comment: '',
                                     created: Date.now(),
-                                    user: req.user._id
+                                    user: user._id
                                 },
                                 history: []
                             }
@@ -945,7 +947,7 @@ exports.seedMaturityModels = function(req, callback){
                                     score: null,
                                     comment: '',
                                     created: Date.now(),
-                                    user: req.user._id
+                                    user: user._id
                                 },
                                 history: []
                             }
@@ -962,7 +964,7 @@ exports.seedMaturityModels = function(req, callback){
                                     score: null,
                                     comment: '',
                                     created: Date.now(),
-                                    user: req.user._id
+                                    user: user._id
                                 },
                                 history: []
                             }
@@ -978,7 +980,7 @@ exports.seedMaturityModels = function(req, callback){
                                     score: null,
                                     comment: '',
                                     created: Date.now(),
-                                    user: req.user._id
+                                    user: user._id
                                 },
                                 history: []
                             }
@@ -996,7 +998,7 @@ exports.seedMaturityModels = function(req, callback){
                                     score: null,
                                     comment: '',
                                     created: Date.now(),
-                                    user: req.user._id
+                                    user: user._id
                                 },
                                 history: []
                             }
@@ -1012,7 +1014,7 @@ exports.seedMaturityModels = function(req, callback){
                                     score: null,
                                     comment: '',
                                     created: Date.now(),
-                                    user: req.user._id
+                                    user: user._id
                                 },
                                 history: []
                             }
@@ -1030,7 +1032,7 @@ exports.seedMaturityModels = function(req, callback){
                                     score: null,
                                     comment: '',
                                     created: Date.now(),
-                                    user: req.user._id
+                                    user: user._id
                                 },
                                 history: []
                             }
@@ -1046,7 +1048,7 @@ exports.seedMaturityModels = function(req, callback){
                                     score: null,
                                     comment: '',
                                     created: Date.now(),
-                                    user: req.user._id
+                                    user: user._id
                                 },
                                 history: []
                             }
@@ -1062,7 +1064,7 @@ exports.seedMaturityModels = function(req, callback){
                                     score: null,
                                     comment: '',
                                     created: Date.now(),
-                                    user: req.user._id
+                                    user: user._id
                                 },
                                 history: []
                             }
@@ -1078,7 +1080,7 @@ exports.seedMaturityModels = function(req, callback){
                                     score: null,
                                     comment: '',
                                     created: Date.now(),
-                                    user: req.user._id
+                                    user: user._id
                                 },
                                 history: []
                             }
@@ -1095,7 +1097,7 @@ exports.seedMaturityModels = function(req, callback){
                                     score: null,
                                     comment: '',
                                     created: Date.now(),
-                                    user: req.user._id
+                                    user: user._id
                                 },
                                 history: []
                             }
@@ -1113,7 +1115,7 @@ exports.seedMaturityModels = function(req, callback){
                                     score: null,
                                     comment: '',
                                     created: Date.now(),
-                                    user: req.user._id
+                                    user: user._id
                                 },
                                 history: []
                             }
@@ -1130,7 +1132,7 @@ exports.seedMaturityModels = function(req, callback){
                                     score: null,
                                     comment: '',
                                     created: Date.now(),
-                                    user: req.user._id
+                                    user: user._id
                                 },
                                 history: []
                             }
@@ -1147,7 +1149,7 @@ exports.seedMaturityModels = function(req, callback){
                                     score: null,
                                     comment: '',
                                     created: Date.now(),
-                                    user: req.user._id
+                                    user: user._id
                                 },
                                 history: []
                             }
@@ -1164,7 +1166,7 @@ exports.seedMaturityModels = function(req, callback){
                                     score: null,
                                     comment: '',
                                     created: Date.now(),
-                                    user: req.user._id
+                                    user: user._id
                                 },
                                 history: []
                             }
@@ -1180,7 +1182,7 @@ exports.seedMaturityModels = function(req, callback){
                                     score: null,
                                     comment: '',
                                     created: Date.now(),
-                                    user: req.user._id
+                                    user: user._id
                                 },
                                 history: []
                             }
@@ -1196,7 +1198,7 @@ exports.seedMaturityModels = function(req, callback){
                                     score: null,
                                     comment: '',
                                     created: Date.now(),
-                                    user: req.user._id
+                                    user: user._id
                                 },
                                 history: []
                             }
@@ -1212,7 +1214,7 @@ exports.seedMaturityModels = function(req, callback){
                                     score: null,
                                     comment: '',
                                     created: Date.now(),
-                                    user: req.user._id
+                                    user: user._id
                                 },
                                 history: []
                             }

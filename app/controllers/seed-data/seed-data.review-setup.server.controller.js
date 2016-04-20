@@ -18,6 +18,8 @@ var createObjects = function(schema, stringMsg, seedArray, callback){
                 schema.create(item, function(err){
                     callbackEach(err);
                 });
+            } else {
+                callbackEach();
             }
         });
     }, function(err){
@@ -29,7 +31,7 @@ var createObjects = function(schema, stringMsg, seedArray, callback){
     });
 };
 
-exports.seedReviewScores = function(req, callback){
+exports.seedReviewScores = function(user, callback){
     
     // Review scores
 
@@ -41,14 +43,14 @@ exports.seedReviewScores = function(req, callback){
     
     async.series([
         function(callback) {
-            var schema = mongoose.mtModel(req.user.tenantId + '.' + 'ProjectReviewScore');
+            var schema = mongoose.mtModel(user.tenantId + '.' + 'ProjectReviewScore');
             var seedArray =  [
                 {
                     _id: score1,
                     name: 'Not at all satisfied',
                     description:'Not at all satisfied',
                     numericalValue: 0,
-                    user:req.user._id,
+                    user:user._id,
                     created: Date.now()
                 },
                 {
@@ -56,7 +58,7 @@ exports.seedReviewScores = function(req, callback){
                     name: 'Slightly satisfied',
                     description:'Slightly satisfied',
                     numericalValue: 25,
-                    user:req.user._id,
+                    user:user._id,
                     created: Date.now()
                 },
                 {
@@ -64,7 +66,7 @@ exports.seedReviewScores = function(req, callback){
                     name: 'Moderately satisfied',
                     description:'Moderately satisfied',
                     numericalValue: 50,
-                    user:req.user._id,
+                    user:user._id,
                     created: Date.now()
                 },
                 {
@@ -72,7 +74,7 @@ exports.seedReviewScores = function(req, callback){
                     name: 'Very satisfied',
                     description:'Very satisfied',
                     numericalValue: 75,
-                    user:req.user._id,
+                    user:user._id,
                     created: Date.now()
                 },
                 {
@@ -80,7 +82,7 @@ exports.seedReviewScores = function(req, callback){
                     name: 'Extremely satisfied',
                     description:'Extremely satisfied',
                     numericalValue: 100,
-                    user:req.user._id,
+                    user:user._id,
                     created: Date.now()
                 }
             ];

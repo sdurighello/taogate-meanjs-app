@@ -16,6 +16,8 @@ var createObjects = function(schema, stringMsg, seedArray, callback){
                 schema.create(item, function(err){
                     callbackEach(err);
                 });
+            } else {
+                callbackEach();
             }
         });
     }, function(err){
@@ -27,7 +29,7 @@ var createObjects = function(schema, stringMsg, seedArray, callback){
     });
 };
 
-exports.seedPriorities = function(req, callback){
+exports.seedPriorities = function(user, callback){
 
     // ------ Priority values ------
 
@@ -59,14 +61,14 @@ exports.seedPriorities = function(req, callback){
 
     async.series([
         function(callback) {
-            var schema = mongoose.mtModel(req.user.tenantId + '.' + 'PriorityGroup');
+            var schema = mongoose.mtModel(user.tenantId + '.' + 'PriorityGroup');
             var seedArray = [
                 {
                     _id: prio1,
                     name: 'Project stakeholders',
                     description:'Project stakeholders prioritization',
                     priorities: [prio11, prio12, prio13],
-                    user:req.user._id,
+                    user:user._id,
                     created: Date.now()
                 },
                 {
@@ -74,7 +76,7 @@ exports.seedPriorities = function(req, callback){
                     name: 'Executive management',
                     description:'Executive management prioritization',
                     priorities: [prio21, prio22],
-                    user:req.user._id,
+                    user:user._id,
                     created: Date.now()
                 },
                 {
@@ -82,69 +84,69 @@ exports.seedPriorities = function(req, callback){
                     name: 'Technology leadership',
                     description:'Technology leadership prioritization',
                     priorities: [prio31, prio32],
-                    user:req.user._id,
+                    user:user._id,
                     created: Date.now()
                 }
             ];
             createObjects(schema, 'PriorityGroup', seedArray, callback);
         },
         function(callback){
-            var schema = mongoose.mtModel(req.user.tenantId + '.' + 'Priority');
+            var schema = mongoose.mtModel(user.tenantId + '.' + 'Priority');
             var seedArray = [
                 {
                     _id: prio11,
                     name: 'Supplier',
                     description:'Supplier prioritization',
-                    user:req.user._id,
+                    user:user._id,
                     created: Date.now()
                 },
                 {
                     _id: prio12,
                     name: 'User',
                     description:'User prioritization',
-                    user:req.user._id,
+                    user:user._id,
                     created: Date.now()
                 },
                 {
                     _id: prio13,
                     name: 'Sponsor',
                     description:'Sponsor prioritization',
-                    user:req.user._id,
+                    user:user._id,
                     created: Date.now()
                 },
                 {
                     _id: prio21,
                     name: 'Executive board',
                     description:'Executive board prioritization',
-                    user:req.user._id,
+                    user:user._id,
                     created: Date.now()
                 },
                 {
                     _id: prio22,
                     name: 'Investment management committee',
                     description:'Investment management committee prioritization',
-                    user:req.user._id,
+                    user:user._id,
                     created: Date.now()
                 },
                 {
                     _id: prio31,
                     name: 'Project Management Office',
                     description:'Project Management Office prioritization',
-                    user:req.user._id,
+                    user:user._id,
                     created: Date.now()
                 },
                 {
                     _id: prio32,
                     name: 'Enterprise Architecture Board',
                     description:'Enterprise Architecture Board prioritization',
-                    user:req.user._id,
+                    user:user._id,
                     created: Date.now()
                 }
             ];
             createObjects(schema, 'Priority', seedArray, callback);
         },
         function(callback){
-            var schema = mongoose.mtModel(req.user.tenantId + '.' + 'PriorityValue');
+            var schema = mongoose.mtModel(user.tenantId + '.' + 'PriorityValue');
             var seedArray = [
                 {
                     _id: high,
@@ -152,7 +154,7 @@ exports.seedPriorities = function(req, callback){
                     description:'High priority',
                     numericalValue: 30,
                     position: 1,
-                    user:req.user._id,
+                    user:user._id,
                     created: Date.now()
                 },
                 {
@@ -161,7 +163,7 @@ exports.seedPriorities = function(req, callback){
                     description:'Medium priority',
                     numericalValue: 20,
                     position: 2,
-                    user:req.user._id,
+                    user:user._id,
                     created: Date.now()
                 },
                 {
@@ -170,7 +172,7 @@ exports.seedPriorities = function(req, callback){
                     description:'Low priority',
                     numericalValue: 10,
                     position: 3,
-                    user:req.user._id,
+                    user:user._id,
                     created: Date.now()
                 }
             ];

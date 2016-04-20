@@ -8,6 +8,7 @@ var _ = require('lodash'),
 	mongoose = require('mongoose'),
 	passport = require('passport'),
 	async = require('async'),
+    seedData = require('../seed-data.server.controller'),
 	User = mongoose.model('User');
 
 /**
@@ -49,7 +50,7 @@ exports.signup = function(req, res) {
             var person = new Person({
                 name : createdUser.displayName,
                 organization : createdUser.organization,
-                title : null,
+                title : createdUser.title,
                 email : createdUser.email,
                 phone : createdUser.phone,
                 assignedUser : createdUser._id,
@@ -62,6 +63,13 @@ exports.signup = function(req, res) {
                 }
                 callback(null, createdUser);
             });
+        },
+        // If 'seedData' checked, load setup data
+        function(createdUser, callback) {
+            if(req.body.seedData){
+                return seedData.loadSetupData(createdUser, callback);
+            }
+            callback(null);
         }
     ], function (err) {
         if (err) {
@@ -72,6 +80,7 @@ exports.signup = function(req, res) {
             // Remove sensitive data before login
             user.password = undefined;
             user.salt = undefined;
+            user.tenantId = undefined;
 
             req.login(user, function(err) {
                 if (err) {
@@ -95,6 +104,7 @@ exports.signin = function(req, res, next) {
 			// Remove sensitive data before login
 			user.password = undefined;
 			user.salt = undefined;
+            user.tenantId = undefined;
 
 			req.login(user, function(err) {
 				if (err) {

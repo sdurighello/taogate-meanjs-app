@@ -18,6 +18,8 @@ var createObjects = function(schema, stringMsg, seedArray, callback){
                 schema.create(item, function(err){
                     callbackEach(err);
                 });
+            } else {
+                callbackEach();
             }
         });
     }, function(err){
@@ -29,7 +31,7 @@ var createObjects = function(schema, stringMsg, seedArray, callback){
     });
 };
 
-exports.seedQualitativeImpacts = function(req, callback){
+exports.seedQualitativeImpacts = function(user, callback){
 
 // Alignment
     var q1 = mongoose.Types.ObjectId();
@@ -72,7 +74,7 @@ exports.seedQualitativeImpacts = function(req, callback){
 
     async.series([
         function(callback) {
-            var schema = mongoose.mtModel(req.user.tenantId + '.' + 'QualitativeImpactGroup');
+            var schema = mongoose.mtModel(user.tenantId + '.' + 'QualitativeImpactGroup');
             var seedArray =  [
                 {
                     _id: q1,
@@ -80,7 +82,7 @@ exports.seedQualitativeImpacts = function(req, callback){
                     description:'Alignment',
                     weight: 25,
                     impacts: [q11, q12],
-                    user:req.user._id,
+                    user:user._id,
                     created: Date.now()
                 },
                 {
@@ -89,7 +91,7 @@ exports.seedQualitativeImpacts = function(req, callback){
                     description:'Economic contribution',
                     weight: 25,
                     impacts: [q21, q22, q23, q24],
-                    user:req.user._id,
+                    user:user._id,
                     created: Date.now()
                 },
                 {
@@ -98,7 +100,7 @@ exports.seedQualitativeImpacts = function(req, callback){
                     description:'Balanced scorecard',
                     weight: 25,
                     impacts: [q31, q32, q33, q34],
-                    user:req.user._id,
+                    user:user._id,
                     created: Date.now()
                 },
                 {
@@ -107,21 +109,21 @@ exports.seedQualitativeImpacts = function(req, callback){
                     description:'Marketing contribution',
                     weight: 25,
                     impacts: [q41, q42, q43, q44],
-                    user:req.user._id,
+                    user:user._id,
                     created: Date.now()
                 }
             ];
             createObjects(schema, 'QualitativeImpactGroup', seedArray, callback);
         },
         function(callback) {
-            var schema = mongoose.mtModel(req.user.tenantId + '.' + 'QualitativeImpact');
+            var schema = mongoose.mtModel(user.tenantId + '.' + 'QualitativeImpact');
             var seedArray =  [
                 {
                     _id: q11,
                     name: 'Business alignment',
                     description:'Business alignment',
                     weight: 50,
-                    user:req.user._id,
+                    user:user._id,
                     created: Date.now()
                 },
                 {
@@ -129,7 +131,7 @@ exports.seedQualitativeImpacts = function(req, callback){
                     name: 'Technology alignment',
                     description:'Technology alignment',
                     weight: 50,
-                    user:req.user._id,
+                    user:user._id,
                     created: Date.now()
                 },
                 // ----
@@ -138,7 +140,7 @@ exports.seedQualitativeImpacts = function(req, callback){
                     name: 'Revenue generation',
                     description:'Technology alignment',
                     weight: 25,
-                    user:req.user._id,
+                    user:user._id,
                     created: Date.now()
                 },
                 {
@@ -146,7 +148,7 @@ exports.seedQualitativeImpacts = function(req, callback){
                     name: 'Cost reduction',
                     description:'Cost reduction',
                     weight: 25,
-                    user:req.user._id,
+                    user:user._id,
                     created: Date.now()
                 },
                 {
@@ -154,7 +156,7 @@ exports.seedQualitativeImpacts = function(req, callback){
                     name: 'Differentiation',
                     description:'Differentiation',
                     weight: 25,
-                    user:req.user._id,
+                    user:user._id,
                     created: Date.now()
                 },
                 {
@@ -162,7 +164,7 @@ exports.seedQualitativeImpacts = function(req, callback){
                     name: 'Competitive advantage',
                     description:'Competitive advantage',
                     weight: 25,
-                    user:req.user._id,
+                    user:user._id,
                     created: Date.now()
                 },
                 // ----
@@ -171,7 +173,7 @@ exports.seedQualitativeImpacts = function(req, callback){
                     name: 'Financial',
                     description:'Financial',
                     weight: 25,
-                    user:req.user._id,
+                    user:user._id,
                     created: Date.now()
                 },
                 {
@@ -179,7 +181,7 @@ exports.seedQualitativeImpacts = function(req, callback){
                     name: 'Internal',
                     description:'Internal',
                     weight: 25,
-                    user:req.user._id,
+                    user:user._id,
                     created: Date.now()
                 },
                 {
@@ -187,7 +189,7 @@ exports.seedQualitativeImpacts = function(req, callback){
                     name: 'Growth',
                     description:'Growth',
                     weight: 25,
-                    user:req.user._id,
+                    user:user._id,
                     created: Date.now()
                 },
                 {
@@ -195,7 +197,7 @@ exports.seedQualitativeImpacts = function(req, callback){
                     name: 'Customer',
                     description:'Customer',
                     weight: 25,
-                    user:req.user._id,
+                    user:user._id,
                     created: Date.now()
                 },
                 // ---
@@ -204,7 +206,7 @@ exports.seedQualitativeImpacts = function(req, callback){
                     name: 'Customer acquisition',
                     description:'Customer acquisition',
                     weight: 25,
-                    user:req.user._id,
+                    user:user._id,
                     created: Date.now()
                 },
                 {
@@ -212,7 +214,7 @@ exports.seedQualitativeImpacts = function(req, callback){
                     name: 'Customer retention',
                     description:'Customer retention',
                     weight: 25,
-                    user:req.user._id,
+                    user:user._id,
                     created: Date.now()
                 },
                 {
@@ -220,7 +222,7 @@ exports.seedQualitativeImpacts = function(req, callback){
                     name: 'Reputation',
                     description:'Reputation',
                     weight: 25,
-                    user:req.user._id,
+                    user:user._id,
                     created: Date.now()
                 },
                 {
@@ -228,21 +230,21 @@ exports.seedQualitativeImpacts = function(req, callback){
                     name: 'Brand awareness',
                     description:'Brand awareness',
                     weight: 25,
-                    user:req.user._id,
+                    user:user._id,
                     created: Date.now()
                 }
             ];
             createObjects(schema, 'QualitativeImpact', seedArray, callback);
         },
         function(callback) {
-            var schema = mongoose.mtModel(req.user.tenantId + '.' + 'QualitativeImpactScore');
+            var schema = mongoose.mtModel(user.tenantId + '.' + 'QualitativeImpactScore');
             var seedArray =  [
                 {
                     _id: none,
                     name: 'None',
                     description:'No project contribution to the impact',
                     numericalValue: 0,
-                    user:req.user._id,
+                    user:user._id,
                     created: Date.now()
                 },
                 {
@@ -250,7 +252,7 @@ exports.seedQualitativeImpacts = function(req, callback){
                     name: 'Very low',
                     description:'Project contribution to the impact is very low',
                     numericalValue: 10,
-                    user:req.user._id,
+                    user:user._id,
                     created: Date.now()
                 },
                 {
@@ -258,7 +260,7 @@ exports.seedQualitativeImpacts = function(req, callback){
                     name: 'Low',
                     description:'Project contribution to the impact is low',
                     numericalValue: 20,
-                    user:req.user._id,
+                    user:user._id,
                     created: Date.now()
                 },
                 {
@@ -266,7 +268,7 @@ exports.seedQualitativeImpacts = function(req, callback){
                     name: 'Medium',
                     description:'Project contribution to the impact is medium',
                     numericalValue: 30,
-                    user:req.user._id,
+                    user:user._id,
                     created: Date.now()
                 },
                 {
@@ -274,7 +276,7 @@ exports.seedQualitativeImpacts = function(req, callback){
                     name: 'High',
                     description:'Project contribution to the impact is high',
                     numericalValue: 40,
-                    user:req.user._id,
+                    user:user._id,
                     created: Date.now()
                 },
                 {
@@ -282,7 +284,7 @@ exports.seedQualitativeImpacts = function(req, callback){
                     name: 'Very high',
                     description:'Project contribution to the impact is very high',
                     numericalValue: 50,
-                    user:req.user._id,
+                    user:user._id,
                     created: Date.now()
                 }
             ];

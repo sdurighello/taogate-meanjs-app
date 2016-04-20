@@ -382,7 +382,8 @@
                                                                                                         </div>
                                                                                                     </div>
                                                                                                     <hr>
-                                                                                                    <div class="row" data-ng-show="!(selectedProjectReview.approval.currentRecord.approvalState === 'completed') && !peopleReview.submitted && userHasReviewAuthorization('edit', userData, peopleReview)">
+                                                                                                    {{userHasReviewAuthorization('edit', userData, peopleReview)}}
+                                                                                                    <div class="row" data-ng-show="(selectedProjectReview.approval.currentRecord.approvalState !== 'completed') && (!peopleReview.submitted) && userHasReviewAuthorization('edit', userData, peopleReview)">
                                                                                                         <div class="col-md-12">
                                                                                                             <div class=" pull-right">
                                                                                                                 <button class="btn btn-warning btn-xs" data-ng-click="submitPeopleReview(selectedProjectReview, reviewGroup, reviewItem, peopleReview)"

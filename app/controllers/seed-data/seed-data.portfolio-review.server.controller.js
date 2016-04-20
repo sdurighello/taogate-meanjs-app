@@ -18,6 +18,8 @@ var createObjects = function(schema, stringMsg, seedArray, callback){
                 schema.create(item, function(err){
                     callbackEach(err);
                 });
+            } else {
+                callbackEach();
             }
         });
     }, function(err){
@@ -29,7 +31,7 @@ var createObjects = function(schema, stringMsg, seedArray, callback){
     });
 };
 
-exports.seedPortfolioReviews = function(req, callback){
+exports.seedPortfolioReviews = function(user, callback){
 
     // Project Review Types
 
@@ -43,31 +45,31 @@ exports.seedPortfolioReviews = function(req, callback){
 
     async.series([
         function(callback) {
-            var schema = mongoose.mtModel(req.user.tenantId + '.' + 'PortfolioReviewType');
+            var schema = mongoose.mtModel(user.tenantId + '.' + 'PortfolioReviewType');
             var seedArray =  [
                 {
                     _id: pReviewType1,
                     name: 'Stakeholders survey',
                     description:'Stakeholder satisfaction surveys',
-                    user:req.user._id,
+                    user:user._id,
                     created: Date.now()
                 },
                 {
                     _id: pReviewType2,
                     name: 'Governance review',
                     description:'Process effectiveness evaluations',
-                    user:req.user._id,
+                    user:user._id,
                     created: Date.now()
                 }
             ];
             createObjects(schema, 'PortfolioReviewType', seedArray, callback);
         },
         function(callback) {
-            var schema = mongoose.mtModel(req.user.tenantId + '.' + 'PortfolioReviewTemplate');
+            var schema = mongoose.mtModel(user.tenantId + '.' + 'PortfolioReviewTemplate');
             var seedArray =  [
                 {
                     _id: pReviewTemp1,
-                    user:req.user._id,
+                    user:user._id,
                     created: Date.now(),
                     name: 'Quarterly portfolio assessment',
                     description:'Quarterly portfolio assessment',
@@ -75,7 +77,7 @@ exports.seedPortfolioReviews = function(req, callback){
                     groups:[
                         {
                             name:'Strategic alignment',
-                            user:req.user._id,
+                            user:user._id,
                             created: Date.now(),
                             description:'Projects should be all aligned to the business strategy',
                             weight: 20,
@@ -83,7 +85,7 @@ exports.seedPortfolioReviews = function(req, callback){
                             items :[
                                 {
                                     name:'How well is the portfolio activity aligned to the business strategy?',
-                                    user:req.user._id,
+                                    user:user._id,
                                     created: Date.now(),
                                     description:'Each project should be clearly assigned to a strategic theme',
                                     weight: 20,
@@ -95,7 +97,7 @@ exports.seedPortfolioReviews = function(req, callback){
                 },
                 {
                     _id: pReviewTemp2,
-                    user:req.user._id,
+                    user:user._id,
                     created: Date.now(),
                     name: 'Annual IT Audit',
                     description:'Audit portfolio assessment',
@@ -103,7 +105,7 @@ exports.seedPortfolioReviews = function(req, callback){
                     groups:[
                         {
                             name:'IT controls',
-                            user:req.user._id,
+                            user:user._id,
                             created: Date.now(),
                             description:'Cobit controls implementation',
                             weight: 20,
@@ -111,7 +113,7 @@ exports.seedPortfolioReviews = function(req, callback){
                             items :[
                                 {
                                     name:'How well is change managed?',
-                                    user:req.user._id,
+                                    user:user._id,
                                     created: Date.now(),
                                     description:'An authorization process for changes should be in place',
                                     weight: 20,

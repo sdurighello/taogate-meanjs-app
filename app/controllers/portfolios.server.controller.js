@@ -11,15 +11,17 @@ var mongoose = require('mongoose'),
 /**
  * Create a Portfolio
  */
-exports.create = function(req, res) {
-    var PortfolioRanking = mongoose.mtModel(req.user.tenantId + '.' + 'PortfolioRanking');
-	var Portfolio = mongoose.mtModel(req.user.tenantId + '.' + 'Portfolio');
-	var portfolio = new Portfolio(req.body);
-	portfolio.user = req.user;
 
-    var PeopleCategory = mongoose.mtModel(req.user.tenantId + '.' + 'PeopleCategory');
-    var PeoplePortfolioGroup = mongoose.mtModel(req.user.tenantId + '.' + 'PeoplePortfolioGroup');
-    var PeoplePortfolioRole = mongoose.mtModel(req.user.tenantId + '.' + 'PeoplePortfolioRole');
+
+var createPortfolio = function(user, body, callback){
+    var PortfolioRanking = mongoose.mtModel(user.tenantId + '.' + 'PortfolioRanking');
+    var Portfolio = mongoose.mtModel(user.tenantId + '.' + 'Portfolio');
+    var portfolio = new Portfolio(body);
+    portfolio.user = user;
+
+    var PeopleCategory = mongoose.mtModel(user.tenantId + '.' + 'PeopleCategory');
+    var PeoplePortfolioGroup = mongoose.mtModel(user.tenantId + '.' + 'PeoplePortfolioGroup');
+    var PeoplePortfolioRole = mongoose.mtModel(user.tenantId + '.' + 'PeoplePortfolioRole');
 
     async.series([
         // PORTFOLIO: Save new portfolio
@@ -94,6 +96,18 @@ exports.create = function(req, res) {
         }
     ],function(err){
         if (err) {
+            callback(err);
+        } else {
+            callback(null, portfolio);
+        }
+    });
+};
+
+exports.createPortfolio = createPortfolio;
+
+exports.create = function(req, res) {
+    createPortfolio(req.user, req.body, function(err, portfolio){
+        if (err) {
             return res.status(400).send({
                 message: errorHandler.getErrorMessage(err)
             });
@@ -101,6 +115,96 @@ exports.create = function(req, res) {
             res.jsonp(portfolio);
         }
     });
+
+    // var PortfolioRanking = mongoose.mtModel(req.user.tenantId + '.' + 'PortfolioRanking');
+    // var Portfolio = mongoose.mtModel(req.user.tenantId + '.' + 'Portfolio');
+    // var portfolio = new Portfolio(req.body);
+    // portfolio.user = req.user;
+    //
+    // var PeopleCategory = mongoose.mtModel(req.user.tenantId + '.' + 'PeopleCategory');
+    // var PeoplePortfolioGroup = mongoose.mtModel(req.user.tenantId + '.' + 'PeoplePortfolioGroup');
+    // var PeoplePortfolioRole = mongoose.mtModel(req.user.tenantId + '.' + 'PeoplePortfolioRole');
+    //
+    // async.series([
+    //     // PORTFOLIO: Save new portfolio
+    //     function(callback){
+    //         portfolio.save(function(err){
+    //             callback(err);
+    //         });
+    //     },
+    //     // PORTFOLIO-RANKINGS: Add portfolio to rankings
+    //     function(callback){
+    //         var portfolioRanking = new PortfolioRanking({
+    //             portfolio: portfolio._id,
+    //             projects: []
+    //         });
+    //         portfolioRanking.save(function(err){
+    //             callback(err);
+    //         });
+    //     },
+    //     // PORTFOLIO.STAKEHOLDERS: Add all existing groups/roles + categories/values to new portfolio
+    //     function(callback){
+    //         async.waterfall([
+    //             // Create the "categorization" array [{category:<objectId>, categoryValue:null}] from all existing people-categories
+    //             function(callback){
+    //                 PeopleCategory.find().exec(function(err, categories) {
+    //                     if (err) {
+    //                         callback(err);
+    //                     } else {
+    //                         var retArray = [];
+    //                         async.each(categories, function(category, callback){
+    //                             retArray.push({
+    //                                 category: category._id,
+    //                                 categoryValue: null
+    //                             });
+    //                             callback();
+    //                         });
+    //                         callback(null, retArray);
+    //                     }
+    //                 });
+    //             },
+    //             // Add to portfolios all the people-groups/roles with the "categorization" array
+    //             function(retArray, callback){
+    //                 PeoplePortfolioGroup.find().exec(function(err, groups){
+    //                     if (err) {
+    //                         callback(err);
+    //                     } else {
+    //                         async.each(groups, function(group, callback){
+    //                             var obj = {group: group._id, roles: []};
+    //                             async.each(group.roles, function(role, callback){
+    //                                 obj.roles.push({
+    //                                     role: role,
+    //                                     person: null,
+    //                                     categorization: retArray
+    //                                 });
+    //                                 callback();
+    //                             });
+    //                             portfolio.stakeholders.push(obj);
+    //                             portfolio.save(function(err){
+    //                                 if(err){callback(err);} else {callback();}
+    //                             });
+    //                         });
+    //                         callback(null);
+    //                     }
+    //                 });
+    //             }
+    //         ],function(err){
+    //             if (err) {
+    //                 callback(err);
+    //             } else {
+    //                 callback(null);
+    //             }
+    //         });
+    //     }
+    // ],function(err){
+    //     if (err) {
+    //         return res.status(400).send({
+    //             message: errorHandler.getErrorMessage(err)
+    //         });
+    //     } else {
+    //         res.jsonp(portfolio);
+    //     }
+    // });
 
 };
 

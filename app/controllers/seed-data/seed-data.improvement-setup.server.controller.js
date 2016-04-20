@@ -8,6 +8,7 @@ var _ = require('lodash'),
     errorHandler = require('../errors.server.controller'),
     mongoose = require('mongoose'),
     async = require('async'),
+    seedIDs = require('./seed-data.ids.server.controller').getIDs(),
     User = mongoose.model('User');
 
 
@@ -18,6 +19,8 @@ var createObjects = function(schema, stringMsg, seedArray, callback){
                 schema.create(item, function(err){
                     callbackEach(err);
                 });
+            } else {
+                callbackEach();
             }
         });
     }, function(err){
@@ -29,119 +32,119 @@ var createObjects = function(schema, stringMsg, seedArray, callback){
     });
 };
 
-exports.seedImprovements = function(req, callback){
+exports.seedImprovements = function(user, callback){
 
     // Reasons for improvement
 
-    var reason1 = mongoose.Types.ObjectId();
-    var reason2 = mongoose.Types.ObjectId();
-    var reason3 = mongoose.Types.ObjectId();
+    var reason1 = seedIDs.PortfolioType.reason1;
+    var reason2 = seedIDs.PortfolioType.reason2;
+    var reason3 = seedIDs.PortfolioType.reason3;
 
     // Improvement States
 
-    var state1 = mongoose.Types.ObjectId();
-    var state2 = mongoose.Types.ObjectId();
-    var state3 = mongoose.Types.ObjectId();
-    var state4 = mongoose.Types.ObjectId();
+    var state1 = seedIDs.PortfolioType.state1;
+    var state2 = seedIDs.PortfolioType.state2;
+    var state3 = seedIDs.PortfolioType.state3;
+    var state4 = seedIDs.PortfolioType.state4;
 
     // Improvement Types
 
-    var type1 = mongoose.Types.ObjectId();
-    var type2 = mongoose.Types.ObjectId();
-    var type3 = mongoose.Types.ObjectId();
-    var type4 = mongoose.Types.ObjectId();
+    var type1 = seedIDs.PortfolioType.type1;
+    var type2 = seedIDs.PortfolioType.type2;
+    var type3 = seedIDs.PortfolioType.type3;
+    var type4 = seedIDs.PortfolioType.type4;
 
     async.series([
         function(callback) {
-            var schema = mongoose.mtModel(req.user.tenantId + '.' + 'ImprovementReason');
+            var schema = mongoose.mtModel(user.tenantId + '.' + 'ImprovementReason');
             var seedArray =  [
                 {
                     _id: reason1,
                     name: 'Low business value of projects',
                     description:'Low business value of projects',
-                    user:req.user._id,
+                    user:user._id,
                     created: Date.now()
                 },
                 {
                     _id: reason2,
                     name: 'Low team morale',
                     description:'Low team morale',
-                    user:req.user._id,
+                    user:user._id,
                     created: Date.now()
                 },
                 {
                     _id: reason3,
                     name: 'Idea to market shorter lead time',
                     description:'Idea to market shorter lead time',
-                    user:req.user._id,
+                    user:user._id,
                     created: Date.now()
                 }
             ];
             createObjects(schema, 'ImprovementReason', seedArray, callback);
         },
         function(callback) {
-            var schema = mongoose.mtModel(req.user.tenantId + '.' + 'ImprovementState');
+            var schema = mongoose.mtModel(user.tenantId + '.' + 'ImprovementState');
             var seedArray =  [
                 {
                     _id: state1,
                     name: 'Not started',
                     description:'Not started',
-                    user:req.user._id,
+                    user:user._id,
                     created: Date.now()
                 },
                 {
                     _id: state2,
                     name: 'In progress',
                     description:'In progress',
-                    user:req.user._id,
+                    user:user._id,
                     created: Date.now()
                 },
                 {
                     _id: state3,
                     name: 'On-hold',
                     description:'On-hold',
-                    user:req.user._id,
+                    user:user._id,
                     created: Date.now()
                 },
                 {
                     _id: state4,
                     name: 'Closed',
                     description:'Closed',
-                    user:req.user._id,
+                    user:user._id,
                     created: Date.now()
                 }
             ];
             createObjects(schema, 'ImprovementState', seedArray, callback);
         },
         function(callback) {
-            var schema = mongoose.mtModel(req.user.tenantId + '.' + 'ImprovementType');
+            var schema = mongoose.mtModel(user.tenantId + '.' + 'ImprovementType');
             var seedArray =  [
                 {
                     _id: type1,
                     name: 'Coaching',
                     description:'Coaching',
-                    user:req.user._id,
+                    user:user._id,
                     created: Date.now()
                 },
                 {
                     _id: type2,
                     name: 'New governance artifact',
                     description:'New governance artifact',
-                    user:req.user._id,
+                    user:user._id,
                     created: Date.now()
                 },
                 {
                     _id: type3,
                     name: 'Team building activity',
                     description:'Team building activity',
-                    user:req.user._id,
+                    user:user._id,
                     created: Date.now()
                 },
                 {
                     _id: type4,
                     name: 'Internal process improvement',
                     description:'Internal process improvement',
-                    user:req.user._id,
+                    user:user._id,
                     created: Date.now()
                 }
             ];

@@ -17,6 +17,8 @@ var createObjects = function(schema, stringMsg, seedArray, callback){
                 schema.create(item, function(err){
                     callbackEach(err);
                 });
+            } else {
+                callbackEach();
             }
         });
     }, function(err){
@@ -28,7 +30,7 @@ var createObjects = function(schema, stringMsg, seedArray, callback){
     });
 };
 
-exports.seedProjectPeople = function(req, callback){
+exports.seedProjectPeople = function(user, callback){
 
     // Project Steering Committee
     var projectSteeringCommittee = mongoose.Types.ObjectId();
@@ -48,14 +50,14 @@ exports.seedProjectPeople = function(req, callback){
 
     async.series([
         function(callback) {
-            var schema = mongoose.mtModel(req.user.tenantId + '.' + 'PeopleProjectGroup');
+            var schema = mongoose.mtModel(user.tenantId + '.' + 'PeopleProjectGroup');
             var seedArray =  [
                 {
                     _id: projectSteeringCommittee,
                     name: 'Project steering committee',
                     description:'Project steering committee',
                     roles: [seniorSupplier, seniorUser, executiveSponsor, projectManager],
-                    user:req.user._id,
+                    user:user._id,
                     created: Date.now()
                 },
                 {
@@ -63,27 +65,27 @@ exports.seedProjectPeople = function(req, callback){
                     name: 'Architecture review board',
                     description:'Architecture review board',
                     roles: [designCoordinator, securityOfficer, applicationArchitect, enterpriseArchitect],
-                    user:req.user._id,
+                    user:user._id,
                     created: Date.now()
                 }
             ];
             createObjects(schema, 'PeopleProjectGroup', seedArray, callback);
         },
         function(callback) {
-            var schema = mongoose.mtModel(req.user.tenantId + '.' + 'PeopleProjectRole');
+            var schema = mongoose.mtModel(user.tenantId + '.' + 'PeopleProjectRole');
             var seedArray =  [
                 {
                     _id: seniorUser,
                     name: 'Senior user',
                     description:'Represents the interests of Users within the project',
-                    user:req.user._id,
+                    user:user._id,
                     created: Date.now()
                 },
                 {
                     _id: seniorSupplier,
                     name: 'Senior supplier',
                     description:'Represents the interests of Suppliers within the project',
-                    user:req.user._id,
+                    user:user._id,
                     created: Date.now()
                 },
                 {
@@ -92,14 +94,14 @@ exports.seedProjectPeople = function(req, callback){
                     description:'Senior member of the project board and often the chair. ' +
                     'The project sponsor will be a senior executive in a corporation who is responsible ' +
                     'to the business for the success of the project',
-                    user:req.user._id,
+                    user:user._id,
                     created: Date.now()
                 },
                 {
                     _id: projectManager,
                     name: 'Project Manager',
                     description:'Project manager',
-                    user:req.user._id,
+                    user:user._id,
                     created: Date.now()
                 },
                 // ---
@@ -107,28 +109,28 @@ exports.seedProjectPeople = function(req, callback){
                     _id: designCoordinator,
                     name: 'Design coordinator',
                     description:'Design coordinator',
-                    user:req.user._id,
+                    user:user._id,
                     created: Date.now()
                 },
                 {
                     _id: securityOfficer,
                     name: 'Security officer',
                     description:'Security officer',
-                    user:req.user._id,
+                    user:user._id,
                     created: Date.now()
                 },
                 {
                     _id: applicationArchitect,
                     name: 'Application architect',
                     description:'Application architect',
-                    user:req.user._id,
+                    user:user._id,
                     created: Date.now()
                 },
                 {
                     _id: enterpriseArchitect,
                     name: 'Enterprise architect',
                     description:'Enterprise architect',
-                    user:req.user._id,
+                    user:user._id,
                     created: Date.now()
                 }
             ];

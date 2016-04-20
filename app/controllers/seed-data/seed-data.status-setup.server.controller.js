@@ -18,6 +18,8 @@ var createObjects = function(schema, stringMsg, seedArray, callback){
                 schema.create(item, function(err){
                     callbackEach(err);
                 });
+            } else {
+                callbackEach();
             }
         });
     }, function(err){
@@ -29,7 +31,7 @@ var createObjects = function(schema, stringMsg, seedArray, callback){
     });
 };
 
-exports.seedStatuses = function(req, callback){
+exports.seedStatuses = function(user, callback){
     
     // Status indicators
 
@@ -45,54 +47,54 @@ exports.seedStatuses = function(req, callback){
 
     async.series([
         function(callback) {
-            var schema = mongoose.mtModel(req.user.tenantId + '.' + 'LogStatusIndicator');
+            var schema = mongoose.mtModel(user.tenantId + '.' + 'LogStatusIndicator');
             var seedArray =  [
                 {
                     _id: indicator1,
                     name: 'Red',
                     description:'Item is failing',
-                    user:req.user._id,
+                    user:user._id,
                     created: Date.now()
                 },
                 {
                     _id: indicator2,
                     name: 'Amber',
                     description:'Item requires attention',
-                    user:req.user._id,
+                    user:user._id,
                     created: Date.now()
                 },
                 {
                     _id: indicator3,
                     name: 'Green',
                     description:'Item is successfully progressing',
-                    user:req.user._id,
+                    user:user._id,
                     created: Date.now()
                 }
             ];
             createObjects(schema, 'LogStatusIndicator', seedArray, callback);
         },
         function(callback) {
-            var schema = mongoose.mtModel(req.user.tenantId + '.' + 'LogStatusArea');
+            var schema = mongoose.mtModel(user.tenantId + '.' + 'LogStatusArea');
             var seedArray =  [
                 {
                     _id: area1,
                     name: 'Risk management',
                     description:'Risk management status',
-                    user:req.user._id,
+                    user:user._id,
                     created: Date.now()
                 },
                 {
                     _id: area2,
                     name: 'Benefits realization',
                     description:'Benefits realization',
-                    user:req.user._id,
+                    user:user._id,
                     created: Date.now()
                 },
                 {
                     _id: area3,
                     name: 'Stakeholders management',
                     description:'Stakeholders management',
-                    user:req.user._id,
+                    user:user._id,
                     created: Date.now()
                 }
             ];
