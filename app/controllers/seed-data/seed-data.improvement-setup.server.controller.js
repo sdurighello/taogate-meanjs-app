@@ -36,23 +36,23 @@ exports.seedImprovements = function(user, callback){
 
     // Reasons for improvement
 
-    var reason1 = seedIDs.PortfolioType.reason1;
-    var reason2 = seedIDs.PortfolioType.reason2;
-    var reason3 = seedIDs.PortfolioType.reason3;
+    var reason1 = seedIDs.ImprovementReason.reason1;
+    var reason2 = seedIDs.ImprovementReason.reason2;
+    var reason3 = seedIDs.ImprovementReason.reason3;
 
     // Improvement States
 
-    var state1 = seedIDs.PortfolioType.state1;
-    var state2 = seedIDs.PortfolioType.state2;
-    var state3 = seedIDs.PortfolioType.state3;
-    var state4 = seedIDs.PortfolioType.state4;
+    var state1 = seedIDs.ImprovementState.state1;
+    var state2 = seedIDs.ImprovementState.state2;
+    var state3 = seedIDs.ImprovementState.state3;
+    var state4 = seedIDs.ImprovementState.state4;
 
     // Improvement Types
 
-    var type1 = seedIDs.PortfolioType.type1;
-    var type2 = seedIDs.PortfolioType.type2;
-    var type3 = seedIDs.PortfolioType.type3;
-    var type4 = seedIDs.PortfolioType.type4;
+    var type1 = seedIDs.ImprovementType.type1;
+    var type2 = seedIDs.ImprovementType.type2;
+    var type3 = seedIDs.ImprovementType.type3;
+    var type4 = seedIDs.ImprovementType.type4;
 
     async.series([
         function(callback) {
@@ -152,6 +152,7 @@ exports.seedImprovements = function(user, callback){
         }
     ], function (err, result) {
         if( err ) {
+            console.log(err);
             callback(err);
         } else {
             callback(null, result);

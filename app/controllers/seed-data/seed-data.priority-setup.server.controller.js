@@ -7,6 +7,7 @@ var _ = require('lodash'),
     errorHandler = require('../errors.server.controller'),
     mongoose = require('mongoose'),
     async = require('async'),
+    seedIDs = require('./seed-data.ids.server.controller').getIDs(),
     User = mongoose.model('User');
 
 var createObjects = function(schema, stringMsg, seedArray, callback){
@@ -33,31 +34,31 @@ exports.seedPriorities = function(user, callback){
 
     // ------ Priority values ------
 
-    var low = mongoose.Types.ObjectId(); // Low
-    var medium = mongoose.Types.ObjectId(); // medium
-    var high = mongoose.Types.ObjectId(); // high
+    var prioValue1 = seedIDs.PriorityValue.prioValue1;
+    var prioValue2 = seedIDs.PriorityValue.prioValue2;
+    var prioValue3 = seedIDs.PriorityValue.prioValue3;
 
     // ------ Project stakeholders ------
 
-    var prio1 = mongoose.Types.ObjectId();
+    var prio1 = seedIDs.PriorityGroup.prio1;
 
-    var prio11 = mongoose.Types.ObjectId(); // Supplier
-    var prio12 = mongoose.Types.ObjectId(); // User
-    var prio13 = mongoose.Types.ObjectId(); // Sponsor
+    var prio11 = seedIDs.Priority.prio11; // Supplier
+    var prio12 = seedIDs.Priority.prio12; // User
+    var prio13 = seedIDs.Priority.prio13; // Sponsor
 
     // ------ Executive management ------
 
-    var prio2 = mongoose.Types.ObjectId();
+    var prio2 = seedIDs.PriorityGroup.prio2;
 
-    var prio21 = mongoose.Types.ObjectId(); // Executive board
-    var prio22 = mongoose.Types.ObjectId(); // Investment management committee
+    var prio21 = seedIDs.Priority.prio21; // Executive board
+    var prio22 = seedIDs.Priority.prio22; // Investment management committee
 
     // ------ Technology leadership ------
 
-    var prio3 = mongoose.Types.ObjectId();
+    var prio3 = seedIDs.PriorityGroup.prio3;
 
-    var prio31 = mongoose.Types.ObjectId(); // Project Management Office
-    var prio32 = mongoose.Types.ObjectId(); // Enterprise Architecture Board
+    var prio31 = seedIDs.Priority.prio31; // Project Management Office
+    var prio32 = seedIDs.Priority.prio32; // Enterprise Architecture Board
 
     async.series([
         function(callback) {
@@ -149,7 +150,7 @@ exports.seedPriorities = function(user, callback){
             var schema = mongoose.mtModel(user.tenantId + '.' + 'PriorityValue');
             var seedArray = [
                 {
-                    _id: high,
+                    _id: prioValue1,
                     name: 'High',
                     description:'High priority',
                     numericalValue: 30,
@@ -158,7 +159,7 @@ exports.seedPriorities = function(user, callback){
                     created: Date.now()
                 },
                 {
-                    _id: medium,
+                    _id: prioValue2,
                     name: 'Medium',
                     description:'Medium priority',
                     numericalValue: 20,
@@ -167,7 +168,7 @@ exports.seedPriorities = function(user, callback){
                     created: Date.now()
                 },
                 {
-                    _id: low,
+                    _id: prioValue3,
                     name: 'Low',
                     description:'Low priority',
                     numericalValue: 10,

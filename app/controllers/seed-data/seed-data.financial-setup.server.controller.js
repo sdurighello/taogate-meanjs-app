@@ -37,43 +37,43 @@ exports.seedFinancials = function(user, callback){
     // ------ COSTS ------
 
 // Capex
-    var cost1 = seedIDs.PortfolioType.cost1;
+    var cost1 = seedIDs.FinancialCostGroup.cost1;
 
-    var cost11 = seedIDs.PortfolioType.cost11; // Hardware
-    var cost12 = seedIDs.PortfolioType.cost12; // Network equipment
-    var cost13 = seedIDs.PortfolioType.cost13; // Property
+    var cost11 = seedIDs.FinancialCostType.cost11; // Hardware
+    var cost12 = seedIDs.FinancialCostType.cost12; // Network equipment
+    var cost13 = seedIDs.FinancialCostType.cost13; // Property
 
 // Opex
-    var cost2 = seedIDs.PortfolioType.cost2;
+    var cost2 = seedIDs.FinancialCostGroup.cost2;
 
-    var cost21 = seedIDs.PortfolioType.cost21; // Software licences
-    var cost22 = seedIDs.PortfolioType.cost22; // Internal labour
-    var cost23 = seedIDs.PortfolioType.cost23; // External contractors
-    var cost24 = seedIDs.PortfolioType.cost24; // Consulting services
-    var cost25 = seedIDs.PortfolioType.cost25; // External support and maintenance services
+    var cost21 = seedIDs.FinancialCostType.cost21; // Software licences
+    var cost22 = seedIDs.FinancialCostType.cost22; // Internal labour
+    var cost23 = seedIDs.FinancialCostType.cost23; // External contractors
+    var cost24 = seedIDs.FinancialCostType.cost24; // Consulting services
+    var cost25 = seedIDs.FinancialCostType.cost25; // External support and maintenance services
 
     // ------ BENEFITS ------
 
 
 // Revenue increase
-    var benefit1 = seedIDs.PortfolioType.benefit1;
+    var benefit1 = seedIDs.FinancialBenefitGroup.benefit1;
 
-    var benefit11 = seedIDs.PortfolioType.benefit11; // Higher leads conversion rates
-    var benefit12 = seedIDs.PortfolioType.benefit12; // Churn reduction
-    var benefit13 = seedIDs.PortfolioType.benefit13; // Sales increase
+    var benefit11 = seedIDs.FinancialBenefitType.benefit11; // Higher leads conversion rates
+    var benefit12 = seedIDs.FinancialBenefitType.benefit12; // Churn reduction
+    var benefit13 = seedIDs.FinancialBenefitType.benefit13; // Sales increase
 
 // Cost reduction
-    var benefit2 = seedIDs.PortfolioType.benefit2;
+    var benefit2 = seedIDs.FinancialBenefitGroup.benefit2;
 
-    var benefit21 = seedIDs.PortfolioType.benefit21; // Staff efficiency increase
-    var benefit22 = seedIDs.PortfolioType.benefit22; // Externalization
-    var benefit23 = seedIDs.PortfolioType.benefit23; // Supplier cost reduction
+    var benefit21 = seedIDs.FinancialBenefitType.benefit21; // Staff efficiency increase
+    var benefit22 = seedIDs.FinancialBenefitType.benefit22; // Externalization
+    var benefit23 = seedIDs.FinancialBenefitType.benefit23; // Supplier cost reduction
 
 // Intangible benefit
-    var benefit3 = seedIDs.PortfolioType.benefit3;
+    var benefit3 = seedIDs.FinancialBenefitGroup.benefit3;
 
-    var benefit31 = seedIDs.PortfolioType.benefit31; // Increased brand awareness
-    var benefit32 = seedIDs.PortfolioType.benefit32; // Achieved regulatory compliance
+    var benefit31 = seedIDs.FinancialBenefitType.benefit31; // Increased brand awareness
+    var benefit32 = seedIDs.FinancialBenefitType.benefit32; // Achieved regulatory compliance
 
 
     async.series([
@@ -260,6 +260,7 @@ exports.seedFinancials = function(user, callback){
         }
     ], function (err, result) {
         if( err ) {
+            console.log(err);
             callback(err);
         } else {
             callback(null, result);

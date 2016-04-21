@@ -34,36 +34,36 @@ exports.seedDependencies = function(user, callback){
 
     // Dependency types
 
-    var dt1 = seedIDs.PortfolioType.dt1; // inputForReview
-    var dt2 = seedIDs.PortfolioType.dt2; // reviewResponse
+    var dt1 = seedIDs.DependencyType.dt1; // inputForReview
+    var dt2 = seedIDs.DependencyType.dt2; // reviewResponse
 
-    var dt3 = seedIDs.PortfolioType.dt3; // inputForApproval
-    var dt4 = seedIDs.PortfolioType.dt4; // approvalResponse
+    var dt3 = seedIDs.DependencyType.dt3; // inputForApproval
+    var dt4 = seedIDs.DependencyType.dt4; // approvalResponse
 
-    var dt5 = seedIDs.PortfolioType.dt5; // software
-    var dt6 = seedIDs.PortfolioType.dt6; // hardware
-    var dt7 = seedIDs.PortfolioType.dt7; // resource
+    var dt5 = seedIDs.DependencyType.dt5; // software
+    var dt6 = seedIDs.DependencyType.dt6; // hardware
+    var dt7 = seedIDs.DependencyType.dt7; // resource
 
-    var dt8 = seedIDs.PortfolioType.dt8; // planning
-    var dt9 = seedIDs.PortfolioType.dt9; // analysis
-    var dt10 = seedIDs.PortfolioType.dt10; // design
-    var dt11 = seedIDs.PortfolioType.dt11; // build
-    var dt12 = seedIDs.PortfolioType.dt12; // test
+    var dt8 = seedIDs.DependencyType.dt8; // planning
+    var dt9 = seedIDs.DependencyType.dt9; // analysis
+    var dt10 = seedIDs.DependencyType.dt10; // design
+    var dt11 = seedIDs.DependencyType.dt11; // build
+    var dt12 = seedIDs.DependencyType.dt12; // test
 
     // Dependency impacts
 
-    var di1 = seedIDs.PortfolioType.di1; // veryLow
-    var di2 = seedIDs.PortfolioType.di2; // low
-    var di3 = seedIDs.PortfolioType.di3; // medium
-    var di4 = seedIDs.PortfolioType.di4; // high
-    var di5 = seedIDs.PortfolioType.di5; // veryHigh
+    var di1 = seedIDs.DependencyImpact.di1; // veryLow
+    var di2 = seedIDs.DependencyImpact.di2; // low
+    var di3 = seedIDs.DependencyImpact.di3; // medium
+    var di4 = seedIDs.DependencyImpact.di4; // high
+    var di5 = seedIDs.DependencyImpact.di5; // veryHigh
 
     // Dependency state
 
-    var ds1 = seedIDs.PortfolioType.ds1; // toBeDiscussed
-    var ds2 = seedIDs.PortfolioType.ds2; // underDiscussion
-    var ds3 = seedIDs.PortfolioType.ds3; // agreed
-    var ds4 = seedIDs.PortfolioType.ds4; // done
+    var ds1 = seedIDs.DependencyState.ds1; // toBeDiscussed
+    var ds2 = seedIDs.DependencyState.ds2; // underDiscussion
+    var ds3 = seedIDs.DependencyState.ds3; // agreed
+    var ds4 = seedIDs.DependencyState.ds4; // done
 
     async.series([
         function(callback) {
@@ -247,6 +247,7 @@ exports.seedDependencies = function(user, callback){
         }
     ], function (err, result) {
         if( err ) {
+            console.log(err);
             callback(err);
         } else {
             callback(null, result);

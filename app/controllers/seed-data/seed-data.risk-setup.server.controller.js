@@ -7,6 +7,7 @@
 var _ = require('lodash'),
     errorHandler = require('../errors.server.controller'),
     mongoose = require('mongoose'),
+    seedIDs = require('./seed-data.ids.server.controller').getIDs(),
     async = require('async'),
     User = mongoose.model('User');
 
@@ -34,67 +35,67 @@ var createObjects = function(schema, stringMsg, seedArray, callback){
 exports.seedRisks = function(user, callback){
 
 // Delivery
-    var r1 = mongoose.Types.ObjectId();
+    var r1 = seedIDs.RiskCategory.r1;
 
-    var r11 = mongoose.Types.ObjectId(); // Poor product quality
-    var r12 = mongoose.Types.ObjectId(); // Supplier failure
-    var r13 = mongoose.Types.ObjectId(); // Lack of staff or skills
+    var r11 = seedIDs.Risk.r11; // Poor product quality
+    var r12 = seedIDs.Risk.r12; // Supplier failure
+    var r13 = seedIDs.Risk.r13; // Lack of staff or skills
 
 // Financial
-    var r2 = mongoose.Types.ObjectId();
+    var r2 = seedIDs.RiskCategory.r2;
 
-    var r21 = mongoose.Types.ObjectId(); // Cost overrun
-    var r22 = mongoose.Types.ObjectId(); // Increased cost variability
-    var r23 = mongoose.Types.ObjectId(); // Increased capex/opex ratio
+    var r21 = seedIDs.Risk.r21; // Cost overrun
+    var r22 = seedIDs.Risk.r22; // Increased cost variability
+    var r23 = seedIDs.Risk.r23; // Increased capex/opex ratio
 
 // Technology
-    var r3 = mongoose.Types.ObjectId();
+    var r3 = seedIDs.RiskCategory.r3;
 
-    var r31 = mongoose.Types.ObjectId(); // Technology aging
-    var r32 = mongoose.Types.ObjectId(); // Platform instability
-    var r33 = mongoose.Types.ObjectId(); // Impacts on other systems
+    var r31 = seedIDs.Risk.r31; // Technology aging
+    var r32 = seedIDs.Risk.r32; // Platform instability
+    var r33 = seedIDs.Risk.r33; // Impacts on other systems
 
 // Operational
-    var r4 = mongoose.Types.ObjectId();
+    var r4 = seedIDs.RiskCategory.r4;
 
-    var r41 = mongoose.Types.ObjectId(); // Impaired support and maintenance
-    var r42 = mongoose.Types.ObjectId(); // Difficult business adoption
-    var r43 = mongoose.Types.ObjectId(); // Business process failure
+    var r41 = seedIDs.Risk.r41; // Impaired support and maintenance
+    var r42 = seedIDs.Risk.r42; // Difficult business adoption
+    var r43 = seedIDs.Risk.r43; // Business process failure
 
 // Market
-    var r5 = mongoose.Types.ObjectId();
+    var r5 = seedIDs.RiskCategory.r5;
 
-    var r51 = mongoose.Types.ObjectId(); // Poor market reception
-    var r52 = mongoose.Types.ObjectId(); // Impact on Partner relationships
-    var r53 = mongoose.Types.ObjectId(); // Reaction from competition
+    var r51 = seedIDs.Risk.r51; // Poor market reception
+    var r52 = seedIDs.Risk.r52; // Impact on Partner relationships
+    var r53 = seedIDs.Risk.r53; // Reaction from competition
 
 // Legal
-    var r6 = mongoose.Types.ObjectId();
+    var r6 = seedIDs.RiskCategory.r6;
 
-    var r61 = mongoose.Types.ObjectId(); // Regulatory breach
-    var r62 = mongoose.Types.ObjectId(); // Exposure to lawsuit loss
+    var r61 = seedIDs.Risk.r61; // Regulatory breach
+    var r62 = seedIDs.Risk.r62; // Exposure to lawsuit loss
 
 // Impacts
 
-    var incidental = mongoose.Types.ObjectId();
-    var minor = mongoose.Types.ObjectId();
-    var moderate = mongoose.Types.ObjectId();
-    var major = mongoose.Types.ObjectId();
-    var extreme = mongoose.Types.ObjectId();
+    var incidental = seedIDs.RiskImpact.incidental;
+    var minor = seedIDs.RiskImpact.minor;
+    var moderate = seedIDs.RiskImpact.moderate;
+    var major = seedIDs.RiskImpact.major;
+    var extreme = seedIDs.RiskImpact.extreme;
 
 // Probabilities
 
-    var rare = mongoose.Types.ObjectId();
-    var unlikely = mongoose.Types.ObjectId();
-    var possible = mongoose.Types.ObjectId();
-    var likely = mongoose.Types.ObjectId();
-    var frequent = mongoose.Types.ObjectId();
+    var rare = seedIDs.RiskProbability.rare;
+    var unlikely = seedIDs.RiskProbability.unlikely;
+    var possible = seedIDs.RiskProbability.possible;
+    var likely = seedIDs.RiskProbability.likely;
+    var frequent = seedIDs.RiskProbability.frequent;
 
 // Severities
 
-    var low = mongoose.Types.ObjectId();
-    var medium = mongoose.Types.ObjectId();
-    var high = mongoose.Types.ObjectId();
+    var low = seedIDs.RiskSeverity.low;
+    var medium = seedIDs.RiskSeverity.medium;
+    var high = seedIDs.RiskSeverity.high;
 
     async.series([
         function(callback) {
@@ -593,6 +594,7 @@ exports.seedRisks = function(user, callback){
         }
     ], function (err, result) {
         if( err ) {
+            console.log(err);
             callback(err);
         } else {
             callback(null, result);

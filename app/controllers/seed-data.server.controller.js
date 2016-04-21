@@ -12,6 +12,7 @@ var mongoose = require('mongoose'),
 
 // -------------------------
 
+
 var loadSetupData = function(user, callback){
     async.parallel([
         function(callback){
@@ -69,7 +70,10 @@ var loadSetupData = function(user, callback){
             return require('./seed-data/seed-data.process-setup.server.controller.js').seedProcesses(user, callback);
         },
         function(callback){
-            return require('./seed-data/seed-data.strategy-setup.server.controller.js').seedStrategyNodes(user, callback);
+            return require('./seed-data/seed-data.portfolio-setup.server.controller.js').seedPortfolioSetup(user, callback);
+        },
+        function(callback){
+            return require('./seed-data/seed-data.strategy-setup.server.controller.js').seedStrategySetup(user, callback);
         }
     ], function(err, results) {
         if (err) {
@@ -80,10 +84,27 @@ var loadSetupData = function(user, callback){
     });
 };
 
-var loadProjectData = function (user, callback) {
+var loadTrees = function (user, callback) {
     async.parallel([
         function(callback){
-            return require('./seed-data/seed-data.portfolio-setup.server.controller.js').seedPortfolios(user, callback);
+            return require('./seed-data/seed-data.strategy-tree.server.controller.js').seedStrategyTree(user, callback);
+        },
+        function(callback){
+            return require('./seed-data/seed-data.portfolio-tree.server.controller.js').seedPortfolioTree(user, callback);
+        }
+    ], function(err, results) {
+        if (err) {
+            callback(err);
+        } else {
+            callback(null, results);
+        }
+    });
+};
+
+var loadProjects = function (user, callback) {
+    async.series([
+        function(callback){
+            return require('./seed-data/seed-data.project-identification.server.controller.js').seedProjects(user, callback);
         }
     ], function(err, results) {
         if (err) {
@@ -96,7 +117,9 @@ var loadProjectData = function (user, callback) {
 
 exports.loadSetupData = loadSetupData;
 
-exports.loadProjectData = loadSetupData;
+exports.loadTrees = loadTrees;
+
+exports.loadProjects = loadProjects;
 
 exports.seed = function(req, res) {
     async.series([
@@ -104,9 +127,13 @@ exports.seed = function(req, res) {
         function(callback){
             return loadSetupData(req.user, callback);
         },
-        // 2) Create projects, portfolio and similar by calling the 'route'
+        // 2) Create portfolio and strategy structure
         function(callback){
-            return loadProjectData(req.user, callback);
+            return loadTrees(req.user, callback);
+        },
+        // 3) Create projects
+        function(callback){
+            return loadProjects(req.user, callback);
         }
     ], function(err, results){
         if (err) {

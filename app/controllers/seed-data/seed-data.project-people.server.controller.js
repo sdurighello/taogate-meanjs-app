@@ -7,6 +7,7 @@ var _ = require('lodash'),
     errorHandler = require('../errors.server.controller'),
     mongoose = require('mongoose'),
     async = require('async'),
+    seedIDs = require('./seed-data.ids.server.controller').getIDs(),
     User = mongoose.model('User');
 
 
@@ -33,38 +34,38 @@ var createObjects = function(schema, stringMsg, seedArray, callback){
 exports.seedProjectPeople = function(user, callback){
 
     // Project Steering Committee
-    var projectSteeringCommittee = mongoose.Types.ObjectId();
+    var group1 = seedIDs.PeopleProjectGroup.group1;
 
-    var seniorUser = mongoose.Types.ObjectId();
-    var seniorSupplier = mongoose.Types.ObjectId();
-    var executiveSponsor = mongoose.Types.ObjectId();
-    var projectManager = mongoose.Types.ObjectId();
+    var role11 = seedIDs.PeopleProjectRole.role11;
+    var role12 = seedIDs.PeopleProjectRole.role12;
+    var role13 = seedIDs.PeopleProjectRole.role13;
+    var role14 = seedIDs.PeopleProjectRole.role14;
 
     // Architecture Review Board
-    var architectureReviewBoard = mongoose.Types.ObjectId();
+    var group2 = seedIDs.PeopleProjectGroup.group2;
 
-    var designCoordinator = mongoose.Types.ObjectId();
-    var securityOfficer = mongoose.Types.ObjectId();
-    var applicationArchitect = mongoose.Types.ObjectId();
-    var enterpriseArchitect = mongoose.Types.ObjectId();
+    var role21 = seedIDs.PeopleProjectRole.role21;
+    var role22 = seedIDs.PeopleProjectRole.role22;
+    var role23 = seedIDs.PeopleProjectRole.role23;
+    var role24 = seedIDs.PeopleProjectRole.role24;
 
     async.series([
         function(callback) {
             var schema = mongoose.mtModel(user.tenantId + '.' + 'PeopleProjectGroup');
             var seedArray =  [
                 {
-                    _id: projectSteeringCommittee,
+                    _id: group1,
                     name: 'Project steering committee',
                     description:'Project steering committee',
-                    roles: [seniorSupplier, seniorUser, executiveSponsor, projectManager],
+                    roles: [role11, role12, role13, role14],
                     user:user._id,
                     created: Date.now()
                 },
                 {
-                    _id: architectureReviewBoard,
+                    _id: group2,
                     name: 'Architecture review board',
                     description:'Architecture review board',
-                    roles: [designCoordinator, securityOfficer, applicationArchitect, enterpriseArchitect],
+                    roles: [role21, role22, role23, role24],
                     user:user._id,
                     created: Date.now()
                 }
@@ -75,21 +76,21 @@ exports.seedProjectPeople = function(user, callback){
             var schema = mongoose.mtModel(user.tenantId + '.' + 'PeopleProjectRole');
             var seedArray =  [
                 {
-                    _id: seniorUser,
+                    _id: role11,
                     name: 'Senior user',
                     description:'Represents the interests of Users within the project',
                     user:user._id,
                     created: Date.now()
                 },
                 {
-                    _id: seniorSupplier,
+                    _id: role12,
                     name: 'Senior supplier',
                     description:'Represents the interests of Suppliers within the project',
                     user:user._id,
                     created: Date.now()
                 },
                 {
-                    _id: executiveSponsor,
+                    _id: role13,
                     name: 'Executive sponsor',
                     description:'Senior member of the project board and often the chair. ' +
                     'The project sponsor will be a senior executive in a corporation who is responsible ' +
@@ -98,7 +99,7 @@ exports.seedProjectPeople = function(user, callback){
                     created: Date.now()
                 },
                 {
-                    _id: projectManager,
+                    _id: role14,
                     name: 'Project Manager',
                     description:'Project manager',
                     user:user._id,
@@ -106,28 +107,28 @@ exports.seedProjectPeople = function(user, callback){
                 },
                 // ---
                 {
-                    _id: designCoordinator,
+                    _id: role21,
                     name: 'Design coordinator',
                     description:'Design coordinator',
                     user:user._id,
                     created: Date.now()
                 },
                 {
-                    _id: securityOfficer,
+                    _id: role22,
                     name: 'Security officer',
                     description:'Security officer',
                     user:user._id,
                     created: Date.now()
                 },
                 {
-                    _id: applicationArchitect,
+                    _id: role23,
                     name: 'Application architect',
                     description:'Application architect',
                     user:user._id,
                     created: Date.now()
                 },
                 {
-                    _id: enterpriseArchitect,
+                    _id: role24,
                     name: 'Enterprise architect',
                     description:'Enterprise architect',
                     user:user._id,

@@ -8,6 +8,7 @@ var _ = require('lodash'),
     errorHandler = require('../errors.server.controller'),
     mongoose = require('mongoose'),
     async = require('async'),
+    seedIDs = require('./seed-data.ids.server.controller').getIDs(),
     User = mongoose.model('User');
 
 
@@ -34,43 +35,43 @@ var createObjects = function(schema, stringMsg, seedArray, callback){
 exports.seedQualitativeImpacts = function(user, callback){
 
 // Alignment
-    var q1 = mongoose.Types.ObjectId();
+    var q1 = seedIDs.QualitativeImpactGroup.q1;
 
-    var q11 = mongoose.Types.ObjectId(); // Business alignment
-    var q12 = mongoose.Types.ObjectId(); // Technology alignment
+    var q11 = seedIDs.QualitativeImpact.q11; // Business alignment
+    var q12 = seedIDs.QualitativeImpact.q12; // Technology alignment
 
 // Economic contribution
-    var q2 = mongoose.Types.ObjectId();
+    var q2 = seedIDs.QualitativeImpactGroup.q2;
 
-    var q21 = mongoose.Types.ObjectId(); // Revenue generation
-    var q22 = mongoose.Types.ObjectId(); // Cost reduction
-    var q23 = mongoose.Types.ObjectId(); // Differentiation
-    var q24 = mongoose.Types.ObjectId(); // Competitive advantage
+    var q21 = seedIDs.QualitativeImpact.q21; // Revenue generation
+    var q22 = seedIDs.QualitativeImpact.q22; // Cost reduction
+    var q23 = seedIDs.QualitativeImpact.q23; // Differentiation
+    var q24 = seedIDs.QualitativeImpact.q24; // Competitive advantage
 
 // Balanced scorecard
-    var q3 = mongoose.Types.ObjectId();
+    var q3 = seedIDs.QualitativeImpactGroup.q3;
 
-    var q31 = mongoose.Types.ObjectId(); // Financial
-    var q32 = mongoose.Types.ObjectId(); // Internal
-    var q33 = mongoose.Types.ObjectId(); // Growth
-    var q34 = mongoose.Types.ObjectId(); // Customer
+    var q31 = seedIDs.QualitativeImpact.q31; // Financial
+    var q32 = seedIDs.QualitativeImpact.q32; // Internal
+    var q33 = seedIDs.QualitativeImpact.q33; // Growth
+    var q34 = seedIDs.QualitativeImpact.q34; // Customer
 
 // Marketing contribution
-    var q4 = mongoose.Types.ObjectId();
+    var q4 = seedIDs.QualitativeImpactGroup.q4;
 
-    var q41 = mongoose.Types.ObjectId(); // Customer acquisition
-    var q42 = mongoose.Types.ObjectId(); // Customer retention
-    var q43 = mongoose.Types.ObjectId(); // Reputation
-    var q44 = mongoose.Types.ObjectId(); // Brand awareness
+    var q41 = seedIDs.QualitativeImpact.q41; // Customer acquisition
+    var q42 = seedIDs.QualitativeImpact.q42; // Customer retention
+    var q43 = seedIDs.QualitativeImpact.q43; // Reputation
+    var q44 = seedIDs.QualitativeImpact.q44; // Brand awareness
 
 // Impact scores
 
-    var none = mongoose.Types.ObjectId();
-    var veryLow = mongoose.Types.ObjectId();
-    var low = mongoose.Types.ObjectId();
-    var medium = mongoose.Types.ObjectId();
-    var high = mongoose.Types.ObjectId();
-    var veryHigh = mongoose.Types.ObjectId();
+    var impactScore1 = seedIDs.QualitativeImpactScore.impactScore1; // none
+    var impactScore2 = seedIDs.QualitativeImpactScore.impactScore2; // veryLow
+    var impactScore3 = seedIDs.QualitativeImpactScore.impactScore3; // low
+    var impactScore4 = seedIDs.QualitativeImpactScore.impactScore4; // medium
+    var impactScore5 = seedIDs.QualitativeImpactScore.impactScore5; // high
+    var impactScore6 = seedIDs.QualitativeImpactScore.impactScore6; // veryHigh
 
     async.series([
         function(callback) {
@@ -240,7 +241,7 @@ exports.seedQualitativeImpacts = function(user, callback){
             var schema = mongoose.mtModel(user.tenantId + '.' + 'QualitativeImpactScore');
             var seedArray =  [
                 {
-                    _id: none,
+                    _id: impactScore1,
                     name: 'None',
                     description:'No project contribution to the impact',
                     numericalValue: 0,
@@ -248,7 +249,7 @@ exports.seedQualitativeImpacts = function(user, callback){
                     created: Date.now()
                 },
                 {
-                    _id: veryLow,
+                    _id: impactScore2,
                     name: 'Very low',
                     description:'Project contribution to the impact is very low',
                     numericalValue: 10,
@@ -256,7 +257,7 @@ exports.seedQualitativeImpacts = function(user, callback){
                     created: Date.now()
                 },
                 {
-                    _id: low,
+                    _id: impactScore3,
                     name: 'Low',
                     description:'Project contribution to the impact is low',
                     numericalValue: 20,
@@ -264,7 +265,7 @@ exports.seedQualitativeImpacts = function(user, callback){
                     created: Date.now()
                 },
                 {
-                    _id: medium,
+                    _id: impactScore4,
                     name: 'Medium',
                     description:'Project contribution to the impact is medium',
                     numericalValue: 30,
@@ -272,7 +273,7 @@ exports.seedQualitativeImpacts = function(user, callback){
                     created: Date.now()
                 },
                 {
-                    _id: high,
+                    _id: impactScore5,
                     name: 'High',
                     description:'Project contribution to the impact is high',
                     numericalValue: 40,
@@ -280,7 +281,7 @@ exports.seedQualitativeImpacts = function(user, callback){
                     created: Date.now()
                 },
                 {
-                    _id: veryHigh,
+                    _id: impactScore6,
                     name: 'Very high',
                     description:'Project contribution to the impact is very high',
                     numericalValue: 50,

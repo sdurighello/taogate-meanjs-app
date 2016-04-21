@@ -568,6 +568,7 @@ exports.seedCategories = function(user, callback){
         }
     ], function (err, result) {
         if( err ) {
+            console.log(err);
             callback(err);
         } else {
             callback(null, result);

@@ -7,6 +7,7 @@ var _ = require('lodash'),
     errorHandler = require('../errors.server.controller'),
     mongoose = require('mongoose'),
     async = require('async'),
+    seedIDs = require('./seed-data.ids.server.controller').getIDs(),
     User = mongoose.model('User');
 
 
@@ -34,46 +35,46 @@ exports.seedLogs = function(user, callback){
 
     // ------ Log priorities ------
 
-    var priority1 = mongoose.Types.ObjectId(); // Low
-    var priority2 = mongoose.Types.ObjectId(); // medium
-    var priority3 = mongoose.Types.ObjectId(); // high
+    var logPriority1 = seedIDs.LogPriority.logPriority1;
+    var logPriority2 = seedIDs.LogPriority.logPriority2;
+    var logPriority3 = seedIDs.LogPriority.logPriority3;
 
     // ------ Log reasons ------
 
-    var reason1 = mongoose.Types.ObjectId();
-    var reason2 = mongoose.Types.ObjectId();
-    var reason3 = mongoose.Types.ObjectId();
+    var logReason1 = seedIDs.LogReason.logReason1;
+    var logReason2 = seedIDs.LogReason.logReason2;
+    var logReason3 = seedIDs.LogReason.logReason3;
 
     // ------ Issue states ------
 
-    var issueState1 = mongoose.Types.ObjectId();
-    var issueState2 = mongoose.Types.ObjectId();
-    var issueState3 = mongoose.Types.ObjectId();
-    var issueState4 = mongoose.Types.ObjectId();
-    var issueState5 = mongoose.Types.ObjectId();
+    var issueState1 = seedIDs.IssueState.issueState1;
+    var issueState2 = seedIDs.IssueState.issueState2;
+    var issueState3 = seedIDs.IssueState.issueState3;
+    var issueState4 = seedIDs.IssueState.issueState4;
+    var issueState5 = seedIDs.IssueState.issueState5;
 
     // ------ Issue action states ------
 
-    var actionState1 = mongoose.Types.ObjectId();
-    var actionState2 = mongoose.Types.ObjectId();
-    var actionState3 = mongoose.Types.ObjectId();
-    var actionState4 = mongoose.Types.ObjectId();
+    var actionState1 = seedIDs.IssueActionState.actionState1;
+    var actionState2 = seedIDs.IssueActionState.actionState2;
+    var actionState3 = seedIDs.IssueActionState.actionState3;
+    var actionState4 = seedIDs.IssueActionState.actionState4;
 
     // ------ Change Request states ------
 
-    var changeState1 = mongoose.Types.ObjectId();
-    var changeState2 = mongoose.Types.ObjectId();
-    var changeState3 = mongoose.Types.ObjectId();
-    var changeState4 = mongoose.Types.ObjectId();
-    var changeState5 = mongoose.Types.ObjectId();
-    var changeState6 = mongoose.Types.ObjectId();
+    var changeState1 = seedIDs.ChangeRequestState.changeState1;
+    var changeState2 = seedIDs.ChangeRequestState.changeState2;
+    var changeState3 = seedIDs.ChangeRequestState.changeState3;
+    var changeState4 = seedIDs.ChangeRequestState.changeState4;
+    var changeState5 = seedIDs.ChangeRequestState.changeState5;
+    var changeState6 = seedIDs.ChangeRequestState.changeState6;
 
     async.series([
         function(callback) {
             var schema = mongoose.mtModel(user.tenantId + '.' + 'LogPriority');
             var seedArray =  [
                 {
-                    _id: priority1,
+                    _id: logPriority1,
                     name: 'High',
                     description:'High priority',
                     numericalValue: 100,
@@ -82,7 +83,7 @@ exports.seedLogs = function(user, callback){
                     created: Date.now()
                 },
                 {
-                    _id: priority2,
+                    _id: logPriority2,
                     name: 'Medium',
                     description:'Medium priority',
                     numericalValue: 70,
@@ -91,7 +92,7 @@ exports.seedLogs = function(user, callback){
                     created: Date.now()
                 },
                 {
-                    _id: priority3,
+                    _id: logPriority3,
                     name: 'Low',
                     description:'Low priority',
                     numericalValue: 30,
@@ -106,21 +107,21 @@ exports.seedLogs = function(user, callback){
             var schema = mongoose.mtModel(user.tenantId + '.' + 'LogReason');
             var seedArray =  [
                 {
-                    _id: reason1,
+                    _id: logReason1,
                     name: 'Poor estimation',
                     description:'Change is required due to poor previous estimation',
                     user:user._id,
                     created: Date.now()
                 },
                 {
-                    _id: reason2,
+                    _id: logReason2,
                     name: 'Resource bottleneck',
                     description:'Change is required due to lack of staff or skills',
                     user:user._id,
                     created: Date.now()
                 },
                 {
-                    _id: reason3,
+                    _id: logReason3,
                     name: 'Scope change',
                     description:'Change is required due to scope change',
                     user:user._id,

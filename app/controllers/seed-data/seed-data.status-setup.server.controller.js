@@ -8,6 +8,7 @@ var _ = require('lodash'),
     errorHandler = require('../errors.server.controller'),
     mongoose = require('mongoose'),
     async = require('async'),
+    seedIDs = require('./seed-data.ids.server.controller').getIDs(),
     User = mongoose.model('User');
 
 
@@ -35,15 +36,15 @@ exports.seedStatuses = function(user, callback){
     
     // Status indicators
 
-    var indicator1 = mongoose.Types.ObjectId();
-    var indicator2 = mongoose.Types.ObjectId();
-    var indicator3 = mongoose.Types.ObjectId();
+    var indicator1 = seedIDs.LogStatusIndicator.indicator1;
+    var indicator2 = seedIDs.LogStatusIndicator.indicator2;
+    var indicator3 = seedIDs.LogStatusIndicator.indicator3;
 
     // Status areas
 
-    var area1 = mongoose.Types.ObjectId();
-    var area2 = mongoose.Types.ObjectId();
-    var area3 = mongoose.Types.ObjectId();
+    var area1 = seedIDs.LogStatusArea.area1;
+    var area2 = seedIDs.LogStatusArea.area2;
+    var area3 = seedIDs.LogStatusArea.area3;
 
     async.series([
         function(callback) {

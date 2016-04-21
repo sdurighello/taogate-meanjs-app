@@ -12,22 +12,22 @@ var mongoose = require('mongoose'),
 /**
  * Create a Project
  */
-exports.create = function(req, res) {
-    var Project = mongoose.mtModel(req.user.tenantId + '.' + 'Project');
-    var project = new Project(req.body);
-    project.user = req.user;
+exports.create = function(user, body, callback) {
+    var Project = mongoose.mtModel(user.tenantId + '.' + 'Project');
+    var project = new Project(body);
+    project.user = user;
 
-    var CategoryGroup = mongoose.mtModel(req.user.tenantId + '.' + 'CategoryGroup');
-    var Category = mongoose.mtModel(req.user.tenantId + '.' + 'Category');
-    var PriorityGroup = mongoose.mtModel(req.user.tenantId + '.' + 'PriorityGroup');
-    var Priority = mongoose.mtModel(req.user.tenantId + '.' + 'Priority');
-    var QualitativeImpactGroup = mongoose.mtModel(req.user.tenantId + '.' + 'QualitativeImpactGroup');
-    var QualitativeImpact = mongoose.mtModel(req.user.tenantId + '.' + 'QualitativeImpact');
-    var RiskCategory = mongoose.mtModel(req.user.tenantId + '.' + 'RiskCategory');
-    var Risk = mongoose.mtModel(req.user.tenantId + '.' + 'Risk');
-    var PeopleCategory = mongoose.mtModel(req.user.tenantId + '.' + 'PeopleCategory');
-    var PeopleProjectGroup = mongoose.mtModel(req.user.tenantId + '.' + 'PeopleProjectGroup');
-    var PeopleProjectRole = mongoose.mtModel(req.user.tenantId + '.' + 'PeopleProjectRole');
+    var CategoryGroup = mongoose.mtModel(user.tenantId + '.' + 'CategoryGroup');
+    var Category = mongoose.mtModel(user.tenantId + '.' + 'Category');
+    var PriorityGroup = mongoose.mtModel(user.tenantId + '.' + 'PriorityGroup');
+    var Priority = mongoose.mtModel(user.tenantId + '.' + 'Priority');
+    var QualitativeImpactGroup = mongoose.mtModel(user.tenantId + '.' + 'QualitativeImpactGroup');
+    var QualitativeImpact = mongoose.mtModel(user.tenantId + '.' + 'QualitativeImpact');
+    var RiskCategory = mongoose.mtModel(user.tenantId + '.' + 'RiskCategory');
+    var Risk = mongoose.mtModel(user.tenantId + '.' + 'Risk');
+    var PeopleCategory = mongoose.mtModel(user.tenantId + '.' + 'PeopleCategory');
+    var PeopleProjectGroup = mongoose.mtModel(user.tenantId + '.' + 'PeopleProjectGroup');
+    var PeopleProjectRole = mongoose.mtModel(user.tenantId + '.' + 'PeopleProjectRole');
 
 
     async.series([
@@ -197,11 +197,9 @@ exports.create = function(req, res) {
         }
     ],function(err){
         if (err) {
-            return res.status(400).send({
-                message: errorHandler.getErrorMessage(err)
-            });
+            callback(err);
         } else {
-            res.jsonp(project);
+            callback(null, project);
         }
     });
 };

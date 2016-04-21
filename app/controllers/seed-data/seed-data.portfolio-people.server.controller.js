@@ -7,6 +7,7 @@ var _ = require('lodash'),
     errorHandler = require('../errors.server.controller'),
     mongoose = require('mongoose'),
     async = require('async'),
+    seedIDs = require('./seed-data.ids.server.controller').getIDs(),
     User = mongoose.model('User');
 
 
@@ -31,21 +32,23 @@ var createObjects = function(schema, stringMsg, seedArray, callback){
 };
 
 exports.seedPortfolioPeople = function(user, callback){
-    // Portfolio Governance Board
-    var portfolioGovernanceBoard = mongoose.Types.ObjectId();
 
-    var businessExecutive = mongoose.Types.ObjectId();
-    var sectorITManager = mongoose.Types.ObjectId();
-    var portfolioManager = mongoose.Types.ObjectId();
+    // Portfolio Governance Board
+    var group1 = seedIDs.PeoplePortfolioGroup.group1;
+
+    var role1 = seedIDs.PeoplePortfolioRole.role1;
+    var role2 = seedIDs.PeoplePortfolioRole.role2;
+    var role3 = seedIDs.PeoplePortfolioRole.role3;
+
     async.series([
         function(callback) {
             var schema = mongoose.mtModel(user.tenantId + '.' + 'PeoplePortfolioGroup');
             var seedArray =  [
                 {
-                    _id: portfolioGovernanceBoard,
+                    _id: group1,
                     name: 'Portfolio governance board',
                     description:'Portfolio governance board',
-                    roles: [businessExecutive, sectorITManager, portfolioManager],
+                    roles: [role1, role2, role3],
                     user:user._id,
                     created: Date.now()
                 }
@@ -56,21 +59,21 @@ exports.seedPortfolioPeople = function(user, callback){
             var schema = mongoose.mtModel(user.tenantId + '.' + 'PeoplePortfolioRole');
             var seedArray =  [
                 {
-                    _id: businessExecutive,
+                    _id: role1,
                     name: 'Business executive',
                     description:'Business executive',
                     user:user._id,
                     created: Date.now()
                 },
                 {
-                    _id: sectorITManager,
+                    _id: role2,
                     name: 'Sector IT Manager',
                     description:'Sector IT Manager',
                     user:user._id,
                     created: Date.now()
                 },
                 {
-                    _id: portfolioManager,
+                    _id: role3,
                     name: 'Portfolio Manager',
                     description:'Portfolio Manager',
                     user:user._id,

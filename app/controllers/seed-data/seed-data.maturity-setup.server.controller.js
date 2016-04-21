@@ -8,6 +8,7 @@ var _ = require('lodash'),
     errorHandler = require('../errors.server.controller'),
     mongoose = require('mongoose'),
     async = require('async'),
+    seedIDs = require('./seed-data.ids.server.controller').getIDs(),
     User = mongoose.model('User');
 
 
@@ -35,128 +36,121 @@ exports.seedMaturityModels = function(user, callback){
 
     // Maturity model
 
-    var model1 = mongoose.Types.ObjectId();
+    var model1 = seedIDs.MaturityModel.model1;
 
 // Levels
 
-    var level1 = mongoose.Types.ObjectId();
-    var level2 = mongoose.Types.ObjectId();
-    var level3 = mongoose.Types.ObjectId();
-    var level4 = mongoose.Types.ObjectId();
-    var level5 = mongoose.Types.ObjectId();
+    var level1 = seedIDs.MaturityModelLevel.level1;
+    var level2 = seedIDs.MaturityModelLevel.level2;
+    var level3 = seedIDs.MaturityModelLevel.level3;
+    var level4 = seedIDs.MaturityModelLevel.level4;
+    var level5 = seedIDs.MaturityModelLevel.level5;
 
 // Areas
-    var area1 = mongoose.Types.ObjectId();
-    var area2 = mongoose.Types.ObjectId();
-    var area3 = mongoose.Types.ObjectId();
-    var area4 = mongoose.Types.ObjectId();
-    var area5 = mongoose.Types.ObjectId();
-    var area6 = mongoose.Types.ObjectId();
-    var area7 = mongoose.Types.ObjectId();
-    var area8 = mongoose.Types.ObjectId();
-    var area9 = mongoose.Types.ObjectId();
-    var area10 = mongoose.Types.ObjectId();
-    var area11 = mongoose.Types.ObjectId();
-    var area12 = mongoose.Types.ObjectId();
-    var area13 = mongoose.Types.ObjectId();
-    var area14 = mongoose.Types.ObjectId();
-    var area15 = mongoose.Types.ObjectId();
-    var area16 = mongoose.Types.ObjectId();
-    var area17 = mongoose.Types.ObjectId();
-    var area18 = mongoose.Types.ObjectId();
-    var area19 = mongoose.Types.ObjectId();
-    var area20 = mongoose.Types.ObjectId();
-    var area21 = mongoose.Types.ObjectId();
-    var area22 = mongoose.Types.ObjectId();
+    var area1 = seedIDs.MaturityModelArea.area1;
+    var area2 = seedIDs.MaturityModelArea.area2;
+    var area3 = seedIDs.MaturityModelArea.area3;
+    var area4 = seedIDs.MaturityModelArea.area4;
+    var area5 = seedIDs.MaturityModelArea.area5;
+    var area6 = seedIDs.MaturityModelArea.area6;
+    var area7 = seedIDs.MaturityModelArea.area7;
+    var area8 = seedIDs.MaturityModelArea.area8;
+    var area9 = seedIDs.MaturityModelArea.area9;
+    var area10 = seedIDs.MaturityModelArea.area10;
+    var area11 = seedIDs.MaturityModelArea.area11;
+    var area12 = seedIDs.MaturityModelArea.area12;
+    var area13 = seedIDs.MaturityModelArea.area13;
+    var area14 = seedIDs.MaturityModelArea.area14;
+    var area15 = seedIDs.MaturityModelArea.area15;
+    var area16 = seedIDs.MaturityModelArea.area16;
+    var area17 = seedIDs.MaturityModelArea.area17;
+    var area18 = seedIDs.MaturityModelArea.area18;
+    var area19 = seedIDs.MaturityModelArea.area19;
+    var area20 = seedIDs.MaturityModelArea.area20;
+    var area21 = seedIDs.MaturityModelArea.area21;
+    var area22 = seedIDs.MaturityModelArea.area22;
 
 // Dimensions
 
-    // Level 1
-    var l1a1_1 = mongoose.Types.ObjectId();
-    var l1a2_1 = mongoose.Types.ObjectId();
-    var l1a3_1 = mongoose.Types.ObjectId();
-    var l1a4_1 = mongoose.Types.ObjectId();
-    var l1a5_1 = mongoose.Types.ObjectId();
-
     // Level 2
 
-    var l2a1_1 = mongoose.Types.ObjectId();
+    var l2a1_1 = seedIDs.MaturityModelDimension.l2a1_1;
 
-    var l2a2_1 = mongoose.Types.ObjectId();
-    var l2a2_2 = mongoose.Types.ObjectId();
-    var l2a2_3 = mongoose.Types.ObjectId();
+    var l2a2_1 = seedIDs.MaturityModelDimension.l2a2_1;
+    var l2a2_2 = seedIDs.MaturityModelDimension.l2a2_2;
+    var l2a2_3 = seedIDs.MaturityModelDimension.l2a2_3;
 
-    var l2a3_1 = mongoose.Types.ObjectId();
-    var l2a3_2 = mongoose.Types.ObjectId();
+    var l2a3_1 = seedIDs.MaturityModelDimension.l2a3_1;
+    var l2a3_2 = seedIDs.MaturityModelDimension.l2a3_2;
 
-    var l2a4_1 = mongoose.Types.ObjectId();
-    var l2a4_2 = mongoose.Types.ObjectId();
+    var l2a4_1 = seedIDs.MaturityModelDimension.l2a4_1;
+    var l2a4_2 = seedIDs.MaturityModelDimension.l2a4_2;
 
-    var l2a5_1 = mongoose.Types.ObjectId();
-    var l2a5_2 = mongoose.Types.ObjectId();
+    var l2a5_1 = seedIDs.MaturityModelDimension.l2a5_1;
+    var l2a5_2 = seedIDs.MaturityModelDimension.l2a5_2;
 
-    var l2a6_1 = mongoose.Types.ObjectId();
-    var l2a6_2 = mongoose.Types.ObjectId();
+    var l2a6_1 = seedIDs.MaturityModelDimension.l2a6_1;
+    var l2a6_2 = seedIDs.MaturityModelDimension.l2a6_2;
 
-    var l2a7_1 = mongoose.Types.ObjectId();
-    var l2a7_2 = mongoose.Types.ObjectId();
-    var l2a7_3 = mongoose.Types.ObjectId();
+    var l2a7_1 = seedIDs.MaturityModelDimension.l2a7_1;
+    var l2a7_2 = seedIDs.MaturityModelDimension.l2a7_2;
+    var l2a7_3 = seedIDs.MaturityModelDimension.l2a7_3;
 
     // Level 3
 
-    var l3a8_1 = mongoose.Types.ObjectId();
-    var l3a8_2 = mongoose.Types.ObjectId();
-    var l3a8_3 = mongoose.Types.ObjectId();
+    var l3a8_1 = seedIDs.MaturityModelDimension.l3a8_1;
+    var l3a8_2 = seedIDs.MaturityModelDimension.l3a8_2;
+    var l3a8_3 = seedIDs.MaturityModelDimension.l3a8_3;
 
-    var l3a9_1 = mongoose.Types.ObjectId();
-    var l3a9_2 = mongoose.Types.ObjectId();
-    var l3a9_3 = mongoose.Types.ObjectId();
+    var l3a9_1 = seedIDs.MaturityModelDimension.l3a9_1;
+    var l3a9_2 = seedIDs.MaturityModelDimension.l3a9_2;
+    var l3a9_3 = seedIDs.MaturityModelDimension.l3a9_3;
 
-    var l3a10_1 = mongoose.Types.ObjectId();
-    var l3a10_2 = mongoose.Types.ObjectId();
-    var l3a10_3 = mongoose.Types.ObjectId();
+    var l3a10_1 = seedIDs.MaturityModelDimension.l3a10_1;
+    var l3a10_2 = seedIDs.MaturityModelDimension.l3a10_2;
+    var l3a10_3 = seedIDs.MaturityModelDimension.l3a10_3;
 
-    var l3a11_1 = mongoose.Types.ObjectId();
-    var l3a11_2 = mongoose.Types.ObjectId();
-    var l3a11_3 = mongoose.Types.ObjectId();
+    var l3a11_1 = seedIDs.MaturityModelDimension.l3a11_1;
+    var l3a11_2 = seedIDs.MaturityModelDimension.l3a11_2;
+    var l3a11_3 = seedIDs.MaturityModelDimension.l3a11_3;
 
-    var l3a12_1 = mongoose.Types.ObjectId();
-    var l3a12_2 = mongoose.Types.ObjectId();
+    var l3a12_1 = seedIDs.MaturityModelDimension.l3a12_1;
+    var l3a12_2 = seedIDs.MaturityModelDimension.l3a12_2;
 
-    var l3a13_1 = mongoose.Types.ObjectId();
-    var l3a13_2 = mongoose.Types.ObjectId();
-    var l3a13_3 = mongoose.Types.ObjectId();
+    var l3a13_1 = seedIDs.MaturityModelDimension.l3a13_1;
+    var l3a13_2 = seedIDs.MaturityModelDimension.l3a13_2;
+    var l3a13_3 = seedIDs.MaturityModelDimension.l3a13_3;
 
-    var l3a14_1 = mongoose.Types.ObjectId();
-    var l3a14_2 = mongoose.Types.ObjectId();
+    var l3a14_1 = seedIDs.MaturityModelDimension.l3a14_1;
+    var l3a14_2 = seedIDs.MaturityModelDimension.l3a14_2;
 
-    var l3a15_1 = mongoose.Types.ObjectId();
-    var l3a15_2 = mongoose.Types.ObjectId();
+    var l3a15_1 = seedIDs.MaturityModelDimension.l3a15_1;
+    var l3a15_2 = seedIDs.MaturityModelDimension.l3a15_2;
 
-    var l3a16_1 = mongoose.Types.ObjectId();
-    var l3a16_2 = mongoose.Types.ObjectId();
-    var l3a16_3 = mongoose.Types.ObjectId();
+    var l3a16_1 = seedIDs.MaturityModelDimension.l3a16_1;
+    var l3a16_2 = seedIDs.MaturityModelDimension.l3a16_2;
+    var l3a16_3 = seedIDs.MaturityModelDimension.l3a16_3;
 
-    var l3a17_1 = mongoose.Types.ObjectId();
-    var l3a17_2 = mongoose.Types.ObjectId();
-    var l3a17_3 = mongoose.Types.ObjectId();
+    var l3a17_1 = seedIDs.MaturityModelDimension.l3a17_1;
+    var l3a17_2 = seedIDs.MaturityModelDimension.l3a17_2;
+    var l3a17_3 = seedIDs.MaturityModelDimension.l3a17_3;
 
-    var l3a18_1 = mongoose.Types.ObjectId();
+    var l3a18_1 = seedIDs.MaturityModelDimension.l3a18_1;
 
     // Level 4
 
-    var l4a19_1 = mongoose.Types.ObjectId();
+    var l4a19_1 = seedIDs.MaturityModelDimension.l4a19_1;
 
-    var l4a20_1 = mongoose.Types.ObjectId();
-    var l4a20_2 = mongoose.Types.ObjectId();
+    var l4a20_1 = seedIDs.MaturityModelDimension.l4a20_1;
+    var l4a20_2 = seedIDs.MaturityModelDimension.l4a20_2;
 
     // Level 5
 
-    var l5a21_1 = mongoose.Types.ObjectId();
-    var l5a21_2 = mongoose.Types.ObjectId();
+    var l5a21_1 = seedIDs.MaturityModelDimension.l5a21_1;
+    var l5a21_2 = seedIDs.MaturityModelDimension.l5a21_2;
 
-    var l5a22_1 = mongoose.Types.ObjectId();
-    var l5a22_2 = mongoose.Types.ObjectId();
+    var l5a22_1 = seedIDs.MaturityModelDimension.l5a22_1;
+    var l5a22_2 = seedIDs.MaturityModelDimension.l5a22_2;
 
     async.series([
         function(callback) {

@@ -8,6 +8,7 @@ var _ = require('lodash'),
     errorHandler = require('../errors.server.controller'),
     mongoose = require('mongoose'),
     async = require('async'),
+    seedIDs = require('./seed-data.ids.server.controller').getIDs(),
     User = mongoose.model('User');
 
 
@@ -33,78 +34,78 @@ var createObjects = function(schema, stringMsg, seedArray, callback){
 
 exports.seedProcesses = function(user, callback){
     // Outcome scores
-    var notAchieved = mongoose.Types.ObjectId();
-    var partiallyAchieved = mongoose.Types.ObjectId();
-    var achieved = mongoose.Types.ObjectId();
+    var goScore1 = seedIDs.GateOutcomeScore.goScore1;
+    var goScore2 = seedIDs.GateOutcomeScore.goScore2;
+    var goScore3 = seedIDs.GateOutcomeScore.goScore3;
 
     // Gate Statuses
-    var gStatus1 = mongoose.Types.ObjectId();
-    var gStatus2 = mongoose.Types.ObjectId();
-    var gStatus3 = mongoose.Types.ObjectId();
-    var gStatus4 = mongoose.Types.ObjectId();
-    var gStatus5 = mongoose.Types.ObjectId();
-    var gStatus6 = mongoose.Types.ObjectId();
+    var gStatus1 = seedIDs.GateStatus.gStatus1;
+    var gStatus2 = seedIDs.GateStatus.gStatus2;
+    var gStatus3 = seedIDs.GateStatus.gStatus3;
+    var gStatus4 = seedIDs.GateStatus.gStatus4;
+    var gStatus5 = seedIDs.GateStatus.gStatus5;
+    var gStatus6 = seedIDs.GateStatus.gStatus6;
 
     // Waterfall
-    var w1 = mongoose.Types.ObjectId();
+    var w1 = seedIDs.GateProcess.w1;
 
-    var w11 = mongoose.Types.ObjectId(); // Startup
-    var w12 = mongoose.Types.ObjectId(); // Initiation
-    var w13 = mongoose.Types.ObjectId(); // Planning
-    var w14 = mongoose.Types.ObjectId(); // Execution
-    var w15 = mongoose.Types.ObjectId(); // Warranty
-    var w16 = mongoose.Types.ObjectId(); // Closure
+    var w11 = seedIDs.Gate.w11; // Startup
+    var w12 = seedIDs.Gate.w12; // Initiation
+    var w13 = seedIDs.Gate.w13; // Planning
+    var w14 = seedIDs.Gate.w14; // Execution
+    var w15 = seedIDs.Gate.w15; // Warranty
+    var w16 = seedIDs.Gate.w16; // Closure
 
-    var w111 = mongoose.Types.ObjectId(); // Initiative aligned to approved strategic theme
-    var w112 = mongoose.Types.ObjectId(); // Formal support by a named Sponsor identified
-    var w113 = mongoose.Types.ObjectId(); // Expected delivery identified in approved roadmap
-    var w114 = mongoose.Types.ObjectId(); // A Project Manager has been assigned
+    var w111 = seedIDs.GateOutcome.w111; // Initiative aligned to approved strategic theme
+    var w112 = seedIDs.GateOutcome.w112; // Formal support by a named Sponsor identified
+    var w113 = seedIDs.GateOutcome.w113; // Expected delivery identified in approved roadmap
+    var w114 = seedIDs.GateOutcome.w114; // A Project Manager has been assigned
 
-    var w121 = mongoose.Types.ObjectId(); // Business justification agreed between stakeholders
-    var w122 = mongoose.Types.ObjectId(); // Funding available and committed
-    var w123 = mongoose.Types.ObjectId(); // Strategic intent clear and aligned with other initiatives
+    var w121 = seedIDs.GateOutcome.w121; // Business justification agreed between stakeholders
+    var w122 = seedIDs.GateOutcome.w122; // Funding available and committed
+    var w123 = seedIDs.GateOutcome.w123; // Strategic intent clear and aligned with other initiatives
 
-    var w131 = mongoose.Types.ObjectId(); // Cost/Benefits ownership agreed
-    var w132 = mongoose.Types.ObjectId(); // Clear requirements
-    var w133 = mongoose.Types.ObjectId(); // Impacts on other systems and interfaces identified
-    var w134 = mongoose.Types.ObjectId(); // Impacts on business processes, organization and people identified
-    var w135 = mongoose.Types.ObjectId(); // Delivery and operations risks mitigated
+    var w131 = seedIDs.GateOutcome.w131; // Cost/Benefits ownership agreed
+    var w132 = seedIDs.GateOutcome.w132; // Clear requirements
+    var w133 = seedIDs.GateOutcome.w133; // Impacts on other systems and interfaces identified
+    var w134 = seedIDs.GateOutcome.w134; // Impacts on business processes, organization and people identified
+    var w135 = seedIDs.GateOutcome.w135; // Delivery and operations risks mitigated
 
-    var w141 = mongoose.Types.ObjectId(); // Business change validated
-    var w142 = mongoose.Types.ObjectId(); // Functional behaviour detailed
-    var w143 = mongoose.Types.ObjectId(); // Business case approved
-    var w144 = mongoose.Types.ObjectId(); // Testing strategy agreed
+    var w141 = seedIDs.GateOutcome.w141; // Business change validated
+    var w142 = seedIDs.GateOutcome.w142; // Functional behaviour detailed
+    var w143 = seedIDs.GateOutcome.w143; // Business case approved
+    var w144 = seedIDs.GateOutcome.w144; // Testing strategy agreed
 
-    var w151 = mongoose.Types.ObjectId(); // Solution built as per design with variance to design documented and agreed
-    var w152 = mongoose.Types.ObjectId(); // Changes have been placed into production based on formal approval
-    var w153 = mongoose.Types.ObjectId(); // Users understand how changes to systems and processes will impact them, and where to go for support
-    var w154 = mongoose.Types.ObjectId(); // Maintenance of new systems, processes or required updates in place
+    var w151 = seedIDs.GateOutcome.w151; // Solution built as per design with variance to design documented and agreed
+    var w152 = seedIDs.GateOutcome.w152; // Changes have been placed into production based on formal approval
+    var w153 = seedIDs.GateOutcome.w153; // Users understand how changes to systems and processes will impact them, and where to go for support
+    var w154 = seedIDs.GateOutcome.w154; // Maintenance of new systems, processes or required updates in place
 
-    var w161 = mongoose.Types.ObjectId(); // Post implementation review completed
-    var w162 = mongoose.Types.ObjectId(); // Lessons learned captured and embedded
-    var w163 = mongoose.Types.ObjectId(); // Business benefits realization tracking initiated
-    var w164 = mongoose.Types.ObjectId(); // Project formally closed in management systems
+    var w161 = seedIDs.GateOutcome.w161; // Post implementation review completed
+    var w162 = seedIDs.GateOutcome.w162; // Lessons learned captured and embedded
+    var w163 = seedIDs.GateOutcome.w163; // Business benefits realization tracking initiated
+    var w164 = seedIDs.GateOutcome.w164; // Project formally closed in management systems
 
     async.series([
         function(callback) {
             var schema = mongoose.mtModel(user.tenantId + '.' + 'GateOutcomeScore');
             var seedArray =  [
                 {
-                    _id: notAchieved,
+                    _id: goScore1,
                     name: 'Not achieved',
                     description:'Gate outcome has not been achieved',
                     user:user._id,
                     created: Date.now()
                 },
                 {
-                    _id: partiallyAchieved,
+                    _id: goScore2,
                     name: 'Partially achieved',
                     description:'Gate outcome has been partially achieved',
                     user:user._id,
                     created: Date.now()
                 },
                 {
-                    _id: achieved,
+                    _id: goScore3,
                     name: 'Achieved',
                     description:'Gate outcome has been achieved',
                     user:user._id,

@@ -7,6 +7,7 @@ var _ = require('lodash'),
     errorHandler = require('../errors.server.controller'),
     mongoose = require('mongoose'),
     async = require('async'),
+    seedIDs = require('./seed-data.ids.server.controller').getIDs(),
     User = mongoose.model('User');
 
 var createObjects = function(schema, stringMsg, seedArray, callback){
@@ -32,65 +33,65 @@ var createObjects = function(schema, stringMsg, seedArray, callback){
 exports.seedStakeholders = function(user, callback){
 
 // Internal/External
-    var id1 = mongoose.Types.ObjectId();
+    var id1 = seedIDs.PeopleCategory.id1;
 
-    var id11 = mongoose.Types.ObjectId(); // External
-    var id12 = mongoose.Types.ObjectId(); // Internal
+    var id11 = seedIDs.PeopleCategoryValue.id11; // External
+    var id12 = seedIDs.PeopleCategoryValue.id12; // Internal
 
 // Soft systems taxonomy
-    var id2 = mongoose.Types.ObjectId();
+    var id2 = seedIDs.PeopleCategory.id2;
 
-    var id21 = mongoose.Types.ObjectId(); // Primary
-    var id22 = mongoose.Types.ObjectId(); // Secondary
-    var id23 = mongoose.Types.ObjectId(); // Tertiary
-    var id24 = mongoose.Types.ObjectId(); // Facilitating
+    var id21 = seedIDs.PeopleCategoryValue.id21; // Primary
+    var id22 = seedIDs.PeopleCategoryValue.id22; // Secondary
+    var id23 = seedIDs.PeopleCategoryValue.id23; // Tertiary
+    var id24 = seedIDs.PeopleCategoryValue.id24; // Facilitating
 
 // Salience level
-    var id3 = mongoose.Types.ObjectId();
+    var id3 = seedIDs.PeopleCategory.id3;
 
-    var id31 = mongoose.Types.ObjectId(); // Dormant
-    var id32 = mongoose.Types.ObjectId(); // Discretionary
-    var id33 = mongoose.Types.ObjectId(); // Demanding
-    var id34 = mongoose.Types.ObjectId(); // Dominant
-    var id35 = mongoose.Types.ObjectId(); // Dangerous
-    var id36 = mongoose.Types.ObjectId(); // Dependent
-    var id37 = mongoose.Types.ObjectId(); // Definitive
-    var id38 = mongoose.Types.ObjectId(); // NonStakeholder
+    var id31 = seedIDs.PeopleCategoryValue.id31; // Dormant
+    var id32 = seedIDs.PeopleCategoryValue.id32; // Discretionary
+    var id33 = seedIDs.PeopleCategoryValue.id33; // Demanding
+    var id34 = seedIDs.PeopleCategoryValue.id34; // Dominant
+    var id35 = seedIDs.PeopleCategoryValue.id35; // Dangerous
+    var id36 = seedIDs.PeopleCategoryValue.id36; // Dependent
+    var id37 = seedIDs.PeopleCategoryValue.id37; // Definitive
+    var id38 = seedIDs.PeopleCategoryValue.id38; // NonStakeholder
 
 // Power/Interest grid
-    var id4 = mongoose.Types.ObjectId();
+    var id4 = seedIDs.PeopleCategory.id4;
 
-    var id41 = mongoose.Types.ObjectId(); // Keep satisfied
-    var id42 = mongoose.Types.ObjectId(); // Manage closely
-    var id43 = mongoose.Types.ObjectId(); // Monitor
-    var id44 = mongoose.Types.ObjectId(); // Keep informed
+    var id41 = seedIDs.PeopleCategoryValue.id41; // Keep satisfied
+    var id42 = seedIDs.PeopleCategoryValue.id42; // Manage closely
+    var id43 = seedIDs.PeopleCategoryValue.id43; // Monitor
+    var id44 = seedIDs.PeopleCategoryValue.id44; // Keep informed
 
 
 // PMI engagement level
-    var id5 = mongoose.Types.ObjectId();
+    var id5 = seedIDs.PeopleCategory.id5;
 
-    var id51 = mongoose.Types.ObjectId(); // Unaware
-    var id52 = mongoose.Types.ObjectId(); // Resistant
-    var id53 = mongoose.Types.ObjectId(); // Neutral
-    var id54 = mongoose.Types.ObjectId(); // Supportive
-    var id55 = mongoose.Types.ObjectId(); // Leading
+    var id51 = seedIDs.PeopleCategoryValue.id51; // Unaware
+    var id52 = seedIDs.PeopleCategoryValue.id52; // Resistant
+    var id53 = seedIDs.PeopleCategoryValue.id53; // Neutral
+    var id54 = seedIDs.PeopleCategoryValue.id54; // Supportive
+    var id55 = seedIDs.PeopleCategoryValue.id55; // Leading
 
 // OGC taxonomy
-    var id6 = mongoose.Types.ObjectId();
+    var id6 = seedIDs.PeopleCategory.id6;
 
-    var id61 = mongoose.Types.ObjectId(); // Users/Beneficiaries
-    var id62 = mongoose.Types.ObjectId(); // Providers
-    var id63 = mongoose.Types.ObjectId(); // Governance
-    var id64 = mongoose.Types.ObjectId(); // Influencers
+    var id61 = seedIDs.PeopleCategoryValue.id61; // Users/Beneficiaries
+    var id62 = seedIDs.PeopleCategoryValue.id62; // Providers
+    var id63 = seedIDs.PeopleCategoryValue.id63; // Governance
+    var id64 = seedIDs.PeopleCategoryValue.id64; // Influencers
 
 // Engagement approach
-    var id7 = mongoose.Types.ObjectId();
+    var id7 = seedIDs.PeopleCategory.id7;
 
-    var id71 = mongoose.Types.ObjectId(); // Partnership
-    var id72 = mongoose.Types.ObjectId(); // Participation
-    var id73 = mongoose.Types.ObjectId(); // Consultation
-    var id74 = mongoose.Types.ObjectId(); // Push communication
-    var id75 = mongoose.Types.ObjectId(); // Pull communication
+    var id71 = seedIDs.PeopleCategoryValue.id71; // Partnership
+    var id72 = seedIDs.PeopleCategoryValue.id72; // Participation
+    var id73 = seedIDs.PeopleCategoryValue.id73; // Consultation
+    var id74 = seedIDs.PeopleCategoryValue.id74; // Push communication
+    var id75 = seedIDs.PeopleCategoryValue.id75; // Pull communication
 
     async.series([
         function(callback) {

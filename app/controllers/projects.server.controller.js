@@ -14,8 +14,17 @@ var mongoose = require('mongoose'),
  * Create a Project
  */
 
-exports.create = require('./projects/projects.create.server.controller').create;
-
+exports.create = function(req, res) {
+    require('./projects/projects.create.server.controller').create(req.user, req.body, function (err, project) {
+        if (err) {
+            return res.status(400).send({
+                message: errorHandler.getErrorMessage(err)
+            });
+        } else {
+            res.jsonp(project);
+        }
+    });
+};
 
 /**
  * Show the current Project

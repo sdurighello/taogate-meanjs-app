@@ -8,6 +8,7 @@ var _ = require('lodash'),
     errorHandler = require('../errors.server.controller'),
     mongoose = require('mongoose'),
     async = require('async'),
+    seedIDs = require('./seed-data.ids.server.controller').getIDs(),
     User = mongoose.model('User');
 
 
@@ -33,15 +34,15 @@ var createObjects = function(schema, stringMsg, seedArray, callback){
 
 exports.seedPortfolioReviews = function(user, callback){
 
-    // Project Review Types
+    // Portfolio Review Types
 
-    var pReviewType1 = mongoose.Types.ObjectId();
-    var pReviewType2 = mongoose.Types.ObjectId();
+    var pReviewType1 = seedIDs.PortfolioReviewType.pReviewType1;
+    var pReviewType2 = seedIDs.PortfolioReviewType.pReviewType2;
 
-    // Project Review templates
+    // Portfolio Review templates
 
-    var pReviewTemp1 = mongoose.Types.ObjectId();
-    var pReviewTemp2 = mongoose.Types.ObjectId();
+    var pReviewTemp1 = seedIDs.PortfolioReviewTemplate.pReviewTemp1;
+    var pReviewTemp2 = seedIDs.PortfolioReviewTemplate.pReviewTemp2;
 
     async.series([
         function(callback) {
