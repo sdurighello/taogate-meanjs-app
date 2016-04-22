@@ -34,68 +34,101 @@ var createObjects = function(schema, stringMsg, seedArray, callback){
 
 exports.seedRisks = function(user, callback){
 
-// Delivery
+    // Delivery
     var r1 = seedIDs.RiskCategory.r1;
 
     var r11 = seedIDs.Risk.r11; // Poor product quality
     var r12 = seedIDs.Risk.r12; // Supplier failure
     var r13 = seedIDs.Risk.r13; // Lack of staff or skills
 
-// Financial
+    // Financial
     var r2 = seedIDs.RiskCategory.r2;
 
     var r21 = seedIDs.Risk.r21; // Cost overrun
     var r22 = seedIDs.Risk.r22; // Increased cost variability
     var r23 = seedIDs.Risk.r23; // Increased capex/opex ratio
 
-// Technology
+    // Technology
     var r3 = seedIDs.RiskCategory.r3;
 
     var r31 = seedIDs.Risk.r31; // Technology aging
     var r32 = seedIDs.Risk.r32; // Platform instability
     var r33 = seedIDs.Risk.r33; // Impacts on other systems
 
-// Operational
+    // Operational
     var r4 = seedIDs.RiskCategory.r4;
 
     var r41 = seedIDs.Risk.r41; // Impaired support and maintenance
     var r42 = seedIDs.Risk.r42; // Difficult business adoption
     var r43 = seedIDs.Risk.r43; // Business process failure
 
-// Market
+    // Market
     var r5 = seedIDs.RiskCategory.r5;
 
     var r51 = seedIDs.Risk.r51; // Poor market reception
     var r52 = seedIDs.Risk.r52; // Impact on Partner relationships
     var r53 = seedIDs.Risk.r53; // Reaction from competition
 
-// Legal
+    // Legal
     var r6 = seedIDs.RiskCategory.r6;
 
     var r61 = seedIDs.Risk.r61; // Regulatory breach
     var r62 = seedIDs.Risk.r62; // Exposure to lawsuit loss
 
-// Impacts
+    // Impacts
 
-    var incidental = seedIDs.RiskImpact.incidental;
-    var minor = seedIDs.RiskImpact.minor;
-    var moderate = seedIDs.RiskImpact.moderate;
-    var major = seedIDs.RiskImpact.major;
-    var extreme = seedIDs.RiskImpact.extreme;
+    var riskImpact1 = seedIDs.RiskImpact.riskImpact1; // incidental
+    var riskImpact2 = seedIDs.RiskImpact.riskImpact2; // minor
+    var riskImpact3 = seedIDs.RiskImpact.riskImpact3; // moderate
+    var riskImpact4 = seedIDs.RiskImpact.riskImpact4; // major
+    var riskImpact5 = seedIDs.RiskImpact.riskImpact5; // extreme
 
-// Probabilities
+    // Probabilities
 
-    var rare = seedIDs.RiskProbability.rare;
-    var unlikely = seedIDs.RiskProbability.unlikely;
-    var possible = seedIDs.RiskProbability.possible;
-    var likely = seedIDs.RiskProbability.likely;
-    var frequent = seedIDs.RiskProbability.frequent;
+    var riskProb1 = seedIDs.RiskProbability.riskProb1; // rare
+    var riskProb2 = seedIDs.RiskProbability.riskProb2; // unlikely
+    var riskProb3 = seedIDs.RiskProbability.riskProb3; // possible
+    var riskProb4 = seedIDs.RiskProbability.riskProb4; // likely
+    var riskProb5 = seedIDs.RiskProbability.riskProb5; // frequent
 
-// Severities
+    // Severities
 
-    var low = seedIDs.RiskSeverity.low;
-    var medium = seedIDs.RiskSeverity.medium;
-    var high = seedIDs.RiskSeverity.high;
+    var riskSev1 = seedIDs.RiskSeverity.riskSev1; // low
+    var riskSev2 = seedIDs.RiskSeverity.riskSev2; // medium
+    var riskSev3 = seedIDs.RiskSeverity.riskSev3; // high
+
+    // Severities Assignments
+
+    var ri1Rp5 = seedIDs.RiskSeverityAssignment.ri1Rp5;
+    var ri1Rp4 = seedIDs.RiskSeverityAssignment.ri1Rp4;
+    var ri1Rp3 = seedIDs.RiskSeverityAssignment.ri1Rp3;
+    var ri1Rp2 = seedIDs.RiskSeverityAssignment.ri1Rp2;
+    var ri1Rp1 = seedIDs.RiskSeverityAssignment.ri1Rp1;
+
+    var ri2Rp5 = seedIDs.RiskSeverityAssignment.ri2Rp5;
+    var ri2Rp4 = seedIDs.RiskSeverityAssignment.ri2Rp4;
+    var ri2Rp3 = seedIDs.RiskSeverityAssignment.ri2Rp3;
+    var ri2Rp2 = seedIDs.RiskSeverityAssignment.ri2Rp2;
+    var ri2Rp1 = seedIDs.RiskSeverityAssignment.ri2Rp1;
+
+    var ri3Rp5 = seedIDs.RiskSeverityAssignment.ri3Rp5;
+    var ri3Rp4 = seedIDs.RiskSeverityAssignment.ri3Rp4;
+    var ri3Rp3 = seedIDs.RiskSeverityAssignment.ri3Rp3;
+    var ri3Rp2 = seedIDs.RiskSeverityAssignment.ri3Rp2;
+    var ri3Rp1 = seedIDs.RiskSeverityAssignment.ri3Rp1;
+
+    var ri4Rp5 = seedIDs.RiskSeverityAssignment.ri4Rp5;
+    var ri4Rp4 = seedIDs.RiskSeverityAssignment.ri4Rp4;
+    var ri4Rp3 = seedIDs.RiskSeverityAssignment.ri4Rp3;
+    var ri4Rp2 = seedIDs.RiskSeverityAssignment.ri4Rp2;
+    var ri4Rp1 = seedIDs.RiskSeverityAssignment.ri4Rp1;
+
+    var ri5Rp5 = seedIDs.RiskSeverityAssignment.ri5Rp5;
+    var ri5Rp4 = seedIDs.RiskSeverityAssignment.ri5Rp4;
+    var ri5Rp3 = seedIDs.RiskSeverityAssignment.ri5Rp3;
+    var ri5Rp2 = seedIDs.RiskSeverityAssignment.ri5Rp2;
+    var ri5Rp1 = seedIDs.RiskSeverityAssignment.ri5Rp1;
+
 
     async.series([
         function(callback) {
@@ -286,7 +319,7 @@ exports.seedRisks = function(user, callback){
             var schema = mongoose.mtModel(user.tenantId + '.' + 'RiskImpact');
             var seedArray =  [
                 {
-                    _id: incidental,
+                    _id: riskImpact1,
                     name: 'Incidental',
                     description:'Incidental impact on operations',
                     impactValue: 0,
@@ -294,7 +327,7 @@ exports.seedRisks = function(user, callback){
                     created: Date.now()
                 },
                 {
-                    _id: minor,
+                    _id: riskImpact2,
                     name: 'Minor',
                     description:'Minor impact on operations',
                     impactValue: 25,
@@ -302,7 +335,7 @@ exports.seedRisks = function(user, callback){
                     created: Date.now()
                 },
                 {
-                    _id: moderate,
+                    _id: riskImpact3,
                     name: 'Moderate',
                     description:'Moderate impact on operations',
                     impactValue: 50,
@@ -310,7 +343,7 @@ exports.seedRisks = function(user, callback){
                     created: Date.now()
                 },
                 {
-                    _id: major,
+                    _id: riskImpact4,
                     name: 'Major',
                     description:'Major impact on operations',
                     impactValue: 75,
@@ -318,7 +351,7 @@ exports.seedRisks = function(user, callback){
                     created: Date.now()
                 },
                 {
-                    _id: extreme,
+                    _id: riskImpact5,
                     name: 'Extreme',
                     description:'Extreme impact on operations',
                     impactValue: 100,
@@ -332,7 +365,7 @@ exports.seedRisks = function(user, callback){
             var schema = mongoose.mtModel(user.tenantId + '.' + 'RiskProbability');
             var seedArray =  [
                 {
-                    _id: rare,
+                    _id: riskProb1,
                     name: 'Rare',
                     description:'Rare likelihood',
                     probabilityValue: 0,
@@ -340,7 +373,7 @@ exports.seedRisks = function(user, callback){
                     created: Date.now()
                 },
                 {
-                    _id: unlikely,
+                    _id: riskProb2,
                     name: 'Unlikely',
                     description:'Unlikely likelihood',
                     probabilityValue: 25,
@@ -348,7 +381,7 @@ exports.seedRisks = function(user, callback){
                     created: Date.now()
                 },
                 {
-                    _id: possible,
+                    _id: riskProb3,
                     name: 'Possible',
                     description:'Possible likelihood',
                     probabilityValue: 50,
@@ -356,7 +389,7 @@ exports.seedRisks = function(user, callback){
                     created: Date.now()
                 },
                 {
-                    _id: likely,
+                    _id: riskProb4,
                     name: 'Likely',
                     description:'Likely to happen',
                     probabilityValue: 75,
@@ -364,7 +397,7 @@ exports.seedRisks = function(user, callback){
                     created: Date.now()
                 },
                 {
-                    _id: frequent,
+                    _id: riskProb5,
                     name: 'Frequent',
                     description:'Almost certain',
                     probabilityValue: 100,
@@ -378,7 +411,7 @@ exports.seedRisks = function(user, callback){
             var schema = mongoose.mtModel(user.tenantId + '.' + 'RiskSeverity');
             var seedArray =  [
                 {
-                    _id: high,
+                    _id: riskSev3,
                     name: 'High',
                     description:'High severity of combined impact and probability',
                     severityValue: 99,
@@ -387,7 +420,7 @@ exports.seedRisks = function(user, callback){
                     created: Date.now()
                 },
                 {
-                    _id: medium,
+                    _id: riskSev2,
                     name: 'Medium',
                     description:'Medium severity of combined impact and probability',
                     severityValue: 66,
@@ -396,7 +429,7 @@ exports.seedRisks = function(user, callback){
                     created: Date.now()
                 },
                 {
-                    _id: low,
+                    _id: riskSev1,
                     name: 'Low',
                     description:'Low severity of combined impact and probability',
                     severityValue: 33,
@@ -411,181 +444,206 @@ exports.seedRisks = function(user, callback){
             var schema = mongoose.mtModel(user.tenantId + '.' + 'RiskSeverityAssignment');
             var seedArray =  [
                 {
-                    impact: incidental,
-                    probability: frequent,
-                    severity: medium,
+                    _id: ri1Rp5,
+                    impact: riskImpact1,
+                    probability: riskProb5,
+                    severity: riskSev2,
                     user:user._id,
                     created: Date.now()
                 },
                 {
-                    impact: incidental,
-                    probability: likely,
-                    severity: medium,
+                    _id: ri1Rp4,
+                    impact: riskImpact1,
+                    probability: riskProb4,
+                    severity: riskSev2,
                     user:user._id,
                     created: Date.now()
                 },
                 {
-                    impact: incidental,
-                    probability: possible,
-                    severity: low,
+                    _id: ri1Rp3,
+                    impact: riskImpact1,
+                    probability: riskProb3,
+                    severity: riskSev1,
                     user:user._id,
                     created: Date.now()
                 },
                 {
-                    impact: incidental,
-                    probability: unlikely,
-                    severity: low,
+                    _id: ri1Rp2,
+                    impact: riskImpact1,
+                    probability: riskProb2,
+                    severity: riskSev1,
                     user:user._id,
                     created: Date.now()
                 },
                 {
-                    impact: incidental,
-                    probability: rare,
-                    severity: low,
-                    user:user._id,
-                    created: Date.now()
-                },
-                // ----
-                {
-                    impact: minor,
-                    probability: frequent,
-                    severity: high,
-                    user:user._id,
-                    created: Date.now()
-                },
-                {
-                    impact: minor,
-                    probability: likely,
-                    severity: medium,
-                    user:user._id,
-                    created: Date.now()
-                },
-                {
-                    impact: minor,
-                    probability: possible,
-                    severity: medium,
-                    user:user._id,
-                    created: Date.now()
-                },
-                {
-                    impact: minor,
-                    probability: unlikely,
-                    severity: low,
-                    user:user._id,
-                    created: Date.now()
-                },
-                {
-                    impact: minor,
-                    probability: rare,
-                    severity: low,
+                    _id: ri1Rp1,
+                    impact: riskImpact1,
+                    probability: riskProb1,
+                    severity: riskSev1,
                     user:user._id,
                     created: Date.now()
                 },
                 // ----
                 {
-                    impact: moderate,
-                    probability: frequent,
-                    severity: high,
+                    _id: ri2Rp5,
+                    impact: riskImpact2,
+                    probability: riskProb5,
+                    severity: riskSev3,
                     user:user._id,
                     created: Date.now()
                 },
                 {
-                    impact: moderate,
-                    probability: likely,
-                    severity: high,
+                    _id: ri2Rp4,
+                    impact: riskImpact2,
+                    probability: riskProb4,
+                    severity: riskSev2,
                     user:user._id,
                     created: Date.now()
                 },
                 {
-                    impact: moderate,
-                    probability: possible,
-                    severity: medium,
+                    _id: ri2Rp3,
+                    impact: riskImpact2,
+                    probability: riskProb3,
+                    severity: riskSev2,
                     user:user._id,
                     created: Date.now()
                 },
                 {
-                    impact: moderate,
-                    probability: unlikely,
-                    severity: medium,
+                    _id: ri2Rp2,
+                    impact: riskImpact2,
+                    probability: riskProb2,
+                    severity: riskSev1,
                     user:user._id,
                     created: Date.now()
                 },
                 {
-                    impact: moderate,
-                    probability: rare,
-                    severity: low,
-                    user:user._id,
-                    created: Date.now()
-                },
-                // ----
-                {
-                    impact: major,
-                    probability: frequent,
-                    severity: high,
-                    user:user._id,
-                    created: Date.now()
-                },
-                {
-                    impact: major,
-                    probability: likely,
-                    severity: high,
-                    user:user._id,
-                    created: Date.now()
-                },
-                {
-                    impact: major,
-                    probability: possible,
-                    severity: high,
-                    user:user._id,
-                    created: Date.now()
-                },
-                {
-                    impact: major,
-                    probability: unlikely,
-                    severity: medium,
-                    user:user._id,
-                    created: Date.now()
-                },
-                {
-                    impact: major,
-                    probability: rare,
-                    severity: medium,
+                    _id: ri2Rp1,
+                    impact: riskImpact2,
+                    probability: riskProb1,
+                    severity: riskSev1,
                     user:user._id,
                     created: Date.now()
                 },
                 // ----
                 {
-                    impact: extreme,
-                    probability: frequent,
-                    severity: high,
+                    _id: ri3Rp5,
+                    impact: riskImpact3,
+                    probability: riskProb5,
+                    severity: riskSev3,
                     user:user._id,
                     created: Date.now()
                 },
                 {
-                    impact: extreme,
-                    probability: likely,
-                    severity: high,
+                    _id: ri3Rp4,
+                    impact: riskImpact3,
+                    probability: riskProb4,
+                    severity: riskSev3,
                     user:user._id,
                     created: Date.now()
                 },
                 {
-                    impact: extreme,
-                    probability: possible,
-                    severity: high,
+                    _id: ri3Rp3,
+                    impact: riskImpact3,
+                    probability: riskProb3,
+                    severity: riskSev2,
                     user:user._id,
                     created: Date.now()
                 },
                 {
-                    impact: extreme,
-                    probability: unlikely,
-                    severity: high,
+                    _id: ri3Rp2,
+                    impact: riskImpact3,
+                    probability: riskProb2,
+                    severity: riskSev2,
                     user:user._id,
                     created: Date.now()
                 },
                 {
-                    impact: extreme,
-                    probability: rare,
-                    severity: medium,
+                    _id: ri3Rp1,
+                    impact: riskImpact3,
+                    probability: riskProb1,
+                    severity: riskSev1,
+                    user:user._id,
+                    created: Date.now()
+                },
+                // ----
+                {
+                    _id: ri4Rp5,
+                    impact: riskImpact4,
+                    probability: riskProb5,
+                    severity: riskSev3,
+                    user:user._id,
+                    created: Date.now()
+                },
+                {
+                    _id: ri4Rp4,
+                    impact: riskImpact4,
+                    probability: riskProb4,
+                    severity: riskSev3,
+                    user:user._id,
+                    created: Date.now()
+                },
+                {
+                    _id: ri4Rp3,
+                    impact: riskImpact4,
+                    probability: riskProb3,
+                    severity: riskSev3,
+                    user:user._id,
+                    created: Date.now()
+                },
+                {
+                    _id: ri4Rp2,
+                    impact: riskImpact4,
+                    probability: riskProb2,
+                    severity: riskSev2,
+                    user:user._id,
+                    created: Date.now()
+                },
+                {
+                    _id: ri4Rp1,
+                    impact: riskImpact4,
+                    probability: riskProb1,
+                    severity: riskSev2,
+                    user:user._id,
+                    created: Date.now()
+                },
+                // ----
+                {
+                    _id: ri5Rp5,
+                    impact: riskImpact5,
+                    probability: riskProb5,
+                    severity: riskSev3,
+                    user:user._id,
+                    created: Date.now()
+                },
+                {
+                    _id: ri5Rp4,
+                    impact: riskImpact5,
+                    probability: riskProb4,
+                    severity: riskSev3,
+                    user:user._id,
+                    created: Date.now()
+                },
+                {
+                    _id: ri5Rp3,
+                    impact: riskImpact5,
+                    probability: riskProb3,
+                    severity: riskSev3,
+                    user:user._id,
+                    created: Date.now()
+                },
+                {
+                    _id: ri5Rp2,
+                    impact: riskImpact5,
+                    probability: riskProb2,
+                    severity: riskSev3,
+                    user:user._id,
+                    created: Date.now()
+                },
+                {
+                    _id: ri5Rp1,
+                    impact: riskImpact5,
+                    probability: riskProb1,
+                    severity: riskSev2,
                     user:user._id,
                     created: Date.now()
                 }

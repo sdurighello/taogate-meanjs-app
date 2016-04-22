@@ -123,48 +123,7 @@ exports.overallRankingByID = function(req, res, next, id) {
 	});
 };
 
-exports.checkExistenceAndCreate = function(req, res, next){
-    // If there is no document in the collection create one
-	if(!req.params.overallRankingId){
-        var OverallRanking = mongoose.mtModel(req.user.tenantId + '.' + 'OverallRanking');
-        async.waterfall([
-            // Get the overall rankings
-            function(callback) {
-                OverallRanking.find().exec(function(err, overallRankings) {
-                    if (err) {
-                        return callback(err);
-                    } else {
-                        callback(null, overallRankings);
-                    }
-                });
-            },
-            // If the overall ranking array is empty, create one, else do nothing
-            function(overallRankings, callback) {
-                if(!overallRankings.length){
-                    var overallRanking = new OverallRanking({
-                        created : Date.now(),
-                        user : null,
-                        projects : []
-                    }) ;
-                    overallRanking.save(function(err) {
-                        if (err) {
-                            return callback(err);
-                        }
-                    });
-                }
 
-                callback(null);
-            }
-        ], function (err, result) {
-            if(err){
-                return res.status(404).send({
-                    message: 'Cannot find or create overall ranking document'
-                });
-            }
-            next();
-        });
-    }
-};
 
 /**
  * Overall ranking authorization middleware

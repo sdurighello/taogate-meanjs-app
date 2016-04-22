@@ -6,7 +6,7 @@ module.exports = function(app) {
 
 	// Overall rankings Routes
 	app.route('/overall-rankings')
-		.get(users.requiresLogin, overallRankings.checkExistenceAndCreate, overallRankings.list)
+		.get(users.requiresLogin, overallRankings.list)
 		.post(users.requiresLogin, overallRankings.hasAuthorization, overallRankings.create);
 
 	app.route('/overall-rankings/:overallRankingId')

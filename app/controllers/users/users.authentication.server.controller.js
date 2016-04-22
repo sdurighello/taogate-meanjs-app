@@ -34,6 +34,7 @@ exports.signup = function(req, res) {
     user.roles = ['superAdmin'];
 
     var Person = mongoose.mtModel(user.tenantId + '.' + 'Person');
+    var OverallRanking = mongoose.mtModel(user.tenantId + '.' + 'OverallRanking');
 
     async.waterfall([
         // Save the new user
@@ -59,6 +60,20 @@ exports.signup = function(req, res) {
             });
             person.save(function(err){
                 if(err){
+                    return callback(err);
+                }
+                callback(null, createdUser);
+            });
+        },
+        // Create "Overall Ranking" collection
+        function(createdUser, callback) {
+            var overallRanking = new OverallRanking({
+                created : Date.now(),
+                user : createdUser._id,
+                projects : []
+            }) ;
+            overallRanking.save(function(err) {
+                if (err) {
                     return callback(err);
                 }
                 callback(null, createdUser);

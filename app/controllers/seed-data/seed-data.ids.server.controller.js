@@ -135,6 +135,24 @@ var idObject = {
         benefit21 : mongoose.Types.ObjectId(), benefit22 : mongoose.Types.ObjectId(), benefit23 : mongoose.Types.ObjectId(),
         benefit31 : mongoose.Types.ObjectId(), benefit32 : mongoose.Types.ObjectId()
     },
+
+    // Project costs
+    FinancialCost: {
+        project1Cost1: mongoose.Types.ObjectId(), project1Cost2: mongoose.Types.ObjectId(), project1Cost3: mongoose.Types.ObjectId(),
+        project1Cost4: mongoose.Types.ObjectId(), project1Cost5: mongoose.Types.ObjectId(), project1Cost6: mongoose.Types.ObjectId(),
+        project1Cost7: mongoose.Types.ObjectId(), project1Cost8: mongoose.Types.ObjectId(), project1Cost9: mongoose.Types.ObjectId(),
+        project1Cost10: mongoose.Types.ObjectId(), project1Cost11: mongoose.Types.ObjectId(), project1Cost12: mongoose.Types.ObjectId(),
+        project1Cost13: mongoose.Types.ObjectId(), project1Cost14: mongoose.Types.ObjectId(), project1Cost15: mongoose.Types.ObjectId(),
+        project1Cost16: mongoose.Types.ObjectId()
+    },
+
+    // Project benefits
+    FinancialBenefit: {
+        project1Benefit1: mongoose.Types.ObjectId(), project1Benefit2: mongoose.Types.ObjectId(), project1Benefit3: mongoose.Types.ObjectId(),
+        project1Benefit4: mongoose.Types.ObjectId(), project1Benefit5: mongoose.Types.ObjectId(), project1Benefit6: mongoose.Types.ObjectId(),
+        project1Benefit7: mongoose.Types.ObjectId(), project1Benefit8: mongoose.Types.ObjectId(), project1Benefit9: mongoose.Types.ObjectId(),
+        project1Benefit10: mongoose.Types.ObjectId(), project1Benefit11: mongoose.Types.ObjectId(), project1Benefit12: mongoose.Types.ObjectId()
+    },
     
     // Qualitative Analysis
     QualitativeImpactGroup: {
@@ -165,15 +183,31 @@ var idObject = {
         r61 : mongoose.Types.ObjectId(), r62 : mongoose.Types.ObjectId()
     },
     RiskImpact: {
-        incidental : mongoose.Types.ObjectId(), minor : mongoose.Types.ObjectId(), moderate : mongoose.Types.ObjectId(),
-        major : mongoose.Types.ObjectId(), extreme : mongoose.Types.ObjectId()
+        riskImpact1 : mongoose.Types.ObjectId(), riskImpact2 : mongoose.Types.ObjectId(), riskImpact3 : mongoose.Types.ObjectId(),
+        riskImpact4 : mongoose.Types.ObjectId(), riskImpact5 : mongoose.Types.ObjectId()
     },
     RiskProbability: {
-        rare : mongoose.Types.ObjectId(), unlikely : mongoose.Types.ObjectId(), possible : mongoose.Types.ObjectId(),
-        likely : mongoose.Types.ObjectId(), frequent : mongoose.Types.ObjectId()
+        riskProb1 : mongoose.Types.ObjectId(), riskProb2 : mongoose.Types.ObjectId(), riskProb3 : mongoose.Types.ObjectId(),
+        riskProb4 : mongoose.Types.ObjectId(), riskProb5 : mongoose.Types.ObjectId()
     },
     RiskSeverity: {
-        low : mongoose.Types.ObjectId(), medium : mongoose.Types.ObjectId(), high : mongoose.Types.ObjectId()
+        riskSev1 : mongoose.Types.ObjectId(), riskSev2 : mongoose.Types.ObjectId(), riskSev3 : mongoose.Types.ObjectId()
+    },
+    RiskSeverityAssignment: {
+        ri1Rp5 : mongoose.Types.ObjectId(), ri1Rp4 : mongoose.Types.ObjectId(), ri1Rp3 : mongoose.Types.ObjectId(),
+        ri1Rp2 : mongoose.Types.ObjectId(), ri1Rp1 : mongoose.Types.ObjectId(),
+
+        ri2Rp5 : mongoose.Types.ObjectId(), ri2Rp4 : mongoose.Types.ObjectId(), ri2Rp3 : mongoose.Types.ObjectId(),
+        ri2Rp2 : mongoose.Types.ObjectId(), ri2Rp1 : mongoose.Types.ObjectId(),
+
+        ri3Rp5 : mongoose.Types.ObjectId(), ri3Rp4 : mongoose.Types.ObjectId(), ri3Rp3 : mongoose.Types.ObjectId(),
+        ri3Rp2 : mongoose.Types.ObjectId(), ri3Rp1 : mongoose.Types.ObjectId(),
+
+        ri4Rp5 : mongoose.Types.ObjectId(), ri4Rp4 : mongoose.Types.ObjectId(), ri4Rp3 : mongoose.Types.ObjectId(),
+        ri4Rp2 : mongoose.Types.ObjectId(), ri4Rp1 : mongoose.Types.ObjectId(),
+
+        ri5Rp5 : mongoose.Types.ObjectId(), ri5Rp4 : mongoose.Types.ObjectId(), ri5Rp3 : mongoose.Types.ObjectId(),
+        ri5Rp2 : mongoose.Types.ObjectId(), ri5Rp1 : mongoose.Types.ObjectId()
     },
 
     // Stakeholder Analysis
@@ -421,6 +455,125 @@ var idObject = {
     },
     LogStatusArea: {
         area1 : mongoose.Types.ObjectId(), area2 : mongoose.Types.ObjectId(), area3 : mongoose.Types.ObjectId()
+    },
+    
+    // Delivery data
+    GateStatusAssignment: {
+        // Project1 - Waterfall (w1)
+        p1gw11Status: mongoose.Types.ObjectId(), p1gw12Status: mongoose.Types.ObjectId(), p1gw13Status: mongoose.Types.ObjectId(),
+        p1gw14Status: mongoose.Types.ObjectId(), p1gw15Status: mongoose.Types.ObjectId(), p1gw16Status: mongoose.Types.ObjectId()
+    },
+    GateOutcomeReview: {
+        // Project1 - Waterfall (w1)
+        p1gw11Out1: mongoose.Types.ObjectId(), p1gw11Out2: mongoose.Types.ObjectId(), p1gw11Out3: mongoose.Types.ObjectId(), p1gw11Out4: mongoose.Types.ObjectId(),
+        p1gw12Out1: mongoose.Types.ObjectId(), p1gw12Out2: mongoose.Types.ObjectId(), p1gw12Out3: mongoose.Types.ObjectId(),
+        p1gw13Out1: mongoose.Types.ObjectId(), p1gw13Out2: mongoose.Types.ObjectId(), p1gw13Out3: mongoose.Types.ObjectId(), p1gw13Out4: mongoose.Types.ObjectId(), p1gw13Out5: mongoose.Types.ObjectId(),
+        p1gw14Out1: mongoose.Types.ObjectId(), p1gw14Out2: mongoose.Types.ObjectId(), p1gw14Out3: mongoose.Types.ObjectId(), p1gw14Out4: mongoose.Types.ObjectId(),
+        p1gw15Out1: mongoose.Types.ObjectId(), p1gw15Out2: mongoose.Types.ObjectId(), p1gw15Out3: mongoose.Types.ObjectId(), p1gw15Out4: mongoose.Types.ObjectId(),
+        p1gw16Out1: mongoose.Types.ObjectId(), p1gw16Out2: mongoose.Types.ObjectId(), p1gw16Out3: mongoose.Types.ObjectId(), p1gw16Out4: mongoose.Types.ObjectId()
+    },
+    ProjectAreaReview: {
+        // Project1 - Waterfall (w1)
+        p1gw11Area1: mongoose.Types.ObjectId(), p1gw11Area2: mongoose.Types.ObjectId(), p1gw11Area3: mongoose.Types.ObjectId(),
+        p1gw12Area1: mongoose.Types.ObjectId(), p1gw12Area2: mongoose.Types.ObjectId(), p1gw12Area3: mongoose.Types.ObjectId(),
+        p1gw13Area1: mongoose.Types.ObjectId(), p1gw13Area2: mongoose.Types.ObjectId(), p1gw13Area3: mongoose.Types.ObjectId(),
+        p1gw14Area1: mongoose.Types.ObjectId(), p1gw14Area2: mongoose.Types.ObjectId(), p1gw14Area3: mongoose.Types.ObjectId(),
+        p1gw15Area1: mongoose.Types.ObjectId(), p1gw15Area2: mongoose.Types.ObjectId(), p1gw15Area3: mongoose.Types.ObjectId(),
+        p1gw16Area1: mongoose.Types.ObjectId(), p1gw16Area2: mongoose.Types.ObjectId(), p1gw16Area3: mongoose.Types.ObjectId()
+    },
+    
+    BaselineDuration: {
+        // Project1 - Waterfall (w1)
+        basDur1Sw11Tw11: mongoose.Types.ObjectId(), basDur1Sw11Tw12: mongoose.Types.ObjectId(), basDur1Sw11Tw13: mongoose.Types.ObjectId(), basDur1Sw11Tw14: mongoose.Types.ObjectId(), basDur1Sw11Tw15: mongoose.Types.ObjectId(), basDur1Sw11Tw16: mongoose.Types.ObjectId(),
+        basDur1Sw12Tw12: mongoose.Types.ObjectId(), basDur1Sw12Tw13: mongoose.Types.ObjectId(), basDur1Sw12Tw14: mongoose.Types.ObjectId(), basDur1Sw12Tw15: mongoose.Types.ObjectId(), basDur1Sw12Tw16: mongoose.Types.ObjectId(),
+        basDur1Sw13Tw13: mongoose.Types.ObjectId(), basDur1Sw13Tw14: mongoose.Types.ObjectId(), basDur1Sw13Tw15: mongoose.Types.ObjectId(), basDur1Sw13Tw16: mongoose.Types.ObjectId(),
+        basDur1Sw14Tw14: mongoose.Types.ObjectId(), basDur1Sw14Tw15: mongoose.Types.ObjectId(), basDur1Sw14Tw16: mongoose.Types.ObjectId(),
+        basDur1Sw15Tw15: mongoose.Types.ObjectId(), basDur1Sw15Tw16: mongoose.Types.ObjectId(),
+        basDur1Sw16Tw16: mongoose.Types.ObjectId()
+    },
+    BaselineCost: {
+        // Project1 - Waterfall (w1)
+        basCost1Sw11Tw11: mongoose.Types.ObjectId(), basCost1Sw11Tw12: mongoose.Types.ObjectId(), basCost1Sw11Tw13: mongoose.Types.ObjectId(), basCost1Sw11Tw14: mongoose.Types.ObjectId(), basCost1Sw11Tw15: mongoose.Types.ObjectId(), basCost1Sw11Tw16: mongoose.Types.ObjectId(),
+        basCost1Sw12Tw12: mongoose.Types.ObjectId(), basCost1Sw12Tw13: mongoose.Types.ObjectId(), basCost1Sw12Tw14: mongoose.Types.ObjectId(), basCost1Sw12Tw15: mongoose.Types.ObjectId(), basCost1Sw12Tw16: mongoose.Types.ObjectId(),
+        basCost1Sw13Tw13: mongoose.Types.ObjectId(), basCost1Sw13Tw14: mongoose.Types.ObjectId(), basCost1Sw13Tw15: mongoose.Types.ObjectId(), basCost1Sw13Tw16: mongoose.Types.ObjectId(),
+        basCost1Sw14Tw14: mongoose.Types.ObjectId(), basCost1Sw14Tw15: mongoose.Types.ObjectId(), basCost1Sw14Tw16: mongoose.Types.ObjectId(),
+        basCost1Sw15Tw15: mongoose.Types.ObjectId(), basCost1Sw15Tw16: mongoose.Types.ObjectId(),
+        basCost1Sw16Tw16: mongoose.Types.ObjectId()
+    },
+    BaselineCompletion: {
+        // Project1 - Waterfall (w1)
+        basComp1Sw11Tw11: mongoose.Types.ObjectId(), basComp1Sw11Tw12: mongoose.Types.ObjectId(), basComp1Sw11Tw13: mongoose.Types.ObjectId(), basComp1Sw11Tw14: mongoose.Types.ObjectId(), basComp1Sw11Tw15: mongoose.Types.ObjectId(), basComp1Sw11Tw16: mongoose.Types.ObjectId(),
+        basComp1Sw12Tw12: mongoose.Types.ObjectId(), basComp1Sw12Tw13: mongoose.Types.ObjectId(), basComp1Sw12Tw14: mongoose.Types.ObjectId(), basComp1Sw12Tw15: mongoose.Types.ObjectId(), basComp1Sw12Tw16: mongoose.Types.ObjectId(),
+        basComp1Sw13Tw13: mongoose.Types.ObjectId(), basComp1Sw13Tw14: mongoose.Types.ObjectId(), basComp1Sw13Tw15: mongoose.Types.ObjectId(), basComp1Sw13Tw16: mongoose.Types.ObjectId(),
+        basComp1Sw14Tw14: mongoose.Types.ObjectId(), basComp1Sw14Tw15: mongoose.Types.ObjectId(), basComp1Sw14Tw16: mongoose.Types.ObjectId(),
+        basComp1Sw15Tw15: mongoose.Types.ObjectId(), basComp1Sw15Tw16: mongoose.Types.ObjectId(),
+        basComp1Sw16Tw16: mongoose.Types.ObjectId()
+    },
+
+    EstimateDuration: {
+        // Project1 - Waterfall (w1)
+        estDur1Sw11Tw11: mongoose.Types.ObjectId(), estDur1Sw11Tw12: mongoose.Types.ObjectId(), estDur1Sw11Tw13: mongoose.Types.ObjectId(), estDur1Sw11Tw14: mongoose.Types.ObjectId(), estDur1Sw11Tw15: mongoose.Types.ObjectId(), estDur1Sw11Tw16: mongoose.Types.ObjectId(),
+        estDur1Sw12Tw12: mongoose.Types.ObjectId(), estDur1Sw12Tw13: mongoose.Types.ObjectId(), estDur1Sw12Tw14: mongoose.Types.ObjectId(), estDur1Sw12Tw15: mongoose.Types.ObjectId(), estDur1Sw12Tw16: mongoose.Types.ObjectId(),
+        estDur1Sw13Tw13: mongoose.Types.ObjectId(), estDur1Sw13Tw14: mongoose.Types.ObjectId(), estDur1Sw13Tw15: mongoose.Types.ObjectId(), estDur1Sw13Tw16: mongoose.Types.ObjectId(),
+        estDur1Sw14Tw14: mongoose.Types.ObjectId(), estDur1Sw14Tw15: mongoose.Types.ObjectId(), estDur1Sw14Tw16: mongoose.Types.ObjectId(),
+        estDur1Sw15Tw15: mongoose.Types.ObjectId(), estDur1Sw15Tw16: mongoose.Types.ObjectId(),
+        estDur1Sw16Tw16: mongoose.Types.ObjectId()
+    },
+    EstimateCost: {
+        // Project1 - Waterfall (w1)
+        estCost1Sw11Tw11: mongoose.Types.ObjectId(), estCost1Sw11Tw12: mongoose.Types.ObjectId(), estCost1Sw11Tw13: mongoose.Types.ObjectId(), estCost1Sw11Tw14: mongoose.Types.ObjectId(), estCost1Sw11Tw15: mongoose.Types.ObjectId(), estCost1Sw11Tw16: mongoose.Types.ObjectId(),
+        estCost1Sw12Tw12: mongoose.Types.ObjectId(), estCost1Sw12Tw13: mongoose.Types.ObjectId(), estCost1Sw12Tw14: mongoose.Types.ObjectId(), estCost1Sw12Tw15: mongoose.Types.ObjectId(), estCost1Sw12Tw16: mongoose.Types.ObjectId(),
+        estCost1Sw13Tw13: mongoose.Types.ObjectId(), estCost1Sw13Tw14: mongoose.Types.ObjectId(), estCost1Sw13Tw15: mongoose.Types.ObjectId(), estCost1Sw13Tw16: mongoose.Types.ObjectId(),
+        estCost1Sw14Tw14: mongoose.Types.ObjectId(), estCost1Sw14Tw15: mongoose.Types.ObjectId(), estCost1Sw14Tw16: mongoose.Types.ObjectId(),
+        estCost1Sw15Tw15: mongoose.Types.ObjectId(), estCost1Sw15Tw16: mongoose.Types.ObjectId(),
+        estCost1Sw16Tw16: mongoose.Types.ObjectId()
+    },
+    EstimateCompletion: {
+        // Project1 - Waterfall (w1)
+        estComp1Sw11Tw11: mongoose.Types.ObjectId(), estComp1Sw11Tw12: mongoose.Types.ObjectId(), estComp1Sw11Tw13: mongoose.Types.ObjectId(), estComp1Sw11Tw14: mongoose.Types.ObjectId(), estComp1Sw11Tw15: mongoose.Types.ObjectId(), estComp1Sw11Tw16: mongoose.Types.ObjectId(),
+        estComp1Sw12Tw12: mongoose.Types.ObjectId(), estComp1Sw12Tw13: mongoose.Types.ObjectId(), estComp1Sw12Tw14: mongoose.Types.ObjectId(), estComp1Sw12Tw15: mongoose.Types.ObjectId(), estComp1Sw12Tw16: mongoose.Types.ObjectId(),
+        estComp1Sw13Tw13: mongoose.Types.ObjectId(), estComp1Sw13Tw14: mongoose.Types.ObjectId(), estComp1Sw13Tw15: mongoose.Types.ObjectId(), estComp1Sw13Tw16: mongoose.Types.ObjectId(),
+        estComp1Sw14Tw14: mongoose.Types.ObjectId(), estComp1Sw14Tw15: mongoose.Types.ObjectId(), estComp1Sw14Tw16: mongoose.Types.ObjectId(),
+        estComp1Sw15Tw15: mongoose.Types.ObjectId(), estComp1Sw15Tw16: mongoose.Types.ObjectId(),
+        estComp1Sw16Tw16: mongoose.Types.ObjectId()
+    },
+
+    ActualDuration: {
+        // Project1 - Waterfall (w1)
+        actDur1Sw11Tw11: mongoose.Types.ObjectId(), 
+        actDur1Sw12Tw12: mongoose.Types.ObjectId(),
+        actDur1Sw13Tw13: mongoose.Types.ObjectId(), 
+        actDur1Sw14Tw14: mongoose.Types.ObjectId(), 
+        actDur1Sw15Tw15: mongoose.Types.ObjectId(), 
+        actDur1Sw16Tw16: mongoose.Types.ObjectId()
+    },
+    ActualCost: {
+        // Project1 - Waterfall (w1)
+        actCost1Sw11Tw11: mongoose.Types.ObjectId(), 
+        actCost1Sw12Tw12: mongoose.Types.ObjectId(), 
+        actCost1Sw13Tw13: mongoose.Types.ObjectId(), 
+        actCost1Sw14Tw14: mongoose.Types.ObjectId(), 
+        actCost1Sw15Tw15: mongoose.Types.ObjectId(), 
+        actCost1Sw16Tw16: mongoose.Types.ObjectId()
+    },
+    ActualCompletion: {
+        // Project1 - Waterfall (w1)
+        actComp1Sw11Tw11: mongoose.Types.ObjectId(),  
+        actComp1Sw12Tw12: mongoose.Types.ObjectId(), 
+        actComp1Sw13Tw13: mongoose.Types.ObjectId(), 
+        actComp1Sw14Tw14: mongoose.Types.ObjectId(), 
+        actComp1Sw15Tw15: mongoose.Types.ObjectId(), 
+        actComp1Sw16Tw16: mongoose.Types.ObjectId()
+    },
+    
+    GateReview: {
+        gReviewP1w11: mongoose.Types.ObjectId(), gReviewP1w12: mongoose.Types.ObjectId(), gReviewP1w13: mongoose.Types.ObjectId(),
+        gReviewP1w14: mongoose.Types.ObjectId(), gReviewP1w15: mongoose.Types.ObjectId(), gReviewP1w16: mongoose.Types.ObjectId()
+    },
+    
+    ProjectStatusUpdate: {
+        statusP1w11: mongoose.Types.ObjectId(), statusP1w12: mongoose.Types.ObjectId(), statusP1w13: mongoose.Types.ObjectId(),
+        statusP1w14: mongoose.Types.ObjectId(), statusP1w15: mongoose.Types.ObjectId(), statusP1w16: mongoose.Types.ObjectId()
     }
 };
 

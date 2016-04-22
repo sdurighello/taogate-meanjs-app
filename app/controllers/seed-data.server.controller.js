@@ -102,7 +102,13 @@ var loadTrees = function (user, callback) {
 };
 
 var loadProjects = function (user, callback) {
-    async.series([
+    async.parallel([
+        function(callback){
+            return require('./seed-data/seed-data.financial-costs.server.controller.js').seedFinancialCosts(user, callback);
+        },
+        function(callback){
+            return require('./seed-data/seed-data.financial-benefits.server.controller.js').seedFinancialBenefits(user, callback);
+        },
         function(callback){
             return require('./seed-data/seed-data.project-identification.server.controller.js').seedProjects(user, callback);
         }
