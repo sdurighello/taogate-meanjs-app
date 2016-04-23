@@ -4,7 +4,7 @@ module.exports = function(app) {
     var users = require('../../app/controllers/users.server.controller');
     var mytao = require('../../app/controllers/mytao.server.controller');
 
-    var seed = require('../../app/controllers/seed-data.server.controller');
+    var seed = require('../controllers/seed-data/seed-data.server.controller.js');
 
     app.route('/mytao/user-projects').get(users.requiresLogin, mytao.getUserProjects);
 

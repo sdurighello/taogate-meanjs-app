@@ -8,7 +8,7 @@ var _ = require('lodash'),
 	mongoose = require('mongoose'),
 	passport = require('passport'),
 	async = require('async'),
-    seedData = require('../seed-data.server.controller'),
+    seedData = require('../seed-data/seed-data.server.controller.js'),
 	User = mongoose.model('User');
 
 /**
