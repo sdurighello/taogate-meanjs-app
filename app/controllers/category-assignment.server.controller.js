@@ -18,6 +18,7 @@ exports.categorizationOverview = function(req, res){
         // Aggregate all
         function(callback) {
             Project.aggregate([
+                {'$match': {'selection.active': true}},
                 {'$unwind': '$categorization'},
                 {'$unwind' : '$categorization.categories'},
                 {'$group' : {
@@ -31,6 +32,7 @@ exports.categorizationOverview = function(req, res){
                     fundsCategoryValue : {'$sum' : '$identification.earmarkedFunds'}
                 }}
             ], function (err, aggregateArray) {
+                console.log(aggregateArray);
                 if (err) {
                     return callback(err);
                 } else {
@@ -61,6 +63,7 @@ exports.categorizationOverview = function(req, res){
         // Aggregate by portfolio
         function(resultAll, callback) {
             Project.aggregate([
+                {'$match': {'selection.active': true}},
                 {'$unwind': '$categorization'},
                 {'$unwind' : '$categorization.categories'},
                 {'$group' : {

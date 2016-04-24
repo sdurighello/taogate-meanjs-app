@@ -169,24 +169,24 @@ exports.seedFinancials = function(user, callback){
             var seedArray =  [
                 {
                     _id: benefit1,
-                    name: 'Revenue increase',
-                    description:'Revenue increase',
+                    name: 'Operational',
+                    description:'Operational benefit',
                     benefitTypes: [benefit11, benefit12, benefit13],
                     user:user._id,
                     created: Date.now()
                 },
                 {
                     _id: benefit2,
-                    name: 'Churn reduction',
-                    description:'Churn reduction',
+                    name: 'Cost impact',
+                    description:'Benefits directly impacting costs',
                     benefitTypes: [benefit21, benefit22, benefit23],
                     user:user._id,
                     created: Date.now()
                 },
                 {
                     _id: benefit3,
-                    name: 'Intangible benefit',
-                    description:'Intangible benefit',
+                    name: 'Revenue impact',
+                    description:'Benefits directly impacting revenues',
                     benefitTypes: [benefit31, benefit32],
                     user:user._id,
                     created: Date.now()
@@ -199,43 +199,43 @@ exports.seedFinancials = function(user, callback){
             var seedArray =  [
                 {
                     _id: benefit11,
-                    name: 'Higher leads conversion rates',
-                    description:'Higher leads conversion rates',
+                    name: 'Operational improvement',
+                    description:'Benefits from improved operational efficiency',
                     user:user._id,
                     created: Date.now()
                 },
                 {
                     _id: benefit12,
-                    name: 'Churn reduction',
-                    description:'Churn reduction',
+                    name: 'Capital reduction',
+                    description:'Capital reduction',
                     user:user._id,
                     created: Date.now()
                 },
                 {
                     _id: benefit13,
-                    name: 'Sales increase',
-                    description:'Sales increase',
+                    name: 'Tax advantage',
+                    description:'Tax advantage',
                     user:user._id,
                     created: Date.now()
                 },
                 // --
                 {
                     _id: benefit21,
-                    name: 'Staff efficiency increase',
+                    name: 'Cost reduction',
                     description:'Staff efficiency increase',
                     user:user._id,
                     created: Date.now()
                 },
                 {
                     _id: benefit22,
-                    name: 'Externalization',
-                    description:'Externalization',
+                    name: 'Cost avoidance',
+                    description:'Quantifies costs that would otherwise be sustained',
                     user:user._id,
                     created: Date.now()
                 },
                 {
                     _id: benefit23,
-                    name: 'Supplier cost reduction',
+                    name: 'Improved cost mix',
                     description:'Supplier cost reduction',
                     user:user._id,
                     created: Date.now()
@@ -243,15 +243,15 @@ exports.seedFinancials = function(user, callback){
                 // --
                 {
                     _id: benefit31,
-                    name: 'Increased brand awareness',
-                    description:'Increased brand awareness',
+                    name: 'Revenue protection',
+                    description:'Quantifies revenues that would otherwise be lost',
                     user:user._id,
                     created: Date.now()
                 },
                 {
                     _id: benefit32,
-                    name: 'Achieved regulatory compliance',
-                    description:'Achieved regulatory compliance',
+                    name: 'Revenue generation',
+                    description:'Generation of new sales in addition to current levels',
                     user:user._id,
                     created: Date.now()
                 }

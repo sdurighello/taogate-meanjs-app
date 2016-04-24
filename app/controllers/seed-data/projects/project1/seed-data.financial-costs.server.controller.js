@@ -5,10 +5,11 @@
  */
 
 var _ = require('lodash'),
-    errorHandler = require('../../errors.server.controller.js'),
+    errorHandler = require('../../../errors.server.controller.js'),
     mongoose = require('mongoose'),
     async = require('async'),
-    seedIDs = require('./../seed-data.ids.server.controller.js').getIDs(),
+    seedIDs = require('./../../seed-data.ids.server.controller.js').getIDs(),
+    seedIDsProject = require('./seed-data.ids-project.server.controller.js').getIDs(),
     User = mongoose.model('User');
 
 
@@ -57,22 +58,22 @@ exports.seedFinancialCosts = function(user, callback){
 
     // --------- PROJECT COSTS ----------
 
-    var project1Cost1 = seedIDs.FinancialCost.project1Cost1;
-    var project1Cost2 = seedIDs.FinancialCost.project1Cost2;
-    var project1Cost3 = seedIDs.FinancialCost.project1Cost3;
-    var project1Cost4 = seedIDs.FinancialCost.project1Cost4;
-    var project1Cost5 = seedIDs.FinancialCost.project1Cost5;
-    var project1Cost6 = seedIDs.FinancialCost.project1Cost6;
-    var project1Cost7 = seedIDs.FinancialCost.project1Cost7;
-    var project1Cost8 = seedIDs.FinancialCost.project1Cost8;
-    var project1Cost9 = seedIDs.FinancialCost.project1Cost9;
-    var project1Cost10 = seedIDs.FinancialCost.project1Cost10;
-    var project1Cost11 = seedIDs.FinancialCost.project1Cost11;
-    var project1Cost12 = seedIDs.FinancialCost.project1Cost12;
-    var project1Cost13 = seedIDs.FinancialCost.project1Cost13;
-    var project1Cost14 = seedIDs.FinancialCost.project1Cost14;
-    var project1Cost15 = seedIDs.FinancialCost.project1Cost15;
-    var project1Cost16 = seedIDs.FinancialCost.project1Cost16;
+    var project1Cost1 = seedIDsProject.FinancialCost.project1Cost1;
+    var project1Cost2 = seedIDsProject.FinancialCost.project1Cost2;
+    var project1Cost3 = seedIDsProject.FinancialCost.project1Cost3;
+    var project1Cost4 = seedIDsProject.FinancialCost.project1Cost4;
+    var project1Cost5 = seedIDsProject.FinancialCost.project1Cost5;
+    var project1Cost6 = seedIDsProject.FinancialCost.project1Cost6;
+    var project1Cost7 = seedIDsProject.FinancialCost.project1Cost7;
+    var project1Cost8 = seedIDsProject.FinancialCost.project1Cost8;
+    var project1Cost9 = seedIDsProject.FinancialCost.project1Cost9;
+    var project1Cost10 = seedIDsProject.FinancialCost.project1Cost10;
+    var project1Cost11 = seedIDsProject.FinancialCost.project1Cost11;
+    var project1Cost12 = seedIDsProject.FinancialCost.project1Cost12;
+    var project1Cost13 = seedIDsProject.FinancialCost.project1Cost13;
+    var project1Cost14 = seedIDsProject.FinancialCost.project1Cost14;
+    var project1Cost15 = seedIDsProject.FinancialCost.project1Cost15;
+    var project1Cost16 = seedIDsProject.FinancialCost.project1Cost16;
 
     var seedArrayProject1 =  [
         // Opex
@@ -239,45 +240,5 @@ exports.seedFinancialCosts = function(user, callback){
         }
     ];
 
-
-    var project2Cost1 = seedIDs.FinancialCost.project2Cost1;
-    var project2Cost2 = seedIDs.FinancialCost.project2Cost2;
-    var project2Cost3 = seedIDs.FinancialCost.project2Cost3;
-    var project2Cost4 = seedIDs.FinancialCost.project2Cost4;
-    var project2Cost5 = seedIDs.FinancialCost.project2Cost5;
-    var project2Cost6 = seedIDs.FinancialCost.project2Cost6;
-    var project2Cost7 = seedIDs.FinancialCost.project2Cost7;
-    var project2Cost8 = seedIDs.FinancialCost.project2Cost8;
-    var project2Cost9 = seedIDs.FinancialCost.project2Cost9;
-    var project2Cost10 = seedIDs.FinancialCost.project2Cost10;
-    var project2Cost11 = seedIDs.FinancialCost.project2Cost11;
-    var project2Cost12 = seedIDs.FinancialCost.project2Cost12;
-    var project2Cost13 = seedIDs.FinancialCost.project2Cost13;
-    var project2Cost14 = seedIDs.FinancialCost.project2Cost14;
-    var project2Cost15 = seedIDs.FinancialCost.project2Cost15;
-    var project2Cost16 = seedIDs.FinancialCost.project2Cost16;
-
-
-
-    // ---------------------------------
-
-
-    async.parallel([
-        // Costs for Project1
-        function(callback) {
-            createObjects(FinancialCost, 'Costs for project 1', seedArrayProject1, callback);
-        },
-        // Costs for Project2
-        function(callback) {
-
-            callback(null);
-        }
-    ], function (err, result) {
-        if( err ) {
-            console.log(err);
-            callback(err);
-        } else {
-            callback(null, result);
-        }
-    });
+    createObjects(FinancialCost, 'FinancialCost', seedArrayProject1, callback);
 };

@@ -183,7 +183,7 @@ exports.seedPortfolioTree = function(user, callback){
                     created: Date.now()
                 }
             ];
-            async.each(seedArray, function(item, callbackEach) {
+            async.eachSeries(seedArray, function(item, callbackEach) {
                 schema.findById(item._id).exec(function(err, itemReturned){
                     if(!itemReturned){
                         portfolioController.createPortfolio(user, item, function(err){
