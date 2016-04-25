@@ -115,7 +115,6 @@ angular.module('qualitative-analysis').controller('QualitativeAnalysisController
 				retPropertiesString : 'user created selection identification portfolio qualitativeAnalysis',
 				deepPopulateArray : [
 					'portfolio',
-					'identification.projectManager','identification.backupProjectManager',
 					'qualitativeAnalysis.group','qualitativeAnalysis.impacts.impact'
 				]
 			}, function(res){

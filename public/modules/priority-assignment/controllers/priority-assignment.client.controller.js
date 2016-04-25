@@ -51,7 +51,7 @@ angular.module('priority-assignment').controller('PriorityAssignmentController',
 				userIsSuperhero = !!_.some(userData.roles, function(role){
 					return role === 'superAdmin' || role === 'admin' || role === 'pmo';
 				});
-				userIsProjectManager = (userData._id === project.projectManager) || (userData._id === project.backupProjectManager);
+				userIsProjectManager = (userData._id === project.identification.projectManager) || (userData._id === project.identification.backupProjectManager);
 				if(project.portfolio){
 					userIsPortfolioManager = (userData._id === project.portfolio.portfolioManager) || (userData._id === project.portfolio.backupPortfolioManager);
 				}
@@ -108,7 +108,6 @@ angular.module('priority-assignment').controller('PriorityAssignmentController',
 				retPropertiesString : 'user created selection identification prioritization portfolio',
 				deepPopulateArray : [
                     'portfolio',
-                    'identification.projectManager','identification.backupProjectManager',
                     'prioritization.group','prioritization.priorities.priority'
                 ]
 			}, function(res){

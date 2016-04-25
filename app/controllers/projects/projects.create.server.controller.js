@@ -12,8 +12,12 @@ var mongoose = require('mongoose'),
 /**
  * Create a Project
  */
+
 exports.create = function(user, body, callback) {
+
+    var Counter = mongoose.mtModel(user.tenantId + '.' + 'Counter');
     var Project = mongoose.mtModel(user.tenantId + '.' + 'Project');
+
     var project = new Project(body);
     project.user = user;
 
@@ -31,6 +35,31 @@ exports.create = function(user, body, callback) {
 
 
     async.series([
+        // COUNTER: Add the sequential number
+        function(callback){
+            Counter.findByIdAndUpdate({_id: 'projectSequence'}, {$inc: { seq: 1} }, function(error, counter)   {
+                if(error){
+                    return callback(error);
+                }
+                // Must create the document in 'counter' collection for our entity the first time we create an entity document
+                if(!counter){
+                    var newCounter = new Counter({
+                        _id : 'projectSequence'
+                    });
+                    newCounter.save(function(err){
+                        if(err){
+                            return callback( new Error('Failed to create sequence counter for project'));
+                        }
+                        project.idNumber = 1;
+                        callback(null);
+                    });
+                }
+                if(counter) {
+                    project.idNumber = counter.seq;
+                    callback(null);
+                }
+            });
+        },
         // PROJECT: Save project in its collection
         function(callback){
             project.save(function(err){

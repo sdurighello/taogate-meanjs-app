@@ -98,7 +98,7 @@
 																class="btn btn-default btn-sm btn-block center-block" style="overflow: hidden;">
 															<div as-sortable-item-handle class="pull-left">
 																<span class="badge" data-ng-bind="selectedAssignment.assignedProjects.indexOf(project) + 1"></span> &nbsp;
-																<span>{{project.idNumber}} - {{project.name}}</span>
+                                                                <span data-ng-show="project.idReference">{{project.idReference}} - </span><span>{{project.name}}</span>
 															</div>
 														</button>
 													</div>
@@ -133,7 +133,7 @@
 														<button data-ng-repeat="project in selectedAssignment.unassignedProjects | filter:filterUnassignedProject" as-sortable-item
 																class="btn btn-default btn-sm btn-block center-block" style="overflow: hidden;">
 															<div as-sortable-item-handle class="text-center">
-																{{project.idNumber}} - {{project.name}}
+                                                                <span data-ng-show="project.idReference">{{project.idReference}} - </span><span>{{project.name}}</span>
 															</div>
 														</button>
 													</div>

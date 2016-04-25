@@ -149,7 +149,6 @@ angular.module('financial-analysis').controller('FinancialAnalysisController', [
                 retPropertiesString : 'user created selection identification portfolio discountRate baseYear costs benefits',
                 deepPopulateArray : [
                     'portfolio',
-                    'identification.projectManager','identification.backupProjectManager',
                     'costs.group.costTypes','costs.type',
                     'benefits.group.benefitTypes','benefits.type'
                 ]

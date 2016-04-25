@@ -162,7 +162,7 @@ angular.module('project-issues').controller('ProjectIssuesController', ['$rootSc
 
         $scope.newProjectIssue = {};
 
-        $scope.createNewProjectIssue = function (project) {
+        $scope.createNewProjectIssue = function (user, project) {
             var newProjectIssue = new ProjectIssues({
                 project: project._id,
                 gate: allowNull($scope.newProjectIssue.gate),
@@ -180,7 +180,7 @@ angular.module('project-issues').controller('ProjectIssuesController', ['$rootSc
                 // Clear new form
                 $scope.newProjectIssue = {};
                 // Select in view mode the new review
-                $scope.selectProjectIssue(_.find($scope.projectIssues, _.matchesProperty('_id', res._id)), project);
+                $scope.selectProjectIssue(user, _.find($scope.projectIssues, _.matchesProperty('_id', res._id)), project);
                 // Close new review form done directly in the view's html
             }, function (err) {
                 $scope.isResolving = false;

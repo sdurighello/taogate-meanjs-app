@@ -15,40 +15,8 @@
         <strong data-ng-repeat="err in initError" data-ng-bind="err.message"></strong>
     </div>
     <div class="row">
-        <div class="col-sm-3"><!-- PROJECTS LIST -->
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    <h6 class="panel-title text-center">Projects</h6>
-                </div>
-                <div class="panel-body">
-                    <div class="row">
-                        <div class=" form-group col-md-12">
-                            <select id="" class="form-control input-sm" data-ng-model="filterProfilePortfolio"
-                                    ng-options="portfolio.name for portfolio in portfolios">
-                                <option value="">--filter by portfolio</option>
-                            </select>
-                        </div>
-                        <div class="col-md-12 form-group-sm">
-                            <input id="" type="text" class="form-control input-sm"
-                                   data-ng-model="filterProfileProject.name" placeholder="Filter by project name">
-                        </div>
-                    </div>
-                    <hr style="margin: 10px">
-                    <div class="row" style="min-height: 400px; max-height: 400px; overflow-y: auto">
-                        <div class="col-md-12">
-                            <div data-ng-show="projects.length === 0" class="alert alert-warning text-center">
-                                There are no projects in evaluation
-                            </div>
-                            <button type="button"
-                                    data-ng-repeat="project in projects | filter:{identification: filterProfileProject, portfolio: filterProfilePortfolio._id} "
-                                    data-ng-click="selectProject(project)"
-                                    class="btn btn-default btn-sm center-block btn-block" style="overflow: hidden;">
-                                {{project.identification.idNumber}} - {{project.identification.name}}
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
+        <div class="col-md-3">
+            <project-list projects="projects" select-project="selectProject" portfolios="portfolios" gate-processes="gateProcesses" is-resolving="isResolving"></project-list>
         </div>
         <div class="col-md-9">
             <div class="row">

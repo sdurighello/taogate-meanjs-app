@@ -106,7 +106,7 @@ angular.module('portfolio-ranking-assignment').controller('PortfolioRankingAssig
                     $scope.selectedAssignment.assignedProjects = _.map(res[0].projects, function(project){
                         return {
                             _id: project._id,
-                            idNumber: project.identification.idNumber,
+                            idReference: project.identification.idReference,
                             name: project.identification.name
                         };
                     });
@@ -116,7 +116,7 @@ angular.module('portfolio-ranking-assignment').controller('PortfolioRankingAssig
                         if(!_.find(res[0].projects,'_id', project._id)){
                             $scope.selectedAssignment.unassignedProjects.push({
                                 _id: project._id,
-                                idNumber : project.identification.idNumber,
+                                idReference : project.identification.idReference,
                                 name: project.identification.name
                             });
                         }
@@ -138,7 +138,7 @@ angular.module('portfolio-ranking-assignment').controller('PortfolioRankingAssig
                     $scope.selectedAssignment.assignedProjects = _.map(res.projects, function(project){
                         return {
                             _id: project._id,
-                            idNumber: project.identification.idNumber,
+                            idReference: project.identification.idReference,
                             name: project.identification.name
                         };
                     });
@@ -150,7 +150,7 @@ angular.module('portfolio-ranking-assignment').controller('PortfolioRankingAssig
                             if(!_.find(res.projects,'_id', project._id)){
                                 $scope.selectedAssignment.unassignedProjects.push({
                                     _id: project._id,
-                                    idNumber : project.identification.idNumber,
+                                    idReference : project.identification.idReference,
                                     name: project.identification.name
                                 });
                             }

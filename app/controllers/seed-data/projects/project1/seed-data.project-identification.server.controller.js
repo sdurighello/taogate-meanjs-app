@@ -434,11 +434,16 @@ exports.seedProjects = function(user, callback){
 
 
     var item = {
+
         _id: project1,
+
+        idNumber: 1,
+
         parent: sn111,
         portfolio: pn111,
+
         identification: {
-            idNumber: 'PID1',
+            idReference: 'PID1',
             name: 'Radius implementation',
             description: 'Radius implementation',
             earmarkedFunds: 300000,
@@ -447,6 +452,7 @@ exports.seedProjects = function(user, callback){
             projectManager : null,
             backupProjectManager : null
         },
+
         categorization: [
             {
                 group: cat1,
@@ -481,6 +487,7 @@ exports.seedProjects = function(user, callback){
                 ]
             }
         ],
+
         prioritization: [
             {
                 group: prio1,

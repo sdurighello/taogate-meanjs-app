@@ -63,7 +63,7 @@ angular.module('category-assignment').controller('CategoryAssignmentController',
                 userIsSuperhero = !!_.some(userData.roles, function(role){
                     return role === 'superAdmin' || role === 'admin' || role === 'pmo';
                 });
-                userIsProjectManager = (userData._id === project.projectManager) || (userData._id === project.backupProjectManager);
+                userIsProjectManager = (userData._id === project.identification.projectManager) || (userData._id === project.identification.backupProjectManager);
                 if(project.portfolio){
                     userIsPortfolioManager = (userData._id === project.portfolio.portfolioManager) || (userData._id === project.portfolio.backupPortfolioManager);
                 }
@@ -120,7 +120,6 @@ angular.module('category-assignment').controller('CategoryAssignmentController',
 				retPropertiesString : 'user created selection identification categorization portfolio',
 				deepPopulateArray : [
 					'portfolio',
-					'identification.projectManager','identification.backupProjectManager',
 					'categorization.group','categorization.categories.category.categoryValues'
 				]
 			}, function(res){

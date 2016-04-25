@@ -16,6 +16,9 @@ var mongoose = require('mongoose'),
 var loadSetupData = function(user, callback){
     async.parallel([
         function(callback){
+            return require('./setup/seed-data.counter.server.controller.js').seedCounters(user, callback);
+        },
+        function(callback){
             return require('./setup/seed-data.category-setup.server.controller.js').seedCategories(user, callback);
         },
         function(callback){
@@ -105,10 +108,10 @@ var loadProjects = function (user, callback) {
     async.parallel([
         function(callback){
             return require('./projects/project1/seed-data.load-project.server.controller.js').loadProject(user, callback);
-        },
-        function(callback){
-            return require('./projects/project2/seed-data.load-project.server.controller.js').loadProject(user, callback);
         }
+        // function(callback){
+        //     return require('./projects/project2/seed-data.load-project.server.controller.js').loadProject(user, callback);
+        // }
     ], function(err, results) {
         if (err) {
             callback(err);

@@ -76,7 +76,7 @@
                             <div class="form-group-sm col-md-3">
                                 <label for="">Gate</label>
                                 <select id="" class="form-control" data-ng-model = "selectedProjectIssue.gate"
-                                        data-ng-options="gate as gate.name for gate in selectedProject.process.gates track by gate._id | orderBy: 'position'" required>
+                                        data-ng-options="gate as gate.name for gate in selectedProject.process.gates | orderBy: 'position' track by gate._id" required>
                                     <option value="">--choose gate</option>
                                 </select>
                             </div>

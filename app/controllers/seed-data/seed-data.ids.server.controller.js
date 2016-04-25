@@ -13,7 +13,11 @@ var _ = require('lodash'),
 
 var idObject = {
 
-
+    // Counters
+    Counter:{
+      projectSequence : 'projectSequence'
+    },
+    
     // -----------------------------------------  DEFINITION  ----------------------------------------------
 
     // Strategy & Portfolio trees

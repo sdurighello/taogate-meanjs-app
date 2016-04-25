@@ -30,7 +30,7 @@
                 <label>Identification data</label>
             </div>
             <div class="form-group-sm" style="margin-bottom: 2px;">
-                <input class="form-control" data-ng-model="filterIdentification.idNumber" placeholder="project id">
+                <input class="form-control" data-ng-model="filterIdentification.idReference" placeholder="project id">
             </div>
             <div class="form-group-sm" style="margin-bottom: 4px;">
                 <input class="form-control" data-ng-model="filterIdentification.name" placeholder="project name">
@@ -123,22 +123,22 @@
                 <fieldset>
                     <table class="table">
                         <tr>
-                            <th class="text-center">id</th>
+                            <th class="text-center">Reference</th>
                             <th class="text-center">Project</th>
                             <th class="text-center">Assigned delivery process</th>
                             <th colspan="2" class="text-center"> </th>
                         </tr>
                         <tr data-ng-repeat="project in projects | projectsCategorization : filterCategorization | projectsPrioritization : filterPrioritization | filter:
 {
-	identification: ((!!filterIdentification.name || !!filterIdentification.idNumber) || undefined) && {
+	identification: ((!!filterIdentification.name || !!filterIdentification.idReference) || undefined) && {
 			name : (!!filterIdentification.name || undefined) && filterIdentification.name,
-			idNumber : (!!filterIdentification.idNumber || undefined) && filterIdentification.idNumber
+			idReference : (!!filterIdentification.idReference || undefined) && filterIdentification.idReference
 			},
 	portfolio: (!!filterHierarchy.portfolio || undefined) && {_id : filterHierarchy.portfolio._id},
 	parent: filterHierarchy.strategyNode._id
 } | projectsProcess : filterProcess">
                             <td class="text-center">
-                                <span>{{project.identification.idNumber}}</span>
+                                <span>{{project.identification.idReference}}</span>
                             </td>
                             <td class="text-center">
                                 <span>{{project.identification.name}}</span>

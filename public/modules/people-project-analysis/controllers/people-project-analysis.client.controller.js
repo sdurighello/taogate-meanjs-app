@@ -114,7 +114,6 @@ angular.module('people-project-analysis').controller('PeopleProjectAnalysisContr
 				retPropertiesString : 'user created selection identification portfolio stakeholders',
 				deepPopulateArray : [
 					'portfolio',
-					'identification.projectManager','identification.backupProjectManager',
 					'stakeholders.group','stakeholders.roles.role','stakeholders.roles.categorization.category.categoryValues'
 				]
 			}, function(res){

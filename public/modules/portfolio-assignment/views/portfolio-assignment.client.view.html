@@ -97,7 +97,7 @@
                                                         <button data-ng-repeat="project in selectedAssignments.assignedProjects[selectedNode._id] | filter:filterAssignedProject" as-sortable-item
                                                                 class="btn btn-default btn-sm btn-block center-block" style="overflow: hidden;">
                                                             <div as-sortable-item-handle class="text-center">
-                                                                {{project.identification.idNumber}} - {{project.identification.name}}
+                                                                <span data-ng-show="project.identification.idReference">{{project.identification.idReference}} - </span><span>{{project.identification.name}}</span>
                                                             </div>
                                                         </button>
                                                     </div>
@@ -133,7 +133,7 @@
                                                         <button data-ng-repeat="project in selectedAssignments.unassignedProjects | filter:filterUnassignedProject" as-sortable-item
                                                                 class="btn btn-default btn-sm btn-block center-block" style="overflow: hidden;">
                                                             <div as-sortable-item-handle class="text-center">
-                                                                {{project.identification.idNumber}} - {{project.identification.name}}
+                                                                <span data-ng-show="project.identification.idReference">{{project.identification.idReference}} - </span><span>{{project.identification.name}}</span>
                                                             </div>
                                                         </button>
                                                     </div>

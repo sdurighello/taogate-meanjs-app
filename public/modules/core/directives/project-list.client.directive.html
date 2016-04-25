@@ -22,9 +22,15 @@
                 <input type="text" class="form-control input-sm"
                        data-ng-model="filterProfile.name" placeholder="--filter project name">
             </div>
-            <div class=" form-group col-md-12" style="margin: 2px">
-                <input type="text" class="form-control input-sm"
-                       data-ng-model="filterProfile.idNumber" placeholder="--filter project id">
+            <div class="form-group" style="margin: 2px">
+                <div class="col-xs-6">
+                    <input type="text" class="form-control input-sm"
+                           data-ng-model="filterProfile.idReference" placeholder="--reference">
+                </div>
+                <div class="col-xs-6">
+                    <input type="text" class="form-control input-sm"
+                           data-ng-model="filterProfile.idNumber" placeholder="--ID">
+                </div>
             </div>
         </div>
         <hr style="margin: 10px">
@@ -36,9 +42,10 @@
                 <button type="button"
                         data-ng-repeat="project in projects | filter:
 {
-    identification: ((!!filterProfile.name || !!filterProfile.idNumber) || undefined) && {
+    idNumber : (!!filterProfile.idNumber || undefined) && filterProfile.idNumber,
+    identification: ((!!filterProfile.name || !!filterProfile.idReference) || undefined) && {
         name : (!!filterProfile.name || undefined) && filterProfile.name,
-        idNumber : (!!filterProfile.idNumber || undefined) && filterProfile.idNumber},
+        idReference : (!!filterProfile.idReference || undefined) && filterProfile.idReference},
     portfolio: (!!filterProfilePortfolio || undefined) && {_id : filterProfilePortfolio._id},
     process: (!!filterProfileProcess || undefined) && {_id : filterProfileProcess._id}
 }"
@@ -46,7 +53,7 @@
                         class="btn btn-default btn-sm center-block btn-block"
                         style="overflow: hidden;"
                         data-ng-disabled="isResolving">
-                    {{project.identification.idNumber}} - {{project.identification.name}}
+                    <span data-ng-show="project.identification.idReference">{{project.identification.idReference}} - </span><span>{{project.identification.name}}</span>
                 </button>
             </div>
         </div>

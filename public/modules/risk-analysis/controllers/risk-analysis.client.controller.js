@@ -132,7 +132,6 @@ angular.module('risk-analysis').controller('RiskAnalysisController', ['$rootScop
 				retPropertiesString : 'user created selection identification portfolio riskAnalysis',
 				deepPopulateArray : [
 					'portfolio',
-					'identification.projectManager','identification.backupProjectManager',
 					'riskAnalysis.category','riskAnalysis.risks.risk'
 				]
 			}, function(res){

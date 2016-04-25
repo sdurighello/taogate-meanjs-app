@@ -145,7 +145,7 @@ angular.module('project-identification').controller('ProjectIdentificationContro
                 parent: null,
                 portfolio: null,
                 identification: {
-                    idNumber : $scope.newProject.idNumber,
+                    idReference : $scope.newProject.idReference,
                     name : $scope.newProject.name,
                     description : $scope.newProject.description,
                     reqStartDate: $scope.newProject.reqStartDate,
@@ -168,10 +168,11 @@ angular.module('project-identification').controller('ProjectIdentificationContro
             });
             newProject.$save(function(res) {
                 // Add new project to view after saving to server
-                $scope.projects.unshift(newProject);
+                $scope.projects.push(newProject);
                 // Clear form fields
                 $scope.newProject = {};
-                $scope.selectProjectForm('default');
+                // Select the newly created project
+                $scope.selectProject(newProject);
             }, function(err) {
                 $scope.error = err.data.message;
             });

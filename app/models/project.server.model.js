@@ -100,6 +100,9 @@ var AssignedPeopleProjectGroupSchema = new Schema({
 
 
 var ProjectSchema = new Schema({
+
+    idNumber: {type: Number, required:'Sequential counter for project is required'},
+
     created: {type: Date, default: Date.now},
     user: {type: Schema.ObjectId, ref: 'User'},
 
@@ -110,7 +113,7 @@ var ProjectSchema = new Schema({
     parent: {type: Schema.ObjectId, ref: 'StrategyNode', default:null, $tenant:true},
     portfolio: {type: Schema.ObjectId, ref: 'Portfolio', default:null, $tenant:true},
     identification: {
-        idNumber: {type: String, trim: true, default:null},
+        idReference: {type: String, trim: true, default:null},
         name: {type: String, default: '', trim: true, required:'Project name is required'},
         description: {type: String, default: '', trim: true},
         earmarkedFunds: {type: Number, default:null},

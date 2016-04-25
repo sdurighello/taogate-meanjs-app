@@ -3,12 +3,14 @@
 angular.module('project-reviews').controller('ProjectReviewsController', ['$rootScope', '$scope','$stateParams', '$location',
 	'Authentication', 'Projects', 'Portfolios','$q', '_',
 	'ProjectReviewTemplates', 'ProjectReviewScores', 'ProjectReviewTypes','ProjectReviews',
-    'PeopleProjectGroups', 'PeopleProjectRoles',
+    'PeopleProjectGroups', 'PeopleProjectRoles', 'GateProcesses',
 	function($rootScope, $scope, $stateParams, $location, Authentication, Projects, Portfolios, $q, _,
 			 ProjectReviewTemplates, ProjectReviewScores, ProjectReviewTypes, ProjectReviews,
-             PeopleProjectGroups, PeopleProjectRoles) {
+             PeopleProjectGroups, PeopleProjectRoles, GateProcesses) {
 
         $rootScope.staticMenu = false;
+
+        $scope.isResolving = false;
 
 		// ------------- INIT -------------
 
@@ -39,6 +41,12 @@ angular.module('project-reviews').controller('ProjectReviewsController', ['$root
 			}, function(err){
 				$scope.initError.push({message: err.data.message});
 			});
+            
+            GateProcesses.query(function(res){
+                $scope.gateProcesses = res;
+            }, function(err){
+                $scope.initError.push({message: err.data.message});
+            });
 
             ProjectReviewTemplates.query(function(res){
 				$scope.projectReviewTemplates = res;

@@ -30,7 +30,10 @@
                 <label>Filter identification data</label>
             </div>
             <div class="form-group-sm" style="margin-bottom: 2px;">
-                <input class="form-control" data-ng-model="filterIdentification.idNumber" placeholder="project id">
+                <input class="form-control" data-ng-model="filterIdentification.idNumber" placeholder="project ID">
+            </div>
+            <div class="form-group-sm" style="margin-bottom: 2px;">
+                <input class="form-control" data-ng-model="filterIdentification.idReference" placeholder="project reference">
             </div>
             <div class="form-group-sm" style="margin-bottom: 2px;">
                 <input class="form-control" data-ng-model="filterIdentification.name" placeholder="project name">
@@ -111,7 +114,7 @@
                 <fieldset>
                     <table class="table">
                         <tr>
-                            <th class="text-center">id</th>
+                            <th class="text-center">Reference</th>
                             <th class="text-center">Project</th>
                             <th class="text-center">Active&nbsp;<input type="checkbox" data-ng-model="filterSelection.active"></th>
                             <th class="text-center">Prioritization&nbsp;<input type="checkbox" data-ng-model="filterSelection.prioritization"></th>
@@ -121,9 +124,9 @@
                         </tr>
                         <tr data-ng-repeat="project in projects | projectsCategorization : filterCategorization | projectsPrioritization : filterPrioritization | filter:
 {
-	identification: ((!!filterIdentification.name || !!filterIdentification.idNumber) || undefined) && {
+	identification: ((!!filterIdentification.name || !!filterIdentification.idReference) || undefined) && {
 			name : (!!filterIdentification.name || undefined) && filterIdentification.name,
-			idNumber : (!!filterIdentification.idNumber || undefined) && filterIdentification.idNumber
+			idReference : (!!filterIdentification.idReference || undefined) && filterIdentification.idReference
 			},
 	selection: ((!!filterSelection.active || !!filterSelection.prioritization || !!filterSelection.evaluation || !!filterSelection.delivery) || undefined) && {
 			active : (!!filterSelection.active || undefined) && filterSelection.active,
@@ -132,10 +135,11 @@
 			selectedForDelivery : (!!filterSelection.delivery || undefined) && filterSelection.delivery
 			},
 	portfolio: (!!filterHierarchy.portfolio || undefined) && {_id : filterHierarchy.portfolio._id},
-	parent: filterHierarchy.strategyNode._id
+	parent: filterHierarchy.strategyNode._id,
+	idNumber : (!!filterIdentification.idNumber || undefined) && filterIdentification.idNumber
 }">
                             <td class="text-center">
-                                <span>{{project.identification.idNumber}}</span>
+                                <span>{{project.identification.idReference}}</span>
                             </td>
                             <td class="text-center">
                                 <span>{{project.identification.name}}</span>
@@ -180,11 +184,11 @@
                                 </button>
                             </td>
                             <td class="text-center">
-                                <div class="btn-group btn-group-xs" role="group" data-ng-show="showEditProjectForm[project._id]" >
-                                    <button type="button" class="btn btn-success" data-ng-click="saveEditProject(project)">
+                                <div data-ng-show="showEditProjectForm[project._id]" >
+                                    <button type="button" class="btn btn-xs btn-success" data-ng-click="saveEditProject(project)">
                                         <span class="glyphicon glyphicon-ok"></span>
                                     </button>
-                                    <button type="button" class="btn btn-info" data-ng-click="cancelEditProject(project)">
+                                    <button type="button" class="btn btn-xs btn-info" data-ng-click="cancelEditProject(project)">
                                         <span class="glyphicon glyphicon-remove"></span>
                                     </button>
                                 </div>
