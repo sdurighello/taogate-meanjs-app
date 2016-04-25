@@ -2,8 +2,8 @@
 
 // Definition dashboards controller
 angular.module('category-assignment').controller('CategorizationOverviewController', ['$rootScope', '$scope', '$stateParams', '$location', 'Authentication',
-	'CategoryAssignment','CategoryGroups', 'Categories', 'Portfolios', '_','$q', '$sce',
-	function($rootScope, $scope, $stateParams, $location, Authentication, CategoryAssignment, CategoryGroups, Categories, Portfolios, _, $q, $sce) {
+	'CategoryAssignment','CategoryGroups', 'Categories', 'Portfolios', 'StrategyNodes', '_','$q', '$sce',
+	function($rootScope, $scope, $stateParams, $location, Authentication, CategoryAssignment, CategoryGroups, Categories, Portfolios, StrategyNodes, _, $q, $sce) {
 
 		$rootScope.staticMenu = false;
 
@@ -15,7 +15,8 @@ angular.module('category-assignment').controller('CategorizationOverviewControll
 
 		$scope.typeOfChart = 'number';
 
-		var projectCategorization = [];
+		var projectCategorizationPortfolio = [];
+        var projectCategorizationStrategy = [];
 
 		$scope.init = function(){
 
@@ -25,6 +26,13 @@ angular.module('category-assignment').controller('CategorizationOverviewControll
 			}, function(err){
 				$scope.initError.push({message: err.data.message});
 			});
+
+            StrategyNodes.query(function(res){
+                $scope.strategyNodes = res;
+                $scope.strategyTrees = createNodeTrees(res);
+            }, function(err){
+                $scope.initError.push({message: err.data.message});
+            });
 
 			CategoryGroups.query(function(categoryGroups){
 				$scope.categoryGroups = categoryGroups;
@@ -38,12 +46,17 @@ angular.module('category-assignment').controller('CategorizationOverviewControll
 				$scope.initError.push(err.data.message);
 			});
 
-			CategoryAssignment.categorizationOverview(function(res){
-				projectCategorization = res;
+			CategoryAssignment.categorizationOverviewPortfolio(function(res){
+				projectCategorizationPortfolio = res;
 			}, function(err){
 				$scope.initError.push(err.data.message);
 			});
 
+            CategoryAssignment.categorizationOverviewStrategy(function(res){
+                projectCategorizationStrategy = res;
+            }, function(err){
+                $scope.initError.push(err.data.message);
+            });
 
 		};
 
@@ -106,23 +119,44 @@ angular.module('category-assignment').controller('CategorizationOverviewControll
 		$scope.selectPortfolio = function(portfolio){
 			if(portfolio === 'all'){
 				$scope.selectedPortfolio = {name : 'All'};
-				$scope.projectCategorizationView = _.filter(projectCategorization, function(item){
+				$scope.projectCategorizationPortfolioView = _.filter(projectCategorizationPortfolio, function(item){
 					return item.all === true;
 				});
 				return;
 			}
 			if(portfolio === 'unassigned'){
 				$scope.selectedPortfolio = {name : 'Unassigned'};
-				$scope.projectCategorizationView = _.filter(projectCategorization, function(item){
+				$scope.projectCategorizationPortfolioView = _.filter(projectCategorizationPortfolio, function(item){
 					return (item.all === false) && (!item.portfolio);
 				});
 				return;
 			}
 			$scope.selectedPortfolio = portfolio;
-			$scope.projectCategorizationView = _.filter(projectCategorization, function(item){
+			$scope.projectCategorizationPortfolioView = _.filter(projectCategorizationPortfolio, function(item){
 				return (item.portfolio) && (item.portfolio === portfolio._id);
 			});
 		};
+
+        $scope.selectStrategyNode = function(strategyNode){
+            if(strategyNode === 'all'){
+                $scope.selectedStrategyNode = {name : 'All'};
+                $scope.projectCategorizationStrategyView = _.filter(projectCategorizationStrategy, function(item){
+                    return item.all === true;
+                });
+                return;
+            }
+            if(strategyNode === 'unassigned'){
+                $scope.selectedStrategyNode = {name : 'Unassigned'};
+                $scope.projectCategorizationStrategyView = _.filter(projectCategorizationStrategy, function(item){
+                    return (item.all === false) && (!item.parent);
+                });
+                return;
+            }
+            $scope.selectedStrategyNode = strategyNode;
+            $scope.projectCategorizationStrategyView = _.filter(projectCategorizationStrategy, function(item){
+                return (item.parent) && (item.parent === strategyNode._id);
+            });
+        };
 
 
 

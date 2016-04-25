@@ -11,151 +11,314 @@
 			</div>
 		</div>
 	</div>
-	<div class="col-sm-3"><!-- PORTFOLIO LIST -->
-		<div class="panel panel-default">
-			<div class="panel-heading">
-				<h6 class="panel-title text-center">Portfolio tree</h6>
-			</div>
-			<div class="panel-body">
-				<div class="alert alert-warning text-center" data-ng-hide="!portfolios.$resolved || portfolios.length">
-					No portfolios yet
-				</div>
-				<div class="row" data-ng-show="portfolios.$resolved && portfolios.length !== 0">
-					<div class="col-md-12">
-						<button class="btn btn-default btn-sm btn-info" style="min-width:50px; max-width: 150px; overflow:hidden; margin: 2%;"
-								data-ng-click="selectPortfolio('all')">
-							All
-						</button>
-						<button class="btn btn-default btn-sm btn-warning" style="min-width:50px; max-width: 150px; overflow:hidden; margin: 2%;"
-								data-ng-click="selectPortfolio('unassigned')">
-							Unassigned
-						</button>
-					</div>
-				</div>
-				<hr style="margin: 5px">
-				<div class="row" style="min-height: 470px;  max-height: 470px; overflow-y: auto;">
-					<div class="col-md-12">
-						<script type="text/ng-template" id="portfolioTree">
-							<button class="btn btn-default btn-sm" data-ng-click="selectPortfolio(tree.node);"
-									style="min-width:50px; max-width: 150px; overflow:hidden; margin: 2%;">
-								<span data-ng-bind="tree.node.name"></span>
-							</button>
-							<ul data-ng-if="tree.nodeTrees" style="list-style: none;">
-								<li data-ng-repeat="tree in tree.nodeTrees track by $index " >
-									<span data-ng-include="'portfolioTree'" style="display:block; margin-left:-0.5em;"></span>
-								</li>
-							</ul>
-						</script>
-						<ul style="margin-left: 2%; padding-left: 2%; list-style: none;">
-							<li data-ng-repeat="tree in portfolioTrees track by $index" >
-								<span data-ng-include="'portfolioTree'" style="display:block; margin-left:-0.5em;"></span>
-							</li>
-						</ul>
-					</div>
-				</div>
-			</div>
-		</div>
-	</div>
-	<div class="col-xs-9">
-		<div class="row">
-			<div class="col-md-12">
-				<div data-ng-hide="selectedPortfolio || portfolios.length === 0" class="alert alert-warning text-center">
-					Select a portfolio to see its details
-				</div>
-			</div>
-		</div>
-		<div class="row" data-ng-show="selectedPortfolio">
-			<div class="col-md-12">
-				<div class="panel panel-default">
-					<div class="panel-heading text-center" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: normal; width: 100%;">
-						<h6 class="panel-title">{{selectedPortfolio.name}}</h6>
-					</div>
-					<div class="panel-body">
-						<div class="row" data-ng-show="!projectPrioritizationView.length">
-							<div class="col-md-12">
-								<div class="alert alert-warning text-center">
-									There are no assignments for this portfolio
-								</div>
-							</div>
-						</div>
-						<div data-ng-show="projectPrioritizationView.length">
-							<div class="row">
-								<div class=" form-group-sm col-md-4">
-									<select id="catGroup" class="form-control" data-ng-model="filterPrioritization.group"
-											data-ng-options="item as item.name for item in priorityGroups" data-ng-disabled="filterPrioritization.priority">
-										<option value="">--priority group</option>
-									</select>
-								</div>
-								<div class="form-group-sm col-md-4">
-									<select id="priority" class="form-control" data-ng-model="filterPrioritization.priority"
-											data-ng-options="item as item.name for item in filterPrioritization.group.priorities" data-ng-disabled="filterPrioritization.priorityValue">
-										<option value="">--priority</option>
-									</select>
-								</div>
-								<div class="form-group-sm col-md-4">
-									<select id="priorityValue" class="form-control" data-ng-model="filterPrioritization.priorityValue"
-											data-ng-options="item as item.name for item in priorityValues">
-										<option value="">--priority values</option>
-									</select>
-								</div>
-							</div>
-							<hr>
-							<div class="row" style="max-height: 445px; min-height: 445px; overflow-y: auto;">
-								<div class="col-md-12">
-									<div class="table-responsive" data-ng-show="projectPrioritizationView.length">
-										<table class="table table-hover table-bordered table-condensed small">
-											<thead>
-											<tr>
-												<th>
-													Priority group
-												</th>
-												<th>
-													Priority
-												</th>
-												<th>
-													Priority value
-												</th>
-												<th colspan="2">
-													<span>N. of projects</span>
-													<button class="btn btn-xs" data-ng-click="orderTable = 'countPriorityValue'">
-														<span class="glyphicon glyphicon-sort-by-attributes-alt"></span>
-													</button>
-												</th>
-												<th colspan="2">
-													<span>Earmarked funds</span>
-													<button class="btn btn-xs" data-ng-click="orderTable = 'fundsPriorityValue'">
-														<span class="glyphicon glyphicon-sort-by-attributes-alt"></span>
-													</button>
-												</th>
-											</tr>
-											</thead>
-											<tbody>
-											<tr data-ng-repeat="catObj in projectPrioritizationView | orderBy : orderTable : true
+    <div class="row">
+        <div class="col-xs-12">
+            <tabset>
+                <tab heading="By Portfolio Tree">
+                    <br>
+                    <div class="row">
+                        <div class="col-sm-3"><!-- PORTFOLIO LIST -->
+                            <div class="panel panel-default">
+                                <div class="panel-heading">
+                                    <h6 class="panel-title text-center">Portfolio tree</h6>
+                                </div>
+                                <div class="panel-body">
+                                    <div class="alert alert-warning text-center" data-ng-hide="!portfolios.$resolved || portfolios.length">
+                                        No portfolios yet
+                                    </div>
+                                    <div class="row" data-ng-show="portfolios.$resolved && portfolios.length !== 0">
+                                        <div class="col-md-12">
+                                            <button class="btn btn-default btn-sm btn-info" style="min-width:50px; max-width: 150px; overflow:hidden; margin: 2%;"
+                                                    data-ng-click="selectPortfolio('all')">
+                                                All
+                                            </button>
+                                            <button class="btn btn-default btn-sm btn-warning" style="min-width:50px; max-width: 150px; overflow:hidden; margin: 2%;"
+                                                    data-ng-click="selectPortfolio('unassigned')">
+                                                Unassigned
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <hr style="margin: 5px">
+                                    <div class="row" style="min-height: 470px;  max-height: 470px; overflow-y: auto;">
+                                        <div class="col-md-12">
+                                            <script type="text/ng-template" id="portfolioTree">
+                                                <button class="btn btn-default btn-sm" data-ng-click="selectPortfolio(tree.node);"
+                                                        style="min-width:50px; max-width: 150px; overflow:hidden; margin: 2%;">
+                                                    <span data-ng-bind="tree.node.name"></span>
+                                                </button>
+                                                <ul data-ng-if="tree.nodeTrees" style="list-style: none;">
+                                                    <li data-ng-repeat="tree in tree.nodeTrees track by $index " >
+                                                        <span data-ng-include="'portfolioTree'" style="display:block; margin-left:-0.5em;"></span>
+                                                    </li>
+                                                </ul>
+                                            </script>
+                                            <ul style="margin-left: 2%; padding-left: 2%; list-style: none;">
+                                                <li data-ng-repeat="tree in portfolioTrees track by $index" >
+                                                    <span data-ng-include="'portfolioTree'" style="display:block; margin-left:-0.5em;"></span>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xs-9">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div data-ng-hide="selectedPortfolio || portfolios.length === 0" class="alert alert-warning text-center">
+                                        Select a portfolio to see its details
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row" data-ng-show="selectedPortfolio">
+                                <div class="col-md-12">
+                                    <div class="panel panel-default">
+                                        <div class="panel-heading text-center" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: normal; width: 100%;">
+                                            <h6 class="panel-title">{{selectedPortfolio.name}}</h6>
+                                        </div>
+                                        <div class="panel-body">
+                                            <div class="row" data-ng-show="!projectPrioritizationPortfolioView.length">
+                                                <div class="col-md-12">
+                                                    <div class="alert alert-warning text-center">
+                                                        There are no assignments for this portfolio
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div data-ng-show="projectPrioritizationPortfolioView.length">
+                                                <div class="row">
+                                                    <div class=" form-group-sm col-md-4">
+                                                        <select id="catGroup" class="form-control" data-ng-model="filterPrioritization.group"
+                                                                data-ng-options="item as item.name for item in priorityGroups" data-ng-disabled="filterPrioritization.priority">
+                                                            <option value="">--priority group</option>
+                                                        </select>
+                                                    </div>
+                                                    <div class="form-group-sm col-md-4">
+                                                        <select id="priority" class="form-control" data-ng-model="filterPrioritization.priority"
+                                                                data-ng-options="item as item.name for item in filterPrioritization.group.priorities" data-ng-disabled="filterPrioritization.priorityValue">
+                                                            <option value="">--priority</option>
+                                                        </select>
+                                                    </div>
+                                                    <div class="form-group-sm col-md-4">
+                                                        <select id="priorityValue" class="form-control" data-ng-model="filterPrioritization.priorityValue"
+                                                                data-ng-options="item as item.name for item in priorityValues">
+                                                            <option value="">--priority values</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                                <hr>
+                                                <div class="row" style="max-height: 445px; min-height: 445px; overflow-y: auto;">
+                                                    <div class="col-md-12">
+                                                        <div class="table-responsive" data-ng-show="projectPrioritizationPortfolioView.length">
+                                                            <table class="table table-hover table-bordered table-condensed small">
+                                                                <thead>
+                                                                <tr>
+                                                                    <th>
+                                                                        Priority group
+                                                                    </th>
+                                                                    <th>
+                                                                        Priority
+                                                                    </th>
+                                                                    <th>
+                                                                        Priority value
+                                                                    </th>
+                                                                    <th colspan="2">
+                                                                        <span>N. of projects</span>
+                                                                        <button class="btn btn-xs" data-ng-click="orderTable = 'countPriorityValue'">
+                                                                            <span class="glyphicon glyphicon-sort-by-attributes-alt"></span>
+                                                                        </button>
+                                                                    </th>
+                                                                    <th colspan="2">
+                                                                        <span>Earmarked funds</span>
+                                                                        <button class="btn btn-xs" data-ng-click="orderTable = 'fundsPriorityValue'">
+                                                                            <span class="glyphicon glyphicon-sort-by-attributes-alt"></span>
+                                                                        </button>
+                                                                    </th>
+                                                                </tr>
+                                                                </thead>
+                                                                <tbody>
+                                                                <tr data-ng-repeat="catObj in projectPrioritizationPortfolioView | orderBy : orderTable : true
                 | filter : (!!filterPrioritization.group || undefined) && {group:{_id: filterPrioritization.group._id}}
                 | filter : (!!filterPrioritization.priority || undefined) && {priority:{_id: filterPrioritization.priority._id}}
                 | filter : (!!filterPrioritization.priorityValue || undefined) && {priorityValue:{_id: filterPrioritization.priorityValue._id}}">
-												<td>{{catObj.group.name}}</td>
-												<td>{{catObj.priority.name}}</td>
-												<td data-ng-show="catObj.priorityValue">{{catObj.priorityValue.name}}</td>
-												<td data-ng-show="!catObj.priorityValue"><span class="text-muted">Unassigned</span></td>
-												<td>
-													<button tooltip-html-unsafe="{{tooltipView}}" tooltip-trigger="focus" class="btn btn-link" data-ng-click="createTooltipView(catObj.projects)">
-														{{catObj.countPriorityValue | number : 0}}
-													</button>
-												</td>
-												<td>{{catObj.countPriorityValueRatio * 100 | number : 1}}%</td>
-												<td>{{catObj.fundsPriorityValue | number : 0}}</td>
-												<td>{{catObj.fundsPriorityValueRatio * 100 | number : 1}}%</td>
-											</tr>
-											</tbody>
-										</table>
-									</div>
-								</div>
-							</div>
-						</div>
-					</div>
-				</div>
-			</div>
-		</div>
-	</div>
+                                                                    <td>{{catObj.group.name}}</td>
+                                                                    <td>{{catObj.priority.name}}</td>
+                                                                    <td data-ng-show="catObj.priorityValue">{{catObj.priorityValue.name}}</td>
+                                                                    <td data-ng-show="!catObj.priorityValue"><span class="text-muted">Unassigned</span></td>
+                                                                    <td>
+                                                                        <button tooltip-html-unsafe="{{tooltipView}}" tooltip-trigger="focus" class="btn btn-link" data-ng-click="createTooltipView(catObj.projects)">
+                                                                            {{catObj.countPriorityValue | number : 0}}
+                                                                        </button>
+                                                                    </td>
+                                                                    <td>{{catObj.countPriorityValueRatio * 100 | number : 1}}%</td>
+                                                                    <td>{{catObj.fundsPriorityValue | number : 0}}</td>
+                                                                    <td>{{catObj.fundsPriorityValueRatio * 100 | number : 1}}%</td>
+                                                                </tr>
+                                                                </tbody>
+                                                            </table>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </tab>
+                <tab heading="By Strategy Tree">
+                    <br>
+                    <div class="row">
+                        <div class="col-sm-3"><!-- PORTFOLIO LIST -->
+                            <div class="panel panel-default">
+                                <div class="panel-heading">
+                                    <h6 class="panel-title text-center">Strategy tree</h6>
+                                </div>
+                                <div class="panel-body">
+                                    <div class="alert alert-warning text-center" data-ng-hide="!strategyNodes.$resolved || strategyNodes.length">
+                                        No strategy nodes yet
+                                    </div>
+                                    <div class="row" data-ng-show="strategyNodes.$resolved && strategyNodes.length !== 0">
+                                        <div class="col-md-12">
+                                            <button class="btn btn-default btn-sm btn-info" style="min-width:50px; max-width: 150px; overflow:hidden; margin: 2%;"
+                                                    data-ng-click="selectStrategyNode('all')">
+                                                All
+                                            </button>
+                                            <button class="btn btn-default btn-sm btn-warning" style="min-width:50px; max-width: 150px; overflow:hidden; margin: 2%;"
+                                                    data-ng-click="selectStrategyNode('unassigned')">
+                                                Unassigned
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <hr style="margin: 5px">
+                                    <div class="row" style="min-height: 470px;  max-height: 470px; overflow-y: auto;">
+                                        <div class="col-md-12">
+                                            <script type="text/ng-template" id="strategyTree">
+                                                <button class="btn btn-default btn-sm" data-ng-click="selectStrategyNode(tree.node);"
+                                                        style="min-width:50px; max-width: 150px; overflow:hidden; margin: 2%;">
+                                                    <span data-ng-bind="tree.node.name"></span>
+                                                </button>
+                                                <ul data-ng-if="tree.nodeTrees" style="list-style: none;">
+                                                    <li data-ng-repeat="tree in tree.nodeTrees track by $index " >
+                                                        <span data-ng-include="'strategyTree'" style="display:block; margin-left:-0.5em;"></span>
+                                                    </li>
+                                                </ul>
+                                            </script>
+                                            <ul style="margin-left: 2%; padding-left: 2%; list-style: none;">
+                                                <li data-ng-repeat="tree in strategyTrees track by $index" >
+                                                    <span data-ng-include="'strategyTree'" style="display:block; margin-left:-0.5em;"></span>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xs-9">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div data-ng-hide="selectedStrategyNode || strategyNodes.length === 0" class="alert alert-warning text-center">
+                                        Select a strategy node to see its details
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row" data-ng-show="selectedStrategyNode">
+                                <div class="col-md-12">
+                                    <div class="panel panel-default">
+                                        <div class="panel-heading text-center" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: normal; width: 100%;">
+                                            <h6 class="panel-title">{{selectedStrategyNode.name}}</h6>
+                                        </div>
+                                        <div class="panel-body">
+                                            <div class="row" data-ng-show="!projectPrioritizationStrategyView.length">
+                                                <div class="col-md-12">
+                                                    <div class="alert alert-warning text-center">
+                                                        There are no assignments for this node
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div data-ng-show="projectPrioritizationStrategyView.length">
+                                                <div class="row">
+                                                    <div class=" form-group-sm col-md-4">
+                                                        <select id="catGroup" class="form-control" data-ng-model="filterPrioritization.group"
+                                                                data-ng-options="item as item.name for item in priorityGroups" data-ng-disabled="filterPrioritization.priority">
+                                                            <option value="">--priority group</option>
+                                                        </select>
+                                                    </div>
+                                                    <div class="form-group-sm col-md-4">
+                                                        <select id="priority" class="form-control" data-ng-model="filterPrioritization.priority"
+                                                                data-ng-options="item as item.name for item in filterPrioritization.group.priorities" data-ng-disabled="filterPrioritization.priorityValue">
+                                                            <option value="">--priority</option>
+                                                        </select>
+                                                    </div>
+                                                    <div class="form-group-sm col-md-4">
+                                                        <select id="priorityValue" class="form-control" data-ng-model="filterPrioritization.priorityValue"
+                                                                data-ng-options="item as item.name for item in priorityValues">
+                                                            <option value="">--priority values</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                                <hr>
+                                                <div class="row" style="max-height: 445px; min-height: 445px; overflow-y: auto;">
+                                                    <div class="col-md-12">
+                                                        <div class="table-responsive" data-ng-show="projectPrioritizationStrategyView.length">
+                                                            <table class="table table-hover table-bordered table-condensed small">
+                                                                <thead>
+                                                                <tr>
+                                                                    <th>
+                                                                        Priority group
+                                                                    </th>
+                                                                    <th>
+                                                                        Priority
+                                                                    </th>
+                                                                    <th>
+                                                                        Priority value
+                                                                    </th>
+                                                                    <th colspan="2">
+                                                                        <span>N. of projects</span>
+                                                                        <button class="btn btn-xs" data-ng-click="orderTable = 'countPriorityValue'">
+                                                                            <span class="glyphicon glyphicon-sort-by-attributes-alt"></span>
+                                                                        </button>
+                                                                    </th>
+                                                                    <th colspan="2">
+                                                                        <span>Earmarked funds</span>
+                                                                        <button class="btn btn-xs" data-ng-click="orderTable = 'fundsPriorityValue'">
+                                                                            <span class="glyphicon glyphicon-sort-by-attributes-alt"></span>
+                                                                        </button>
+                                                                    </th>
+                                                                </tr>
+                                                                </thead>
+                                                                <tbody>
+                                                                <tr data-ng-repeat="catObj in projectPrioritizationStrategyView | orderBy : orderTable : true
+                | filter : (!!filterPrioritization.group || undefined) && {group:{_id: filterPrioritization.group._id}}
+                | filter : (!!filterPrioritization.priority || undefined) && {priority:{_id: filterPrioritization.priority._id}}
+                | filter : (!!filterPrioritization.priorityValue || undefined) && {priorityValue:{_id: filterPrioritization.priorityValue._id}}">
+                                                                    <td>{{catObj.group.name}}</td>
+                                                                    <td>{{catObj.priority.name}}</td>
+                                                                    <td data-ng-show="catObj.priorityValue">{{catObj.priorityValue.name}}</td>
+                                                                    <td data-ng-show="!catObj.priorityValue"><span class="text-muted">Unassigned</span></td>
+                                                                    <td>
+                                                                        <button tooltip-html-unsafe="{{tooltipView}}" tooltip-trigger="focus" class="btn btn-link" data-ng-click="createTooltipView(catObj.projects)">
+                                                                            {{catObj.countPriorityValue | number : 0}}
+                                                                        </button>
+                                                                    </td>
+                                                                    <td>{{catObj.countPriorityValueRatio * 100 | number : 1}}%</td>
+                                                                    <td>{{catObj.fundsPriorityValue | number : 0}}</td>
+                                                                    <td>{{catObj.fundsPriorityValueRatio * 100 | number : 1}}%</td>
+                                                                </tr>
+                                                                </tbody>
+                                                            </table>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </tab>
+            </tabset>
+        </div>
+    </div>
 </section>

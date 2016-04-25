@@ -5,13 +5,20 @@ angular.module('category-assignment').factory('CategoryAssignment', ['$resource'
 	function($resource) {
 		return $resource('category-assignment', {
 		}, {
-			categorizationOverview: {
+			categorizationOverviewPortfolio: {
 				method: 'GET',
 				isArray: true,
-				url: 'category-assignment/categorizationOverview'
+				url: 'category-assignment/categorizationOverviewPortfolio'
 				// req.query: { project: project._id }
 				// Returns: [{gate: ... , projectChangeRequests: ... }]
-			}
+			},
+            categorizationOverviewStrategy: {
+                method: 'GET',
+                isArray: true,
+                url: 'category-assignment/categorizationOverviewStrategy'
+                // req.query: { project: project._id }
+                // Returns: [{gate: ... , projectChangeRequests: ... }]
+            }
 		});
 	}
 ]);

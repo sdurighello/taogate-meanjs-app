@@ -105,10 +105,10 @@ var loadProjects = function (user, callback) {
     async.parallel([
         function(callback){
             return require('./projects/project1/seed-data.load-project.server.controller.js').loadProject(user, callback);
+        },
+        function(callback){
+            return require('./projects/project2/seed-data.load-project.server.controller.js').loadProject(user, callback);
         }
-        // function(callback){
-        //     return require('./projects/project2/seed-data.load-project.server.controller.js').loadProject(user, callback);
-        // }
     ], function(err, results) {
         if (err) {
             callback(err);

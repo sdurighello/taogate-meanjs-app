@@ -2,8 +2,8 @@
 
 // Definition dashboards controller
 angular.module('priority-assignment').controller('PrioritizationOverviewController', ['$rootScope', '$scope', '$stateParams', '$location', 'Authentication',
-	'PriorityAssignment','PriorityGroups', 'Priorities', 'PriorityValues', 'Portfolios', '_','$q', '$sce',
-	function($rootScope, $scope, $stateParams, $location, Authentication, PriorityAssignment, PriorityGroups, Priorities, PriorityValues, Portfolios, _, $q, $sce) {
+	'PriorityAssignment','PriorityGroups', 'Priorities', 'PriorityValues', 'Portfolios', 'StrategyNodes', '_','$q', '$sce',
+	function($rootScope, $scope, $stateParams, $location, Authentication, PriorityAssignment, PriorityGroups, Priorities, PriorityValues, Portfolios, StrategyNodes, _, $q, $sce) {
 
 		$rootScope.staticMenu = false;
 
@@ -15,7 +15,8 @@ angular.module('priority-assignment').controller('PrioritizationOverviewControll
 
 		$scope.typeOfChart = 'number';
 
-		var projectPrioritization = [];
+		var projectPrioritizationPortfolio = [];
+        var projectPrioritizationStrategy = [];
 
 		$scope.init = function(){
 
@@ -25,6 +26,13 @@ angular.module('priority-assignment').controller('PrioritizationOverviewControll
 			}, function(err){
 				$scope.initError.push({message: err.data.message});
 			});
+
+            StrategyNodes.query(function(res){
+                $scope.strategyNodes = res;
+                $scope.strategyTrees = createNodeTrees(res);
+            }, function(err){
+                $scope.initError.push({message: err.data.message});
+            });
 
 			PriorityGroups.query(function(res){
 				$scope.priorityGroups = res;
@@ -44,11 +52,17 @@ angular.module('priority-assignment').controller('PrioritizationOverviewControll
 				$scope.initError.push(err.data.message);
 			});
 
-			PriorityAssignment.prioritizationOverview(function(res){
-				projectPrioritization = res;
+			PriorityAssignment.prioritizationOverviewPortfolio(function(res){
+				projectPrioritizationPortfolio = res;
 			}, function(err){
 				$scope.initError.push(err.data.message);
 			});
+
+            PriorityAssignment.prioritizationOverviewStrategy(function(res){
+                projectPrioritizationStrategy = res;
+            }, function(err){
+                $scope.initError.push(err.data.message);
+            });
 
 
 		};
@@ -100,23 +114,44 @@ angular.module('priority-assignment').controller('PrioritizationOverviewControll
 		$scope.selectPortfolio = function(portfolio){
 			if(portfolio === 'all'){
 				$scope.selectedPortfolio = {name : 'All'};
-				$scope.projectPrioritizationView = _.filter(projectPrioritization, function(item){
+				$scope.projectPrioritizationPortfolioView = _.filter(projectPrioritizationPortfolio, function(item){
 					return item.all === true;
 				});
 				return;
 			}
 			if(portfolio === 'unassigned'){
 				$scope.selectedPortfolio = {name : 'Unassigned'};
-				$scope.projectPrioritizationView = _.filter(projectPrioritization, function(item){
+				$scope.projectPrioritizationPortfolioView = _.filter(projectPrioritizationPortfolio, function(item){
 					return (item.all === false) && (!item.portfolio);
 				});
 				return;
 			}
 			$scope.selectedPortfolio = portfolio;
-			$scope.projectPrioritizationView = _.filter(projectPrioritization, function(item){
+			$scope.projectPrioritizationPortfolioView = _.filter(projectPrioritizationPortfolio, function(item){
 				return (item.portfolio) && (item.portfolio === portfolio._id);
 			});
 		};
+
+        $scope.selectStrategyNode = function(strategyNode){
+            if(strategyNode === 'all'){
+                $scope.selectedStrategyNode = {name : 'All'};
+                $scope.projectPrioritizationStrategyView = _.filter(projectPrioritizationStrategy, function(item){
+                    return item.all === true;
+                });
+                return;
+            }
+            if(strategyNode === 'unassigned'){
+                $scope.selectedStrategyNode = {name : 'Unassigned'};
+                $scope.projectPrioritizationStrategyView = _.filter(projectPrioritizationStrategy, function(item){
+                    return (item.all === false) && (!item.parent);
+                });
+                return;
+            }
+            $scope.selectedStrategyNode = strategyNode;
+            $scope.projectPrioritizationStrategyView = _.filter(projectPrioritizationStrategy, function(item){
+                return (item.parent) && (item.parent === strategyNode._id);
+            });
+        };
 
 
 

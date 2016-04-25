@@ -5,13 +5,20 @@ angular.module('priority-assignment').factory('PriorityAssignment', ['$resource'
 	function($resource) {
 		return $resource('priority-assignment', {
 		}, {
-			prioritizationOverview: {
+			prioritizationOverviewPortfolio: {
 				method: 'GET',
 				isArray: true,
-				url: 'priority-assignment/prioritizationOverview'
+				url: 'priority-assignment/prioritizationOverviewPortfolio'
 				// req.query: { project: project._id }
 				// Returns: [{gate: ... , projectChangeRequests: ... }]
-			}
+			},
+            prioritizationOverviewStrategy: {
+                method: 'GET',
+                isArray: true,
+                url: 'priority-assignment/prioritizationOverviewStrategy'
+                // req.query: { project: project._id }
+                // Returns: [{gate: ... , projectChangeRequests: ... }]
+            }
 		});
 	}
 ]);
