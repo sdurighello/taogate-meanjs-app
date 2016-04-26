@@ -66,12 +66,17 @@ exports.seedQualitativeImpacts = function(user, callback){
 
 // Impact scores
 
-    var impactScore1 = seedIDs.QualitativeImpactScore.impactScore1; // none
-    var impactScore2 = seedIDs.QualitativeImpactScore.impactScore2; // veryLow
-    var impactScore3 = seedIDs.QualitativeImpactScore.impactScore3; // low
-    var impactScore4 = seedIDs.QualitativeImpactScore.impactScore4; // medium
-    var impactScore5 = seedIDs.QualitativeImpactScore.impactScore5; // high
-    var impactScore6 = seedIDs.QualitativeImpactScore.impactScore6; // veryHigh
+    var impactScore0 = seedIDs.QualitativeImpactScore.impactScore0;
+    var impactScore1 = seedIDs.QualitativeImpactScore.impactScore1; 
+    var impactScore2 = seedIDs.QualitativeImpactScore.impactScore2; 
+    var impactScore3 = seedIDs.QualitativeImpactScore.impactScore3; 
+    var impactScore4 = seedIDs.QualitativeImpactScore.impactScore4; 
+    var impactScore5 = seedIDs.QualitativeImpactScore.impactScore5; 
+    var impactScore6 = seedIDs.QualitativeImpactScore.impactScore6; 
+    var impactScore7 = seedIDs.QualitativeImpactScore.impactScore7; 
+    var impactScore8 = seedIDs.QualitativeImpactScore.impactScore8; 
+    var impactScore9 = seedIDs.QualitativeImpactScore.impactScore9; 
+    var impactScore10 = seedIDs.QualitativeImpactScore.impactScore10; 
 
     async.series([
         function(callback) {
@@ -241,50 +246,90 @@ exports.seedQualitativeImpacts = function(user, callback){
             var schema = mongoose.mtModel(user.tenantId + '.' + 'QualitativeImpactScore');
             var seedArray =  [
                 {
-                    _id: impactScore1,
-                    name: 'None',
+                    _id: impactScore0,
+                    name: '0',
                     description:'No project contribution to the impact',
                     numericalValue: 0,
                     user:user._id,
                     created: Date.now()
                 },
                 {
-                    _id: impactScore2,
-                    name: 'Very low',
-                    description:'Project contribution to the impact is very low',
+                    _id: impactScore1,
+                    name: '10',
+                    description:'Project contributes to impact',
                     numericalValue: 10,
                     user:user._id,
                     created: Date.now()
                 },
                 {
-                    _id: impactScore3,
-                    name: 'Low',
-                    description:'Project contribution to the impact is low',
+                    _id: impactScore2,
+                    name: '20',
+                    description:'Project contributes to impact',
                     numericalValue: 20,
                     user:user._id,
                     created: Date.now()
                 },
                 {
-                    _id: impactScore4,
-                    name: 'Medium',
-                    description:'Project contribution to the impact is medium',
+                    _id: impactScore3,
+                    name: '30',
+                    description:'Project contributes to impact',
                     numericalValue: 30,
                     user:user._id,
                     created: Date.now()
                 },
                 {
-                    _id: impactScore5,
-                    name: 'High',
-                    description:'Project contribution to the impact is high',
+                    _id: impactScore4,
+                    name: '40',
+                    description:'Project contributes to impact',
                     numericalValue: 40,
                     user:user._id,
                     created: Date.now()
                 },
                 {
-                    _id: impactScore6,
-                    name: 'Very high',
-                    description:'Project contribution to the impact is very high',
+                    _id: impactScore5,
+                    name: '50',
+                    description:'Project contributes to impact',
                     numericalValue: 50,
+                    user:user._id,
+                    created: Date.now()
+                },
+                {
+                    _id: impactScore6,
+                    name: '60',
+                    description:'Project contributes to impact',
+                    numericalValue: 60,
+                    user:user._id,
+                    created: Date.now()
+                },
+                {
+                    _id: impactScore7,
+                    name: '70',
+                    description:'Project contributes to impact',
+                    numericalValue: 70,
+                    user:user._id,
+                    created: Date.now()
+                },
+                {
+                    _id: impactScore8,
+                    name: '80',
+                    description:'Project contributes to impact',
+                    numericalValue: 80,
+                    user:user._id,
+                    created: Date.now()
+                },
+                {
+                    _id: impactScore9,
+                    name: '90',
+                    description:'Project contributes to impact',
+                    numericalValue: 90,
+                    user:user._id,
+                    created: Date.now()
+                },
+                {
+                    _id: impactScore10,
+                    name: '100',
+                    description:'Project contributes to impact',
+                    numericalValue: 100,
                     user:user._id,
                     created: Date.now()
                 }

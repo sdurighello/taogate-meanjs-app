@@ -52,6 +52,12 @@
 															<label for="description" class="control-label">Description</label>
 															<textarea id="description" disabled class="form-control" data-ng-model="indicator.description"></textarea>
 														</div>
+                                                        <div class="form-group">
+                                                            <label for="color" class="control-label">Color</label>
+                                                            <select id="color" class="form-control" data-ng-model = "indicator.color" ng-style="{'background-color': indicator.color}"
+                                                                    ng-options="color.colorString as color.colorName for color in colors" disabled>
+                                                            </select>
+                                                        </div>
 														<button type="button" class="btn btn-success pull-right" data-ng-show="userHasAuthorization"
 																data-ng-click="selectStatusIndicator(indicator)">
 															Edit
@@ -83,6 +89,12 @@
 																	  data-ng-model="indicator.description" placeholder="Description">
                                                             </textarea>
 														</div>
+                                                        <div class="form-group">
+                                                            <label for="color" class="control-label">Color</label>
+                                                            <select id="color" class="form-control" data-ng-model = "indicator.color" ng-style="{'background-color': indicator.color}"
+                                                                    ng-options="color.colorString as color.colorName for color in colors">
+                                                            </select>
+                                                        </div>
 														<div class="pull-right">
 															<input type="submit" value="Save" class="btn btn-success" data-ng-disabled="editIndicatorForm.$invalid">
 															<a class="btn btn-danger" data-ng-click="removeStatusIndicator(indicator)" data-ng-show="userHasAuthorization">

@@ -1,8 +1,8 @@
 'use strict';
 
 angular.module('evaluation-summaries').controller('EvaluationSummaryController', ['$rootScope', '$scope', '$stateParams', '$location', 'Authentication',
-	'EvaluationSummaries','Projects','Portfolios', 'GateProcesses', '_','$q','$modal',
-	function($rootScope, $scope, $stateParams, $location, Authentication, EvaluationSummaries, Projects, Portfolios, GateProcesses, _, $q, $modal) {
+	'EvaluationSummaries', 'QualitativeImpactScores','RiskSeverities','Risks','Projects','Portfolios', 'GateProcesses', '_','$q','$modal',
+	function($rootScope, $scope, $stateParams, $location, Authentication, EvaluationSummaries, QualitativeImpactScores, RiskSeverities, Risks, Projects, Portfolios, GateProcesses, _, $q, $modal) {
 
         $rootScope.staticMenu = false;
 
@@ -40,6 +40,27 @@ angular.module('evaluation-summaries').controller('EvaluationSummaryController',
 			}, function(err){
 				vm.initError.push(err.data.message);
 			});
+
+            QualitativeImpactScores.query(function(res){
+                vm.maxQualitativeScore = _.max(res, 'numericalValue');
+                vm.minQualitativeScore = _.min(res, 'numericalValue');
+            }, function(err){
+                vm.initError.push(err.data.message);
+            });
+
+            RiskSeverities.query(function(resSev){
+                Risks.query(function(resRisk){
+                    if(resSev && resRisk){
+                        vm.maxRiskScore = _.max(resSev, 'severityValue').severityValue * resRisk.length;
+                        vm.minRiskScore = _.min(resSev, 'severityValue').severityValue * resRisk.length;
+                    }
+                }, function(err){
+                    vm.initError.push(err.data.message);
+                });
+            }, function(err){
+                vm.initError.push(err.data.message);
+            });
+
 
 
 		};

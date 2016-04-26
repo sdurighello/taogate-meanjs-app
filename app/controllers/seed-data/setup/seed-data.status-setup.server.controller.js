@@ -39,6 +39,8 @@ exports.seedStatuses = function(user, callback){
     var indicator1 = seedIDs.LogStatusIndicator.indicator1;
     var indicator2 = seedIDs.LogStatusIndicator.indicator2;
     var indicator3 = seedIDs.LogStatusIndicator.indicator3;
+    var indicator4 = seedIDs.LogStatusIndicator.indicator4;
+    var indicator5 = seedIDs.LogStatusIndicator.indicator5;
 
     // Status areas
 
@@ -54,6 +56,7 @@ exports.seedStatuses = function(user, callback){
                     _id: indicator1,
                     name: 'Red',
                     description:'Item is failing',
+                    color: 'red',
                     user:user._id,
                     created: Date.now()
                 },
@@ -61,6 +64,7 @@ exports.seedStatuses = function(user, callback){
                     _id: indicator2,
                     name: 'Amber',
                     description:'Item requires attention',
+                    color: 'yellow',
                     user:user._id,
                     created: Date.now()
                 },
@@ -68,6 +72,23 @@ exports.seedStatuses = function(user, callback){
                     _id: indicator3,
                     name: 'Green',
                     description:'Item is successfully progressing',
+                    color: 'green',
+                    user:user._id,
+                    created: Date.now()
+                },
+                {
+                    _id: indicator4,
+                    name: 'Not started',
+                    description:'Item has not started yet',
+                    color: 'blue',
+                    user:user._id,
+                    created: Date.now()
+                },
+                {
+                    _id: indicator5,
+                    name: 'Completed',
+                    description:'Item is completed',
+                    color: 'gray',
                     user:user._id,
                     created: Date.now()
                 }

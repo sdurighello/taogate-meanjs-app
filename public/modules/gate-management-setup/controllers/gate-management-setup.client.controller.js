@@ -53,6 +53,8 @@ angular.module('gate-management-setup').controller('GateManagementSetupControlle
 			if(string === 'view'){ $scope.switchGateOutcomeForm[gateOutcome._id] = 'view';}
 			if(string === 'edit'){$scope.switchGateOutcomeForm[gateOutcome._id] = 'edit';}
 		};
+        
+        $scope.gateProcessDetails = 'processHeader';
 
 		// ----------------- REFRESH GATE PROCESSES LIST ------------
 

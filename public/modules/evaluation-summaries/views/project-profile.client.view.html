@@ -28,6 +28,7 @@
                                             <h5 class="list-group-item-heading">
                                                 <span>{{groupObj.groupName}}</span>
                                                 <span class="badge" data-ng-bind="groupObj.weightedScore | number : 1"></span>
+                                                <span class="badge">{{groupObj.qualitativeScorePercentile * 100 | number : 1}}%</span>
                                             </h5>
                                         </div>
                                         <div>

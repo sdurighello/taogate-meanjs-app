@@ -92,13 +92,13 @@
                                             <tr>
                                                 <th colspan="2" class="text-center">Ranking</th>
                                                 <th rowspan="2" class="text-center">Project</th>
-                                                <th rowspan="2" class="text-center">
+                                                <th rowspan="2" colspan="2" class="text-center">
                                                     <span>Qualitative score</span>
                                                     <button class="btn btn-xs" data-ng-click="parentCtrl.orderByRanking('qualitativeScore', true)">
                                                         <span class="glyphicon glyphicon-sort-by-attributes-alt"></span>
                                                     </button>
                                                 </th>
-                                                <th rowspan="2" class="text-center">
+                                                <th rowspan="2" colspan="2" class="text-center">
                                                     <span>Risk score</span>
                                                     <button class="btn btn-xs" data-ng-click="parentCtrl.orderByRanking('riskScore', false)">
                                                         <span class="glyphicon glyphicon-sort-by-attributes"></span>
@@ -171,7 +171,9 @@
                                                 <td class="text-center"><b>{{$index + 1}}</b></td>
                                                 <td class="btn-link">{{profile.projectName}}</td>
                                                 <td class="text-center">{{profile.qualitativeScore | number : 2}}</td>
+                                                <td class="text-center">{{profile.qualitativeScorePercentile*100 | number : 2}}%</td>
                                                 <td class="text-center">{{profile.riskScore | number : 2}}</td>
+                                                <td class="text-center">{{profile.riskScorePercentile*100 | number : 2}}%</td>
                                                 <td class="text-center">{{profile.earmarkedFunds | number : 0}}</td>
                                                 <td class="text-center">{{profile.financialRatios.totalBenefitDiscounted | number : 0}}</td>
                                                 <td class="text-center">{{profile.financialRatios.totalCostDiscounted | number : 0}}</td>

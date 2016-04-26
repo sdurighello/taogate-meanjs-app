@@ -253,14 +253,19 @@ exports.seedProjects = function(user, callback){
 
     // Impact scores
 
-    var impactScore1 = seedIDs.QualitativeImpactScore.impactScore1; // none
-    var impactScore2 = seedIDs.QualitativeImpactScore.impactScore2; // veryLow
-    var impactScore3 = seedIDs.QualitativeImpactScore.impactScore3; // low
-    var impactScore4 = seedIDs.QualitativeImpactScore.impactScore4; // medium
-    var impactScore5 = seedIDs.QualitativeImpactScore.impactScore5; // high
-    var impactScore6 = seedIDs.QualitativeImpactScore.impactScore6; // veryHigh
-    
-    
+    var impactScore0 = seedIDs.QualitativeImpactScore.impactScore0;
+    var impactScore1 = seedIDs.QualitativeImpactScore.impactScore1;
+    var impactScore2 = seedIDs.QualitativeImpactScore.impactScore2;
+    var impactScore3 = seedIDs.QualitativeImpactScore.impactScore3;
+    var impactScore4 = seedIDs.QualitativeImpactScore.impactScore4;
+    var impactScore5 = seedIDs.QualitativeImpactScore.impactScore5;
+    var impactScore6 = seedIDs.QualitativeImpactScore.impactScore6;
+    var impactScore7 = seedIDs.QualitativeImpactScore.impactScore7;
+    var impactScore8 = seedIDs.QualitativeImpactScore.impactScore8;
+    var impactScore9 = seedIDs.QualitativeImpactScore.impactScore9;
+    var impactScore10 = seedIDs.QualitativeImpactScore.impactScore10;
+
+
     // RISK ANALYSIS
 
     // Delivery

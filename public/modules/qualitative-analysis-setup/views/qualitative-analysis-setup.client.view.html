@@ -22,7 +22,7 @@
 					<div class="row">
 						<div class="col-md-3" data-ng-show="userHasAuthorization">
 							<br>
-							<button class="btn btn-primary" data-ng-click="createGroup()">
+							<button class="btn btn-success" data-ng-click="createGroup()">
 								New impact group
 							</button>
 							<div data-ng-show="error" class="text-danger">
@@ -148,7 +148,7 @@
 														<div class="row">
 															<div class="col-md-3" data-ng-show="userHasAuthorization">
 																<div class="form-group">
-																	<button type="button" class="btn btn-primary" ng-click="createImpact(group)">
+																	<button type="button" class="btn btn-success" ng-click="createImpact(group)">
 																		New impact
 																	</button>
 																</div>
@@ -159,8 +159,8 @@
                                                             <div class="col-md-9">
                                                                 <div class="form-group panel">
                                                                     <span><b>Total impact weights: </b></span>
-                                                                    <span data-ng-bind="getImpactWeights(group)+' %'"></span>
-                                                                    <span data-ng-show="getImpactWeights(group) < 99 || getImpactWeights(group) > 100" class="alert alert-warning text-center">Warning: total should add up to 100%</span>
+                                                                    <span data-ng-bind="getTotalImpactWeights(group)+' %'"></span>
+                                                                    <span data-ng-show="getTotalImpactWeights(group) < 99 || getTotalImpactWeights(group) > 100" class="alert alert-warning text-center">Warning: total should add up to 100%</span>
                                                                 </div>
                                                             </div>
 														</div>

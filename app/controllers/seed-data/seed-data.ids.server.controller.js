@@ -142,8 +142,11 @@ var idObject = {
         q41 : mongoose.Types.ObjectId(), q42 : mongoose.Types.ObjectId(), q43 : mongoose.Types.ObjectId(), q44 : mongoose.Types.ObjectId()
     },
     QualitativeImpactScore: {
+        impactScore0: mongoose.Types.ObjectId(),
         impactScore1: mongoose.Types.ObjectId(), impactScore2: mongoose.Types.ObjectId(), impactScore3: mongoose.Types.ObjectId(),
-        impactScore4: mongoose.Types.ObjectId(), impactScore5: mongoose.Types.ObjectId(), impactScore6: mongoose.Types.ObjectId()
+        impactScore4: mongoose.Types.ObjectId(), impactScore5: mongoose.Types.ObjectId(), impactScore6: mongoose.Types.ObjectId(),
+        impactScore7: mongoose.Types.ObjectId(), impactScore8: mongoose.Types.ObjectId(), impactScore9: mongoose.Types.ObjectId(),
+        impactScore10: mongoose.Types.ObjectId()
     },
     
     // Risk Analysis
@@ -428,7 +431,8 @@ var idObject = {
     
     // Status
     LogStatusIndicator: {
-        indicator1 : mongoose.Types.ObjectId(), indicator2 : mongoose.Types.ObjectId(), indicator3 : mongoose.Types.ObjectId()
+        indicator1 : mongoose.Types.ObjectId(), indicator2 : mongoose.Types.ObjectId(), indicator3 : mongoose.Types.ObjectId(),
+        indicator4 : mongoose.Types.ObjectId(), indicator5 : mongoose.Types.ObjectId()
     },
     LogStatusArea: {
         area1 : mongoose.Types.ObjectId(), area2 : mongoose.Types.ObjectId(), area3 : mongoose.Types.ObjectId()

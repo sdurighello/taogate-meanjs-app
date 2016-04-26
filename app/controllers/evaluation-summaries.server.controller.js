@@ -16,7 +16,13 @@ exports.portfolioSummary = function(req, res){
 	var FinancialBenefit = mongoose.mtModel(req.user.tenantId + '.' + 'FinancialBenefit');
 	var FinancialCost = mongoose.mtModel(req.user.tenantId + '.' + 'FinancialCost');
 
-	async.waterfall([
+    var QualitativeImpactGroup = mongoose.mtModel(req.user.tenantId + '.' + 'QualitativeImpactGroup');
+    var QualitativeImpact = mongoose.mtModel(req.user.tenantId + '.' + 'QualitativeImpact');
+    var QualitativeImpactScore = mongoose.mtModel(req.user.tenantId + '.' + 'QualitativeImpactScore');
+    var Risk = mongoose.mtModel(req.user.tenantId + '.' + 'Risk');
+    var RiskSeverity = mongoose.mtModel(req.user.tenantId + '.' + 'RiskSeverity');
+
+    async.waterfall([
 		// Get all the projects in evaluation
 		function(callback) {
 			Project.find({'selection.active':true, 'selection.selectedForEvaluation':true})
@@ -91,8 +97,106 @@ exports.portfolioSummary = function(req, res){
 				}
 			});
 		},
+        // Min, Max Scores
+        function(projectsWithRankings, callback){
+
+            var minMaxObj = {
+                qualitativeWeight: null,
+                minQualitativeScore: null,
+                maxQualitativeScore: null,
+                minWeightedQualitativeScore: null,
+                maxWeightedQualitativeScore: null,
+                qualitativeScoreInterval : null,
+
+                minRiskScore: null,
+                maxRiskScore: null,
+                numberOfRisks: null,
+                minTotalRiskScore: null,
+                maxTotalRiskScore: null,
+                riskScoreInterval: null
+            };
+
+            async.parallel([
+                function (callback) {
+                    QualitativeImpactGroup.find().populate('impacts').exec(function (err, groups) {
+                        if(err){
+                            return callback(err);
+                        }
+                        if(!groups){
+                            return callback(null);
+                        }
+
+                        minMaxObj.qualitativeWeight = _.reduce(groups, function(sum, group){
+                            return sum + group.weight/100 * (_.reduce(group.impacts, function(sum, impact){
+                                            return sum + impact.weight/100;
+                                        }, 0));
+                        }, 0);
+
+                        callback(null);
+                    });
+                },
+                function(callback) {
+                    QualitativeImpactScore.find().exec(function (err, scores) {
+                        if(err){
+                            return callback(err);
+                        }
+                        if(scores.length >= 0){
+                            minMaxObj.minQualitativeScore = _.min(scores, function(score){
+                                return score.numericalValue;
+                            }).numericalValue;
+                            minMaxObj.maxQualitativeScore = _.max(scores, function(score){
+                                return score.numericalValue;
+                            }).numericalValue;
+                        }
+                        callback(null);
+                    });
+                },
+                function(callback) {
+                    RiskSeverity.find().exec(function (err, severities) {
+                        if(err){
+                            return callback(err);
+                        }
+                        if(severities.length >= 0){
+                            minMaxObj.minRiskScore = _.min(severities, function(sev){
+                                return sev.severityValue;
+                            }).severityValue;
+                            minMaxObj.maxRiskScore = _.max(severities, function(sev){
+                                return sev.severityValue;
+                            }).severityValue;
+                        }
+                        callback(null);
+                    });
+                },
+                function(callback) {
+                    Risk.count({}, function(err, number){
+                        if(err){
+                            return callback(err);
+                        }
+                        if(number){
+                            minMaxObj.numberOfRisks = number;
+                        }
+                        callback(null);
+                    });
+                }
+            ], function (err) {
+                if(err){
+                    callback(err);
+                } else {
+                    // Apply weight to min/max qualitative since you cannot assume that it will always sum up to 100%
+                    minMaxObj.minWeightedQualitativeScore = minMaxObj.minQualitativeScore * minMaxObj.qualitativeWeight;
+                    minMaxObj.maxWeightedQualitativeScore = minMaxObj.maxQualitativeScore * minMaxObj.qualitativeWeight;
+                    minMaxObj.qualitativeScoreInterval = minMaxObj.maxWeightedQualitativeScore - minMaxObj.minWeightedQualitativeScore;
+
+                    minMaxObj.minTotalRiskScore = minMaxObj.minRiskScore * minMaxObj.numberOfRisks;
+                    minMaxObj.maxTotalRiskScore = minMaxObj.maxRiskScore * minMaxObj.numberOfRisks;
+                    minMaxObj.riskScoreInterval = minMaxObj.maxTotalRiskScore - minMaxObj.minTotalRiskScore;
+
+                    callback(null, projectsWithRankings, minMaxObj);
+                }
+            });
+        },
 		// Create project profiles
-		function(projects, callback) {
+		function(projects, minMaxObj, callback) {
 			var projectProfiles = [];
 			_.each(projects, function(project){
 				var profile = {
@@ -102,8 +206,10 @@ exports.portfolioSummary = function(req, res){
 					portfolio : project.portfolio,
 					parent : project.parent,
 					qualitativeScore : 0,
+                    qualitativeScorePercentile: null,
 					qualitativeAnalysis : [],
 					riskScore : 0,
+                    riskScorePercentile: null,
 					riskAnalysis : [],
 					portfolioRanking : project.portfolioRanking,
 					overallRanking : project.overallRanking,
@@ -127,6 +233,7 @@ exports.portfolioSummary = function(req, res){
 						groupName : groupObj.group.name,
 						groupWeight : groupObj.group.weight,
 						sumImpactScores : 0,
+                        sumImpactWeights : 0,
 						weightedScore : 0,
 						impacts : []
 					};
@@ -146,10 +253,23 @@ exports.portfolioSummary = function(req, res){
 						};
 						profileGroupObj.impacts.push(profileImpactObj);
 						profileGroupObj.sumImpactScores = profileGroupObj.sumImpactScores + profileImpactObj.weightedScore;
+                        
+                        profileGroupObj.sumImpactWeights = profileGroupObj.sumImpactWeights + profileImpactObj.impactWeight;
 					});
 					profileGroupObj.weightedScore = profileGroupObj.sumImpactScores * (profileGroupObj.groupWeight/100);
+
+                    // For the percentile at group level
+                    profileGroupObj.qualitativeWeight = (profileGroupObj.groupWeight/100) * (profileGroupObj.sumImpactWeights/100);
+                    profileGroupObj.minWeightedQualitativeScore = minMaxObj.minQualitativeScore * profileGroupObj.qualitativeWeight;
+                    profileGroupObj.maxWeightedQualitativeScore = minMaxObj.maxQualitativeScore * profileGroupObj.qualitativeWeight;
+                    profileGroupObj.qualitativeScoreInterval = profileGroupObj.maxWeightedQualitativeScore - profileGroupObj.minWeightedQualitativeScore;
+                    profileGroupObj.qualitativeScorePercentile = profileGroupObj.weightedScore / profileGroupObj.qualitativeScoreInterval;
+
 					profile.qualitativeAnalysis.push(profileGroupObj);
 					profile.qualitativeScore = profile.qualitativeScore + profileGroupObj.weightedScore;
+                    
+                    // Percentile at project profile level
+                    profile.qualitativeScorePercentile = profile.qualitativeScore / minMaxObj.qualitativeScoreInterval;
 				});
 				// Add risk analysis
 				_.each(project.riskAnalysis, function(categoryObj){
@@ -170,6 +290,7 @@ exports.portfolioSummary = function(req, res){
 					});
 					profile.riskAnalysis.push(profileCategoryObj);
 					profile.riskScore = profile.riskScore + profileCategoryObj.sumSeverityValues;
+                    profile.riskScorePercentile = profile.riskScore / minMaxObj.riskScoreInterval;
 				});
 
 				// Add financial analysis

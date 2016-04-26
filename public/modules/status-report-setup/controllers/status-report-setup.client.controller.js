@@ -42,7 +42,22 @@ angular.module('status-report-setup').controller('StatusReportSetupController', 
 
 // ----------------------------------------------- STATUS-INDICATORS ---------------------------------------
 
-
+        
+        $scope.colors = [
+            {colorName: 'Silver', colorString: 'silver'},
+            {colorName: 'Gray', colorString: 'gray'},
+            {colorName: 'White', colorString: 'white'},
+            {colorName: 'Red', colorString: 'red'},
+            {colorName: 'Purple', colorString: 'purple'},
+            {colorName: 'Fuchsia', colorString: 'fuchsia'},
+            {colorName: 'Green', colorString: 'green'},
+            {colorName: 'Olive', colorString: 'olive'},
+            {colorName: 'Yellow', colorString: 'yellow'},
+            {colorName: 'Navy', colorString: 'navy'},
+            {colorName: 'Teal', colorString: 'teal'},
+            {colorName: 'Aqua', colorString: 'aqua'},
+            {colorName: 'Orange', colorString: 'orange'}
+        ];
 
 		// ------------------- NG-SWITCH ---------------------
 
