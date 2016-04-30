@@ -19,11 +19,24 @@
     </ul>
     <span data-ng-show="parentCtrl.seedErr">{{parentCtrl.seedErr}}</span>
 
-
+    <br>
 
     <div class="row">
         <div class="col-xs-12">
             <tabset>
+                <tab heading="Roadmap">
+                    <br>
+                    <button class="btn btn-default btn-lg" data-ng-click="parentCtrl.whatSelectionFunc(true)">True</button>
+                    <button class="btn btn-default btn-lg" data-ng-click="parentCtrl.whatSelectionFunc(false)">False</button>
+                    <br>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <roadmap data="parentCtrl.roadmapData" select-project="parentCtrl.selectProjectFromRoadmap"></roadmap>
+                        </div>
+                    </div>
+                    <br>
+                    {{parentCtrl.roadmapData}}
+                </tab>
                 <tab heading="My work">
                     <br>
                     <div class="row">
@@ -461,6 +474,14 @@
                             chart-click="parentCtrl.onClick">
                     </canvas>
 
+                </tab>
+                <tab heading="Force graph">
+                    <br>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <graph data="parentCtrl.dependencyData" select-node="parentCtrl.selectNode" select-link="parentCtrl.selectLink" width="800" height="600"></graph>
+                        </div>
+                    </div>
                 </tab>
             </tabset>
         </div>

@@ -243,3 +243,53 @@
 #mc-embedded-subscribe {clear:both; width:auto; display:block; margin:1em 0 1em 5%;}
 #mc_embed_signup #num-subscribers {font-size:1.1em;}
 #mc_embed_signup #num-subscribers span {padding:.5em; border:1px solid #ccc; margin-right:.5em; font-weight:bold;}
+
+/*
+D3 Charts
+*/
+
+/* Graph */
+
+.node {
+    stroke: #fff;
+    stroke-width: 1.5px;
+}
+
+.link {
+    stroke: #999;
+    stroke-opacity: .6;
+}
+
+/* Roadmap */
+
+
+.chart text {
+    fill: black;
+    font: 10px sans-serif;
+    text-anchor: left;
+}
+
+
+.bar {
+    fill: steelblue;
+    pointer-events: all;
+}
+
+/*.bar:hover {*/
+    /*fill: brown;*/
+/*}*/
+
+.axis {
+    font: 10px sans-serif;
+}
+
+.axis path,
+.axis line {
+    fill: none;
+    stroke: #000;
+    shape-rendering: crispEdges;
+}
+
+/*.x.axis path {*/
+    /*display: none;*/
+/*}*/
