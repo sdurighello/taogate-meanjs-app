@@ -370,15 +370,30 @@ angular.module('mytao').controller('MytaoController', ['$scope','$rootScope', '$
         };
 
         vm.roadmapData1 = [
-            {name: 'RAD implementation', start: new Date('2016-02-30T23:00:00Z'), end: new Date('2016-08-30T23:00:00Z'), selected: true},
-            {name: 'Horizon development', start: new Date('2016-06-30T23:00:00Z'), end: new Date('2016-10-30T23:00:00Z'), selected: false},
-            {name: 'Rici router setup phase 2', start: new Date('2016-08-30T23:00:00Z'), end: new Date('2016-09-30T23:00:00Z'), selected: true}
+            {_id: 1, name: 'RAD implementation', start: new Date('2016-02-30T23:00:00Z'), end: new Date('2016-08-30T23:00:00Z'), selected: true},
+            {_id: 2, name: 'Horizon development', start: new Date('2016-06-30T23:00:00Z'), end: new Date('2016-10-30T23:00:00Z'), selected: false},
+            {_id: 3, name: 'Rici router setup phase 2', start: new Date('2016-08-30T23:00:00Z'), end: new Date('2016-09-30T23:00:00Z'), selected: true},
+            {_id: 4, name: 'Bello mio', start: new Date('2016-03-30T23:00:00Z'), end: new Date('2016-07-30T23:00:00Z'), selected: false}
         ];
 
-        vm.roadmapData = vm.roadmapData1;
+        vm.roadmapData2 = [
+            {_id: 1, name: 'RAD implementation', start: new Date('2016-02-30T23:00:00Z'), end: new Date('2016-08-30T23:00:00Z'), selected: true},
+            {_id: 2, name: 'Horizon development', start: new Date('2016-06-30T23:00:00Z'), end: new Date('2016-10-30T23:00:00Z'), selected: false}
+        ];
+
+        vm.roadmapData3 = [
+            {_id: 2, name: 'Horizon development', start: new Date('2016-06-30T23:00:00Z'), end: new Date('2016-10-30T23:00:00Z'), selected: false},
+            {_id: 3, name: 'Rici router setup phase 2', start: new Date('2016-08-30T23:00:00Z'), end: new Date('2016-09-30T23:00:00Z'), selected: true},
+            {_id: 4, name: 'Bello mio', start: new Date('2016-03-30T23:00:00Z'), end: new Date('2016-07-30T23:00:00Z'), selected: false}
+        ];
+
+        vm.roadmapData = _.cloneDeep(vm.roadmapData1);
         
         vm.whatSelectionFunc = function(x){
-            vm.roadmapData = _.filter(vm.roadmapData1, function(d){ return d.selected === x; });
+            if(x){
+                return vm.roadmapData = _.cloneDeep(vm.roadmapData2);
+            }
+            return vm.roadmapData = _.cloneDeep(vm.roadmapData3);
         };
         
         vm.selectProjectFromRoadmap = function(project){

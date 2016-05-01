@@ -22,7 +22,6 @@ angular.module('core').directive('roadmap', ['d3', '_', '$parse',
 
                 var x, xAxis, setChartParameters,
                     onMouseover, onMouseout, onClick,
-                    svg,
                     drawChart, redrawChart;
 
                 scope.$watchCollection(parseData, function(newVal, oldVal){
@@ -56,17 +55,17 @@ angular.module('core').directive('roadmap', ['d3', '_', '$parse',
                     selectProject(d);
                 };
 
-                svg = d3.select(element[0]).append('svg');
+                d3.select(element[0]).append('svg');
 
                 drawChart = function(){
 
                     setChartParameters();
 
-                    var chart = svg
-                        .attr('class', 'chart')
+                    var chart = d3.select('svg')
                         .attr('width', width)
                         .attr('height', (barHeight * data.length) + 2 * margin.top)
                         .append('g')
+                        .attr('id', 'chart')
                         .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
 
                     chart.append('g')
@@ -76,7 +75,9 @@ angular.module('core').directive('roadmap', ['d3', '_', '$parse',
 
 
                     var bar = chart.selectAll('.bar')
-                        .data(data)
+                        .data(data, function(d){
+                            return d._id;
+                        })
                         .enter().append('g')
                         .attr('class', 'bar')
                         .attr('transform', function(d, i) { return 'translate('+ (x(d.start) + margin.left) +',' + ((i * barHeight) + margin.top) + ')'; });
@@ -105,7 +106,66 @@ angular.module('core').directive('roadmap', ['d3', '_', '$parse',
                 };
 
                 redrawChart = function(){
-                    // TO-DO
+
+                    setChartParameters();
+
+                    var svg = d3.select('svg')
+                        .attr('height', (barHeight * data.length) + 2 * margin.top);
+
+                    var chart = svg.select('#chart');
+
+                    chart.select('.x.axis')
+                        .call(xAxis);
+
+                    // Bind the new data
+
+                    var newBars = chart.selectAll('.bar')
+                        .data(data, function(d){
+                            return d._id;
+                        });
+
+                    // Redraw the ones not changed
+
+                    newBars
+                        .attr('transform', function(d, i) { return 'translate('+ (x(d.start) + margin.left) +',' + ((i * barHeight) + margin.top) + ')'; });
+
+                    newBars.selectAll('rect')
+                        .attr('width', function(d){ return x(d.end) - x(d.start);});
+
+                    newBars.selectAll('text')
+                        .attr('x', function(d) { return (x(d.end) - x(d.start))/3; });
+
+
+                    // Draw the ones added
+
+                    var newAppendedBar = newBars.enter().append('g')
+                        .attr('class', 'bar')
+                        .attr('transform', function(d, i) { return 'translate('+ (x(d.start) + margin.left) +',' + ((i * barHeight) + margin.top) + ')'; });
+
+                    newAppendedBar.append('rect')
+                        .attr('width', function(d){ return x(d.end) - x(d.start);})
+                        .attr('height', barHeight - 1)
+                        .on('mouseover', function(d) { onMouseover(this, d); })
+                        .on('mouseout', function(d) { onMouseout(this, d); })
+                        .on('click', function(d){ onClick(this, d); });
+
+                    newAppendedBar.append('text')
+                        .attr('x', function(d) { return (x(d.end) - x(d.start))/3; })
+                        .attr('y', barHeight / 2)
+                        .attr('dy', '.35em')
+                        .text(function(d) { return d.name; })
+                        .on('mouseover', function(d) { onMouseover(this, d); })
+                        .on('mouseout', function(d) { onMouseout(this, d); })
+                        .on('click', function(d){ onClick(this, d); });
+
+                    newAppendedBar.append('title')
+                        .text(function(d){ return d.name; });
+
+                    // Remove the ones removed
+
+                    var newRemovedBar = newBars.exit().remove();
+
+
                 };
 
                 drawChart();

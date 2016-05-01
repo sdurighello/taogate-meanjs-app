@@ -263,7 +263,7 @@ D3 Charts
 /* Roadmap */
 
 
-.chart text {
+#chart text {
     fill: black;
     font: 10px sans-serif;
     text-anchor: left;
