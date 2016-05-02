@@ -1,0 +1,81 @@
+<section data-ng-controller="RoadmapsController as vm">
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <h6 class="panel-title text-center" data-ng-bind="selectedProject.identification.name"></h6>
+        </div>
+        <div class="panel-body" style="min-height: 535px;  max-height: 535px; overflow-y: auto;">
+            <form class="form">
+                <fieldset>
+                    <div class="row">
+                        <div class="form-group-sm col-md-3">
+                            <label for="uid">ID</label>
+                            <input id="uid" type="text" class="form-control" disabled
+                                   ng-model="selectedProject.idNumber">
+                        </div>
+                        <div class="form-group-sm col-md-3">
+                            <label for="uid">Reference</label>
+                            <input id="uid" type="text" class="form-control" disabled placeholder="Enter identifier"
+                                   ng-model="selectedProject.identification.idReference">
+                        </div>
+                        <div class="form-group-sm col-md-6">
+                            <label for="projectName">Project name</label>
+                            <input id="projectName" type="text" class="form-control" disabled placeholder="Enter name"
+                                   ng-model="selectedProject.identification.name">
+                        </div>
+                    </div>
+                    <br>
+                    <div class="row">
+                        <div class="form-group-sm col-md-4">
+                            <label for="projectStart">Requested Start</label>
+                            <input id="projectStart" type="text" class="form-control" datepicker-popup="dd-MMMM-yyyy"
+                                   data-ng-model="selectedProject.identification.reqStartDate" disabled/>
+                        </div>
+                        <div class="form-group-sm col-md-4">
+                            <label for="projectEnd">Requested End</label>
+                            <input id="projectEnd" type="text" class="form-control" datepicker-popup="dd-MMMM-yyyy"
+                                   data-ng-model="selectedProject.identification.reqEndDate" disabled/>
+                        </div>
+                        <div class="form-group-sm col-md-4">
+                            <label for="projectFunds">Earmarked funds</label>
+                            <input id="projectFunds" type="number" min="0" class="form-control" disabled
+                                   ng-model="selectedProject.identification.earmarkedFunds">
+                        </div>
+                    </div>
+                    <br>
+                    <div class="row">
+                        <div class="form-group-sm col-md-4">
+                            <label for="projectManagerNew">Project Manager</label>
+                            <select id="projectManagerNew" class="form-control" data-ng-model = "selectedProject.identification.projectManager"
+                                    ng-options="projectManager._id as projectManager.displayName for projectManager in projectManagers" disabled>
+                                <option value="">--no person</option>
+                            </select>
+                        </div>
+                        <div class="form-group-sm col-md-4">
+                            <label for="backupProjectManagerNew">Backup Project Manager</label>
+                            <select id="backupProjectManagerNew" class="form-control" data-ng-model = "selectedProject.identification.backupProjectManager"
+                                    ng-options="projectManager._id as projectManager.displayName for projectManager in projectManagers" disabled>
+                                <option value="">--no person</option>
+                            </select>
+                        </div>
+                    </div>
+                    <br>
+                    <div class="row">
+                        <div class="form-group-sm col-md-12">
+                            <label for="projectDescription">Project description</label>
+                            <textarea id="projectDescription" class="form-control" placeholder="Enter description" data-ng-model="selectedProject.identification.description" disabled></textarea>
+                        </div>
+                    </div>
+                </fieldset>
+            </form>
+        </div>
+    </div>
+    <div class="row">
+        <div class="center-block text-center">
+            <button class="btn btn-primary btn-sm" data-ng-click="cancelModal()">
+                Close
+            </button>
+        </div>
+    </div>
+    <br>
+    <div class="row"></div>
+</section>

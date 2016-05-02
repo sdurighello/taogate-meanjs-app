@@ -27,8 +27,6 @@ angular.module('core').directive('roadmap', ['d3', '_', '$parse',
                 scope.$watchCollection(parseData, function(newVal, oldVal){
                     data = newVal;
                     redrawChart();
-
-                    console.log(newVal);
                 });
 
                 setChartParameters = function(){
@@ -99,7 +97,7 @@ angular.module('core').directive('roadmap', ['d3', '_', '$parse',
 
                     // Tooltip
                     bar.append('title')
-                        .text(function(d){ return d.identification.name; });
+                        .text(function(d){ return d.identification.name +' - '+'Start: '+d3.time.format('%b %a %e, %Y')(new Date(d.identification.reqStartDate))+' - '+'End: '+d3.time.format('%b %a %e, %Y')(new Date(d.identification.reqEndDate)); });
 
                 };
 
@@ -158,7 +156,7 @@ angular.module('core').directive('roadmap', ['d3', '_', '$parse',
                         .on('click', function(d){ onClick(this, d); });
 
                     newAppendedBar.append('title')
-                        .text(function(d){ return d.identification.name; });
+                        .text(function(d){ return d.identification.name +' - '+'Start: '+d3.time.format('%b %a %e, %Y')(new Date(d.identification.reqStartDate))+' - '+'End: '+d3.time.format('%b %a %e, %Y')(new Date(d.identification.reqEndDate)); });
 
                     // Remove the ones removed
 

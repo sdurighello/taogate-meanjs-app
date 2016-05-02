@@ -1,4 +1,4 @@
-<section data-ng-controller="RoadmapsController as parentCtrl" data-ng-init="parentCtrl.init()">
+<section data-ng-controller="RoadmapsController as vm" data-ng-init="vm.init()">
     <br>
     <div class="row">
         <div class="col-sm-12">
@@ -18,17 +18,19 @@
                     <h6 class="panel-title text-center">Portfolio tree</h6>
                 </div>
                 <div class="panel-body">
-                    <div class="alert alert-warning text-center" data-ng-hide="!parentCtrl.portfolios.$resolved || parentCtrl.portfolios.length">
+                    <div class="alert alert-warning text-center" data-ng-hide="!vm.portfolios.$resolved || vm.portfolios.length">
                         No portfolios yet
                     </div>
-                    <div class="row" data-ng-show="parentCtrl.portfolios.$resolved && parentCtrl.portfolios.length !== 0">
+                    <div class="row" data-ng-show="vm.portfolios.$resolved && vm.portfolios.length !== 0">
                         <div class="col-md-12">
-                            <button class="btn btn-default btn-sm btn-info" style="min-width:50px; max-width: 150px; overflow:hidden; margin: 2%;"
-                                    data-ng-click="parentCtrl.selectPortfolio('all')">
+                            <button class="btn btn-default btn-sm" data-ng-class="{'btn-primary': vm.getPortfolioSelectionStatus('all')}"
+                                    style="min-width:50px; max-width: 150px; overflow:hidden; margin: 2%;"
+                                    data-ng-click="vm.selectPortfolio('all')">
                                 All
                             </button>
-                            <button class="btn btn-default btn-sm btn-warning" style="min-width:50px; max-width: 150px; overflow:hidden; margin: 2%;"
-                                    data-ng-click="parentCtrl.selectPortfolio('unassigned')">
+                            <button class="btn btn-default btn-sm" data-ng-class="{'btn-primary': vm.getPortfolioSelectionStatus('unassigned')}"
+                                    style="min-width:50px; max-width: 150px; overflow:hidden; margin: 2%;"
+                                    data-ng-click="vm.selectPortfolio('unassigned')">
                                 Unassigned
                             </button>
                         </div>
@@ -37,7 +39,8 @@
                     <div class="row" style="min-height: 470px;  max-height: 470px; overflow-y: auto;">
                         <div class="col-md-12">
                             <script type="text/ng-template" id="portfolioTree">
-                                <button class="btn btn-default btn-sm" data-ng-click="parentCtrl.selectPortfolio(tree.node);"
+                                <button class="btn btn-default btn-sm" data-ng-class="{'btn-primary': vm.getPortfolioSelectionStatus(tree.node)}"
+                                        data-ng-click="vm.selectPortfolio(tree.node);"
                                         style="min-width:50px; max-width: 150px; overflow:hidden; margin: 2%;">
                                     <span data-ng-bind="tree.node.name"></span>
                                 </button>
@@ -48,7 +51,7 @@
                                 </ul>
                             </script>
                             <ul style="margin-left: 2%; padding-left: 2%; list-style: none;">
-                                <li data-ng-repeat="tree in parentCtrl.portfolioTrees track by $index" >
+                                <li data-ng-repeat="tree in vm.portfolioTrees track by $index" >
                                     <span data-ng-include="'portfolioTree'" style="display:block; margin-left:-0.5em;"></span>
                                 </li>
                             </ul>
@@ -60,33 +63,28 @@
         <div class="col-sm-9">
             <div class="row">
                 <div class="col-md-12">
-                    <div data-ng-hide="parentCtrl.selectedPortfolio || parentCtrl.portfolios.length === 0" class="alert alert-warning text-center">
-                        Select a portfolio to see its details
+                    <div data-ng-show="vm.isPortfolioSelectionEmpty() && (vm.portfolios.length !== 0)" class="alert alert-warning text-center">
+                        Select one or more portfolios to see the roadmap
                     </div>
                 </div>
             </div>
-            <div class="row" data-ng-show="parentCtrl.selectedPortfolio">
+            <div class="row" data-ng-show="!vm.isPortfolioSelectionEmpty()">
                 <div class="col-md-12">
-                    <div data-ng-show="error" class="text-danger">
-                        <strong data-ng-bind="error"></strong>
-                    </div>
                     <div class="panel panel-default">
                         <div class="panel-heading">
-                            <h6 class="panel-title text-center" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: normal; width: 100%;">
-                                {{parentCtrl.selectedPortfolio.name}}
-                            </h6>
+                            <h6 class="panel-title text-center">Roadmap</h6>
                         </div>
                         <div class="panel-body" style="min-height: 545px;  max-height: 545px; overflow-y: auto; overflow-x: auto">
-                            <div class="row" data-ng-show="!parentCtrl.definitionRoadmaps.length">
+                            <div class="row" data-ng-show="!vm.definitionRoadmaps.length">
                                 <div class="col-md-12">
                                     <div class="alert alert-warning text-center">
                                         <span>No roadmap</span>
                                     </div>
                                 </div>
                             </div>
-                            <div class="row" style="min-height: 325px; overflow-y: auto" data-ng-show="parentCtrl.definitionRoadmaps.length">
+                            <div class="row" style="min-height: 325px; overflow-y: auto" data-ng-show="vm.definitionRoadmaps.length">
                                 <div class="col-md-12">
-                                    <roadmap data="parentCtrl.definitionRoadmaps" select-project="parentCtrl.selectProjectProfile"></roadmap>
+                                    <roadmap data="vm.definitionRoadmaps" select-project="vm.selectProjectProfile"></roadmap>
                                 </div>
                             </div>
                         </div>

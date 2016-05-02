@@ -391,9 +391,10 @@ angular.module('mytao').controller('MytaoController', ['$scope','$rootScope', '$
         
         vm.whatSelectionFunc = function(x){
             if(x){
-                return vm.roadmapData = _.cloneDeep(vm.roadmapData2);
+                vm.roadmapData = _.cloneDeep(vm.roadmapData2);
+                return;
             }
-            return vm.roadmapData = _.cloneDeep(vm.roadmapData3);
+            vm.roadmapData = _.cloneDeep(vm.roadmapData3);
         };
         
         vm.selectProjectFromRoadmap = function(project){

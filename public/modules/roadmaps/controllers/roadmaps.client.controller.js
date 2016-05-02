@@ -14,17 +14,21 @@ angular.module('roadmaps').controller('RoadmapsController', ['$rootScope', '$sco
 
         var roadmaps = [];
 
-        vm.init = function(){
+        vm.portfoliosSelectedForRoadmap = {
+            //    portfolioID : true/false
+        };
 
-            Projects.query({'selection.active': true}, function(res){
-                vm.projects = res;
-            }, function(err){
-                vm.initError.push(err.data.message);
-            });
+        vm.init = function(){
 
             Portfolios.query(function(portfolios){
                 vm.portfolios = portfolios;
                 vm.portfolioTrees = createNodeTrees(portfolios);
+                // Create the properties for the portfolio selection
+                _.each(portfolios, function(portfolio){
+                    vm.portfoliosSelectedForRoadmap[portfolio._id] = false;
+                });
+                vm.portfoliosSelectedForRoadmap.all = false;
+                vm.portfoliosSelectedForRoadmap.unassigned = false;
             }, function(err){
                 vm.initError.push(err.data.message);
             });
@@ -77,46 +81,94 @@ angular.module('roadmaps').controller('RoadmapsController', ['$rootScope', '$sco
 
         // ------ PORTFOLIO SELECTION -----------
 
+
         vm.definitionRoadmaps = [];
 
+        vm.isPortfolioSelectionEmpty = function () {
+            // If no portfolios are selected, then all values should be false and this should return true
+            var flag = true;
+            _.each(vm.portfoliosSelectedForRoadmap, function(v, k){
+                if(v){
+                    flag = false;
+                }
+            });
+            return flag;
+        };
+
+
         vm.selectPortfolio = function(portfolio){
-            if(portfolio === 'all'){
-                vm.treeSelectionFlag = 'all';
-                vm.selectedProjectProfile = null;
-                vm.selectedPortfolio = {name : 'All'};
-                vm.definitionRoadmaps = _.filter(roadmaps, function(project){
-                    return true;
-                });
-                return;
-            }
+
             if(portfolio === 'unassigned'){
-                vm.treeSelectionFlag = 'unassigned';
-                vm.selectedProjectProfile = null;
-                vm.selectedPortfolio = {name : 'Unassigned'};
-                vm.definitionRoadmaps = _.filter(roadmaps, function(project){
-                    return project.portfolio === null;
-                });
-                return;
+                if(vm.portfoliosSelectedForRoadmap.unassigned){
+                    vm.portfoliosSelectedForRoadmap.unassigned = false;
+                } else {
+                    vm.portfoliosSelectedForRoadmap.unassigned = true;
+                }
+
+            } else if(portfolio === 'all'){
+                if(vm.portfoliosSelectedForRoadmap.all){
+                    vm.portfoliosSelectedForRoadmap.all = false;
+                    _.forEach(vm.portfoliosSelectedForRoadmap, function(v, k){
+                        vm.portfoliosSelectedForRoadmap[k] = false;
+                    });
+                } else {
+                    vm.portfoliosSelectedForRoadmap.all = true;
+                    _.each(vm.portfoliosSelectedForRoadmap, function(v, k){
+                        vm.portfoliosSelectedForRoadmap[k] = true;
+                    });
+                }
+
+            } else {
+
+                if(vm.portfoliosSelectedForRoadmap[portfolio._id]){
+                    vm.portfoliosSelectedForRoadmap[portfolio._id] = false;
+                } else {
+                    vm.portfoliosSelectedForRoadmap[portfolio._id] = true;
+                }
             }
-            vm.selectedProjectProfile = null;
-            vm.treeSelectionFlag = 'portfolio';
-            vm.selectedPortfolio = portfolio;
+
+        };
+
+        var createDefinitionRoadmap = function(){
+            var arrayOfPortfolioIds = _.keys(_.pick(vm.portfoliosSelectedForRoadmap, function(v, k){ return v; }));
             vm.definitionRoadmaps = _.filter(roadmaps, function(project){
-                return project.portfolio === portfolio._id;
+                return _.some(arrayOfPortfolioIds, function(portfolioId){
+                    if(portfolioId === 'unassigned' && project.portfolio === null){
+                        return true;
+                    } else {
+                        return project.portfolio === portfolioId;
+                    }
+                });
             });
         };
 
+        $scope.$watch(
+            function($scope){ return vm.portfoliosSelectedForRoadmap; },
+            function ( newValue, oldValue ) {
+                createDefinitionRoadmap();
+            }, true
+        );
+
+        vm.getPortfolioSelectionStatus = function(portfolio){
+            if(portfolio === 'all'){
+                return vm.portfoliosSelectedForRoadmap.all;
+            }
+            if(portfolio === 'unassigned'){
+                return vm.portfoliosSelectedForRoadmap.unassigned;
+            }
+          return vm.portfoliosSelectedForRoadmap[portfolio._id]; 
+        };
+
         // ------ PROJECT SELECTION -----------
+        
 
-        vm.projectProfileDetails = 'financial';
-
-        var modalProjectProfile = function (size, profile) {
+        var modalProjectProfile = function (size, project) {
 
             var modalInstance = $modal.open({
-                templateUrl: 'modules/evaluation-summaries/views/project-profile.client.view.html',
-                controller: function ($scope, $modalInstance, profile) {
+                templateUrl: 'modules/roadmaps/views/project-details.client.view.html',
+                controller: function ($scope, $modalInstance, project) {
 
-                    $scope.profile = profile;
+                    $scope.selectedProject = project;
 
                     $scope.cancelModal = function () {
                         $modalInstance.dismiss();
@@ -124,8 +176,8 @@ angular.module('roadmaps').controller('RoadmapsController', ['$rootScope', '$sco
                 },
                 size: size,
                 resolve: {
-                    profile: function () {
-                        return profile;
+                    project: function () {
+                        return project;
                     }
                 },
                 backdrop: 'static',
@@ -134,8 +186,8 @@ angular.module('roadmaps').controller('RoadmapsController', ['$rootScope', '$sco
 
         };
 
-        vm.selectProjectProfile = function(profile){
-            modalProjectProfile('lg', profile);
+        vm.selectProjectProfile = function(project){
+            modalProjectProfile('lg', project);
         };
 
 
