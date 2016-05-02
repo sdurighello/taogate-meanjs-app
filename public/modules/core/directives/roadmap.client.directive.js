@@ -17,7 +17,7 @@ angular.module('core').directive('roadmap', ['d3', '_', '$parse',
                 var data = parseData(scope);
 
                 var margin = {top: 20, right: 20, left: 20},
-                    width = 960 - margin.left - margin.right,
+                    width = 710 - margin.left - margin.right,
                     barHeight = 20;
 
                 var x, xAxis, setChartParameters,
@@ -34,8 +34,8 @@ angular.module('core').directive('roadmap', ['d3', '_', '$parse',
                 setChartParameters = function(){
 
                     x = d3.time.scale()
-                        .domain([d3.min(data, function(d){return d.start;}), d3.max(data, function(d){return d.end;}) ])
-                        .range([0, width-(margin.left + margin.right)]);
+                        .domain([d3.min(data, function(d){return new Date(d.identification.reqStartDate);}), d3.max(data, function(d){return new Date(d.identification.reqEndDate);}) ])
+                        .range([0, width-(1.5*margin.left + 1.5*margin.right)]);
 
                     xAxis = d3.svg.axis()
                         .scale(x)
@@ -73,35 +73,33 @@ angular.module('core').directive('roadmap', ['d3', '_', '$parse',
                         .call(xAxis)
                         .attr('transform', 'translate(' + margin.left + ',' + 0 + ')');
 
-
                     var bar = chart.selectAll('.bar')
                         .data(data, function(d){
                             return d._id;
                         })
                         .enter().append('g')
                         .attr('class', 'bar')
-                        .attr('transform', function(d, i) { return 'translate('+ (x(d.start) + margin.left) +',' + ((i * barHeight) + margin.top) + ')'; });
-
+                        .attr('transform', function(d, i) { return 'translate('+ (x(new Date(d.identification.reqStartDate)) + margin.left) +',' + ((i * barHeight) + margin.top) + ')'; });
 
                     bar.append('rect')
-                        .attr('width', function(d){ return x(d.end) - x(d.start);})
+                        .attr('width', function(d){ return x(new Date(d.identification.reqEndDate)) - x(new Date(d.identification.reqStartDate));})
                         .attr('height', barHeight - 1)
                         .on('mouseover', function(d) { onMouseover(this, d); })
                         .on('mouseout', function(d) { onMouseout(this, d); })
                         .on('click', function(d){ onClick(this, d); });
 
                     bar.append('text')
-                        .attr('x', function(d) { return (x(d.end) - x(d.start))/3; })
+                        .attr('x', function(d) { return (x(new Date(d.identification.reqEndDate)) - x(new Date(d.identification.reqStartDate)))/3; })
                         .attr('y', barHeight / 2)
                         .attr('dy', '.35em')
-                        .text(function(d) { return d.name; })
+                        .text(function(d) { return d.identification.name; })
                         .on('mouseover', function(d) { onMouseover(this, d); })
                         .on('mouseout', function(d) { onMouseout(this, d); })
                         .on('click', function(d){ onClick(this, d); });
 
                     // Tooltip
                     bar.append('title')
-                        .text(function(d){ return d.name; });
+                        .text(function(d){ return d.identification.name; });
 
                 };
 
@@ -127,44 +125,44 @@ angular.module('core').directive('roadmap', ['d3', '_', '$parse',
                     // Redraw the ones not changed
 
                     newBars
-                        .attr('transform', function(d, i) { return 'translate('+ (x(d.start) + margin.left) +',' + ((i * barHeight) + margin.top) + ')'; });
+                        .transition().duration(1000)
+                        .attr('transform', function(d, i) { return 'translate('+ (x(new Date(d.identification.reqStartDate)) + margin.left) +',' + ((i * barHeight) + margin.top) + ')'; });
 
                     newBars.selectAll('rect')
-                        .attr('width', function(d){ return x(d.end) - x(d.start);});
+                        .attr('width', function(d){ return x(new Date(d.identification.reqEndDate)) - x(new Date(d.identification.reqStartDate));});
 
                     newBars.selectAll('text')
-                        .attr('x', function(d) { return (x(d.end) - x(d.start))/3; });
+                        .attr('x', function(d) { return (x(new Date(d.identification.reqEndDate)) - x(new Date(d.identification.reqStartDate)))/3; });
 
 
                     // Draw the ones added
 
                     var newAppendedBar = newBars.enter().append('g')
                         .attr('class', 'bar')
-                        .attr('transform', function(d, i) { return 'translate('+ (x(d.start) + margin.left) +',' + ((i * barHeight) + margin.top) + ')'; });
+                        .attr('transform', function(d, i) { return 'translate('+ (x(new Date(d.identification.reqStartDate)) + margin.left) +',' + ((i * barHeight) + margin.top) + ')'; });
 
                     newAppendedBar.append('rect')
-                        .attr('width', function(d){ return x(d.end) - x(d.start);})
+                        .attr('width', function(d){ return x(new Date(d.identification.reqEndDate)) - x(new Date(d.identification.reqStartDate));})
                         .attr('height', barHeight - 1)
                         .on('mouseover', function(d) { onMouseover(this, d); })
                         .on('mouseout', function(d) { onMouseout(this, d); })
                         .on('click', function(d){ onClick(this, d); });
 
                     newAppendedBar.append('text')
-                        .attr('x', function(d) { return (x(d.end) - x(d.start))/3; })
+                        .attr('x', function(d) { return (x(new Date(d.identification.reqEndDate)) - x(new Date(d.identification.reqStartDate)))/3; })
                         .attr('y', barHeight / 2)
                         .attr('dy', '.35em')
-                        .text(function(d) { return d.name; })
+                        .text(function(d) { return d.identification.name; })
                         .on('mouseover', function(d) { onMouseover(this, d); })
                         .on('mouseout', function(d) { onMouseout(this, d); })
                         .on('click', function(d){ onClick(this, d); });
 
                     newAppendedBar.append('title')
-                        .text(function(d){ return d.name; });
+                        .text(function(d){ return d.identification.name; });
 
                     // Remove the ones removed
 
                     var newRemovedBar = newBars.exit().remove();
-
 
                 };
 
