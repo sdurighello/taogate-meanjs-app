@@ -91,395 +91,474 @@
 			</div>
 		</div>
         <div class="col-md-8">
-            <div class="row" data-ng-show="showNewDependencyForm">
-                <div class="col-md-12">
-                    <div class="panel panel-default">
-                        <div class="panel-heading">
-                            <h6 class="panel-title text-center">Add new dependency</h6>
-                        </div>
-                        <div class="panel-body" style="min-height: 477px;  max-height: 477px; overflow-y: auto;">
-                            <form class="form" novalidate name="newDependencyForm">
-                                <fieldset>
-                                    <div class="row">
-                                        <div class="form-group-sm col-md-8">
-                                            <label for="dependencyName">Dependency name</label>
-                                            <input id="dependencyName" type="text" class="form-control" placeholder="Enter name"
-                                                   data-ng-model="newDependency.name" required>
-                                        </div>
-                                    </div>
-                                    <br>
-                                    <div class="row">
-                                        <div class=" form-group col-md-6">
-                                            <label for="selectSourcePortfolio">Source</label>
-                                            <select id="selectSourcePortfolio" class="form-control input-sm" data-ng-model="filterDependencyNew.sourcePortfolio"
-                                                    data-ng-options="portfolio._id as portfolio.name for portfolio in portfolios">
-                                                <option value="">--source portfolio</option>
-                                            </select>
-                                        </div>
-                                        <div class=" form-group col-md-6">
-                                            <label for="selectTargetPortfolio">Target</label>
-                                            <select id="selectTargetPortfolio" class="form-control input-sm" data-ng-model="filterDependencyNew.targetPortfolio"
-                                                    data-ng-options="portfolio._id as portfolio.name for portfolio in portfolios">
-                                                <option value="">--target portfolio</option>
-                                            </select>
-                                        </div>
-                                    </div>
-                                    <div class="row">
-                                        <div class="form-group-sm col-md-6">
-                                            <select id="sourceNew" class="form-control" data-ng-model = "newDependency.source"
-                                                    data-ng-options="project._id as project.identification.name for project in projects | filter: project.portfolio = filterDependencyNew.sourcePortfolio"
-                                                    required>
-                                                <option value="">--source project</option>
-                                            </select>
-                                        </div>
-                                        <div class="form-group-sm col-md-6">
-                                            <select id="sourceNew" class="form-control" data-ng-model = "newDependency.target"
-                                                    data-ng-options="project._id as project.identification.name for project in projects | filter: project.portfolio = filterDependencyNew.targetPortfolio"
-                                                    required>
-                                                <option value="">--target project</option>
-                                            </select>
-                                        </div>
-                                    </div>
-                                    <br>
-                                    <div class="row">
-                                        <div class="form-group-sm col-md-4">
-                                            <label for="typeNew">Type</label>
-                                            <select id="typeNew" class="form-control" data-ng-model = "newDependency.type"
-                                                    data-ng-options="type._id as type.name for type in dependencyTypes">
-                                                <option value="">--choose type</option>
-                                            </select>
-                                        </div>
-                                        <div class="form-group-sm col-md-4">
-                                            <label for="impactNew">Impact</label>
-                                            <select id="impactNew" class="form-control" data-ng-model = "newDependency.impact"
-                                                    data-ng-options="impact._id as impact.name for impact in dependencyImpacts">
-                                                <option value="">--choose impact</option>
-                                            </select>
-                                        </div>
-                                        <div class="form-group-sm col-md-4">
-                                            <label for="typeNew">State</label>
-                                            <select id="typeNew" class="form-control" data-ng-model = "newDependency.state"
-                                                    data-ng-options="state._id as state.name for state in dependencyStates">
-                                                <option value="">--choose state</option>
-                                            </select>
-                                        </div>
-                                    </div>
-                                    <br>
-                                    <div class="row">
-                                        <div class="form-group-sm col-md-12">
-                                            <label for="dependencyDescription">Description</label>
-                                            <textarea id="dependencyDescription" class="form-control" placeholder="Enter description" data-ng-model="newDependency.description"></textarea>
-                                        </div>
-                                    </div>
-                                    <hr>
-                                    <div class="row">
-                                        <div class="col-md-12 form-group">
-                                            <div class="pull-right">
-                                                <button class="btn btn-success btn-sm" data-ng-click="createDependency(); showNewDependencyForm = false;"
-                                                        data-ng-disabled="newDependencyForm.$invalid">
-                                                    Save
-                                                </button>
-                                                <button class="btn btn-info btn-sm" data-ng-click="cancelNewDependency(); showNewDependencyForm = false;">
-                                                    Cancel
-                                                </button>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </fieldset>
-                            </form>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="row" data-ng-show="!showNewDependencyForm">
-                <div class="col-md-12">
-                    <div class="row" data-ng-show="!showNewDependencyForm && userHasAuthorization('new', user)">
-                        <div class="col-md-12 form-group-sm center-block">
-                            <button class="btn btn-warning btn-sm" ng-click="showNewDependencyForm = true">
-                                New dependency
-                            </button>
-                        </div>
-                    </div>
-                    <br>
-                    <div class="row">
-                        <div class="col-md-12">
-                            <div data-ng-hide="selectedDependency || dependencies.length === 0" class="alert alert-warning text-center">
-                                Select a dependency to see its details
-                            </div>
-                            <div class="row" data-ng-show="selectedDependency">
-                                <div class="col-md-12">
-                                    <div class="panel panel-default">
-                                        <div class="panel-heading">
-                                            <div class="row">
-                                                <div class="col-md-12 text-center">
-                                                    <b><em>{{selectedDependency.name}}</em></b>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="row">
-                                            <div class="col-md-6 btn-group btn-group-xs btn-group-justified">
-                                                <label class="btn btn-info btn-xs" data-ng-model="projectDependencyDetails" btn-radio="'header'">
-                                                    Header
-                                                </label>
-                                                <label class="btn btn-info btn-xs" data-ng-model="projectDependencyDetails" btn-radio="'status'">
-                                                    Status
-                                                </label>
-                                            </div>
-                                        </div>
-                                        <div class="panel-body" style="min-height: 400px; max-height: 400px; overflow-y: auto">
-                                            <div data-ng-show="projectDependencyDetails === 'header'">
-                                                <div data-ng-switch="switchHeaderForm[selectedDependency._id]">
-                                                    <form data-ng-switch-default="view">
-                                                        <div class="row">
-                                                            <div class="form-group-sm col-md-9">
-                                                                <label for="dependencyName">Dependency name</label>
-                                                                <input id="dependencyName" type="text" class="form-control" placeholder="Enter name"
-                                                                       ng-model="selectedDependency.name" disabled>
-                                                            </div>
-                                                        </div>
-                                                        <br>
-                                                        <div class="row">
-                                                            <div class="form-group-sm col-md-6">
-                                                                <label for="sourceNew">Source</label>
-                                                                <select id="sourceNew" class="form-control" data-ng-model = "selectedDependency.source"
-                                                                        ng-options="project as project.identification.name for project in projects track by project._id" disabled>
-                                                                </select>
-                                                            </div>
-                                                            <div class="form-group-sm col-md-6">
-                                                                <label for="sourceNew">Target</label>
-                                                                <select id="sourceNew" class="form-control" data-ng-model = "selectedDependency.target"
-                                                                        ng-options="project as project.identification.name for project in projects track by project._id" disabled>
-                                                                </select>
-                                                            </div>
-                                                        </div>
-                                                        <br>
-                                                        <div class="row">
-                                                            <div class="form-group-sm col-md-4">
-                                                                <label for="typeNew">Type</label>
-                                                                <select id="typeNew" class="form-control" data-ng-model = "selectedDependency.type"
-                                                                        data-ng-options="type._id as type.name for type in dependencyTypes" disabled>
-                                                                </select>
-                                                            </div>
-                                                            <div class="form-group-sm col-md-4">
-                                                                <label for="impactNew">Impact</label>
-                                                                <select id="impactNew" class="form-control" data-ng-model = "selectedDependency.impact"
-                                                                        data-ng-options="impact._id as impact.name for impact in dependencyImpacts" disabled>
-                                                                </select>
-                                                            </div>
-                                                            <div class="form-group-sm col-md-4">
-                                                                <label for="typeNew">State</label>
-                                                                <select id="typeNew" class="form-control" data-ng-model = "selectedDependency.state"
-                                                                        data-ng-options="state._id as state.name for state in dependencyStates" disabled>
-                                                                </select>
-                                                            </div>
-                                                        </div>
-                                                        <br>
-                                                        <div class="row">
-                                                            <div class="form-group-sm col-md-12">
-                                                                <label for="dependencyDescription">Description</label>
-                                                                <textarea id="dependencyDescription" class="form-control" placeholder="Enter description" data-ng-model="selectedDependency.description" disabled></textarea>
-                                                            </div>
-                                                        </div>
-                                                        <hr>
-                                                        <div class="form-group-sm pull-right" data-ng-show="userHasAuthorization('edit', user, selectedDependency) && !selectedDependency.final">
-                                                            <button class="btn btn-success btn-xs" data-ng-click="editHeader(selectedDependency)">
-                                                                Edit
-                                                            </button>
-                                                        </div>
-                                                    </form>
-                                                    <form data-ng-switch-when="edit" name="editDependencyForm">
-                                                        <div class="row">
-                                                            <div class="form-group-sm col-md-9">
-                                                                <label for="dependencyName">Dependency name</label>
-                                                                <input id="dependencyName" type="text" class="form-control" placeholder="Enter name"
-                                                                       ng-model="selectedDependency.name" required>
-                                                            </div>
-                                                        </div>
-                                                        <br>
-                                                        <div class="row">
-                                                            <div class="form-group-sm col-md-6">
-                                                                <label for="sourceNew">Source</label>
-                                                                <select id="sourceNew" class="form-control" data-ng-model = "selectedDependency.source"
-                                                                        ng-options="project as project.identification.name for project in projects track by project._id" required>
-                                                                    <option value="">--choose project</option>
-                                                                </select>
-                                                            </div>
-                                                            <div class="form-group-sm col-md-6">
-                                                                <label for="sourceNew">Target</label>
-                                                                <select id="sourceNew" class="form-control" data-ng-model = "selectedDependency.target"
-                                                                        ng-options="project as project.identification.name for project in projects track by project._id" required>
-                                                                    <option value="">--choose project</option>
-                                                                </select>
-                                                            </div>
-                                                        </div>
-                                                        <br>
-                                                        <div class="row">
-                                                            <div class="form-group-sm col-md-4">
-                                                                <label for="typeNew">Type</label>
-                                                                <select id="typeNew" class="form-control" data-ng-model = "selectedDependency.type"
-                                                                        data-ng-options="type._id as type.name for type in dependencyTypes">
-                                                                    <option value="">--choose type</option>
-                                                                </select>
-                                                            </div>
-                                                            <div class="form-group-sm col-md-4">
-                                                                <label for="impactNew">Impact</label>
-                                                                <select id="impactNew" class="form-control" data-ng-model = "selectedDependency.impact"
-                                                                        data-ng-options="impact._id as impact.name for impact in dependencyImpacts">
-                                                                    <option value="">--choose impact</option>
-                                                                </select>
-                                                            </div>
-                                                            <div class="form-group-sm col-md-4">
-                                                                <label for="typeNew">State</label>
-                                                                <select id="typeNew" class="form-control" data-ng-model = "selectedDependency.state"
-                                                                        data-ng-options="state._id as state.name for state in dependencyStates">
-                                                                    <option value="">--choose state</option>
-                                                                </select>
-                                                            </div>
-                                                        </div>
-                                                        <br>
-                                                        <div class="row">
-                                                            <div class="form-group-sm col-md-12">
-                                                                <label for="dependencyDescription">Description</label>
-                                                                <textarea id="dependencyDescription" class="form-control" placeholder="Enter description" data-ng-model="selectedDependency.description"></textarea>
-                                                            </div>
-                                                        </div>
-                                                        <hr>
-                                                        <div class="form-group-sm pull-right">
-                                                            <button class="btn btn-success btn-xs" data-ng-click="saveEditHeader(selectedDependency)" data-ng-disabled="editDependencyForm.$invalid">
-                                                                Save
-                                                            </button>
-                                                            <button class="btn btn-danger btn-xs" data-ng-click="deleteDependency(selectedDependency)">
-                                                                Delete dependency
-                                                            </button>
-                                                            <button class="btn btn-info btn-xs" data-ng-click="cancelEditHeader(selectedDependency)">
-                                                                Cancel
-                                                            </button>
-                                                        </div>
-                                                    </form>
-                                                </div>
-                                            </div>
-                                            <div data-ng-show="projectDependencyDetails === 'status'">
-                                                <div data-ng-switch="switchStatusForm[selectedDependency._id]">
-                                                    <form data-ng-switch-default="view">
-                                                        <div class="row">
-                                                            <div class="form-group-sm col-md-4">
-                                                                <label for="">Baseline delivery date</label>
-                                                                <input type="text" id="" class="form-control" datepicker-popup="dd-MMMM-yyyy" data-ng-model="selectedDependency.statusReview.currentRecord.baselineDeliveryDate" disabled />
-                                                            </div>
-                                                            <div class="form-group-sm col-md-4">
-                                                                <label for="">Estimate delivery date</label>
-                                                                <input type="text" id="" class="form-control" datepicker-popup="dd-MMMM-yyyy" data-ng-model="selectedDependency.statusReview.currentRecord.estimateDeliveryDate" disabled />
-                                                            </div>
-                                                            <div class="form-group-sm col-md-4">
-                                                                <label for="">Actual delivery date</label>
-                                                                <input type="text" id="" class="form-control" datepicker-popup="dd-MMMM-yyyy" data-ng-model="selectedDependency.statusReview.currentRecord.actualDeliveryDate" disabled />
-                                                            </div>
-                                                        </div>
-                                                        <br>
-                                                        <div class="row">
-                                                            <div class="form-group-sm col-md-5">
-                                                                <label for="">Status</label>
-                                                                <select id="" class="form-control" data-ng-model = "selectedDependency.statusReview.currentRecord.status"
-                                                                        ng-options="status._id as status.name for status in logStatuses" disabled>
-                                                                </select>
-                                                            </div>
-                                                            <br>
-                                                            <div class="form-group-sm col-md-5">
-                                                                <label for="prjCrEditCompleted">Completed</label>
-                                                                <input id="prjCrEditCompleted" class="" type="checkbox"
-                                                                       data-ng-model="selectedDependency.statusReview.currentRecord.completed" disabled>
-                                                            </div>
-                                                        </div>
-                                                        <br>
-                                                        <div class="row">
-                                                            <div class="form-group-sm col-md-12">
-                                                                <label for="">Status comment</label>
-                                                                <textarea id="" class="form-control" data-ng-model="selectedDependency.statusReview.currentRecord.statusComment" disabled></textarea>
-                                                            </div>
-                                                        </div>
-                                                        <hr>
-                                                        <div class="pull-right" data-ng-show="userHasAuthorization('edit', user, selectedDependency)">
-                                                            <button class="btn btn-success btn-xs" data-ng-click="editStatus(selectedDependency)">
-                                                                Edit
-                                                            </button>
-                                                        </div>
-                                                    </form>
-                                                    <form data-ng-switch-when="edit">
-                                                        <div class="row">
-                                                            <div class="form-group-sm col-md-4">
-                                                                <label for="">Baseline delivery date</label>
-                                                                <div class="input-group">
-                                                                    <input type="text" id="" class="form-control" datepicker-popup="dd-MMMM-yyyy" data-ng-model="selectedDependency.statusReview.currentRecord.baselineDeliveryDate"
-                                                                           is-open="$parent.baselineDeliveryDateOpened[selectedDependency._id]" >
-                                                                            <span class="input-group-btn">
-                                                                                <button type="button" class="btn btn-default btn-sm" ng-click="openBaselineDeliveryDate(selectedDependency, $event)"><i class="glyphicon glyphicon-calendar"></i></button>
-                                                                            </span>
-                                                                </div>
-                                                            </div>
-                                                            <div class="form-group-sm col-md-4">
-                                                                <label for="">Estimate delivery date</label>
-                                                                <div class="input-group">
-                                                                    <input type="text" id="" class="form-control" datepicker-popup="dd-MMMM-yyyy" data-ng-model="selectedDependency.statusReview.currentRecord.estimateDeliveryDate"
-                                                                           is-open="$parent.estimateDeliveryDateOpened[selectedDependency._id]" >
-                                                                            <span class="input-group-btn">
-                                                                                <button type="button" class="btn btn-default btn-sm" ng-click="openEstimateDeliveryDate(selectedDependency, $event)"><i class="glyphicon glyphicon-calendar"></i></button>
-                                                                            </span>
-                                                                </div>
-                                                            </div>
-                                                            <div class="form-group-sm col-md-4">
-                                                                <label for="">Actual delivery date</label>
-                                                                <div class="input-group">
-                                                                    <input type="text" id="" class="form-control" datepicker-popup="dd-MMMM-yyyy" data-ng-model="selectedDependency.statusReview.currentRecord.actualDeliveryDate"
-                                                                           is-open="$parent.actualDeliveryDateOpened[selectedDependency._id]" >
-                                                                            <span class="input-group-btn">
-                                                                                <button type="button" class="btn btn-default btn-sm" ng-click="openActualDeliveryDate(selectedDependency, $event)"><i class="glyphicon glyphicon-calendar"></i></button>
-                                                                            </span>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                        <br>
-                                                        <div class="row">
-                                                            <div class="form-group-sm col-md-5">
-                                                                <label for="">Status</label>
-                                                                <select id="" class="form-control" data-ng-model = "selectedDependency.statusReview.currentRecord.status"
-                                                                        data-ng-options="status._id as status.name for status in logStatuses" >
-                                                                    <option value="">--choose status</option>
-                                                                </select>
-                                                            </div>
-                                                            <br>
-                                                            <div class="form-group-sm col-md-5">
-                                                                <label for="prjCrEditCompleted">Completed</label>
-                                                                <input id="prjCrEditCompleted" class="" type="checkbox"
-                                                                       data-ng-model="selectedDependency.statusReview.currentRecord.completed" >
-                                                            </div>
-                                                        </div>
-                                                        <br>
-                                                        <div class="row">
-                                                            <div class="form-group-sm col-md-12">
-                                                                <label for="">Status comment</label>
-                                                                <textarea id="" class="form-control" placeholder="Enter status comment" data-ng-model="selectedDependency.statusReview.currentRecord.statusComment" ></textarea>
-                                                            </div>
-                                                        </div>
-                                                        <hr>
-                                                        <div class="pull-right">
-                                                            <button class="btn btn-success btn-xs" data-ng-click="saveEditStatus(selectedDependency)">
-                                                                Save
-                                                            </button>
-                                                            <button class="btn btn-info btn-xs" data-ng-click="cancelEditStatus(selectedDependency)">
-                                                                Cancel
-                                                            </button>
-                                                        </div>
-                                                    </form>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            <graph data="dependencyData" select-node="selectNode" select-link="selectLink" width="600" height="700"></graph>
         </div>
     </div>
+
+    <!--<div class="row">-->
+        <!--<div class="col-sm-4">-->
+            <!--<div class="panel panel-default">-->
+                <!--<div class="panel-heading">-->
+                    <!--<h6 class="panel-title text-center">Dependencies</h6>-->
+                <!--</div>-->
+                <!--<div class="panel-body">-->
+                    <!--<div class="row">-->
+                        <!--<div class=" form-group col-md-6">-->
+                            <!--<label for="selectSourcePortfolio">Source</label>-->
+                            <!--<select id="selectSourcePortfolio" class="form-control input-sm" data-ng-model="filterDependency.sourcePortfolio"-->
+                                    <!--data-ng-options="portfolio._id as portfolio.name for portfolio in portfolios">-->
+                                <!--<option value="">&#45;&#45;portfolio</option>-->
+                            <!--</select>-->
+                        <!--</div>-->
+                        <!--<div class=" form-group col-md-6">-->
+                            <!--<label for="selectTargetPortfolio">Target</label>-->
+                            <!--<select id="selectTargetPortfolio" class="form-control input-sm" data-ng-model="filterDependency.targetPortfolio"-->
+                                    <!--data-ng-options="portfolio._id as portfolio.name for portfolio in portfolios">-->
+                                <!--<option value="">&#45;&#45;portfolio</option>-->
+                            <!--</select>-->
+                        <!--</div>-->
+                    <!--</div>-->
+                    <!--<div class="row">-->
+                        <!--<div class="form-group col-md-6">-->
+                            <!--<select id="selectSourceProject" class="form-control input-sm" data-ng-model="filterDependency.source"-->
+                                    <!--data-ng-options="project._id as project.identification.name for project in projects | filter: project.portfolio = filterDependency.sourcePortfolio">-->
+                                <!--<option value="">&#45;&#45;project</option>-->
+                            <!--</select>-->
+                        <!--</div>-->
+                        <!--<div class="form-group col-md-6">-->
+                            <!--<select id="selectTargetProject" class="form-control input-sm" data-ng-model="filterDependency.target"-->
+                                    <!--data-ng-options="project._id as project.identification.name for project in projects | filter: project.portfolio = filterDependency.targetPortfolio">-->
+                                <!--<option value="">&#45;&#45;project</option>-->
+                            <!--</select>-->
+                        <!--</div>-->
+                    <!--</div>-->
+                    <!--<div class="row">-->
+                        <!--<div class="form-group col-md-6">-->
+                            <!--<label for="type">Type</label>-->
+                            <!--<select id="type" class="form-control input-sm" data-ng-model = "filterDependency.type"-->
+                                    <!--data-ng-options="type._id as type.name for type in dependencyTypes">-->
+                                <!--<option value="">&#45;&#45;type</option>-->
+                            <!--</select>-->
+                        <!--</div>-->
+                        <!--<div class="form-group col-md-6">-->
+                            <!--<label for="type">State</label>-->
+                            <!--<select id="type" class="form-control input-sm" data-ng-model = "filterDependency.state"-->
+                                    <!--data-ng-options="state._id as state.name for state in dependencyStates">-->
+                                <!--<option value="">&#45;&#45;state</option>-->
+                            <!--</select>-->
+                        <!--</div>-->
+                    <!--</div>-->
+                    <!--<hr style="margin-top: 2%">-->
+                    <!--<div class="row">-->
+                        <!--<div class="col-md-12">-->
+                            <!--<div data-ng-show="dependencies.length === 0" class="alert alert-warning text-center">-->
+                                <!--There are no dependencies-->
+                            <!--</div>-->
+                        <!--</div>-->
+                    <!--</div>-->
+                    <!--<div class="row" style="min-height: 235px; max-height: 235px; overflow-y: auto">-->
+                        <!--<div class="col-md-12">-->
+                            <!--<button type="button" ng-repeat="dependency in dependencies" data-ng-click="selectDependency(dependency)"-->
+                                    <!--class="btn btn-sm center-block btn-block" style="overflow: hidden;"-->
+                                    <!--data-ng-class="{'btn-default' : dependency.statusReview.currentRecord.completed, 'btn-info' : !dependency.statusReview.currentRecord.completed}">-->
+                                <!--{{dependency.name}}-->
+                            <!--</button>-->
+                        <!--</div>-->
+                    <!--</div>-->
+                <!--</div>-->
+            <!--</div>-->
+        <!--</div>-->
+        <!--<div class="col-md-8">-->
+            <!--<div class="row" data-ng-show="showNewDependencyForm">-->
+                <!--<div class="col-md-12">-->
+                    <!--<div class="panel panel-default">-->
+                        <!--<div class="panel-heading">-->
+                            <!--<h6 class="panel-title text-center">Add new dependency</h6>-->
+                        <!--</div>-->
+                        <!--<div class="panel-body" style="min-height: 477px;  max-height: 477px; overflow-y: auto;">-->
+                            <!--<form class="form" novalidate name="newDependencyForm">-->
+                                <!--<fieldset>-->
+                                    <!--<div class="row">-->
+                                        <!--<div class="form-group-sm col-md-8">-->
+                                            <!--<label for="dependencyName">Dependency name</label>-->
+                                            <!--<input id="dependencyName" type="text" class="form-control" placeholder="Enter name"-->
+                                                   <!--data-ng-model="newDependency.name" required>-->
+                                        <!--</div>-->
+                                    <!--</div>-->
+                                    <!--<br>-->
+                                    <!--<div class="row">-->
+                                        <!--<div class=" form-group col-md-6">-->
+                                            <!--<label for="selectSourcePortfolio">Source</label>-->
+                                            <!--<select id="selectSourcePortfolio" class="form-control input-sm" data-ng-model="filterDependencyNew.sourcePortfolio"-->
+                                                    <!--data-ng-options="portfolio._id as portfolio.name for portfolio in portfolios">-->
+                                                <!--<option value="">&#45;&#45;source portfolio</option>-->
+                                            <!--</select>-->
+                                        <!--</div>-->
+                                        <!--<div class=" form-group col-md-6">-->
+                                            <!--<label for="selectTargetPortfolio">Target</label>-->
+                                            <!--<select id="selectTargetPortfolio" class="form-control input-sm" data-ng-model="filterDependencyNew.targetPortfolio"-->
+                                                    <!--data-ng-options="portfolio._id as portfolio.name for portfolio in portfolios">-->
+                                                <!--<option value="">&#45;&#45;target portfolio</option>-->
+                                            <!--</select>-->
+                                        <!--</div>-->
+                                    <!--</div>-->
+                                    <!--<div class="row">-->
+                                        <!--<div class="form-group-sm col-md-6">-->
+                                            <!--<select id="sourceNew" class="form-control" data-ng-model = "newDependency.source"-->
+                                                    <!--data-ng-options="project._id as project.identification.name for project in projects | filter: project.portfolio = filterDependencyNew.sourcePortfolio"-->
+                                                    <!--required>-->
+                                                <!--<option value="">&#45;&#45;source project</option>-->
+                                            <!--</select>-->
+                                        <!--</div>-->
+                                        <!--<div class="form-group-sm col-md-6">-->
+                                            <!--<select id="sourceNew" class="form-control" data-ng-model = "newDependency.target"-->
+                                                    <!--data-ng-options="project._id as project.identification.name for project in projects | filter: project.portfolio = filterDependencyNew.targetPortfolio"-->
+                                                    <!--required>-->
+                                                <!--<option value="">&#45;&#45;target project</option>-->
+                                            <!--</select>-->
+                                        <!--</div>-->
+                                    <!--</div>-->
+                                    <!--<br>-->
+                                    <!--<div class="row">-->
+                                        <!--<div class="form-group-sm col-md-4">-->
+                                            <!--<label for="typeNew">Type</label>-->
+                                            <!--<select id="typeNew" class="form-control" data-ng-model = "newDependency.type"-->
+                                                    <!--data-ng-options="type._id as type.name for type in dependencyTypes">-->
+                                                <!--<option value="">&#45;&#45;choose type</option>-->
+                                            <!--</select>-->
+                                        <!--</div>-->
+                                        <!--<div class="form-group-sm col-md-4">-->
+                                            <!--<label for="impactNew">Impact</label>-->
+                                            <!--<select id="impactNew" class="form-control" data-ng-model = "newDependency.impact"-->
+                                                    <!--data-ng-options="impact._id as impact.name for impact in dependencyImpacts">-->
+                                                <!--<option value="">&#45;&#45;choose impact</option>-->
+                                            <!--</select>-->
+                                        <!--</div>-->
+                                        <!--<div class="form-group-sm col-md-4">-->
+                                            <!--<label for="typeNew">State</label>-->
+                                            <!--<select id="typeNew" class="form-control" data-ng-model = "newDependency.state"-->
+                                                    <!--data-ng-options="state._id as state.name for state in dependencyStates">-->
+                                                <!--<option value="">&#45;&#45;choose state</option>-->
+                                            <!--</select>-->
+                                        <!--</div>-->
+                                    <!--</div>-->
+                                    <!--<br>-->
+                                    <!--<div class="row">-->
+                                        <!--<div class="form-group-sm col-md-12">-->
+                                            <!--<label for="dependencyDescription">Description</label>-->
+                                            <!--<textarea id="dependencyDescription" class="form-control" placeholder="Enter description" data-ng-model="newDependency.description"></textarea>-->
+                                        <!--</div>-->
+                                    <!--</div>-->
+                                    <!--<hr>-->
+                                    <!--<div class="row">-->
+                                        <!--<div class="col-md-12 form-group">-->
+                                            <!--<div class="pull-right">-->
+                                                <!--<button class="btn btn-success btn-sm" data-ng-click="createDependency(); showNewDependencyForm = false;"-->
+                                                        <!--data-ng-disabled="newDependencyForm.$invalid">-->
+                                                    <!--Save-->
+                                                <!--</button>-->
+                                                <!--<button class="btn btn-info btn-sm" data-ng-click="cancelNewDependency(); showNewDependencyForm = false;">-->
+                                                    <!--Cancel-->
+                                                <!--</button>-->
+                                            <!--</div>-->
+                                        <!--</div>-->
+                                    <!--</div>-->
+                                <!--</fieldset>-->
+                            <!--</form>-->
+                        <!--</div>-->
+                    <!--</div>-->
+                <!--</div>-->
+            <!--</div>-->
+            <!--<div class="row" data-ng-show="!showNewDependencyForm">-->
+                <!--<div class="col-md-12">-->
+                    <!--<div class="row" data-ng-show="!showNewDependencyForm && userHasAuthorization('new', user)">-->
+                        <!--<div class="col-md-12 form-group-sm center-block">-->
+                            <!--<button class="btn btn-warning btn-sm" ng-click="showNewDependencyForm = true">-->
+                                <!--New dependency-->
+                            <!--</button>-->
+                        <!--</div>-->
+                    <!--</div>-->
+                    <!--<br>-->
+                    <!--<div class="row">-->
+                        <!--<div class="col-md-12">-->
+                            <!--<div data-ng-hide="selectedDependency || dependencies.length === 0" class="alert alert-warning text-center">-->
+                                <!--Select a dependency to see its details-->
+                            <!--</div>-->
+                            <!--<div class="row" data-ng-show="selectedDependency">-->
+                                <!--<div class="col-md-12">-->
+                                    <!--<div class="panel panel-default">-->
+                                        <!--<div class="panel-heading">-->
+                                            <!--<div class="row">-->
+                                                <!--<div class="col-md-12 text-center">-->
+                                                    <!--<b><em>{{selectedDependency.name}}</em></b>-->
+                                                <!--</div>-->
+                                            <!--</div>-->
+                                        <!--</div>-->
+                                        <!--<div class="row">-->
+                                            <!--<div class="col-md-6 btn-group btn-group-xs btn-group-justified">-->
+                                                <!--<label class="btn btn-info btn-xs" data-ng-model="projectDependencyDetails" btn-radio="'header'">-->
+                                                    <!--Header-->
+                                                <!--</label>-->
+                                                <!--<label class="btn btn-info btn-xs" data-ng-model="projectDependencyDetails" btn-radio="'status'">-->
+                                                    <!--Status-->
+                                                <!--</label>-->
+                                            <!--</div>-->
+                                        <!--</div>-->
+                                        <!--<div class="panel-body" style="min-height: 400px; max-height: 400px; overflow-y: auto">-->
+                                            <!--<div data-ng-show="projectDependencyDetails === 'header'">-->
+                                                <!--<div data-ng-switch="switchHeaderForm[selectedDependency._id]">-->
+                                                    <!--<form data-ng-switch-default="view">-->
+                                                        <!--<div class="row">-->
+                                                            <!--<div class="form-group-sm col-md-9">-->
+                                                                <!--<label for="dependencyName">Dependency name</label>-->
+                                                                <!--<input id="dependencyName" type="text" class="form-control" placeholder="Enter name"-->
+                                                                       <!--ng-model="selectedDependency.name" disabled>-->
+                                                            <!--</div>-->
+                                                        <!--</div>-->
+                                                        <!--<br>-->
+                                                        <!--<div class="row">-->
+                                                            <!--<div class="form-group-sm col-md-6">-->
+                                                                <!--<label for="sourceNew">Source</label>-->
+                                                                <!--<select id="sourceNew" class="form-control" data-ng-model = "selectedDependency.source"-->
+                                                                        <!--ng-options="project as project.identification.name for project in projects track by project._id" disabled>-->
+                                                                <!--</select>-->
+                                                            <!--</div>-->
+                                                            <!--<div class="form-group-sm col-md-6">-->
+                                                                <!--<label for="sourceNew">Target</label>-->
+                                                                <!--<select id="sourceNew" class="form-control" data-ng-model = "selectedDependency.target"-->
+                                                                        <!--ng-options="project as project.identification.name for project in projects track by project._id" disabled>-->
+                                                                <!--</select>-->
+                                                            <!--</div>-->
+                                                        <!--</div>-->
+                                                        <!--<br>-->
+                                                        <!--<div class="row">-->
+                                                            <!--<div class="form-group-sm col-md-4">-->
+                                                                <!--<label for="typeNew">Type</label>-->
+                                                                <!--<select id="typeNew" class="form-control" data-ng-model = "selectedDependency.type"-->
+                                                                        <!--data-ng-options="type._id as type.name for type in dependencyTypes" disabled>-->
+                                                                <!--</select>-->
+                                                            <!--</div>-->
+                                                            <!--<div class="form-group-sm col-md-4">-->
+                                                                <!--<label for="impactNew">Impact</label>-->
+                                                                <!--<select id="impactNew" class="form-control" data-ng-model = "selectedDependency.impact"-->
+                                                                        <!--data-ng-options="impact._id as impact.name for impact in dependencyImpacts" disabled>-->
+                                                                <!--</select>-->
+                                                            <!--</div>-->
+                                                            <!--<div class="form-group-sm col-md-4">-->
+                                                                <!--<label for="typeNew">State</label>-->
+                                                                <!--<select id="typeNew" class="form-control" data-ng-model = "selectedDependency.state"-->
+                                                                        <!--data-ng-options="state._id as state.name for state in dependencyStates" disabled>-->
+                                                                <!--</select>-->
+                                                            <!--</div>-->
+                                                        <!--</div>-->
+                                                        <!--<br>-->
+                                                        <!--<div class="row">-->
+                                                            <!--<div class="form-group-sm col-md-12">-->
+                                                                <!--<label for="dependencyDescription">Description</label>-->
+                                                                <!--<textarea id="dependencyDescription" class="form-control" placeholder="Enter description" data-ng-model="selectedDependency.description" disabled></textarea>-->
+                                                            <!--</div>-->
+                                                        <!--</div>-->
+                                                        <!--<hr>-->
+                                                        <!--<div class="form-group-sm pull-right" data-ng-show="userHasAuthorization('edit', user, selectedDependency) && !selectedDependency.final">-->
+                                                            <!--<button class="btn btn-success btn-xs" data-ng-click="editHeader(selectedDependency)">-->
+                                                                <!--Edit-->
+                                                            <!--</button>-->
+                                                        <!--</div>-->
+                                                    <!--</form>-->
+                                                    <!--<form data-ng-switch-when="edit" name="editDependencyForm">-->
+                                                        <!--<div class="row">-->
+                                                            <!--<div class="form-group-sm col-md-9">-->
+                                                                <!--<label for="dependencyName">Dependency name</label>-->
+                                                                <!--<input id="dependencyName" type="text" class="form-control" placeholder="Enter name"-->
+                                                                       <!--ng-model="selectedDependency.name" required>-->
+                                                            <!--</div>-->
+                                                        <!--</div>-->
+                                                        <!--<br>-->
+                                                        <!--<div class="row">-->
+                                                            <!--<div class="form-group-sm col-md-6">-->
+                                                                <!--<label for="sourceNew">Source</label>-->
+                                                                <!--<select id="sourceNew" class="form-control" data-ng-model = "selectedDependency.source"-->
+                                                                        <!--ng-options="project as project.identification.name for project in projects track by project._id" required>-->
+                                                                    <!--<option value="">&#45;&#45;choose project</option>-->
+                                                                <!--</select>-->
+                                                            <!--</div>-->
+                                                            <!--<div class="form-group-sm col-md-6">-->
+                                                                <!--<label for="sourceNew">Target</label>-->
+                                                                <!--<select id="sourceNew" class="form-control" data-ng-model = "selectedDependency.target"-->
+                                                                        <!--ng-options="project as project.identification.name for project in projects track by project._id" required>-->
+                                                                    <!--<option value="">&#45;&#45;choose project</option>-->
+                                                                <!--</select>-->
+                                                            <!--</div>-->
+                                                        <!--</div>-->
+                                                        <!--<br>-->
+                                                        <!--<div class="row">-->
+                                                            <!--<div class="form-group-sm col-md-4">-->
+                                                                <!--<label for="typeNew">Type</label>-->
+                                                                <!--<select id="typeNew" class="form-control" data-ng-model = "selectedDependency.type"-->
+                                                                        <!--data-ng-options="type._id as type.name for type in dependencyTypes">-->
+                                                                    <!--<option value="">&#45;&#45;choose type</option>-->
+                                                                <!--</select>-->
+                                                            <!--</div>-->
+                                                            <!--<div class="form-group-sm col-md-4">-->
+                                                                <!--<label for="impactNew">Impact</label>-->
+                                                                <!--<select id="impactNew" class="form-control" data-ng-model = "selectedDependency.impact"-->
+                                                                        <!--data-ng-options="impact._id as impact.name for impact in dependencyImpacts">-->
+                                                                    <!--<option value="">&#45;&#45;choose impact</option>-->
+                                                                <!--</select>-->
+                                                            <!--</div>-->
+                                                            <!--<div class="form-group-sm col-md-4">-->
+                                                                <!--<label for="typeNew">State</label>-->
+                                                                <!--<select id="typeNew" class="form-control" data-ng-model = "selectedDependency.state"-->
+                                                                        <!--data-ng-options="state._id as state.name for state in dependencyStates">-->
+                                                                    <!--<option value="">&#45;&#45;choose state</option>-->
+                                                                <!--</select>-->
+                                                            <!--</div>-->
+                                                        <!--</div>-->
+                                                        <!--<br>-->
+                                                        <!--<div class="row">-->
+                                                            <!--<div class="form-group-sm col-md-12">-->
+                                                                <!--<label for="dependencyDescription">Description</label>-->
+                                                                <!--<textarea id="dependencyDescription" class="form-control" placeholder="Enter description" data-ng-model="selectedDependency.description"></textarea>-->
+                                                            <!--</div>-->
+                                                        <!--</div>-->
+                                                        <!--<hr>-->
+                                                        <!--<div class="form-group-sm pull-right">-->
+                                                            <!--<button class="btn btn-success btn-xs" data-ng-click="saveEditHeader(selectedDependency)" data-ng-disabled="editDependencyForm.$invalid">-->
+                                                                <!--Save-->
+                                                            <!--</button>-->
+                                                            <!--<button class="btn btn-danger btn-xs" data-ng-click="deleteDependency(selectedDependency)">-->
+                                                                <!--Delete dependency-->
+                                                            <!--</button>-->
+                                                            <!--<button class="btn btn-info btn-xs" data-ng-click="cancelEditHeader(selectedDependency)">-->
+                                                                <!--Cancel-->
+                                                            <!--</button>-->
+                                                        <!--</div>-->
+                                                    <!--</form>-->
+                                                <!--</div>-->
+                                            <!--</div>-->
+                                            <!--<div data-ng-show="projectDependencyDetails === 'status'">-->
+                                                <!--<div data-ng-switch="switchStatusForm[selectedDependency._id]">-->
+                                                    <!--<form data-ng-switch-default="view">-->
+                                                        <!--<div class="row">-->
+                                                            <!--<div class="form-group-sm col-md-4">-->
+                                                                <!--<label for="">Baseline delivery date</label>-->
+                                                                <!--<input type="text" id="" class="form-control" datepicker-popup="dd-MMMM-yyyy" data-ng-model="selectedDependency.statusReview.currentRecord.baselineDeliveryDate" disabled />-->
+                                                            <!--</div>-->
+                                                            <!--<div class="form-group-sm col-md-4">-->
+                                                                <!--<label for="">Estimate delivery date</label>-->
+                                                                <!--<input type="text" id="" class="form-control" datepicker-popup="dd-MMMM-yyyy" data-ng-model="selectedDependency.statusReview.currentRecord.estimateDeliveryDate" disabled />-->
+                                                            <!--</div>-->
+                                                            <!--<div class="form-group-sm col-md-4">-->
+                                                                <!--<label for="">Actual delivery date</label>-->
+                                                                <!--<input type="text" id="" class="form-control" datepicker-popup="dd-MMMM-yyyy" data-ng-model="selectedDependency.statusReview.currentRecord.actualDeliveryDate" disabled />-->
+                                                            <!--</div>-->
+                                                        <!--</div>-->
+                                                        <!--<br>-->
+                                                        <!--<div class="row">-->
+                                                            <!--<div class="form-group-sm col-md-5">-->
+                                                                <!--<label for="">Status</label>-->
+                                                                <!--<select id="" class="form-control" data-ng-model = "selectedDependency.statusReview.currentRecord.status"-->
+                                                                        <!--ng-options="status._id as status.name for status in logStatuses" disabled>-->
+                                                                <!--</select>-->
+                                                            <!--</div>-->
+                                                            <!--<br>-->
+                                                            <!--<div class="form-group-sm col-md-5">-->
+                                                                <!--<label for="prjCrEditCompleted">Completed</label>-->
+                                                                <!--<input id="prjCrEditCompleted" class="" type="checkbox"-->
+                                                                       <!--data-ng-model="selectedDependency.statusReview.currentRecord.completed" disabled>-->
+                                                            <!--</div>-->
+                                                        <!--</div>-->
+                                                        <!--<br>-->
+                                                        <!--<div class="row">-->
+                                                            <!--<div class="form-group-sm col-md-12">-->
+                                                                <!--<label for="">Status comment</label>-->
+                                                                <!--<textarea id="" class="form-control" data-ng-model="selectedDependency.statusReview.currentRecord.statusComment" disabled></textarea>-->
+                                                            <!--</div>-->
+                                                        <!--</div>-->
+                                                        <!--<hr>-->
+                                                        <!--<div class="pull-right" data-ng-show="userHasAuthorization('edit', user, selectedDependency)">-->
+                                                            <!--<button class="btn btn-success btn-xs" data-ng-click="editStatus(selectedDependency)">-->
+                                                                <!--Edit-->
+                                                            <!--</button>-->
+                                                        <!--</div>-->
+                                                    <!--</form>-->
+                                                    <!--<form data-ng-switch-when="edit">-->
+                                                        <!--<div class="row">-->
+                                                            <!--<div class="form-group-sm col-md-4">-->
+                                                                <!--<label for="">Baseline delivery date</label>-->
+                                                                <!--<div class="input-group">-->
+                                                                    <!--<input type="text" id="" class="form-control" datepicker-popup="dd-MMMM-yyyy" data-ng-model="selectedDependency.statusReview.currentRecord.baselineDeliveryDate"-->
+                                                                           <!--is-open="$parent.baselineDeliveryDateOpened[selectedDependency._id]" >-->
+                                                                            <!--<span class="input-group-btn">-->
+                                                                                <!--<button type="button" class="btn btn-default btn-sm" ng-click="openBaselineDeliveryDate(selectedDependency, $event)"><i class="glyphicon glyphicon-calendar"></i></button>-->
+                                                                            <!--</span>-->
+                                                                <!--</div>-->
+                                                            <!--</div>-->
+                                                            <!--<div class="form-group-sm col-md-4">-->
+                                                                <!--<label for="">Estimate delivery date</label>-->
+                                                                <!--<div class="input-group">-->
+                                                                    <!--<input type="text" id="" class="form-control" datepicker-popup="dd-MMMM-yyyy" data-ng-model="selectedDependency.statusReview.currentRecord.estimateDeliveryDate"-->
+                                                                           <!--is-open="$parent.estimateDeliveryDateOpened[selectedDependency._id]" >-->
+                                                                            <!--<span class="input-group-btn">-->
+                                                                                <!--<button type="button" class="btn btn-default btn-sm" ng-click="openEstimateDeliveryDate(selectedDependency, $event)"><i class="glyphicon glyphicon-calendar"></i></button>-->
+                                                                            <!--</span>-->
+                                                                <!--</div>-->
+                                                            <!--</div>-->
+                                                            <!--<div class="form-group-sm col-md-4">-->
+                                                                <!--<label for="">Actual delivery date</label>-->
+                                                                <!--<div class="input-group">-->
+                                                                    <!--<input type="text" id="" class="form-control" datepicker-popup="dd-MMMM-yyyy" data-ng-model="selectedDependency.statusReview.currentRecord.actualDeliveryDate"-->
+                                                                           <!--is-open="$parent.actualDeliveryDateOpened[selectedDependency._id]" >-->
+                                                                            <!--<span class="input-group-btn">-->
+                                                                                <!--<button type="button" class="btn btn-default btn-sm" ng-click="openActualDeliveryDate(selectedDependency, $event)"><i class="glyphicon glyphicon-calendar"></i></button>-->
+                                                                            <!--</span>-->
+                                                                <!--</div>-->
+                                                            <!--</div>-->
+                                                        <!--</div>-->
+                                                        <!--<br>-->
+                                                        <!--<div class="row">-->
+                                                            <!--<div class="form-group-sm col-md-5">-->
+                                                                <!--<label for="">Status</label>-->
+                                                                <!--<select id="" class="form-control" data-ng-model = "selectedDependency.statusReview.currentRecord.status"-->
+                                                                        <!--data-ng-options="status._id as status.name for status in logStatuses" >-->
+                                                                    <!--<option value="">&#45;&#45;choose status</option>-->
+                                                                <!--</select>-->
+                                                            <!--</div>-->
+                                                            <!--<br>-->
+                                                            <!--<div class="form-group-sm col-md-5">-->
+                                                                <!--<label for="prjCrEditCompleted">Completed</label>-->
+                                                                <!--<input id="prjCrEditCompleted" class="" type="checkbox"-->
+                                                                       <!--data-ng-model="selectedDependency.statusReview.currentRecord.completed" >-->
+                                                            <!--</div>-->
+                                                        <!--</div>-->
+                                                        <!--<br>-->
+                                                        <!--<div class="row">-->
+                                                            <!--<div class="form-group-sm col-md-12">-->
+                                                                <!--<label for="">Status comment</label>-->
+                                                                <!--<textarea id="" class="form-control" placeholder="Enter status comment" data-ng-model="selectedDependency.statusReview.currentRecord.statusComment" ></textarea>-->
+                                                            <!--</div>-->
+                                                        <!--</div>-->
+                                                        <!--<hr>-->
+                                                        <!--<div class="pull-right">-->
+                                                            <!--<button class="btn btn-success btn-xs" data-ng-click="saveEditStatus(selectedDependency)">-->
+                                                                <!--Save-->
+                                                            <!--</button>-->
+                                                            <!--<button class="btn btn-info btn-xs" data-ng-click="cancelEditStatus(selectedDependency)">-->
+                                                                <!--Cancel-->
+                                                            <!--</button>-->
+                                                        <!--</div>-->
+                                                    <!--</form>-->
+                                                <!--</div>-->
+                                            <!--</div>-->
+                                        <!--</div>-->
+                                    <!--</div>-->
+                                <!--</div>-->
+                            <!--</div>-->
+                        <!--</div>-->
+                    <!--</div>-->
+                <!--</div>-->
+            <!--</div>-->
+        <!--</div>-->
+    <!--</div>-->
+
 </section>

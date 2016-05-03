@@ -31,8 +31,17 @@ angular.module('core').directive('roadmap', ['d3', '_', '$parse',
 
                 setChartParameters = function(){
 
+                    var minDefinition = d3.min(data, function(d){if(d.identification.reqStartDate){return new Date(d.identification.reqStartDate);}});
+                    var maxDefinition = d3.max(data, function(d){if(d.identification.reqEndDate){return new Date(d.identification.reqEndDate);}});
+
+                    var minDelivery = d3.min(data, function(d){if(d.gateData.start){return new Date(d.gateData.start);}});
+                    var maxDelivery = d3.max(data, function(d){if(d.gateData.end){return new Date(d.gateData.end);}});
+
+                    var minAbsolute = d3.min([minDefinition, minDelivery], function(d){if(d){return d;}});
+                    var maxAbsolute = d3.max([maxDefinition, maxDelivery], function(d){if(d){return d;}});
+
                     x = d3.time.scale()
-                        .domain([d3.min(data, function(d){return new Date(d.identification.reqStartDate);}), d3.max(data, function(d){return new Date(d.identification.reqEndDate);}) ])
+                        .domain([minAbsolute, maxAbsolute])
                         .range([0, width-(1.5*margin.left + 1.5*margin.right)]);
 
                     xAxis = d3.svg.axis()
@@ -61,7 +70,7 @@ angular.module('core').directive('roadmap', ['d3', '_', '$parse',
 
                     var chart = d3.select('svg')
                         .attr('width', width)
-                        .attr('height', (barHeight * data.length) + 2 * margin.top)
+                        .attr('height', (2 * barHeight * data.length) + 2 * margin.top)
                         .append('g')
                         .attr('id', 'chart')
                         .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
@@ -77,10 +86,21 @@ angular.module('core').directive('roadmap', ['d3', '_', '$parse',
                         })
                         .enter().append('g')
                         .attr('class', 'bar')
-                        .attr('transform', function(d, i) { return 'translate('+ (x(new Date(d.identification.reqStartDate)) + margin.left) +',' + ((i * barHeight) + margin.top) + ')'; });
+                        .attr('transform', function(d, i) { return 'translate('+ (x(new Date(d.identification.reqStartDate)) + margin.left) +',' + ((i * 2 * barHeight) + margin.top) + ')'; });
 
                     bar.append('rect')
+                        .attr('class', 'rectDefinition')
                         .attr('width', function(d){ return x(new Date(d.identification.reqEndDate)) - x(new Date(d.identification.reqStartDate));})
+                        .attr('height', barHeight - 1)
+                        .on('mouseover', function(d) { onMouseover(this, d); })
+                        .on('mouseout', function(d) { onMouseout(this, d); })
+                        .on('click', function(d){ onClick(this, d); });
+
+                    bar.append('rect')
+                        .attr('class', 'rectDelivery')
+                        .attr('y', barHeight-1)
+                        .attr('fill', function(d){ return d.gateData.status; })
+                        .attr('width', function(d){ return x(new Date(d.gateData.end)) - x(new Date(d.gateData.start));})
                         .attr('height', barHeight - 1)
                         .on('mouseover', function(d) { onMouseover(this, d); })
                         .on('mouseout', function(d) { onMouseout(this, d); })
@@ -95,10 +115,6 @@ angular.module('core').directive('roadmap', ['d3', '_', '$parse',
                         .on('mouseout', function(d) { onMouseout(this, d); })
                         .on('click', function(d){ onClick(this, d); });
 
-                    // Tooltip
-                    bar.append('title')
-                        .text(function(d){ return d.identification.name +' - '+'Start: '+d3.time.format('%b %a %e, %Y')(new Date(d.identification.reqStartDate))+' - '+'End: '+d3.time.format('%b %a %e, %Y')(new Date(d.identification.reqEndDate)); });
-
                 };
 
                 redrawChart = function(){
@@ -106,7 +122,7 @@ angular.module('core').directive('roadmap', ['d3', '_', '$parse',
                     setChartParameters();
 
                     var svg = d3.select('svg')
-                        .attr('height', (barHeight * data.length) + 2 * margin.top);
+                        .attr('height', (2 * barHeight * data.length) + 2 * margin.top);
 
                     var chart = svg.select('#chart');
 
@@ -124,10 +140,13 @@ angular.module('core').directive('roadmap', ['d3', '_', '$parse',
 
                     newBars
                         .transition().duration(1000)
-                        .attr('transform', function(d, i) { return 'translate('+ (x(new Date(d.identification.reqStartDate)) + margin.left) +',' + ((i * barHeight) + margin.top) + ')'; });
+                        .attr('transform', function(d, i) { return 'translate('+ (x(new Date(d.identification.reqStartDate)) + margin.left) +',' + ((i * 2 * barHeight) + margin.top) + ')'; });
 
-                    newBars.selectAll('rect')
+                    newBars.selectAll('.rectDefinition')
                         .attr('width', function(d){ return x(new Date(d.identification.reqEndDate)) - x(new Date(d.identification.reqStartDate));});
+
+                    newBars.selectAll('.rectDelivery')
+                        .attr('width', function(d){ return x(new Date(d.gateData.end)) - x(new Date(d.gateData.start));});
 
                     newBars.selectAll('text')
                         .attr('x', function(d) { return (x(new Date(d.identification.reqEndDate)) - x(new Date(d.identification.reqStartDate)))/3; });
@@ -137,14 +156,29 @@ angular.module('core').directive('roadmap', ['d3', '_', '$parse',
 
                     var newAppendedBar = newBars.enter().append('g')
                         .attr('class', 'bar')
-                        .attr('transform', function(d, i) { return 'translate('+ (x(new Date(d.identification.reqStartDate)) + margin.left) +',' + ((i * barHeight) + margin.top) + ')'; });
+                        .attr('transform', function(d, i) { return 'translate('+ (x(new Date(d.identification.reqStartDate)) + margin.left) +',' + ((i * 2 * barHeight) + margin.top) + ')'; });
 
                     newAppendedBar.append('rect')
+                        .attr('class', 'rectDefinition')
                         .attr('width', function(d){ return x(new Date(d.identification.reqEndDate)) - x(new Date(d.identification.reqStartDate));})
                         .attr('height', barHeight - 1)
                         .on('mouseover', function(d) { onMouseover(this, d); })
                         .on('mouseout', function(d) { onMouseout(this, d); })
-                        .on('click', function(d){ onClick(this, d); });
+                        .on('click', function(d){ onClick(this, d); })
+                        .append('title')
+                            .text(function(d){ return d.identification.name +' - '+'Start: '+d3.time.format('%b %a %e, %Y')(new Date(d.identification.reqStartDate))+' - '+'End: '+d3.time.format('%b %a %e, %Y')(new Date(d.identification.reqEndDate)); });
+
+                    newAppendedBar.append('rect')
+                        .attr('class', 'rectDelivery')
+                        .attr('y', barHeight-1)
+                        .attr('fill', function(d){ return d.gateData.status; })
+                        .attr('width', function(d){ return x(new Date(d.gateData.end)) - x(new Date(d.gateData.start));})
+                        .attr('height', barHeight - 1)
+                        .on('mouseover', function(d) { onMouseover(this, d); })
+                        .on('mouseout', function(d) { onMouseout(this, d); })
+                        .on('click', function(d){ onClick(this, d); })
+                        .append('title')
+                            .text(function(d){ return d.identification.name +' - '+'Start: '+d3.time.format('%b %a %e, %Y')(new Date(d.gateData.start))+' - '+'End: '+d3.time.format('%b %a %e, %Y')(new Date(d.gateData.end)); });
 
                     newAppendedBar.append('text')
                         .attr('x', function(d) { return (x(new Date(d.identification.reqEndDate)) - x(new Date(d.identification.reqStartDate)))/3; })
@@ -155,8 +189,8 @@ angular.module('core').directive('roadmap', ['d3', '_', '$parse',
                         .on('mouseout', function(d) { onMouseout(this, d); })
                         .on('click', function(d){ onClick(this, d); });
 
-                    newAppendedBar.append('title')
-                        .text(function(d){ return d.identification.name +' - '+'Start: '+d3.time.format('%b %a %e, %Y')(new Date(d.identification.reqStartDate))+' - '+'End: '+d3.time.format('%b %a %e, %Y')(new Date(d.identification.reqEndDate)); });
+
+
 
                     // Remove the ones removed
 
