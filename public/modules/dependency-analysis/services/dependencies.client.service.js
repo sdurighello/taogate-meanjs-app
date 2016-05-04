@@ -23,7 +23,16 @@ angular.module('dependency-analysis').factory('Dependencies', ['$resource',
 				method: 'PUT',
 				url: 'dependencies/:dependencyId/status'
 				// req.body: {whole milestone object}
-			}
+			},
+            
+            // --- Analysis --
+
+            getDependenciesAnalysis: {
+                method: 'GET',
+                isArray: false,
+                url: 'dependencies-analysis'
+            }
+            
 		});
 	}
 ]);

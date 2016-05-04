@@ -25,8 +25,10 @@ angular.module('core').directive('roadmap', ['d3', '_', '$parse',
                     drawChart, redrawChart;
 
                 scope.$watchCollection(parseData, function(newVal, oldVal){
-                    data = newVal;
-                    redrawChart();
+                    if(newVal !== oldVal){
+                        data = newVal;
+                        redrawChart();
+                    }
                 });
 
                 setChartParameters = function(){

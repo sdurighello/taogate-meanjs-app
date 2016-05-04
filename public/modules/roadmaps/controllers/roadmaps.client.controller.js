@@ -145,7 +145,9 @@ angular.module('roadmaps').controller('RoadmapsController', ['$rootScope', '$sco
         $scope.$watch(
             function($scope){ return vm.portfoliosSelectedForRoadmap; },
             function ( newValue, oldValue ) {
-                createDefinitionRoadmap();
+                if(newValue !== oldValue){
+                    createDefinitionRoadmap();
+                }
             }, true
         );
 

@@ -22,6 +22,9 @@ module.exports = function(app) {
 	app.route('/dependencies/:dependencyId/status')
 		.put(users.requiresLogin, dependencies.hasEditAuthorization, dependencies.updateStatus);
 
+    app.route('/dependencies-analysis')
+        .get(users.requiresLogin, dependencies.getDependenciesAnalysis);
+
 	// Finish by binding the Dependency middleware
 	app.param('dependencyId', dependencies.dependencyByID);
 };

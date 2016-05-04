@@ -361,6 +361,9 @@ angular.module('core').service('Menus', [
                 // Project dependencies
         this.addSubMenuItem('topbar', 'evaluation', 'Project dependencies', 'dependency-analysis','dependency-analysis',false,
             ['superAdmin','admin','pmo','projectManager','portfolioManager','executive'],18);
+                // Dependency analysis
+        this.addSubMenuItem('topbar', 'evaluation', 'Dependencies analysis', 'portfolio-dependency','portfolio-dependency',false,
+            ['superAdmin','admin','pmo','projectManager','portfolioManager','executive'],19);
 
 
 

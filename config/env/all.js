@@ -38,7 +38,8 @@ module.exports = {
 				'public/lib/Chart.js/Chart.js',
                 'public/lib/angular-chart.js/dist/angular-chart.js',
                 // D3
-                'public/lib/d3/d3.min.js'
+                'public/lib/d3/d3.min.js',
+                'public/lib/d3-plugins/sankey/sankey.js'
             ]
 		},
 		css: [

@@ -176,6 +176,98 @@ exports.list = function(req, res) {
 };
 
 /**
+ * Dependencies analysis
+ */
+
+exports.getDependenciesAnalysis = function(req, res) {
+
+    var Dependency = mongoose.mtModel(req.user.tenantId + '.' + 'Dependency');
+
+    async.waterfall([
+        // Get all dependencies , excluding where BOTH target and source are 'not active' (e.g. at least one is active)
+        function(callback) {
+            Dependency.find()
+                .populate('source', 'idNumber parent portfolio identification selection process')
+                .populate('target', 'idNumber parent portfolio identification selection process')
+                .populate('impact').populate('type').populate('state').populate('statusReview.currentRecord.status')
+                .exec(function(err, res) {
+                    if (err) {
+                        return callback(err);
+                    }
+                    var dependencies = _.filter(res, function(dependency){
+                        return dependency.source.selection.active || dependency.target.selection.active;
+                    });
+                    callback(null, dependencies);
+            });
+        },
+        function(dependencies, callback) {
+
+            var retArray = {
+                nodes : [
+                    // { project }
+                ],
+                links : [
+                    // {
+                    //  _id: dependencyId,
+                    //  source: sourceProjectIndex, target: targetProjectIndex,
+                    //  sourcePortfolio: portfolioId, targetPortfolio: portfolioId
+                    //  dependency: { dependencyObj}
+                    // }
+                ]
+            };
+
+            var duplicatedNodes = [];
+            _.each(dependencies, function(dependency){
+                duplicatedNodes.push(dependency.source);
+                duplicatedNodes.push(dependency.target);
+            });
+
+            var unique = function(xs) {
+                var seen = {};
+                return xs.filter(function(x) {
+                    if (seen[x._id])
+                        return;
+                    seen[x._id] = true;
+                    return x;
+                });
+            };
+
+            var uniqueNodes = unique(duplicatedNodes);
+            
+            var links = _.map(dependencies, function (dependency) {
+                return {
+                    _id : dependency._id,
+                    source: _.findIndex(uniqueNodes, function(node){
+                        return node._id.equals(dependency.source._id);
+                    }),
+                    target: _.findIndex(uniqueNodes, function(node){
+                        return node._id.equals(dependency.target._id);
+                    }),
+                    sourcePortfolioId: dependency.source.portfolio,
+                    targetPortfolioId: dependency.target.portfolio,
+                    dependency: dependency
+                };
+            });
+            
+            retArray.nodes = uniqueNodes;
+            retArray.links = links;
+            
+            callback(null, retArray);
+            
+        }
+    ], function (err, result) {
+        if (err) {
+            return res.status(400).send({
+                message: errorHandler.getErrorMessage(err)
+            });
+        } else {
+            res.jsonp(result);
+        }
+    });
+    
+};
+
+/**
  * Dependency middleware
  */
 

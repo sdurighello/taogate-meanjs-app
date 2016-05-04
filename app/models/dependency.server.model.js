@@ -33,8 +33,8 @@ var DependencySchema = new Schema({
 	},
     description: {type: String, default: '', trim: true},
 
-    type : {type: Schema.Types.ObjectId, ref: 'DependencyType', $tenant:true},
-    impact : {type: Schema.Types.ObjectId, ref: 'DependencyImpact', $tenant:true},
+    type : {type: Schema.Types.ObjectId, default: null, ref: 'DependencyType', $tenant:true},
+    impact : {type: Schema.Types.ObjectId, default: null, ref: 'DependencyImpact', $tenant:true},
 
     state : {type: Schema.Types.ObjectId, default: null, ref: 'DependencyState', $tenant:true},
 

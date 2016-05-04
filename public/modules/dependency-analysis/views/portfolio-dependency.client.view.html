@@ -1,0 +1,98 @@
+<section data-ng-controller="PortfolioDependencyController as vm" data-ng-init="vm.init()">
+    <br>
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="panel-heading">
+                <ol class="breadcrumb">
+                    <li>Portfolio evaluation</li>
+                    <li>Dependencies</li>
+                    <li class="active">Dependencies analysis</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+    <button ng-click="vm.change()">change</button>
+    <div class="row">
+        <div class="col-sm-3"><!-- PORTFOLIO LIST -->
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h6 class="panel-title text-center">Portfolio tree</h6>
+                </div>
+                <div class="panel-body">
+                    <div class="alert alert-warning text-center" data-ng-hide="!vm.portfolios.$resolved || vm.portfolios.length">
+                        No portfolios yet
+                    </div>
+                    <div class="row" data-ng-show="vm.portfolios.$resolved && vm.portfolios.length !== 0">
+                        <div class="col-md-12">
+                            <button class="btn btn-default btn-sm" data-ng-class="{'btn-primary': vm.getPortfolioSelectionStatus('all')}"
+                                    style="min-width:50px; max-width: 150px; overflow:hidden; margin: 2%;"
+                                    data-ng-click="vm.selectPortfolio('all')">
+                                All
+                            </button>
+                            <button class="btn btn-default btn-sm" data-ng-class="{'btn-primary': vm.getPortfolioSelectionStatus('unassigned')}"
+                                    style="min-width:50px; max-width: 150px; overflow:hidden; margin: 2%;"
+                                    data-ng-click="vm.selectPortfolio('unassigned')">
+                                Unassigned
+                            </button>
+                        </div>
+                    </div>
+                    <hr style="margin: 5px">
+                    <div class="row" style="min-height: 470px;  max-height: 470px; overflow-y: auto;">
+                        <div class="col-md-12">
+                            <script type="text/ng-template" id="portfolioTree">
+                                <button class="btn btn-default btn-sm" data-ng-class="{'btn-primary': vm.getPortfolioSelectionStatus(tree.node)}"
+                                        data-ng-click="vm.selectPortfolio(tree.node);"
+                                        style="min-width:50px; max-width: 150px; overflow:hidden; margin: 2%;">
+                                    <span data-ng-bind="tree.node.name"></span>
+                                </button>
+                                <ul data-ng-if="tree.nodeTrees" style="list-style: none;">
+                                    <li data-ng-repeat="tree in tree.nodeTrees track by $index " >
+                                        <span data-ng-include="'portfolioTree'" style="display:block; margin-left:-0.5em;"></span>
+                                    </li>
+                                </ul>
+                            </script>
+                            <ul style="margin-left: 2%; padding-left: 2%; list-style: none;">
+                                <li data-ng-repeat="tree in vm.portfolioTrees track by $index" >
+                                    <span data-ng-include="'portfolioTree'" style="display:block; margin-left:-0.5em;"></span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-9">
+            <div class="row">
+                <div class="col-md-12">
+                    <div data-ng-show="false" class="alert alert-warning text-center">
+                        <span>Select one or more portfolios to see the dependencies</span>
+                    </div>
+                </div>
+            </div>
+            <div class="row" data-ng-show="true">
+                <div class="col-md-12">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <h6 class="panel-title text-center">Portfolio dependencies</h6>
+                        </div>
+                        <div class="panel-body" style="min-height: 545px;  max-height: 545px; overflow-y: auto; overflow-x: auto">
+                            <div class="row" data-ng-show="false">
+                                <div class="col-md-12">
+                                    <div class="alert alert-warning text-center">
+                                        <span>No dependencies</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row" style="min-height: 325px; overflow-y: auto" data-ng-show="true">
+                                <div class="col-md-12">
+                                    <!--<graph data="vm.dependenciesForGraphObject" select-node="vm.selectNode" select-link="vm.selectLink" width="800" height="700"></graph>-->
+                                    <sankey data="vm.dependenciesForGraphObject" select-node="vm.selectNode" select-link="vm.selectLink" width="800" height="700"></sankey>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
