@@ -49,40 +49,50 @@ angular.module('dependency-analysis').controller('PortfolioDependencyController'
 
         vm.dependencyData = {
             'nodes':[
-                {_id:0, 'name':'project0','group':0},
-                {_id:1, 'name':'project1','group':1},
-                {_id:2, 'name':'project2','group':2}
+                {_id:0, 'identification':{name: 'index'},'group':0},
+                {_id:1, 'identification':{name: 'about'},'group':1},
+                {_id:2, 'identification':{name: 'contact'},'group':2},
+                {_id:3, 'identification':{name: 'store'},'group':0},
+                {_id:4, 'identification':{name: 'cheese'},'group':1},
+                {_id:5, 'identification':{name: 'yogurt'},'group':2},
+                {_id:6, 'identification':{name: 'milk'},'group':2}
             ],
             'links':[
-                {_id:0, 'source':1,'target':0,'value':1},
-                {_id:1, 'source':1,'target':2,'value':2},
-                {_id:2, 'source':2,'target':0,'value':3}
+                {_id:0, 'source':0,'target':1,'value':100},
+                {_id:1, 'source':0,'target':2, 'value':10},
+                {_id:2, 'source':0,'target':3,'value':80},
+                {_id:3, 'source':1,'target':2,'value':20},
+                {_id:4, 'source':3,'target':4, 'value':45},
+                {_id:5, 'source':3,'target':5,'value':60},
+                {_id:6, 'source':3,'target':6,'value':10},
+                {_id:7, 'source':4,'target':6, 'value':1},
+                {_id:8, 'source':4,'target':5,'value':25}
             ]
         };
 
         vm.change = function(){
             vm.dependencyData = {
                 'nodes':[
-                    {_id:0, 'name':'project0','group':0},
-                    {_id:1, 'name':'project1 xxx','group':1},
-                    {_id:2, 'name':'project2','group':2},
-                    {_id:3, 'name':'project3','group':3}
+                    {_id:0, 'identification':{name: 'project0'},'group':'2'},
+                    {_id:1, 'identification':{name: 'project0'},'group':'2'},
+                    {_id:2, 'identification':{name: 'project0'},'group':'2'},
+                    {_id:3, 'identification':{name: 'project0'},'group':'2'}
                 ],
                 'links':[
-                    {_id:0, 'source':1,'target':0,'value':1},
-                    {_id:1, 'source':1,'target':2,'value':2},
-                    {_id:2, 'source':2,'target':0,'value':6},
-                    {_id:3, 'source':1,'target':3,'value':4}
+                    {_id:0, 'source':1,'target':0,'dependency':{impact: {numericalValue: '2'}}},
+                    {_id:1, 'source':1,'target':2,'dependency':{impact: {numericalValue: '2'}}},
+                    {_id:2, 'source':2,'target':0,'dependency':{impact: {numericalValue: '2'}}},
+                    {_id:3, 'source':1,'target':3,'dependency':{impact: {numericalValue: '2'}}}
                 ]
             };
         };
 
-        vm.selectNode = function(project){
-            console.log(project);
+        vm.selectNode = function(node){
+            console.log(node);
         };
 
-        vm.selectLink = function(dependency){
-            console.log(dependency);
+        vm.selectLink = function(link){
+            console.log(link);
         };
 
 

@@ -13,7 +13,8 @@ angular.module('core').directive('graph', ['d3', '_',
             },
             link: function(scope, element){
 
-                var drawGraph, redrawGraph;
+                var setupParameters, weightScale, valueScale,
+                    drawGraph, redrawGraph;
 
                 var width = scope.width,
                     height = scope.height,
@@ -34,27 +35,21 @@ angular.module('core').directive('graph', ['d3', '_',
                     onMouseoutLink, onMouseoutNode,
                     onClickLink, onClickNode;
 
-                var allowNullImpact = function(impact){
-                    if(impact && impact.numericalValue && (impact.numericalValue > 0)){
-                        return impact.numericalValue;
-                    }
-                    return 1;
-                };
 
                 var getNodeColorGroup = function(d){
                     return 1;
                 };
 
                 onMouseoverLink = function(that, d, i){
-                    d3.select(that).style('stroke-width', Math.sqrt(allowNullImpact(d.dependency.impact && d.dependency.impact.numericalValue)) * 5);
+
                 };
 
                 onMouseoutLink = function(that, d, i){
-                    d3.select(that).style('stroke-width', Math.sqrt(allowNullImpact(d.dependency.impact && d.dependency.impact.numericalValue)));
+
                 };
 
                 onClickLink = function(that, d, i){
-                    scope.selectLink(allowNullImpact(d.dependency.impact && d.dependency.impact.numericalValue));
+                    scope.selectLink(d);
                 };
 
                 onMouseoverNode = function(that, d, i){
@@ -66,11 +61,24 @@ angular.module('core').directive('graph', ['d3', '_',
                 };
 
                 onClickNode = function(that, d, i){
-                    scope.selectNode(d.identification.name);
+                    scope.selectNode(d);
                     d.fixed = !d.fixed;
                 };
 
+                setupParameters = function(){
+
+                    weightScale = d3.scale.linear()
+                        .domain(d3.extent(inputData.nodes, function(d){ return d.weight; }))
+                        .range([6, 20]);
+
+                    valueScale = d3.scale.linear()
+                        .domain(d3.extent(inputData.links, function(d){ return d.value; }))
+                        .range([3, 10]);
+                };
+
                 drawGraph = function(){
+
+                    setupParameters();
                     
                     force
                         .nodes(inputData.nodes, function(d){return d._id;})
@@ -81,7 +89,7 @@ angular.module('core').directive('graph', ['d3', '_',
                         .data(inputData.links, function(d){ return d._id; })
                         .enter().append('line')
                         .attr('class', 'link')
-                        .style('stroke-width', function(d) { return Math.sqrt(allowNullImpact(d.dependency.impact && d.dependency.impact.numericalValue)); })
+                        .style('stroke-width', function(d) { return valueScale(d.value); })
                         .on('mouseover', function(d,i) { onMouseoverLink(this, d, i); })
                         .on('mouseout', function(d,i) { onMouseoutLink(this, d, i); })
                         .on('click', function(d,i){ onClickLink(this, d, i); });
@@ -90,15 +98,7 @@ angular.module('core').directive('graph', ['d3', '_',
                         .data(inputData.nodes, function(d){ return d._id; })
                         .enter().append('circle')
                         .attr('class', 'node')
-                        .attr('r', function(d){
-                            if(d.weight >= 5){
-                                if(d.weight <= 20){
-                                    return d.weight;
-                                }
-                                return 20;
-                            }
-                            return 5;
-                        })
+                        .attr('r', function(d){ return weightScale(d.weight); })
                         .style('fill', function(d) { return color(getNodeColorGroup(d)); })
                         .call(force.drag)
                         .on('click', function(d,i){ onClickNode(this, d, i); });
@@ -133,7 +133,12 @@ angular.module('core').directive('graph', ['d3', '_',
 
                     force.stop();
 
-                    force.links(inputData.links, function(d){return d._id;}).nodes(inputData.nodes, function(d){return d._id;});
+                    force
+                        .links(inputData.links, function(d){return d._id;})
+                        .nodes(inputData.nodes, function(d){return d._id;})
+                        .start();
+
+                    setupParameters();
 
                     var newLinks = svg.selectAll('.link')
                         .data(inputData.links, function(d){ return d._id; });
@@ -144,21 +149,13 @@ angular.module('core').directive('graph', ['d3', '_',
                     // Redraw the existing one
 
                     var existingNewLinks = newLinks
-                        .style('stroke-width', function(d) { return Math.sqrt(allowNullImpact(d.dependency.impact && d.dependency.impact.numericalValue)); })
+                        .style('stroke-width', function(d) { return valueScale(d.value); })
                         .on('mouseover', function(d,i) { onMouseoverLink(this, d, i); })
                         .on('mouseout', function(d,i) { onMouseoutLink(this, d, i); })
                         .on('click', function(d,i){ onClickLink(this, d, i); });
 
                     var existingNewNodes = newNodes
-                        .attr('r', function(d){
-                            if(d.weight >= 5){
-                                if(d.weight <= 20){
-                                    return d.weight;
-                                }
-                                return 20;
-                            }
-                            return 5;
-                        })
+                        .attr('r', function(d){ return weightScale(d.weight); })
                         .style('fill', function(d) { return color(getNodeColorGroup(d)); })
                         .call(force.drag)
                         .on('click', function(d,i){ onClickNode(this, d, i); });
@@ -171,7 +168,7 @@ angular.module('core').directive('graph', ['d3', '_',
                     var appendedNewLinks = newLinks.enter()
                         .append('line')
                         .attr('class', 'link')
-                        .style('stroke-width', function(d) { return Math.sqrt(allowNullImpact(d.dependency.impact && d.dependency.impact.numericalValue)); })
+                        .style('stroke-width', function(d) { return valueScale(d.value); })
                         .on('mouseover', function(d,i) { onMouseoverLink(this, d, i); })
                         .on('mouseout', function(d,i) { onMouseoutLink(this, d, i); })
                         .on('click', function(d,i){ onClickLink(this, d, i); });
@@ -179,15 +176,7 @@ angular.module('core').directive('graph', ['d3', '_',
                     var appendedNewNodes = newNodes.enter()
                         .append('circle')
                         .attr('class', 'node')
-                        .attr('r', function(d){
-                            if(d.weight >= 5){
-                                if(d.weight <= 20){
-                                    return d.weight;
-                                }
-                                return 20;
-                            }
-                            return 5;
-                        })
+                        .attr('r', function(d){ return weightScale(d.weight); })
                         .style('fill', function(d) { return color(getNodeColorGroup(d)); })
                         .call(force.drag)
                         .on('click', function(d,i){ onClickNode(this, d, i); });
@@ -209,7 +198,6 @@ angular.module('core').directive('graph', ['d3', '_',
                         .style('opacity', 0)
                         .remove();
 
-                    force.start();
 
                     force.on('tick', function() {
                         d3.selectAll('.link').attr('x1', function(d) { return d.source.x; })

@@ -209,7 +209,7 @@ exports.getDependenciesAnalysis = function(req, res) {
                 links : [
                     // {
                     //  _id: dependencyId,
-                    //  source: sourceProjectIndex, target: targetProjectIndex,
+                    //  source: sourceProjectIndex, target: targetProjectIndex, value: impact.numericalValue
                     //  sourcePortfolio: portfolioId, targetPortfolio: portfolioId
                     //  dependency: { dependencyObj}
                     // }
@@ -243,6 +243,7 @@ exports.getDependenciesAnalysis = function(req, res) {
                     target: _.findIndex(uniqueNodes, function(node){
                         return node._id.equals(dependency.target._id);
                     }),
+                    value: (dependency.impact && dependency.impact.numericalValue && dependency.impact.numericalValue > 0) ? dependency.impact.numericalValue : 1,
                     sourcePortfolioId: dependency.source.portfolio,
                     targetPortfolioId: dependency.target.portfolio,
                     dependency: dependency

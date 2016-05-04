@@ -24,8 +24,8 @@ angular.module('core').directive('sankey', ['d3', '_',
 
                 var sankey = d3.sankey()
                     .size([width, height])
-                    .nodeWidth(15)
-                    .nodePadding(10);
+                    .nodeWidth(20)
+                    .nodePadding(200);
 
                 var gWidthOffset = 20;
                 var gHeightOffset = 20;
@@ -84,7 +84,7 @@ angular.module('core').directive('sankey', ['d3', '_',
                 setParameters = function(){
                     intensityRamp = d3.scale.linear()
                         .domain([0, d3.max(inputData.links, function(d){
-                            return allowNullImpact(d.dependency.impact && d.dependency.impact.numericalValue);
+                            return d.value;
                         })])
                         .range(['black', 'red']);
                 };
@@ -98,24 +98,24 @@ angular.module('core').directive('sankey', ['d3', '_',
                     sankey
                         .nodes(inputData.nodes, function(d){return d._id;})
                         .links(inputData.links, function(d){return d._id;})
-                        .layout(32);
+                        .layout(200);
 
                     var link = sankeyG.selectAll('.link')
-                        .data(inputData.links, function(d){ return d._id; })
+                        .data(inputData.links, function(d){return d._id;})
                         .enter().append('path')
                         .attr('class', 'link')
                         .attr('d', sankey.link())
                         .style('stroke-width', function(d){ return d.dy; })
                         .style('stroke-opacity', 0.5)
                         .style('fill', 'none')
-                        .style('stroke', function(d){ return intensityRamp(allowNullImpact(d.dependency.impact && d.dependency.impact.numericalValue));})
+                        .style('stroke', function(d){ return intensityRamp(d.value);})
                         .sort(function(a, b){ return b.dy - a.dy; })
                         .on('mouseover', function(d,i) { onMouseoverLink(this, d, i); })
                         .on('mouseout', function(d,i) { onMouseoutLink(this, d, i); })
                         .on('click', function(d,i){ onClickLink(this, d, i); });
 
                     var node = sankeyG.selectAll('.node')
-                        .data(inputData.nodes, function(d){ return d._id; })
+                        .data(inputData.nodes, function(d){return d._id;})
                         .enter().append('g')
                         .attr('class', 'node')
                         .attr('transform', function(d){
@@ -168,7 +168,7 @@ angular.module('core').directive('sankey', ['d3', '_',
                     var existingNewLinks = newLinks
                         .attr('d', sankey.link())
                         .style('stroke-width', function(d){ return d.dy; })
-                        .style('stroke', function(d){ return intensityRamp(allowNullImpact(d.dependency.impact && d.dependency.impact.numericalValue));})
+                        .style('stroke', function(d){ return intensityRamp(d.value);})
                         .sort(function(a, b){ return b.dy - a.dy; })
                         .on('mouseover', function(d,i) { onMouseoverLink(this, d, i); })
                         .on('mouseout', function(d,i) { onMouseoutLink(this, d, i); })
@@ -195,7 +195,7 @@ angular.module('core').directive('sankey', ['d3', '_',
                         .style('stroke-width', function(d){ return d.dy; })
                         .style('stroke-opacity', 0.5)
                         .style('fill', 'none')
-                        .style('stroke', function(d){ return intensityRamp(allowNullImpact(d.dependency.impact && d.dependency.impact.numericalValue));})
+                        .style('stroke', function(d){ return intensityRamp(d.value);})
                         .sort(function(a, b){ return b.dy - a.dy; })
                         .on('mouseover', function(d,i) { onMouseoverLink(this, d, i); })
                         .on('mouseout', function(d,i) { onMouseoutLink(this, d, i); })

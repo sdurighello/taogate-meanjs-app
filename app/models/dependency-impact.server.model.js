@@ -19,7 +19,9 @@ var DependencyImpactSchema = new Schema({
 	},
     numericalValue: {
         type: Number,
-        default: 0,
+        min: 1,
+        max: 100,
+        default: 1,
         required: 'Please fill dependency impact numerical value'
     },
     description: {
