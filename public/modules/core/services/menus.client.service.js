@@ -359,10 +359,10 @@ angular.module('core').service('Menus', [
         this.addSubMenuItem('topbar', 'evaluation', 'Dependencies', 'menuTitle','menuTitle',false,
             ['superAdmin','admin','pmo','projectManager','portfolioManager','executive'],17);
                 // Project dependencies
-        this.addSubMenuItem('topbar', 'evaluation', 'Project dependencies', 'dependency-analysis','dependency-analysis',false,
+        this.addSubMenuItem('topbar', 'evaluation', 'Project dependencies', 'project-dependency','project-dependency',false,
             ['superAdmin','admin','pmo','projectManager','portfolioManager','executive'],18);
                 // Dependency analysis
-        this.addSubMenuItem('topbar', 'evaluation', 'Dependencies analysis', 'portfolio-dependency','portfolio-dependency',false,
+        this.addSubMenuItem('topbar', 'evaluation', 'Dependency analysis', 'dependency-analysis','dependency-analysis',false,
             ['superAdmin','admin','pmo','projectManager','portfolioManager','executive'],19);
 
 

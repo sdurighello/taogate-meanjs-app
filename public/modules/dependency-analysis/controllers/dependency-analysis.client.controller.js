@@ -1,342 +1,235 @@
 'use strict';
 
 angular.module('dependency-analysis').controller('DependencyAnalysisController', ['$rootScope', '$scope', '$stateParams', '$location', 'Authentication',
-	'Projects','Portfolios', 'DependencyTypes', 'DependencyStates', 'DependencyImpacts', 'Dependencies', 'LogStatusIndicators', '_','$q',
-	function($rootScope, $scope, $stateParams, $location, Authentication, Projects, Portfolios, DependencyTypes, DependencyStates, DependencyImpacts,
-             Dependencies, LogStatusIndicators, _ , $q) {
+    'Projects','Portfolios','Dependencies', '_','$q','$modal',
+    function($rootScope, $scope, $stateParams, $location, Authentication, Projects, Portfolios, Dependencies, _, $q, $modal) {
 
         $rootScope.staticMenu = false;
 
-		// ----------- INIT ---------------
+        var vm = this;
 
-		$scope.initError = [];
+        // ----------- INIT ---------------
 
-		$scope.init = function(){
+        vm.initError = [];
 
-            $scope.user = Authentication.user;
-
-			Projects.query({'selection.active': true, 'selection.selectedForEvaluation': true}, function(projects){
-				$scope.projects = projects;
-			}, function(err){
-				$scope.initError.push(err.data.message);
-			});
-			Portfolios.query(function(portfolios){
-				$scope.portfolios = portfolios;
-			}, function(err){
-				$scope.initError.push(err.data.message);
-			});
-
-            DependencyTypes.query(function(dependencyTypes){
-                $scope.dependencyTypes = dependencyTypes;
-            }, function(err){
-                $scope.initError.push(err.data.message);
-            });
-			DependencyStates.query(function(res){
-				$scope.dependencyStates = res;
-			}, function(err){
-				$scope.initError.push(err.data.message);
-			});
-            DependencyImpacts.query(function(dependencyImpacts){
-                $scope.dependencyImpacts = dependencyImpacts;
-            }, function(err){
-                $scope.initError.push(err.data.message);
-            });
-            Dependencies.query(function(dependencies){
-                $scope.dependencies = dependencies;
-            }, function(err){
-                $scope.initError.push(err.data.message);
-            });
-
-            LogStatusIndicators.query(function(res){
-                $scope.logStatuses = res;
-            }, function(err){
-                $scope.initError.push(err.data.message);
-            });
-
-		};
-
-        // ------- D3 --------
-
-        $scope.dependencyData = {
-            'nodes':[
-                {_id:1, 'name':'Myriel','group':1},
-                {_id:2, 'name':'Napoleon','group':1},
-                {_id:3, 'name':'Mlle.Baptistine','group':1}
-            ],
-            'links':[
-                {_id:1, 'source':1,'target':0,'value':1},
-                {_id:2, 'source':1,'target':2,'value':1},
-                {_id:3, 'source':2,'target':1,'value':1}
-            ]
+        var portfolioDependenciesObject = {
+            nodes : [],
+            links : []
         };
 
-        $scope.change = function(){
-            $scope.dependencyData = {
-                'nodes':[
-                    {_id:1, 'name':'Myriel','group':1},
-                    {_id:2, 'name':'Napoleon','group':1},
-                    {_id:4, 'name':'Name4','group':1}
-                ],
-                'links':[
-                    {_id:1, 'source':1,'target':0,'value':1},
-                    {_id:2, 'source':1,'target':0,'value':1},
-                    {_id:3, 'source':1,'target':1,'value':1}
-                ]
+        vm.portfoliosSelectedForView = {
+            //    portfolioID : true/false
+        };
+
+        vm.init = function(){
+
+            Portfolios.query(function(portfolios){
+                vm.portfolios = portfolios;
+                vm.portfolioTrees = createNodeTrees(portfolios);
+                // Create the properties for the portfolio selection
+                _.each(portfolios, function(portfolio){
+                    vm.portfoliosSelectedForView[portfolio._id] = false;
+                });
+                vm.portfoliosSelectedForView.all = false;
+                vm.portfoliosSelectedForView.unassigned = false;
+            }, function(err){
+                vm.initError.push(err.data.message);
+            });
+
+            Dependencies.getDependenciesAnalysis(function(res){
+                portfolioDependenciesObject = res;
+                console.log(res);
+            }, function(err){
+                vm.initError.push(err.data.message);
+            });
+
+        };
+
+        // ------ TREE RECURSIONS -----------
+
+        var createNodeTrees = function(strategicNodes){
+            var nodeTrees = [];
+            strategicNodes.forEach(function(node){
+                if(node.parent === null){
+                    nodeTrees.push(
+                        {node : node, nodeTrees : []}
+                    );
+                }
+            });
+            var recursionOnNodeTrees = function(nodeTrees){
+                nodeTrees.forEach(function(node){
+                    strategicNodes.forEach(function(strategicNode){
+                        if(strategicNode.parent !== null){
+                            if(node.node._id === strategicNode.parent){
+                                node.nodeTrees.push(
+                                    {node : strategicNode, nodeTrees : []}
+                                );
+                            }
+                        }
+                    });
+                    recursionOnNodeTrees(node.nodeTrees);
+                });
             };
-        };
-
-        $scope.selectNode = function(project){
-            console.log(project);
-        };
-
-        $scope.selectLink = function(dependency){
-            console.log(dependency);
+            recursionOnNodeTrees(nodeTrees);
+            return nodeTrees;
         };
 
 
-        // -------------- AUTHORIZATION FOR BUTTONS -----------------
+        // ------ PORTFOLIO SELECTION -----------
 
-        $scope.userHasAuthorization = function(action, user, dependency){
-            var userIsSuperhero, userIsProjectManager, userIsPortfolioManager,
-                userIsSourceProjectManager, userIsSourcePortfolioManager,
-                userIsTargetProjectManager, userIsTargetPortfolioManager;
 
-            if(action === 'edit' && user && dependency){
-                var source = dependency.source;
-                var target = dependency.target;
+        vm.dependenciesForGraphObject = {
+            nodes : [],
+            links : []
+        };
 
-                userIsSuperhero = !!_.some(user.roles, function(role){
-                    return role === 'superAdmin' || role === 'admin' || role === 'pmo';
-                });
-                userIsSourceProjectManager = (user._id === source.identification.projectManager) || (user._id === source.identification.backupProjectManager);
-                if(source.portfolio){
-                    userIsSourcePortfolioManager = (user._id === source.portfolio.portfolioManager) || (user._id === source.portfolio.backupPortfolioManager);
+        vm.isPortfolioSelectionEmpty = function () {
+            // If no portfolios are selected, then all values should be false and this should return true
+            var flag = true;
+            _.each(vm.portfoliosSelectedForView, function(v, k){
+                if(v){
+                    flag = false;
                 }
-                userIsTargetProjectManager = (user._id === target.identification.projectManager) || (user._id === target.identification.backupProjectManager);
-                if(target.portfolio){
-                    userIsTargetPortfolioManager = (user._id === target.portfolio.portfolioManager) || (user._id === target.portfolio.backupPortfolioManager);
-                }
-                return userIsSuperhero ||
-                    userIsSourceProjectManager || userIsSourcePortfolioManager ||
-                    userIsTargetProjectManager || userIsTargetPortfolioManager;
-            }
-
-            if(action === 'new' && user){
-                userIsSuperhero = !!_.some(user.roles, function(role){
-                    return role === 'superAdmin' || role === 'admin' || role === 'pmo';
-                });
-                userIsPortfolioManager = !!_.some(user.roles, function(role){
-                    return role === 'portfolioManager';
-                });
-                userIsProjectManager = !!_.some(user.roles, function(role){
-                    return role === 'projectManager';
-                });
-                return userIsSuperhero || userIsPortfolioManager || userIsProjectManager;
-            }
-        };
-
-
-		// ------- DATE PICKER ------
-
-		$scope.openRequiredByDatePickerNew = function($event) {
-			$event.preventDefault();
-			$event.stopPropagation();
-			$scope.requiredByDatePickerOpenedNew = true;
-		};
-
-		$scope.openRequiredByDatePickerEdit = function($event) {
-			$event.preventDefault();
-			$event.stopPropagation();
-			$scope.requiredByDatePickerOpenedEdit = true;
-		};
-
-
-
-		// ------------------- NG-SWITCH ---------------------
-
-        $scope.switchHeaderForm = {};
-        $scope.selectHeaderForm = function(string, dependency){
-            if(string === 'view'){ $scope.switchHeaderForm[dependency._id] = 'view';}
-            if(string === 'edit'){$scope.switchHeaderForm[dependency._id] = 'edit';}
-        };
-
-        $scope.switchStatusForm = {};
-        $scope.selectStatusForm = function(string, dependency){
-            if(string === 'view'){ $scope.switchStatusForm[dependency._id] = 'view';}
-            if(string === 'edit'){$scope.switchStatusForm[dependency._id] = 'edit';}
-        };
-
-		var allowNull = function(obj){
-			if(obj){return obj._id;} else {return null;}
-		};
-
-        // ------------------- OTHER VARIABLES ---------------------
-
-        $scope.projectDependencyDetails = 'header';
-
-		// ------------- CREATE NEW DEPENDENCY -----------
-
-		$scope.newDependency = {};
-
-		$scope.createDependency = function(){
-			var newDependency = new Dependencies({
-                name: $scope.newDependency.name,
-                description: $scope.newDependency.description,
-                type: $scope.newDependency.type,
-                state: $scope.newDependency.state,
-                impact: $scope.newDependency.impact,
-                source: $scope.newDependency.source,
-                target: $scope.newDependency.target
-			});
-			newDependency.$save(function(res) {
-				// Add new dependency to view after saving to server
-				$scope.dependencies.push(res);
-				// Clear form fields
-				$scope.newDependency = {};
-                // Open the new dependency in the view panel
-                $scope.selectDependency(res);
-			}, function(errorResponse) {
-				$scope.error = errorResponse.data.message;
-			});
-		};
-
-		$scope.cancelNewDependency = function(){
-			$scope.newDependency = {};
-		};
-
-
-		// ------------- SELECT VIEW DEPENDENCY ------------
-
-		var originalDependency = {};
-
-		$scope.selectDependency = function(dependency){
-            $scope.selectedDependency = dependency;
-            originalDependency[dependency._id] = _.cloneDeep(dependency);
-		};
-
-        // -------------------------------------------------------- HEADER -------------------------------------------------
-
-
-        $scope.editHeader = function(dependency){
-            $scope.selectHeaderForm('edit', dependency);
-        };
-
-        $scope.saveEditHeader = function(dependency){
-            // Cleanup deepPopulate
-            var copyDependency = _.cloneDeep(dependency);
-            copyDependency.source = copyDependency.source._id;
-            copyDependency.target = copyDependency.target._id;
-
-            Dependencies.updateHeader(
-                {
-                    dependencyId : dependency._id
-                }, copyDependency,
-                function(res){
-                    // Update details pane view with new saved details
-                    originalDependency[dependency._id].name = dependency.name;
-                    originalDependency[dependency._id].description = dependency.description;
-                    originalDependency[dependency._id].source = dependency.source;
-                    originalDependency[dependency._id].target = dependency.target;
-                    originalDependency[dependency._id].state = dependency.state;
-                    originalDependency[dependency._id].type = dependency.type;
-                    originalDependency[dependency._id].impact = dependency.impact;
-
-                    // Close edit header form and back to view
-                    $scope.selectHeaderForm('view', dependency);
-                },
-                function(err){$scope.error = err.data.message;}
-            );
-        };
-
-        $scope.cancelEditHeader = function(dependency){
-            dependency.name = originalDependency[dependency._id].name;
-            dependency.description = originalDependency[dependency._id].description;
-            dependency.source = originalDependency[dependency._id].source;
-            dependency.target = originalDependency[dependency._id].target;
-            dependency.state = originalDependency[dependency._id].state;
-            dependency.type = originalDependency[dependency._id].type;
-            dependency.impact = originalDependency[dependency._id].impact;
-            $scope.selectHeaderForm('view', dependency);
-        };
-
-
-        $scope.deleteDependency = function(dependency){
-            // Cleanup deepPopulate
-            var copyDependency = _.cloneDeep(dependency);
-            copyDependency.source = copyDependency.source._id;
-            copyDependency.target = copyDependency.target._id;
-
-            Dependencies.remove({dependencyId: dependency._id}, copyDependency, function(res){
-                $scope.dependencies = _.without($scope.dependencies, dependency);
-                $scope.cancelNewDependency();
-                $scope.selectedDependency = null;
-                originalDependency = {};
-            }, function(err){
-                $scope.error = err.data.message;
             });
+            return flag;
         };
 
 
-        // -------------------------------------------------------- STATUS -------------------------------------------------
+        vm.selectPortfolio = function(portfolio){
 
-        $scope.baselineDeliveryDateOpened = {};
-        $scope.openBaselineDeliveryDate = function(dependency, $event){
-            $event.preventDefault();
-            $event.stopPropagation();
-            $scope.baselineDeliveryDateOpened[dependency._id] = true;
-        };
-
-        $scope.estimateDeliveryDateOpened = {};
-        $scope.openEstimateDeliveryDate = function(dependency, $event){
-            $event.preventDefault();
-            $event.stopPropagation();
-            $scope.estimateDeliveryDateOpened[dependency._id] = true;
-        };
-
-        $scope.actualDeliveryDateOpened = {};
-        $scope.openActualDeliveryDate = function(dependency, $event){
-            $event.preventDefault();
-            $event.stopPropagation();
-            $scope.actualDeliveryDateOpened[dependency._id] = true;
-        };
-
-        $scope.editStatus = function(dependency){
-            $scope.selectStatusForm('edit', dependency);
-        };
-
-        $scope.saveEditStatus = function(dependency){
-            // Cleanup deepPopulate
-            var copyDependency = _.cloneDeep(dependency);
-            copyDependency.source = copyDependency.source._id;
-            copyDependency.target = copyDependency.target._id;
-
-            Dependencies.updateStatus( { dependencyId : dependency._id }, copyDependency,
-                function(res){
-                    // Change the selected CR
-                    originalDependency[dependency._id].statusReview.currentRecord.baselineDeliveryDate = dependency.statusReview.currentRecord.baselineDeliveryDate;
-                    originalDependency[dependency._id].statusReview.currentRecord.estimateDeliveryDate = dependency.statusReview.currentRecord.estimateDeliveryDate;
-                    originalDependency[dependency._id].statusReview.currentRecord.actualDeliveryDate = dependency.statusReview.currentRecord.actualDeliveryDate;
-                    originalDependency[dependency._id].statusReview.currentRecord.status = dependency.statusReview.currentRecord.status;
-                    originalDependency[dependency._id].statusReview.currentRecord.completed = dependency.statusReview.currentRecord.completed;
-                    originalDependency[dependency._id].statusReview.currentRecord.statusComment = dependency.statusReview.currentRecord.statusComment;
-                    $scope.selectStatusForm('view', dependency);
-                },
-                function(err){
-                    $scope.error = err.data.message;
+            if(portfolio === 'unassigned'){
+                if(vm.portfoliosSelectedForView.unassigned){
+                    vm.portfoliosSelectedForView.unassigned = false;
+                } else {
+                    vm.portfoliosSelectedForView.unassigned = true;
                 }
-            );
+
+            } else if(portfolio === 'all'){
+                if(vm.portfoliosSelectedForView.all){
+                    vm.portfoliosSelectedForView.all = false;
+                    _.forEach(vm.portfoliosSelectedForView, function(v, k){
+                        vm.portfoliosSelectedForView[k] = false;
+                    });
+                } else {
+                    vm.portfoliosSelectedForView.all = true;
+                    _.each(vm.portfoliosSelectedForView, function(v, k){
+                        vm.portfoliosSelectedForView[k] = true;
+                    });
+                }
+
+            } else {
+
+                if(vm.portfoliosSelectedForView[portfolio._id]){
+                    vm.portfoliosSelectedForView[portfolio._id] = false;
+                } else {
+                    vm.portfoliosSelectedForView[portfolio._id] = true;
+                }
+            }
+
         };
 
-        $scope.cancelEditStatus = function(dependency){
-            dependency.statusReview.currentRecord.baselineDeliveryDate = originalDependency[dependency._id].statusReview.currentRecord.baselineDeliveryDate;
-            dependency.statusReview.currentRecord.estimateDeliveryDate = originalDependency[dependency._id].statusReview.currentRecord.estimateDeliveryDate;
-            dependency.statusReview.currentRecord.actualDeliveryDate = originalDependency[dependency._id].statusReview.currentRecord.actualDeliveryDate;
-            dependency.statusReview.currentRecord.status = originalDependency[dependency._id].statusReview.currentRecord.status;
-            dependency.statusReview.currentRecord.completed = originalDependency[dependency._id].statusReview.currentRecord.completed;
-            dependency.statusReview.currentRecord.statusComment = originalDependency[dependency._id].statusReview.currentRecord.statusComment;
-            $scope.selectStatusForm('view', dependency);
+        var createDependenciesForGraph = function(){
+
+            var arrayOfPortfolioIds = _.keys(_.pick(vm.portfoliosSelectedForView, function(v, k){ return v; }));
+            var newLinks = [];
+            var newNodes = [];
+
+            // LINKS: Pick all the dependencies where the sourcePortfolio or the targetPortfolio equals to the selected portfolio
+            newLinks = _.filter(portfolioDependenciesObject.links, function(link){
+                return _.some(arrayOfPortfolioIds, function(portfolioId){
+                    if(portfolioId === 'unassigned' && ((link.sourcePortfolioId === null) || (link.targetPortfolioId === null))){
+                        return true;
+                    } else {
+                        return (link.sourcePortfolioId === portfolioId) || (link.targetPortfolioId === portfolioId);
+                    }
+                });
+            });
+
+            // NODES: Remove from nodes the nodes that are not in any of the new dependencies
+            newNodes = _.filter(portfolioDependenciesObject.nodes, function(node){
+                return _.some(newLinks, function(link){
+                    return (link.dependency.source._id === node._id) || (link.dependency.target._id === node._id);
+                });
+            });
+
+            // Remap the indexOf the source/target in the links array based on the newNodes
+            newLinks = _.map(newLinks, function(link){
+                link.source = _.findIndex(newNodes, function(node){
+                    return node._id === link.dependency.source._id;
+                });
+                link.target = _.findIndex(newNodes, function(node){
+                    return node._id === link.dependency.target._id;
+                });
+                return link;
+            });
+
+            // Attach the new values to the view
+            vm.dependenciesForGraphObject.links = newLinks;
+            vm.dependenciesForGraphObject.nodes = newNodes;
+        };
+
+        $scope.$watch(
+            function($scope){ return vm.portfoliosSelectedForView; },
+            function ( newValue, oldValue ) {
+                if(newValue !== oldValue){
+                    createDependenciesForGraph();
+                }
+            }, true
+        );
+
+        vm.getPortfolioSelectionStatus = function(portfolio){
+            if(portfolio === 'all'){
+                return vm.portfoliosSelectedForView.all;
+            }
+            if(portfolio === 'unassigned'){
+                return vm.portfoliosSelectedForView.unassigned;
+            }
+            return vm.portfoliosSelectedForView[portfolio._id];
+        };
+
+        // ------ PROJECT SELECTION -----------
+
+        vm.selectNode = function(node){
+            console.log(node);
+        };
+
+        vm.selectLink = function(link){
+            console.log(link);
         };
 
 
-	}
+        var modalProjectProfile = function (size, project) {
+
+            var modalInstance = $modal.open({
+                templateUrl: 'modules/dependency-analysis/views/project-details.client.view.html',
+                controller: function ($scope, $modalInstance, project) {
+
+                    $scope.selectedProject = project;
+
+                    $scope.cancelModal = function () {
+                        $modalInstance.dismiss();
+                    };
+                },
+                size: size,
+                resolve: {
+                    project: function () {
+                        return project;
+                    }
+                },
+                backdrop: 'static',
+                keyboard: false
+            });
+
+        };
+
+        vm.selectProjectProfile = function(project){
+            modalProjectProfile('lg', project);
+        };
+
+
+
+
+
+
+    }
 ]);

@@ -188,13 +188,13 @@ angular.module('core').directive('graph', ['d3', '_',
 
                     newLinks.exit()
                         .transition()
-                        .duration(3000)
+                        .duration(1000)
                         .style('opacity', 0)
                         .remove();
 
                     newNodes.exit()
                         .transition()
-                        .duration(4000)
+                        .duration(2000)
                         .style('opacity', 0)
                         .remove();
 
