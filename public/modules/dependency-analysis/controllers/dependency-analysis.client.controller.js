@@ -1,8 +1,8 @@
 'use strict';
 
 angular.module('dependency-analysis').controller('DependencyAnalysisController', ['$rootScope', '$scope', '$stateParams', '$location', 'Authentication',
-    'Projects','Portfolios','Dependencies', '_','$q','$modal',
-    function($rootScope, $scope, $stateParams, $location, Authentication, Projects, Portfolios, Dependencies, _, $q, $modal) {
+    'Projects','Portfolios','Dependencies', 'DependencyTypes', 'DependencyImpacts', 'DependencyStates', 'LogStatusIndicators', '_','$q','$modal',
+    function($rootScope, $scope, $stateParams, $location, Authentication, Projects, Portfolios, Dependencies, DependencyTypes, DependencyImpacts, DependencyStates, LogStatusIndicators, _, $q, $modal) {
 
         $rootScope.staticMenu = false;
 
@@ -21,6 +21,8 @@ angular.module('dependency-analysis').controller('DependencyAnalysisController',
             //    portfolioID : true/false
         };
 
+        var dependencyTypes = [], dependencyImpacts = [], dependencyStates = [], logStatuses = [];
+
         vm.init = function(){
 
             Portfolios.query(function(portfolios){
@@ -38,7 +40,30 @@ angular.module('dependency-analysis').controller('DependencyAnalysisController',
 
             Dependencies.getDependenciesAnalysis(function(res){
                 portfolioDependenciesObject = res;
-                console.log(res);
+            }, function(err){
+                vm.initError.push(err.data.message);
+            });
+
+            DependencyTypes.query(function(res){
+                dependencyTypes = res;
+            }, function(err){
+                vm.initError.push(err.data.message);
+            });
+
+            DependencyImpacts.query(function(res){
+                dependencyImpacts = res;
+            }, function(err){
+                vm.initError.push(err.data.message);
+            });
+
+            DependencyStates.query(function(res){
+                dependencyStates = res;
+            }, function(err){
+                vm.initError.push(err.data.message);
+            });
+
+            LogStatusIndicators.query(function(res){
+                logStatuses = res;
             }, function(err){
                 vm.initError.push(err.data.message);
             });
@@ -189,22 +214,58 @@ angular.module('dependency-analysis').controller('DependencyAnalysisController',
 
         // ------ PROJECT SELECTION -----------
 
-        vm.selectNode = function(node){
-            console.log(node);
+        var getOneProjectDependencies = function(project){
+            var retArray = [];
+            if(project){
+                retArray = _.chain(vm.dependenciesForGraphObject.links)
+                    .filter(function(link){
+                        return (link.dependency.source._id === project._id) || (link.dependency.target._id === project._id);
+                    })
+                    .map(function(link){
+                        return link.dependency;
+                    })
+                    .value();
+
+                return retArray;
+            }
         };
 
-        vm.selectLink = function(link){
-            console.log(link);
+        var getSourceTargetDependencies = function(source, target){
+            var retArray = [];
+            if(source && target){
+                retArray = _.chain(vm.dependenciesForGraphObject.links)
+                    .filter(function(link){
+                        return ((link.dependency.source._id === source._id) && (link.dependency.target._id === target._id)) || ((link.dependency.source._id === target._id) && (link.dependency.target._id === source._id));
+                    })
+                    .map(function(link){
+                        return link.dependency;
+                    })
+                    .value();
+
+                return retArray;
+            }
         };
 
-
-        var modalProjectProfile = function (size, project) {
+        var modalDependencyProfile = function (size, dependencyTypes, dependencyImpacts, dependencyStates, logStatuses, dependencies, source, target) {
 
             var modalInstance = $modal.open({
-                templateUrl: 'modules/dependency-analysis/views/project-details.client.view.html',
-                controller: function ($scope, $modalInstance, project) {
+                templateUrl: 'modules/dependency-analysis/views/dependency-details.client.view.html',
+                controller: function ($scope, $modalInstance, dependencyTypes, dependencyImpacts, dependencyStates, logStatuses, dependencies, source, target) {
 
-                    $scope.selectedProject = project;
+                    $scope.dependencyTypes = dependencyTypes;
+                    $scope.dependencyImpacts = dependencyImpacts;
+                    $scope.dependencyStates = dependencyStates;
+                    $scope.logStatuses = logStatuses;
+
+                    $scope.dependencies = dependencies;
+                    $scope.source = source;
+                    $scope.target = target;
+
+                    $scope.projectDependencyDetails = 'header';
+
+                    $scope.selectDependency = function(dependency){
+                        $scope.selectedDependency = dependency;
+                    };
 
                     $scope.cancelModal = function () {
                         $modalInstance.dismiss();
@@ -212,8 +273,26 @@ angular.module('dependency-analysis').controller('DependencyAnalysisController',
                 },
                 size: size,
                 resolve: {
-                    project: function () {
-                        return project;
+                    dependencyTypes: function () {
+                        return dependencyTypes;
+                    },
+                    dependencyImpacts: function () {
+                        return dependencyImpacts;
+                    },
+                    dependencyStates: function () {
+                        return dependencyStates;
+                    },
+                    logStatuses: function () {
+                        return logStatuses;
+                    },
+                    dependencies: function () {
+                        return dependencies;
+                    },
+                    source: function () {
+                        return source;
+                    },
+                    target: function () {
+                        return target;
                     }
                 },
                 backdrop: 'static',
@@ -222,14 +301,13 @@ angular.module('dependency-analysis').controller('DependencyAnalysisController',
 
         };
 
-        vm.selectProjectProfile = function(project){
-            modalProjectProfile('lg', project);
+        vm.selectNode = function(node){
+            modalDependencyProfile('lg', dependencyTypes, dependencyImpacts, dependencyStates, logStatuses, getOneProjectDependencies(node), node, null);
         };
 
-
-
-
-
+        vm.selectLink = function(link){
+            modalDependencyProfile('lg', dependencyTypes, dependencyImpacts, dependencyStates, logStatuses, getSourceTargetDependencies(link.dependency.source, link.dependency.target), link.dependency.source, link.dependency.target);
+        };
 
     }
 ]);

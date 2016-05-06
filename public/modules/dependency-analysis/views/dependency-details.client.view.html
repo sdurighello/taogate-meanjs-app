@@ -1,0 +1,262 @@
+<section data-ng-controller="DependencyAnalysisController as vm">
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <h6 class="panel-title text-center" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: normal; width: 100%;">
+                <span data-ng-show="!target">{{source.identification.name}}</span>
+                <span data-ng-show="target">{{source.identification.name}} <-> {{target.identification.name}}</span>
+            </h6>
+        </div>
+        <div class="panel-body">
+            <div class="row">
+                <div class="col-sm-6">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <h6 class="panel-title text-center">Dependencies</h6>
+                        </div>
+                        <div class="panel-body">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div data-ng-show="dependencies.length === 0" class="alert alert-warning text-center">
+                                        There are no dependencies
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row" style="min-height: 400px; max-height: 400px; overflow-y: auto" data-ng-show="dependencies.length > 0">
+                                <div class="col-xs-12">
+                                    <div class="table-responsive">
+                                        <table class="table table-hover table-condensed small">
+                                            <thead>
+                                            <tr>
+                                                <td colspan="7">
+                                                    <div class="row" data-ng-show="!showDependencyFilters">
+                                                        <div class="col-md-12">
+                                                            <a data-ng-click="showDependencyFilters = true"><b>Filters</b></a><br>
+
+                                                            <span data-ng-show="dependencyFilter.type"><b>Type: </b><i>"{{dependencyFilter.type.name}}" | </i></span>
+
+                                                            <span data-ng-show="dependencyFilter.impact"><b>Impact: </b><i>"{{dependencyFilter.impact.name}}" | </i></span>
+
+                                                            <span data-ng-show="dependencyFilter.state"><b>State: </b><i>"{{dependencyFilter.state.name}}" | </i></span>
+
+                                                            <span data-ng-show="dependencyFilter.name"><b>Name: </b><i>"{{dependencyFilter.name}}" | </i></span>
+
+                                                            <span data-ng-show="dependencyFilter.statusReview.currentRecord.status"><b>Status: </b><i>"{{dependencyFilter.statusReview.currentRecord.status.name}}" | </i></span>
+
+                                                            <span data-ng-show="dependencyFilter.statusReview.currentRecord.completed === false"><b>Completion: </b><i>"Not completed"</i></span>
+                                                            <span data-ng-show="dependencyFilter.statusReview.currentRecord.completed === true"><b>Completion: </b><i>"Completed"</i></span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="row" data-ng-show="showDependencyFilters">
+                                                        <div class="col-md-12">
+                                                            <div class="row">
+                                                                <div class="col-md-12">
+                                                                    <a data-ng-click="showDependencyFilters = false"><b>Hide filters</b></a>
+                                                                </div>
+                                                            </div>
+                                                            <br>
+                                                            <div class="row">
+                                                                <div class="col-md-4 form-group-sm">
+                                                                    <select class="form-control" data-ng-model = "dependencyFilter.type"
+                                                                            data-ng-options="type as type.name for type in dependencyTypes">
+                                                                        <option value="">--type</option>
+                                                                    </select>
+                                                                </div>
+                                                                <div class="col-md-4 form-group-sm">
+                                                                    <select class="form-control" data-ng-model = "dependencyFilter.state"
+                                                                            data-ng-options="state as state.name for state in dependencyStates">
+                                                                        <option value="">--state</option>
+                                                                    </select>
+                                                                </div>
+                                                                <div class="col-md-4 form-group-sm">
+                                                                    <select class="form-control" data-ng-model = "dependencyFilter.impact"
+                                                                            data-ng-options="impact as impact.name for impact in dependencyImpacts">
+                                                                        <option value="">--impact</option>
+                                                                    </select>
+                                                                </div>
+                                                            </div>
+                                                            <br>
+                                                            <div class="row">
+                                                                <div class="col-md-4 form-group-sm">
+                                                                    <input class="form-control" type="text" placeholder="filter by name" data-ng-model="dependencyFilter.name">
+                                                                </div>
+                                                                <div class="col-md-4 form-group-sm">
+                                                                    <select class="form-control" data-ng-model = "dependencyFilter.statusReview.currentRecord.status"
+                                                                            data-ng-options="status as status.name for status in logStatuses">
+                                                                        <option value="">--status</option>
+                                                                    </select>
+                                                                </div>
+                                                                <div class="col-md-4 form-group-sm">
+                                                                    <select class="form-control" data-ng-model = "dependencyFilter.statusReview.currentRecord.completed"
+                                                                            data-ng-options="completion.flag as completion.name for completion in completionFilterArray">
+                                                                        <option value="">--completion</option>
+                                                                    </select>
+                                                                </div>
+                                                            </div>
+                                                            <br>
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <th colspan="4" class="text-center">Name</th>
+                                            </tr>
+                                            <tr>
+                                                <th>Type</th>
+                                                <th>State</th>
+                                                <th>Impact</th>
+                                                <th>Status</th>
+                                            </tr>
+                                            </thead>
+                                            <tbody data-ng-repeat="dependency in dependencies | orderBy: 'impact.numericalValue'">
+                                            <tr>
+                                                <td colspan="4" class="text-center" style="background-color: lightgray">
+                                                    <button class="btn-link small" data-ng-click="selectDependency(dependency)">
+                                                        <b>{{dependency.name}}</b>
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    <span data-ng-show="dependency.type">{{dependency.type.name}}</span>
+                                                    <span data-ng-show="!dependency.type">No type</span>
+                                                </td>
+                                                <td>
+                                                    <span data-ng-show="dependency.state">{{dependency.state.name}}</span>
+                                                    <span data-ng-show="!dependency.state">No state</span>
+                                                </td>
+                                                <td>
+                                                    <span data-ng-show="dependency.impact">{{dependency.impact.name}}</span>
+                                                    <span data-ng-show="!dependency.impact">No impact</span>
+                                                </td>
+                                                <td>
+                                                    <span data-ng-show="dependency.statusReview.currentRecord.status">{{dependency.statusReview.currentRecord.status.name}}</span>
+                                                    <span data-ng-show="!dependency.statusReview.currentRecord.status">No status</span>
+                                                </td>
+                                            </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div data-ng-hide="selectedDependency || dependencies.length === 0" class="alert alert-warning text-center">
+                        Select a dependency to see its details
+                    </div>
+                    <div class="row" data-ng-show="selectedDependency">
+                        <div class="col-md-12">
+                            <div class="panel panel-default">
+                                <div class="panel-heading">
+                                    <h6 class="panel-title text-center" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: normal; width: 100%;">
+                                        {{selectedDependency.name}}
+                                    </h6>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6 btn-group btn-group-xs btn-group-justified">
+                                        <label class="btn btn-info btn-xs" data-ng-model="projectDependencyDetails" btn-radio="'header'">
+                                            Header
+                                        </label>
+                                        <label class="btn btn-info btn-xs" data-ng-model="projectDependencyDetails" btn-radio="'status'">
+                                            Status
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="panel-body" style="min-height: 405px; max-height: 405px; overflow-y: auto">
+                                    <div data-ng-show="projectDependencyDetails === 'header'">
+                                        <div data-ng-switch="switchHeaderForm[selectedDependency._id]">
+                                            <form>
+                                                <div class="row">
+                                                    <div class="form-group-sm col-md-6">
+                                                        <label>Source</label>
+                                                        <input class="form-control" disabled title="{{selectedDependency.source.identification.name}}" data-ng-model="selectedDependency.source.identification.name">
+                                                    </div>
+                                                    <div class="form-group-sm col-md-6">
+                                                        <label>Target</label>
+                                                        <input class="form-control" disabled title="{{selectedDependency.target.identification.name}}" data-ng-model="selectedDependency.target.identification.name">
+                                                    </div>
+                                                </div>
+                                                <br>
+                                                <div class="row">
+                                                    <div class="form-group-sm col-md-4">
+                                                        <label>Type</label>
+                                                        <input class="form-control" disabled title="{{selectedDependency.type.name}}" data-ng-model="selectedDependency.type.name">
+                                                    </div>
+                                                    <div class="form-group-sm col-md-4">
+                                                        <label>Impact</label>
+                                                        <input class="form-control" disabled title="{{selectedDependency.impact.name}}" data-ng-model="selectedDependency.impact.name">
+                                                    </div>
+                                                    <div class="form-group-sm col-md-4">
+                                                        <label>State</label>
+                                                        <input class="form-control" disabled title="{{selectedDependency.state.name}}" data-ng-model="selectedDependency.state.name">
+                                                    </div>
+                                                </div>
+                                                <br>
+                                                <div class="row">
+                                                    <div class="form-group-sm col-md-12">
+                                                        <label for="dependencyDescription">Description</label>
+                                                        <textarea id="dependencyDescription" class="form-control" placeholder="Enter description" data-ng-model="selectedDependency.description" disabled></textarea>
+                                                    </div>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                    <div data-ng-show="projectDependencyDetails === 'status'">
+                                        <div data-ng-switch="switchStatusForm[selectedDependency._id]">
+                                            <form>
+                                                <div class="row">
+                                                    <div class="form-group-sm col-md-4">
+                                                        <label for="">Baseline delivery date</label>
+                                                        <input type="text" id="" class="form-control" datepicker-popup="dd-MMMM-yyyy" data-ng-model="selectedDependency.statusReview.currentRecord.baselineDeliveryDate" disabled />
+                                                    </div>
+                                                    <div class="form-group-sm col-md-4">
+                                                        <label for="">Estimate delivery date</label>
+                                                        <input type="text" id="" class="form-control" datepicker-popup="dd-MMMM-yyyy" data-ng-model="selectedDependency.statusReview.currentRecord.estimateDeliveryDate" disabled />
+                                                    </div>
+                                                    <div class="form-group-sm col-md-4">
+                                                        <label for="">Actual delivery date</label>
+                                                        <input type="text" id="" class="form-control" datepicker-popup="dd-MMMM-yyyy" data-ng-model="selectedDependency.statusReview.currentRecord.actualDeliveryDate" disabled />
+                                                    </div>
+                                                </div>
+                                                <br>
+                                                <div class="row">
+                                                    <div class="form-group-sm col-md-5">
+                                                        <label>Status</label>
+                                                        <input class="form-control" disabled title="{{selectedDependency.statusReview.currentRecord.status.name}}" data-ng-model="selectedDependency.statusReview.currentRecord.status.name">
+                                                    </div>
+                                                    <br>
+                                                    <div class="form-group-sm col-md-5">
+                                                        <label for="prjCrEditCompleted">Completed</label>
+                                                        <input id="prjCrEditCompleted" class="" type="checkbox"
+                                                               data-ng-model="selectedDependency.statusReview.currentRecord.completed" disabled>
+                                                    </div>
+                                                </div>
+                                                <br>
+                                                <div class="row">
+                                                    <div class="form-group-sm col-md-12">
+                                                        <label for="comment">Status comment</label>
+                                                        <textarea id="comment" class="form-control" data-ng-model="selectedDependency.statusReview.currentRecord.statusComment" disabled></textarea>
+                                                    </div>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="center-block text-center">
+            <button class="btn btn-primary btn-sm" data-ng-click="cancelModal()">
+                Close
+            </button>
+        </div>
+    </div>
+    <br>
+    <div class="row"></div>
+</section>
