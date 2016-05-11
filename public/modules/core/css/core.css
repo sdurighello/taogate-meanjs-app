@@ -198,7 +198,11 @@
     overflow-y: auto;
 }
 
-/* MAIL CHIMP */
+
+
+/* ------------- MAIL CHIMP ------------ */
+
+
 /* MailChimp Form Embed Code - Classic - 08/17/2011 */
 #mc_embed_signup form {display:block; position:relative; text-align:left; padding:10px 0 10px 3%}
 #mc_embed_signup h2 {font-weight:bold; padding:0; margin:15px 0; font-size:1.4em;}
@@ -244,9 +248,10 @@
 #mc_embed_signup #num-subscribers {font-size:1.1em;}
 #mc_embed_signup #num-subscribers span {padding:.5em; border:1px solid #ccc; margin-right:.5em; font-weight:bold;}
 
-/*
-D3 Charts
-*/
+
+
+/* ----------- D3 Charts ----------- */
+
 
 /* Graph */
 
@@ -293,3 +298,61 @@ D3 Charts
 /*.x.axis path {*/
     /*display: none;*/
 /*}*/
+
+
+/* ---------- PRINTING PAGE ------------ */
+
+
+.background-page {
+    background: rgb(204,204,204);
+}
+
+page {
+    background: white;
+    display: block;
+    margin: 0 auto;
+    margin-bottom: 0.5cm;
+    box-shadow: 0 0 0.5cm rgba(0,0,0,0.5);
+}
+page[size="A4"] {
+    width: 21cm;
+    height: 29.7cm;
+}
+page[size="A4"][layout="portrait"] {
+    width: 29.7cm;
+    height: 21cm;
+}
+page[size="A3"] {
+    width: 29.7cm;
+    height: 42cm;
+}
+page[size="A3"][layout="portrait"] {
+    width: 42cm;
+    height: 29.7cm;
+}
+page[size="A5"] {
+    width: 14.8cm;
+    height: 21cm;
+}
+page[size="A5"][layout="portrait"] {
+    width: 21cm;
+    height: 14.8cm;
+}
+@media print {
+    .background-page, page {
+        margin: 0;
+        box-shadow: 0;
+    }
+}
+
+/*USE:*/
+
+/*<div class="background-page">*/
+/*<page size="A4"></page> */
+/*<page size="A4"></page> */
+/*<page size="A4" layout="portrait"></page> */
+/*<page size="A5"></page> */
+/*<page size="A5" layout="portrait"></page> */
+/*<page size="A3"></page> */
+/*<page size="A3" layout="portrait"></page>*/
+                                                                                                                                                                                    /*</div>*/

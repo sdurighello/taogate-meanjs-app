@@ -17,58 +17,109 @@
     <div data-ng-show="error" class="text-danger">
         <strong data-ng-bind="error"></strong>
     </div>
-
     <div class="row">
         <div class="col-sm-4">
             <div class="panel panel-default">
                 <div class="panel-heading">
                     <h6 class="panel-title text-center">Dependencies</h6>
                 </div>
-                <div class="panel-body">
-                    <div class="row">
-                        <div class=" form-group col-md-6">
-                            <label for="selectSourcePortfolio">Source</label>
-                            <select id="selectSourcePortfolio" class="form-control input-sm" data-ng-model="filterDependency.sourcePortfolio"
-                                    data-ng-options="portfolio._id as portfolio.name for portfolio in portfolios">
-                                <option value="">--portfolio</option>
-                            </select>
-                        </div>
-                        <div class=" form-group col-md-6">
-                            <label for="selectTargetPortfolio">Target</label>
-                            <select id="selectTargetPortfolio" class="form-control input-sm" data-ng-model="filterDependency.targetPortfolio"
-                                    data-ng-options="portfolio._id as portfolio.name for portfolio in portfolios">
-                                <option value="">--portfolio</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="form-group col-md-6">
-                            <select id="selectSourceProject" class="form-control input-sm" data-ng-model="filterDependency.source"
-                                    data-ng-options="project._id as project.identification.name for project in projects | filter: project.portfolio = filterDependency.sourcePortfolio">
-                                <option value="">--project</option>
-                            </select>
-                        </div>
-                        <div class="form-group col-md-6">
-                            <select id="selectTargetProject" class="form-control input-sm" data-ng-model="filterDependency.target"
-                                    data-ng-options="project._id as project.identification.name for project in projects | filter: project.portfolio = filterDependency.targetPortfolio">
-                                <option value="">--project</option>
-                            </select>
+                <div class="panel-body" style="min-height: 500px; max-height: 500px; overflow-y: auto">
+                    <div class="row" data-ng-show="!showDependencyFilters">
+                        <div class="col-md-12">
+                            <a data-ng-click="showDependencyFilters = true"><b>Filters</b></a><br>
+
+                            <span data-ng-show="dependencyFilter.name"><b>Name: </b><i>"{{dependencyFilter.name}}" | </i></span>
+
+                            <span data-ng-show="dependencyFilter.source"><b>Source: </b><i>"{{dependencyFilter.source.identification.name}}" | </i></span>
+
+                            <span data-ng-show="dependencyFilter.target"><b>Target: </b><i>"{{dependencyFilter.target.identification.name}}" | </i></span>
+
+                            <span data-ng-show="dependencyFilter.type"><b>Type: </b><i>"{{dependencyFilter.type.name}}" | </i></span>
+
+                            <span data-ng-show="dependencyFilter.impact"><b>Impact: </b><i>"{{dependencyFilter.impact.name}}" | </i></span>
+
+                            <span data-ng-show="dependencyFilter.state"><b>State: </b><i>"{{dependencyFilter.state.name}}" | </i></span>
+
+                            <span data-ng-show="dependencyFilter.statusReview.currentRecord.status"><b>Status: </b><i>"{{dependencyFilter.statusReview.currentRecord.status.name}}" | </i></span>
+
+                            <span data-ng-show="dependencyFilter.statusReview.currentRecord.completed === false"><b>Completion: </b><i>"Not completed"</i></span>
+                            <span data-ng-show="dependencyFilter.statusReview.currentRecord.completed === true"><b>Completion: </b><i>"Completed"</i></span>
                         </div>
                     </div>
-                    <div class="row">
-                        <div class="form-group col-md-6">
-                            <label for="type">Type</label>
-                            <select id="type" class="form-control input-sm" data-ng-model = "filterDependency.type"
-                                    data-ng-options="type._id as type.name for type in dependencyTypes">
-                                <option value="">--type</option>
-                            </select>
-                        </div>
-                        <div class="form-group col-md-6">
-                            <label for="type">State</label>
-                            <select id="type" class="form-control input-sm" data-ng-model = "filterDependency.state"
-                                    data-ng-options="state._id as state.name for state in dependencyStates">
-                                <option value="">--state</option>
-                            </select>
+                    <div class="row" data-ng-show="showDependencyFilters">
+                        <div class="col-xs-12">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <a data-ng-click="showDependencyFilters = false"><b>Hide filters</b></a>
+                                </div>
+                            </div>
+                            <hr style="margin: 3px;">
+                            <div class="row">
+                                <div class=" form-group col-md-12">
+                                    <input title="selectDependencyName" type="text" class="form-control" placeholder="name"
+                                           data-ng-model="dependencyFilter.name">
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="form-group col-md-6">
+                                    <select title="type" class="form-control input-sm" data-ng-model = "dependencyFilter.type"
+                                            data-ng-options="type as type.name for type in dependencyTypes">
+                                        <option value="">--type</option>
+                                    </select>
+                                </div>
+                                <div class="form-group col-md-6">
+                                    <select title="type" class="form-control input-sm" data-ng-model = "dependencyFilter.state"
+                                            data-ng-options="state as state.name for state in dependencyStates">
+                                        <option value="">--state</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="form-group col-md-6">
+                                    <select title="type" class="form-control input-sm" data-ng-model = "dependencyFilter.impact"
+                                            data-ng-options="impact as impact.name for impact in dependencyImpacts">
+                                        <option value="">--impact</option>
+                                    </select>
+                                </div>
+                                <div class="form-group col-md-6">
+                                    <select title="status" class="form-control input-sm" data-ng-model = "dependencyFilter.status"
+                                            data-ng-options="status as status.name for status in logStatuses">
+                                        <option value="">--status</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="form-group col-md-6">
+                                    <select title="completion" class="form-control input-sm" data-ng-model = "dependencyFilter.completion"
+                                            data-ng-options="completion.flag as completion.name for completion in completionFilterArray">
+                                        <option value="">--completion</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class=" form-group col-md-6">
+                                    <label for="selectSourcePortfolio">Source</label>
+                                    <select id="selectSourcePortfolio" class="form-control input-sm" data-ng-model="dependencyFilter.sourcePortfolio"
+                                            data-ng-options="portfolio as portfolio.name for portfolio in portfolios">
+                                        <option value="">--portfolio</option>
+                                    </select>
+                                    <select title="selectSourceProject" class="form-control input-sm" data-ng-model="dependencyFilter.source"
+                                            data-ng-options="project as project.identification.name for project in projects | filter : (!!dependencyFilter.sourcePortfolio || undefined) && {portfolio:{_id: dependencyFilter.sourcePortfolio._id}}">
+                                        <option value="">--project</option>
+                                    </select>
+                                </div>
+                                <div class=" form-group col-md-6">
+                                    <label for="selectTargetPortfolio">Target</label>
+                                    <select id="selectTargetPortfolio" class="form-control input-sm" data-ng-model="dependencyFilter.targetPortfolio"
+                                            data-ng-options="portfolio as portfolio.name for portfolio in portfolios">
+                                        <option value="">--portfolio</option>
+                                    </select>
+                                    <select title="selectTargetProject" class="form-control input-sm" data-ng-model="dependencyFilter.target"
+                                            data-ng-options="project as project.identification.name for project in projects | filter : (!!dependencyFilter.targetPortfolio || undefined) && {portfolio:{_id: dependencyFilter.targetPortfolio._id}}">
+                                        <option value="">--project</option>
+                                    </select>
+                                </div>
+                            </div>
                         </div>
                     </div>
                     <hr style="margin-top: 2%">
@@ -79,11 +130,21 @@
                             </div>
                         </div>
                     </div>
-                    <div class="row" style="min-height: 235px; max-height: 235px; overflow-y: auto">
+                    <div class="row" style="min-height: 420px; max-height: 420px; overflow-y: auto">
                         <div class="col-md-12">
-                            <button type="button" ng-repeat="dependency in dependencies" data-ng-click="selectDependency(dependency)"
-                                    class="btn btn-sm center-block btn-block" style="overflow: hidden;"
-                                    data-ng-class="{'btn-default' : dependency.statusReview.currentRecord.completed, 'btn-info' : !dependency.statusReview.currentRecord.completed}">
+                            <button type="button" class="btn btn-sm center-block btn-block" style="overflow: hidden;"
+                                    data-ng-repeat="dependency in dependencies
+                                    | filter : (!!dependencyFilter.name || undefined) && {name: dependencyFilter.name}
+                                    | filter : (!!dependencyFilter.source || undefined) && {source:{_id: dependencyFilter.source._id}}
+                                    | filter : (!!dependencyFilter.target || undefined) && {target:{_id: dependencyFilter.target._id}}
+                                    | filter : (!!dependencyFilter.type || undefined) && {type:dependencyFilter.type._id}
+                                    | filter : (!!dependencyFilter.state || undefined) && {state:dependencyFilter.state._id}
+                                    | filter : (!!dependencyFilter.impact || undefined) && {impact: dependencyFilter.impact._id}
+                                    | filter : (!!dependencyFilter.status || undefined) && {statusReview:{currentRecord: {status: dependencyFilter.status} }}
+                                    | filter : (!!dependencyFilter.completion || undefined) && {statusReview:{currentRecord: {completed: dependencyFilter.completion} }}"
+                                    data-ng-click="selectDependency(dependency)"
+                                    data-ng-class="{'btn-default' : dependency.statusReview.currentRecord.completed, 'btn-info' : !dependency.statusReview.currentRecord.completed}"
+                                    data-ng-disabled="isResolving">
                                 {{dependency.name}}
                             </button>
                         </div>
@@ -112,14 +173,14 @@
                                     <div class="row">
                                         <div class=" form-group col-md-6">
                                             <label for="selectSourcePortfolio">Source</label>
-                                            <select id="selectSourcePortfolio" class="form-control input-sm" data-ng-model="filterDependencyNew.sourcePortfolio"
+                                            <select id="selectSourcePortfolio" class="form-control input-sm" data-ng-model="dependencyFilterNew.sourcePortfolio"
                                                     data-ng-options="portfolio._id as portfolio.name for portfolio in portfolios">
                                                 <option value="">--source portfolio</option>
                                             </select>
                                         </div>
                                         <div class=" form-group col-md-6">
                                             <label for="selectTargetPortfolio">Target</label>
-                                            <select id="selectTargetPortfolio" class="form-control input-sm" data-ng-model="filterDependencyNew.targetPortfolio"
+                                            <select id="selectTargetPortfolio" class="form-control input-sm" data-ng-model="dependencyFilterNew.targetPortfolio"
                                                     data-ng-options="portfolio._id as portfolio.name for portfolio in portfolios">
                                                 <option value="">--target portfolio</option>
                                             </select>
@@ -128,14 +189,14 @@
                                     <div class="row">
                                         <div class="form-group-sm col-md-6">
                                             <select id="sourceNew" class="form-control" data-ng-model = "newDependency.source"
-                                                    data-ng-options="project._id as project.identification.name for project in projects | filter: project.portfolio = filterDependencyNew.sourcePortfolio"
+                                                    data-ng-options="project._id as project.identification.name for project in projects | filter: project.portfolio = dependencyFilterNew.sourcePortfolio"
                                                     required>
                                                 <option value="">--source project</option>
                                             </select>
                                         </div>
                                         <div class="form-group-sm col-md-6">
                                             <select id="sourceNew" class="form-control" data-ng-model = "newDependency.target"
-                                                    data-ng-options="project._id as project.identification.name for project in projects | filter: project.portfolio = filterDependencyNew.targetPortfolio"
+                                                    data-ng-options="project._id as project.identification.name for project in projects | filter: project.portfolio = dependencyFilterNew.targetPortfolio"
                                                     required>
                                                 <option value="">--target project</option>
                                             </select>
@@ -176,11 +237,11 @@
                                     <div class="row">
                                         <div class="col-md-12 form-group">
                                             <div class="pull-right">
-                                                <button class="btn btn-success btn-sm" data-ng-click="createDependency(); showNewDependencyForm = false;"
-                                                        data-ng-disabled="newDependencyForm.$invalid">
+                                                <button class="btn btn-success btn-sm" data-ng-click="createDependency()"
+                                                        data-ng-disabled="newDependencyForm.$invalid || isResolving">
                                                     Save
                                                 </button>
-                                                <button class="btn btn-info btn-sm" data-ng-click="cancelNewDependency(); showNewDependencyForm = false;">
+                                                <button class="btn btn-info btn-sm" data-ng-click="cancelNewDependency()" data-ng-disabled="isResolving">
                                                     Cancel
                                                 </button>
                                             </div>
@@ -196,7 +257,7 @@
                 <div class="col-md-12">
                     <div class="row" data-ng-show="!showNewDependencyForm && userHasAuthorization('new', user)">
                         <div class="col-md-12 form-group-sm center-block">
-                            <button class="btn btn-warning btn-sm" ng-click="showNewDependencyForm = true">
+                            <button class="btn btn-success btn-sm" data-ng-click="showNewDependency(selectedDependency)" data-ng-disabled="isResolving">
                                 New dependency
                             </button>
                         </div>
@@ -211,11 +272,9 @@
                                 <div class="col-md-12">
                                     <div class="panel panel-default">
                                         <div class="panel-heading">
-                                            <div class="row">
-                                                <div class="col-md-12 text-center">
-                                                    <b><em>{{selectedDependency.name}}</em></b>
-                                                </div>
-                                            </div>
+                                            <h6 class="panel-title text-center" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: normal; width: 100%;">
+                                                {{selectedDependency.name}}
+                                            </h6>
                                         </div>
                                         <div class="row">
                                             <div class="col-md-6 btn-group btn-group-xs btn-group-justified">
@@ -282,7 +341,7 @@
                                                             </div>
                                                         </div>
                                                         <hr>
-                                                        <div class="form-group-sm pull-right" data-ng-show="userHasAuthorization('edit', user, selectedDependency) && !selectedDependency.final">
+                                                        <div class="form-group-sm pull-right" data-ng-show="userHasAuthorization('edit', user, selectedDependency)">
                                                             <button class="btn btn-success btn-xs" data-ng-click="editHeader(selectedDependency)">
                                                                 Edit
                                                             </button>
@@ -346,13 +405,16 @@
                                                         </div>
                                                         <hr>
                                                         <div class="form-group-sm pull-right">
-                                                            <button class="btn btn-success btn-xs" data-ng-click="saveEditHeader(selectedDependency)" data-ng-disabled="editDependencyForm.$invalid">
+                                                            <button class="btn btn-success btn-xs" data-ng-click="saveEditHeader(selectedDependency)"
+                                                                    data-ng-disabled="editDependencyForm.$invalid || isResolving">
                                                                 Save
                                                             </button>
-                                                            <button class="btn btn-danger btn-xs" data-ng-click="deleteDependency(selectedDependency)">
+                                                            <button class="btn btn-danger btn-xs" data-ng-click="deleteDependency(selectedDependency)"
+                                                                    data-ng-disabled="isResolving">
                                                                 Delete dependency
                                                             </button>
-                                                            <button class="btn btn-info btn-xs" data-ng-click="cancelEditHeader(selectedDependency)">
+                                                            <button class="btn btn-info btn-xs" data-ng-click="cancelEditHeader(selectedDependency)"
+                                                                    data-ng-disabled="isResolving">
                                                                 Cancel
                                                             </button>
                                                         </div>
@@ -463,10 +525,12 @@
                                                         </div>
                                                         <hr>
                                                         <div class="pull-right">
-                                                            <button class="btn btn-success btn-xs" data-ng-click="saveEditStatus(selectedDependency)">
+                                                            <button class="btn btn-success btn-xs" data-ng-click="saveEditStatus(selectedDependency)"
+                                                                    data-ng-disabled="isResolving">
                                                                 Save
                                                             </button>
-                                                            <button class="btn btn-info btn-xs" data-ng-click="cancelEditStatus(selectedDependency)">
+                                                            <button class="btn btn-info btn-xs" data-ng-click="cancelEditStatus(selectedDependency)"
+                                                                    data-ng-disabled="isResolving">
                                                                 Cancel
                                                             </button>
                                                         </div>

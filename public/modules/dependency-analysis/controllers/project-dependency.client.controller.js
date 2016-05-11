@@ -9,6 +9,9 @@ angular.module('dependency-analysis').controller('ProjectDependencyController', 
 
         // ----------- INIT ---------------
 
+        $scope.error = null;
+        $scope.isResolving = false;
+        
         $scope.initError = [];
 
         $scope.init = function(){
@@ -53,44 +56,6 @@ angular.module('dependency-analysis').controller('ProjectDependencyController', 
                 $scope.initError.push(err.data.message);
             });
 
-        };
-
-        // ------- D3 --------
-
-        $scope.dependencyData = {
-            'nodes':[
-                {_id:1, 'name':'Myriel','group':1},
-                {_id:2, 'name':'Napoleon','group':1},
-                {_id:3, 'name':'Mlle.Baptistine','group':1}
-            ],
-            'links':[
-                {_id:1, 'source':1,'target':0,'value':1},
-                {_id:2, 'source':1,'target':2,'value':1},
-                {_id:3, 'source':2,'target':1,'value':1}
-            ]
-        };
-
-        $scope.change = function(){
-            $scope.dependencyData = {
-                'nodes':[
-                    {_id:1, 'name':'Myriel','group':1},
-                    {_id:2, 'name':'Napoleon','group':1},
-                    {_id:4, 'name':'Name4','group':1}
-                ],
-                'links':[
-                    {_id:1, 'source':1,'target':0,'value':1},
-                    {_id:2, 'source':1,'target':0,'value':1},
-                    {_id:3, 'source':1,'target':1,'value':1}
-                ]
-            };
-        };
-
-        $scope.selectNode = function(project){
-            console.log(project);
-        };
-
-        $scope.selectLink = function(dependency){
-            console.log(dependency);
         };
 
 
@@ -172,13 +137,32 @@ angular.module('dependency-analysis').controller('ProjectDependencyController', 
 
         // ------------------- OTHER VARIABLES ---------------------
 
+        $scope.completionFilterArray = [
+            {name:'Completed', flag:true},
+            {name:'Not completed', flag:false}
+        ];
+
         $scope.projectDependencyDetails = 'header';
 
         // ------------- CREATE NEW DEPENDENCY -----------
 
+        var cancelEditHeaderData, cancelEditStatusData;
+
         $scope.newDependency = {};
 
+        $scope.showNewDependency = function(dependency){
+
+            // If selectedDependency, cancel any existing changes and set editDependency to view (behind the new form)
+            if(dependency){
+                $scope.cancelEditStatus(dependency);
+                $scope.cancelEditHeader(dependency);
+            }
+
+            $scope.showNewDependencyForm = true;
+        };
+
         $scope.createDependency = function(){
+            
             var newDependency = new Dependencies({
                 name: $scope.newDependency.name,
                 description: $scope.newDependency.description,
@@ -188,20 +172,31 @@ angular.module('dependency-analysis').controller('ProjectDependencyController', 
                 source: $scope.newDependency.source,
                 target: $scope.newDependency.target
             });
+
+            $scope.error = null;
+            $scope.isResolving = true;
+            
             newDependency.$save(function(res) {
+                $scope.isResolving = false;
                 // Add new dependency to view after saving to server
                 $scope.dependencies.push(res);
                 // Clear form fields
                 $scope.newDependency = {};
+                // Close the new dependency form
+                $scope.showNewDependencyForm = false;
                 // Open the new dependency in the view panel
                 $scope.selectDependency(res);
-            }, function(errorResponse) {
-                $scope.error = errorResponse.data.message;
+            }, function(err) {
+                $scope.isResolving = false;
+                $scope.error = err.data.message;
             });
         };
 
         $scope.cancelNewDependency = function(){
+            $scope.error = null;
             $scope.newDependency = {};
+            // Close the new dependency form
+            $scope.showNewDependencyForm = false;
         };
 
 
@@ -227,11 +222,15 @@ angular.module('dependency-analysis').controller('ProjectDependencyController', 
             copyDependency.source = copyDependency.source._id;
             copyDependency.target = copyDependency.target._id;
 
+            $scope.error = null;
+            $scope.isResolving = true;
+
             Dependencies.updateHeader(
                 {
                     dependencyId : dependency._id
                 }, copyDependency,
                 function(res){
+                    $scope.isResolving = false;
                     // Update details pane view with new saved details
                     originalDependency[dependency._id].name = dependency.name;
                     originalDependency[dependency._id].description = dependency.description;
@@ -244,11 +243,14 @@ angular.module('dependency-analysis').controller('ProjectDependencyController', 
                     // Close edit header form and back to view
                     $scope.selectHeaderForm('view', dependency);
                 },
-                function(err){$scope.error = err.data.message;}
+                function(err){
+                    $scope.isResolving = false;
+                    $scope.error = err.data.message;
+                }
             );
         };
-
-        $scope.cancelEditHeader = function(dependency){
+        
+        cancelEditHeaderData = function(dependency){
             dependency.name = originalDependency[dependency._id].name;
             dependency.description = originalDependency[dependency._id].description;
             dependency.source = originalDependency[dependency._id].source;
@@ -256,6 +258,11 @@ angular.module('dependency-analysis').controller('ProjectDependencyController', 
             dependency.state = originalDependency[dependency._id].state;
             dependency.type = originalDependency[dependency._id].type;
             dependency.impact = originalDependency[dependency._id].impact;
+        };
+
+        $scope.cancelEditHeader = function(dependency){
+            $scope.error = null;
+            cancelEditHeaderData(dependency);
             $scope.selectHeaderForm('view', dependency);
         };
 
@@ -266,12 +273,17 @@ angular.module('dependency-analysis').controller('ProjectDependencyController', 
             copyDependency.source = copyDependency.source._id;
             copyDependency.target = copyDependency.target._id;
 
+            $scope.error = null;
+            $scope.isResolving = true;
+            
             Dependencies.remove({dependencyId: dependency._id}, copyDependency, function(res){
+                $scope.isResolving = false;
                 $scope.dependencies = _.without($scope.dependencies, dependency);
                 $scope.cancelNewDependency();
                 $scope.selectedDependency = null;
                 originalDependency = {};
             }, function(err){
+                $scope.isResolving = false;
                 $scope.error = err.data.message;
             });
         };
@@ -310,8 +322,12 @@ angular.module('dependency-analysis').controller('ProjectDependencyController', 
             copyDependency.source = copyDependency.source._id;
             copyDependency.target = copyDependency.target._id;
 
+            $scope.error = null;
+            $scope.isResolving = true;
+
             Dependencies.updateStatus( { dependencyId : dependency._id }, copyDependency,
                 function(res){
+                    $scope.isResolving = false;
                     // Change the selected CR
                     originalDependency[dependency._id].statusReview.currentRecord.baselineDeliveryDate = dependency.statusReview.currentRecord.baselineDeliveryDate;
                     originalDependency[dependency._id].statusReview.currentRecord.estimateDeliveryDate = dependency.statusReview.currentRecord.estimateDeliveryDate;
@@ -322,18 +338,24 @@ angular.module('dependency-analysis').controller('ProjectDependencyController', 
                     $scope.selectStatusForm('view', dependency);
                 },
                 function(err){
+                    $scope.isResolving = false;
                     $scope.error = err.data.message;
                 }
             );
         };
-
-        $scope.cancelEditStatus = function(dependency){
+        
+        cancelEditStatusData = function(dependency){
             dependency.statusReview.currentRecord.baselineDeliveryDate = originalDependency[dependency._id].statusReview.currentRecord.baselineDeliveryDate;
             dependency.statusReview.currentRecord.estimateDeliveryDate = originalDependency[dependency._id].statusReview.currentRecord.estimateDeliveryDate;
             dependency.statusReview.currentRecord.actualDeliveryDate = originalDependency[dependency._id].statusReview.currentRecord.actualDeliveryDate;
             dependency.statusReview.currentRecord.status = originalDependency[dependency._id].statusReview.currentRecord.status;
             dependency.statusReview.currentRecord.completed = originalDependency[dependency._id].statusReview.currentRecord.completed;
             dependency.statusReview.currentRecord.statusComment = originalDependency[dependency._id].statusReview.currentRecord.statusComment;
+        };
+
+        $scope.cancelEditStatus = function(dependency){
+            $scope.error = null;
+            cancelEditStatusData(dependency);
             $scope.selectStatusForm('view', dependency);
         };
 

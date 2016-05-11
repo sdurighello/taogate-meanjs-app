@@ -16,6 +16,8 @@ angular.module('core').directive('roadmap', ['d3', '_', '$parse',
                 var selectProject = parseSelectProject(scope);
                 var data = parseData(scope);
 
+                var baseColorRectDelivery = '#d3d3d3';
+
                 var margin = {top: 20, right: 20, left: 20},
                     width = 710 - margin.left - margin.right,
                     barHeight = 20;
@@ -101,7 +103,7 @@ angular.module('core').directive('roadmap', ['d3', '_', '$parse',
                     bar.append('rect')
                         .attr('class', 'rectDelivery')
                         .attr('y', barHeight-1)
-                        .attr('fill', function(d){ return d.gateData.status; })
+                        .attr('fill', function(d){ if(d.gateData.status){return d.gateData.status;} return baseColorRectDelivery; })
                         .attr('width', function(d){ return x(new Date(d.gateData.end)) - x(new Date(d.gateData.start));})
                         .attr('height', barHeight - 1)
                         .on('mouseover', function(d) { onMouseover(this, d); })
@@ -173,7 +175,7 @@ angular.module('core').directive('roadmap', ['d3', '_', '$parse',
                     newAppendedBar.append('rect')
                         .attr('class', 'rectDelivery')
                         .attr('y', barHeight-1)
-                        .attr('fill', function(d){ return d.gateData.status; })
+                        .attr('fill', function(d){ if(d.gateData.status){return d.gateData.status;} return baseColorRectDelivery; })
                         .attr('width', function(d){ return x(new Date(d.gateData.end)) - x(new Date(d.gateData.start));})
                         .attr('height', barHeight - 1)
                         .on('mouseover', function(d) { onMouseover(this, d); })
@@ -190,9 +192,6 @@ angular.module('core').directive('roadmap', ['d3', '_', '$parse',
                         .on('mouseover', function(d) { onMouseover(this, d); })
                         .on('mouseout', function(d) { onMouseout(this, d); })
                         .on('click', function(d){ onClick(this, d); });
-
-
-
 
                     // Remove the ones removed
 

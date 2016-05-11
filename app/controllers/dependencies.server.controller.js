@@ -162,9 +162,10 @@ exports.delete = function(req, res) {
  */
 exports.list = function(req, res) {
     var Dependency = mongoose.mtModel(req.user.tenantId + '.' + 'Dependency');
-    Dependency.find(req.query).populate('user', 'displayName').deepPopulate([
-        'source.portfolio', 'target.portfolio'
-    ]).exec(function(err, dependencies) {
+    Dependency.find(req.query)
+        .populate('user', 'displayName')
+        .deepPopulate(['source.portfolio', 'target.portfolio'])
+        .exec(function(err, dependencies) {
 		if (err) {
 			return res.status(400).send({
 				message: errorHandler.getErrorMessage(err)

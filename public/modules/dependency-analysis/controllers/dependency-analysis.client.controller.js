@@ -261,6 +261,11 @@ angular.module('dependency-analysis').controller('DependencyAnalysisController',
                     $scope.source = source;
                     $scope.target = target;
 
+                    $scope.completionFilterArray = [
+                        {name:'Completed', flag:true},
+                        {name:'Not completed', flag:false}
+                    ];
+
                     $scope.projectDependencyDetails = 'header';
 
                     $scope.selectDependency = function(dependency){
