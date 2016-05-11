@@ -90,97 +90,38 @@
                                         <table class="table table-bordered table-hover table-condensed small">
                                             <thead>
                                             <tr>
-                                                <th colspan="2" class="text-center">Ranking</th>
                                                 <th rowspan="2" class="text-center">Project</th>
-                                                <th rowspan="2" colspan="2" class="text-center">
-                                                    <span>Qualitative score</span>
-                                                    <button class="btn btn-xs" data-ng-click="vm.orderByRanking('qualitativeScore', true)">
-                                                        <span class="glyphicon glyphicon-sort-by-attributes-alt"></span>
-                                                    </button>
-                                                </th>
-                                                <th rowspan="2" colspan="2" class="text-center">
-                                                    <span>Risk score</span>
-                                                    <button class="btn btn-xs" data-ng-click="vm.orderByRanking('riskScore', false)">
-                                                        <span class="glyphicon glyphicon-sort-by-attributes"></span>
-                                                    </button>
-                                                </th>
-                                                <th rowspan="2" class="text-center">
-                                                    <span>Earmarked funds</span>
-                                                    <button class="btn btn-xs" data-ng-click="vm.orderByRanking('earmarkedFunds', true)">
-                                                        <span class="glyphicon glyphicon-sort-by-attributes-alt"></span>
-                                                    </button>
-                                                </th>
-                                                <th colspan="6" class="text-center">Financial indicators</th>
+                                                <th rowspan="2" class="text-center">Current gate</th>
+                                                <th rowspan="2" class="text-center">Overall</th>
+                                                <th rowspan="2" class="text-center">Duration</th>
+                                                <th rowspan="2" class="text-center">Cost</th>
+                                                <th rowspan="2" class="text-center">Completion</th>
+                                                <th class="text-center" colspan="{{vm.logStatusAreas.length}}">Detail areas</th>
                                             </tr>
                                             <tr>
-                                                <th data-ng-show="vm.treeSelectionFlag === 'all' || vm.treeSelectionFlag === 'unassigned'" class="text-center">
-                                                    <span>Overall</span>
-                                                    <button class="btn btn-xs" data-ng-click="vm.orderByRanking('overallRanking', false)">
-                                                        <span class="glyphicon glyphicon-sort-by-attributes"></span>
-                                                    </button>
-                                                </th>
-                                                <th data-ng-show="vm.treeSelectionFlag === 'portfolio'" class="text-center">
-                                                    <span>Portfolio</span>
-                                                    <button class="btn btn-xs" data-ng-click="vm.orderByRanking('portfolioRanking', false)">
-                                                        <span class="glyphicon glyphicon-sort-by-attributes"></span>
-                                                    </button>
-                                                </th>
-                                                <th> </th>
-                                                <th class="text-center">
-                                                    <span>Benefits</span>
-                                                    <button class="btn btn-xs" data-ng-click="vm.orderByRanking('financialRatios.totalBenefitDiscounted', true)">
-                                                        <span class="glyphicon glyphicon-sort-by-attributes-alt"></span>
-                                                    </button>
-                                                </th>
-                                                <th class="text-center">
-                                                    <span>Costs</span>
-                                                    <button class="btn btn-xs" data-ng-click="vm.orderByRanking('financialRatios.totalCostDiscounted', true)">
-                                                        <span class="glyphicon glyphicon-sort-by-attributes-alt"></span>
-                                                    </button>
-                                                </th>
-                                                <th class="text-center">
-                                                    <span>B/C ratio</span>
-                                                    <button class="btn btn-xs" data-ng-click="vm.orderByRanking('financialRatios.benefitCostRatio', true)">
-                                                        <span class="glyphicon glyphicon-sort-by-attributes-alt"></span>
-                                                    </button>
-                                                </th>
-                                                <th class="text-center">
-                                                    <span>NPV</span>
-                                                    <button class="btn btn-xs" data-ng-click="vm.orderByRanking('financialRatios.totalNetDiscounted', true)">
-                                                        <span class="glyphicon glyphicon-sort-by-attributes-alt"></span>
-                                                    </button>
-                                                </th>
-                                                <th class="text-center">
-                                                    <span>IRR</span>
-                                                    <button class="btn btn-xs" data-ng-click="vm.orderByRanking('financialRatios.IRR', true)">
-                                                        <span class="glyphicon glyphicon-sort-by-attributes-alt"></span>
-                                                    </button>
-                                                </th>
-                                                <th class="text-center">
-                                                    <span>Payback</span>
-                                                    <button class="btn btn-xs" data-ng-click="vm.orderByRanking('financialRatios.IRR', false)">
-                                                        <span class="glyphicon glyphicon-sort-by-attributes"></span>
-                                                    </button>
-                                                </th>
+                                                <th class="text-center" data-ng-repeat="area in vm.logStatusAreas track by area._id">{{area.name}}</th>
                                             </tr>
                                             </thead>
                                             <tbody>
-                                            <tr data-ng-repeat="profile in vm.qualitativeSummaryView | orderBy : vm.orderByProperty : vm.orderByDirection" data-ng-click="vm.selectProjectProfile(profile)">
-                                                <td data-ng-show="vm.treeSelectionFlag === 'all' || vm.treeSelectionFlag === 'unassigned'" class="text-center">{{profile.overallRanking}}</td>
-                                                <td data-ng-show="vm.treeSelectionFlag === 'portfolio'" class="text-center">{{profile.portfolioRanking}}</td>
-                                                <td class="text-center"><b>{{$index + 1}}</b></td>
-                                                <td class="btn-link">{{profile.projectName}}</td>
-                                                <td class="text-center">{{profile.qualitativeScore | number : 2}}</td>
-                                                <td class="text-center">{{profile.qualitativeScorePercentile*100 | number : 2}}%</td>
-                                                <td class="text-center">{{profile.riskScore | number : 2}}</td>
-                                                <td class="text-center">{{profile.riskScorePercentile*100 | number : 2}}%</td>
-                                                <td class="text-center">{{profile.earmarkedFunds | number : 0}}</td>
-                                                <td class="text-center">{{profile.financialRatios.totalBenefitDiscounted | number : 0}}</td>
-                                                <td class="text-center">{{profile.financialRatios.totalCostDiscounted | number : 0}}</td>
-                                                <td class="text-center">{{profile.financialRatios.benefitCostRatio * 100 | number : 1}}%</td>
-                                                <td class="text-center">{{profile.financialRatios.totalNetDiscounted | number : 0}}</td>
-                                                <td class="text-center">{{profile.financialRatios.IRR * 100 | number : 1}}%</td>
-                                                <td class="text-center">{{profile.financialRatios.paybackPeriod | number : 1}}</td>
+                                            <tr data-ng-repeat="profile in vm.qualitativeSummaryView" data-ng-click="vm.selectProjectProfile(profile)">
+                                                <td class="btn-link">{{profile.identification.name}}</td>
+                                                <td class="text-center">{{profile.currentGate.name}}</td>
+                                                <td class="text-center" style="background-color: {{profile.gateStatusAssignment.overallStatus.currentRecord.status.color}}">
+                                                    {{profile.gateStatusAssignment.overallStatus.currentRecord.status.name}}
+                                                </td>
+                                                <td class="text-center" style="background-color: {{profile.gateStatusAssignment.durationStatus.currentRecord.status.color}}">
+                                                    {{profile.gateStatusAssignment.durationStatus.currentRecord.status.name}}
+                                                </td>
+                                                <td class="text-center" style="background-color: {{profile.gateStatusAssignment.costStatus.currentRecord.status.color}}">
+                                                    {{profile.gateStatusAssignment.costStatus.currentRecord.status.name}}
+                                                </td>
+                                                <td class="text-center" style="background-color: {{profile.gateStatusAssignment.completionStatus.currentRecord.status.color}}">
+                                                    {{profile.gateStatusAssignment.completionStatus.currentRecord.status.name}}
+                                                </td>
+                                                <td class="text-center" data-ng-repeat="areaReview in profile.projectAreaReviews"
+                                                    style="background-color: {{areaReview.currentRecord.status.color}}">
+                                                    {{areaReview.currentRecord.status.name}}
+                                                </td>
                                             </tr>
                                             </tbody>
                                         </table>

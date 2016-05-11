@@ -1,8 +1,8 @@
 'use strict';
 
 angular.module('status-summaries').controller('StatusSummaryController', ['$rootScope', '$scope', '$stateParams', '$location', 'Authentication',
-    'EvaluationSummaries', 'QualitativeImpactScores','RiskSeverities','Risks','Projects','Portfolios', 'GateProcesses', '_','$q','$modal',
-    function($rootScope, $scope, $stateParams, $location, Authentication, EvaluationSummaries, QualitativeImpactScores, RiskSeverities, Risks, Projects, Portfolios, GateProcesses, _, $q, $modal) {
+    'StatusSummaries','LogStatusAreas','Projects','Portfolios', 'GateProcesses', '_','$q','$modal',
+    function($rootScope, $scope, $stateParams, $location, Authentication, StatusSummaries, LogStatusAreas, Projects, Portfolios, GateProcesses, _, $q, $modal) {
 
         $rootScope.staticMenu = false;
 
@@ -16,12 +16,6 @@ angular.module('status-summaries').controller('StatusSummaryController', ['$root
 
         vm.init = function(){
 
-            Projects.query({'selection.active': true, 'selection.selectedForEvaluation': true}, function(projects){
-                vm.projects = projects;
-            }, function(err){
-                vm.initError.push(err.data.message);
-            });
-
             Portfolios.query(function(portfolios){
                 vm.portfolios = portfolios;
                 vm.portfolioTrees = createNodeTrees(portfolios);
@@ -29,40 +23,17 @@ angular.module('status-summaries').controller('StatusSummaryController', ['$root
                 vm.initError.push(err.data.message);
             });
 
-            GateProcesses.query(function(gateProcesses){
-                vm.gateProcesses = gateProcesses;
-            }, function(err){
-                vm.initError.push(err.data.message);
-            });
-
-            EvaluationSummaries.portfolioSummary(function(res){
+            StatusSummaries.portfolioSummary(function(res){
                 projectProfiles = res;
             }, function(err){
                 vm.initError.push(err.data.message);
             });
 
-            QualitativeImpactScores.query(function(res){
-                vm.maxQualitativeScore = _.max(res, 'numericalValue');
-                vm.minQualitativeScore = _.min(res, 'numericalValue');
+            LogStatusAreas.query(function(res){
+                vm.logStatusAreas = _.sortBy(res, '_id');
             }, function(err){
                 vm.initError.push(err.data.message);
             });
-
-            RiskSeverities.query(function(resSev){
-                Risks.query(function(resRisk){
-                    if(resSev && resRisk){
-                        vm.maxRiskScore = _.max(resSev, 'severityValue').severityValue * resRisk.length;
-                        vm.minRiskScore = _.min(resSev, 'severityValue').severityValue * resRisk.length;
-                    }
-                }, function(err){
-                    vm.initError.push(err.data.message);
-                });
-            }, function(err){
-                vm.initError.push(err.data.message);
-            });
-
-
-
         };
 
 
@@ -141,7 +112,7 @@ angular.module('status-summaries').controller('StatusSummaryController', ['$root
         var modalProjectProfile = function (size, profile) {
 
             var modalInstance = $modal.open({
-                templateUrl: 'modules/evaluation-summaries/views/project-profile.client.view.html',
+                templateUrl: 'modules/status-summaries/views/project-profile.client.view.html',
                 controller: function ($scope, $modalInstance, profile) {
 
                     $scope.profile = profile;

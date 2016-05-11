@@ -1,0 +1,271 @@
+<section data-ng-controller="EvaluationSummaryController as parentCtrl" data-ng-init="parentCtrl.init()">
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <h5 class="panel-title text-center"
+                style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: normal; width: 100%;">
+                <em>{{profile.identification.name}}</em>
+            </h5>
+        </div>
+        <div class="panel-body">
+            <div class="row">
+                <div class="col-xs-12">
+                    <div class="panel panel-default panel-body">
+                        <form class="form">
+                            <fieldset>
+                                <div class="row">
+                                    <div class="form-group-sm col-md-2">
+                                        <label for="uid">ID</label>
+                                        <input id="uid" type="text" class="form-control" disabled
+                                               ng-model="profile.idNumber">
+                                    </div>
+                                    <div class="form-group-sm col-md-2">
+                                        <label for="uid">Reference</label>
+                                        <input id="uid" type="text" class="form-control" disabled placeholder="Enter identifier"
+                                               ng-model="profile.identification.idReference">
+                                    </div>
+                                </div>
+                                <br>
+                                <div class="row">
+                                    <div class="form-group-sm col-md-4">
+                                        <label for="projectStart">Requested Start</label>
+                                        <input id="projectStart" type="text" class="form-control" datepicker-popup="dd-MMMM-yyyy"
+                                               data-ng-model="profile.identification.reqStartDate" disabled/>
+                                    </div>
+                                    <div class="form-group-sm col-md-4">
+                                        <label for="projectEnd">Requested End</label>
+                                        <input id="projectEnd" type="text" class="form-control" datepicker-popup="dd-MMMM-yyyy"
+                                               data-ng-model="profile.identification.reqEndDate" disabled/>
+                                    </div>
+                                    <div class="form-group-sm col-md-4">
+                                        <label for="projectFunds">Earmarked funds</label>
+                                        <input id="projectFunds" type="number" min="0" class="form-control" disabled
+                                               ng-model="profile.identification.earmarkedFunds">
+                                    </div>
+                                </div>
+                                <br>
+                                <div class="row">
+                                    <div class="form-group-sm col-md-4">
+                                        <label for="projectManagerNew">Project Manager</label>
+                                        <input id="projectManagerNew" class="form-control" data-ng-model = "profile.identification.projectManager.displayName"
+                                               disabled >
+                                    </div>
+                                    <div class="form-group-sm col-md-4">
+                                        <label for="backupProjectManagerNew">Backup Project Manager</label>
+                                        <input id="backupProjectManagerNew" class="form-control" data-ng-model = "profile.identification.backupProjectManager.displayName"
+                                               disabled >
+                                    </div>
+                                </div>
+                                <br>
+                                <div class="row">
+                                    <div class="form-group-sm col-md-12">
+                                        <label for="projectDescription">Project description</label>
+                                        <textarea id="projectDescription" class="form-control" data-ng-model="profile.identification.description" disabled></textarea>
+                                    </div>
+                                </div>
+                            </fieldset>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-xs-12">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <h6 class="panel-title text-center">Overall</h6>
+                        </div>
+                        <div class="panel-body">
+                            <div class="row">
+                                <div class="form-group-sm col-md-4">
+                                    <input title="statusIndicator"
+                                           class="form-control"
+                                           data-ng-model = "profile.gateStatusAssignment.overallStatus.currentRecord.status.name"
+                                           style="background-color: {{profile.gateStatusAssignment.overallStatus.currentRecord.status.color}}"
+                                           disabled >
+                                </div>
+                            </div>
+                            <br>
+                            <div class="row">
+                                <div class="form-group-sm col-md-12">
+                                    <textarea title="statusComment" class="form-control"
+                                              data-ng-model="profile.gateStatusAssignment.overallStatus.currentRecord.comment"
+                                              disabled></textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xs-6">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <h6 class="panel-title text-center">Duration</h6>
+                        </div>
+                        <div class="panel-body">
+                            <div class="row">
+                                <div class="form-group-sm col-md-8">
+                                    <input title="statusIndicator"
+                                           class="form-control"
+                                           data-ng-model = "profile.gateStatusAssignment.durationStatus.currentRecord.status.name"
+                                           style="background-color: {{profile.gateStatusAssignment.durationStatus.currentRecord.status.color}}"
+                                           disabled >
+                                </div>
+                            </div>
+                            <br>
+                            <div class="row">
+                                <div class="form-group-sm col-md-12">
+                                    <textarea title="statusComment" class="form-control"
+                                              data-ng-model="profile.gateStatusAssignment.durationStatus.currentRecord.comment"
+                                              disabled></textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xs-6">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <h6 class="panel-title text-center">Cost</h6>
+                        </div>
+                        <div class="panel-body">
+                            <div class="row">
+                                <div class="form-group-sm col-md-8">
+                                    <input title="statusIndicator"
+                                           class="form-control"
+                                           data-ng-model = "profile.gateStatusAssignment.costStatus.currentRecord.status.name"
+                                           style="background-color: {{profile.gateStatusAssignment.costStatus.currentRecord.status.color}}"
+                                           disabled >
+                                </div>
+                            </div>
+                            <br>
+                            <div class="row">
+                                <div class="form-group-sm col-md-12">
+                                    <textarea title="statusComment" class="form-control"
+                                              data-ng-model="profile.gateStatusAssignment.costStatus.currentRecord.comment"
+                                              disabled></textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xs-6">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <h6 class="panel-title text-center">Completion</h6>
+                        </div>
+                        <div class="panel-body">
+                            <div class="row">
+                                <div class="form-group-sm col-md-8">
+                                    <input title="statusIndicator"
+                                           class="form-control"
+                                           data-ng-model = "profile.gateStatusAssignment.completionStatus.currentRecord.status.name"
+                                           style="background-color: {{profile.gateStatusAssignment.completionStatus.currentRecord.status.color}}"
+                                           disabled >
+                                </div>
+                            </div>
+                            <br>
+                            <div class="row">
+                                <div class="form-group-sm col-md-12">
+                                    <textarea title="statusComment" class="form-control"
+                                              data-ng-model="profile.gateStatusAssignment.completionStatus.currentRecord.comment"
+                                              disabled></textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xs-6" data-ng-repeat="areaReview in profile.projectAreaReviews">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <h6 class="panel-title text-center">{{areaReview.statusArea.name}}</h6>
+                        </div>
+                        <div class="panel-body">
+                            <div class="row">
+                                <div class="form-group-sm col-md-8">
+                                    <input title="statusIndicator"
+                                           class="form-control"
+                                           data-ng-model = "areaReview.currentRecord.status.name"
+                                           style="background-color: {{areaReview.currentRecord.status.color}}"
+                                           disabled >
+                                </div>
+                            </div>
+                            <br>
+                            <div class="row">
+                                <div class="form-group-sm col-md-12">
+                                    <textarea title="statusComment" class="form-control"
+                                              data-ng-model="areaReview.currentRecord.comment"
+                                              disabled></textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-xs-12">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <h6 class="panel-title text-center">Current gate: <em>{{profile.currentGate.name}}</em></h6>
+                        </div>
+                        <div class="panel-body">
+                            <div class="row">
+                                <div class="col-xs-12">
+                                    <div class="panel panel-default panel-body">
+                                        <div class="row">
+                                            <div class="form-group-sm col-xs-4">
+                                                <label>Completion</label>
+                                                <span title="completion" class="form-control" data-ng-bind="'Completed'" data-ng-show="profile.gateStatusAssignment.currentRecord.completed" disabled ></span>
+                                                <span title="completion" class="form-control" data-ng-bind="'Not completed'" data-ng-show="!profile.gateStatusAssignment.currentRecord.completed" disabled ></span>
+                                            </div>
+                                            <div class="form-group-sm col-xs-4">
+                                                <label>Review status</label>
+                                                <input title="gateReviewStatus" class="form-control" data-ng-model="profile.gateStatusAssignment.currentRecord.status.name" disabled >
+                                            </div>
+                                            <div class="form-group-sm col-xs-4">
+                                                <label>Review score</label>
+                                                <input title="gateReviewScore" class="form-control" data-ng-model="profile.gateStatusAssignment.currentRecord.overallScore.name" disabled >
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-xs-6" data-ng-repeat="outcomeReview in profile.gateOutcomeReviews">
+                                    <div class="panel panel-default">
+                                        <div class="panel-heading">
+                                            <h6 class="panel-title text-center">{{outcomeReview.outcome.name}}</h6>
+                                        </div>
+                                        <div class="panel-body">
+                                            <div class="row">
+                                                <div class="form-group-sm col-md-8">
+                                                    <input title="statusIndicator"
+                                                           class="form-control"
+                                                           data-ng-model = "outcomeReview.currentStatus.status.name"
+                                                           style="background-color: {{outcomeReview.currentStatus.status.color}}"
+                                                           disabled >
+                                                </div>
+                                            </div>
+                                            <br>
+                                            <div class="row">
+                                                <div class="form-group-sm col-md-12">
+                                                    <textarea title="statusComment" class="form-control" data-ng-model="outcomeReview.currentStatus.comment" disabled></textarea>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="center-block text-center">
+            <button class="btn btn-primary btn-sm" data-ng-click="cancelModal()">
+                Close
+            </button>
+        </div>
+    </div>
+    <br>
+    <div class="row"></div>
+</section>
