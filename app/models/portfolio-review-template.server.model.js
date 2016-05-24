@@ -4,7 +4,7 @@
  * Module dependencies.
  */
 var mongoose = require('mongoose'),
-	deepPopulate = require('mongoose-deep-populate'),
+	deepPopulate = require('mongoose-deep-populate')(mongoose),
 	Schema = mongoose.Schema;
 require('mongoose-multitenant');
 
