@@ -5,7 +5,7 @@
  */
 var mongoose = require('mongoose'),
 	Schema = mongoose.Schema,
-	deepPopulate = require('mongoose-deep-populate');
+	deepPopulate = require('mongoose-deep-populate')(mongoose);
 
 require('mongoose-multitenant');
 
