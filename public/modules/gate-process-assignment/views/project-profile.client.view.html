@@ -1,0 +1,430 @@
+<section data-ng-controller="GateProcessAssignmentController as vm">
+    <div class="panel panel-default">
+        <div class="panel-heading text-center" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: normal; width: 100%;">
+            <h6 class="panel-title">{{selectedProject.identification.name}} - <em>{{selectedProject.process.name}}</em></h6>
+        </div>
+        <div data-ng-show="error" class="text-danger">
+            <strong data-ng-bind="error"></strong>
+        </div>
+        <div data-ng-show="vm.error" class="text-danger">
+            <strong data-ng-bind="vm.error"></strong>
+        </div>
+        <div class="row">
+            <div class="col-md-12 btn-group btn-group-xs btn-group-justified">
+                <label class="btn btn-info btn-xs" data-ng-model="processDetails" btn-radio="'header'">
+                    Process header
+                </label>
+                <label class="btn btn-info btn-xs" data-ng-model="processDetails" btn-radio="'gates'">
+                    Gates
+                </label>
+                <label class="btn btn-info btn-xs" data-ng-model="processDetails" btn-radio="'approval'">
+                    Approval
+                </label>
+            </div>
+        </div>
+        <div class="panel-body" style="min-height: 475px">
+            <div data-ng-show="processDetails === 'header'">
+                <div data-ng-switch="switchProcessHeaderForm">
+                    <div ng-switch-default="view">
+                        <form>
+                            <fieldset>
+                                <div class="row">
+                                    <div class="col-md-7 form-group">
+                                        <label for="processName" class="control-label">Process name</label>
+                                        <input disabled id="processName" type="text" class="form-control" data-ng-model="selectedProject.process.name">
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-12 form-group">
+                                        <label for="processDescription" class="control-label">Process description</label>
+                                        <textarea disabled id="processDescription" data-ng-model="selectedProject.process.description" class="form-control" placeholder="No description yet"></textarea>
+                                    </div>
+                                </div>
+                                <div class="row" data-ng-show="vm.userHasAuthorization('edit', user, selectedProject) && vm.isProcessEditable(selectedProject)">
+                                    <div class="col-md-12">
+                                        <div class="form-group pull-right">
+                                            <button class="btn btn-sm btn-success" data-ng-click="editProcess(selectedProject)">Edit</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </fieldset>
+                        </form>
+                    </div>
+                    <div ng-switch-when="edit">
+                        <form name="editGateProcessForm" novalidate>
+                            <fieldset>
+                                <div class="row">
+                                    <div class="col-md-7 form-group">
+                                        <label for="processNameEdit" class="control-label">Process name</label>
+                                        <input id="processNameEdit" name="processNameEdit" type="text" class="form-control" data-ng-model="selectedProject.process.name" required>
+													<span data-ng-show="editGateProcessForm.processNameEdit.$error.required">
+														<em style="color: red">Name is required</em>
+													</span>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-12 form-group">
+                                        <label for="processDescription" class="control-label">Process description</label>
+                                        <textarea id="processDescription" data-ng-model="selectedProject.process.description" class="form-control" placeholder="No description yet"></textarea>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <div class="form-group pull-right">
+                                            <button type="button" class="btn btn-sm btn-success" data-ng-click="saveEditProcess(selectedProject)"
+                                                    data-ng-disabled="editGateProcessForm.$invalid || isResolving">
+                                                Save
+                                            </button>
+                                            <button type="button" class="btn btn-sm btn-info" data-ng-click="cancelEditProcess(selectedProject)">
+                                                Cancel
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </fieldset>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <div data-ng-show="processDetails === 'gates'">
+                <div class="row">
+                    <div class="col-md-3">
+                        <div class="panel panel-default">
+                            <div class="panel-heading">
+                                <h6 class="panel-title text-center">Gates</h6>
+                            </div>
+                            <div class="panel-body" style="min-height: 380px;">
+                                <div class="row">
+                                    <div class="col-md-12 text-center">
+                                        <button class="btn btn-xs btn-success" data-ng-click="createGate(selectedProject)"
+                                                data-ng-show="vm.userHasAuthorization('edit', user, selectedProject) && vm.isProcessEditable(selectedProject)" data-ng-disabled="isResolving">
+                                            New gate
+                                        </button>
+                                    </div>
+                                </div>
+                                <hr style="margin: 10px">
+                                <div class="row" style="min-height: 250px; max-height: 250px; overflow-y: auto">
+                                    <div class="col-md-12">
+                                        <button type="button"
+                                                data-ng-repeat="gate in selectedProject.process.gates | orderBy: 'position'"
+                                                data-ng-click="selectGate(gate)"
+                                                class="btn btn-default btn-sm center-block btn-block" style="overflow: hidden;"
+                                                data-ng-disabled="isResolving">
+                                            <span class="badge pull-left" data-ng-bind="gate.position"></span>&nbsp;
+                                            <span data-ng-bind="gate.name"></span>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-9">
+                        <div data-ng-hide="selectedGate || selectedProject.process.gates.length === 0" class="alert alert-warning text-center">
+                            Select a gate to see its details
+                        </div>
+                        <div class="panel panel-default" data-ng-show="selectedGate">
+                            <div class="panel-heading text-center">
+                                <h6 class="panel-title" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: normal; width: 100%;">
+                                    {{selectedGate.name}}
+                                </h6>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6 btn-group btn-group-xs btn-group-justified">
+                                    <label class="btn btn-info btn-xs" data-ng-model="gateDetails" btn-radio="'header'">
+                                        Gate header
+                                    </label>
+                                    <label class="btn btn-info btn-xs" data-ng-model="gateDetails" btn-radio="'outcomes'">
+                                        Outcomes
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="panel-body" style="min-height: 355px; max-height: 355px; overflow-y: auto">
+                                <div data-ng-show="gateDetails === 'header'">
+                                    <div data-ng-switch="switchHeaderForm">
+                                        <form ng-switch-default="view">
+                                            <div class="row">
+                                                <div class="col-md-7 form-group">
+                                                    <label for="gateName" class="control-label">Gate name</label>
+                                                    <input disabled id="gateName" type="text" class="form-control" data-ng-model="selectedGate.name">
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-md-12 form-group">
+                                                    <label for="gateDescription" class="control-label">Gate description</label>
+                                                    <textarea disabled id="gateDescription" data-ng-model="selectedGate.description" class="form-control" placeholder="No description yet"></textarea>
+                                                </div>
+                                            </div>
+                                            <div class="row" data-ng-show="vm.userHasAuthorization('edit', user, selectedProject)">
+                                                <div class="col-md-12">
+                                                    <div class="pull-right">
+                                                        <button class="btn btn-success btn-sm" data-ng-click="editGateHeader(selectedGate)">Edit</button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </form>
+                                        <form ng-switch-when="edit" name="editGateHeaderForm" novalidate>
+                                            <div class="row">
+                                                <div class="col-md-7 form-group">
+                                                    <label for="gateNameEdit" class="control-label">Gate name</label>
+                                                    <input id="gateNameEdit" name="gateNameEdit" type="text" class="form-control" data-ng-model="selectedGate.name" required>
+																				<span data-ng-show="editGateHeaderForm.gateNameEdit.$error.required">
+																					<em style="color: red">Name is required</em>
+																				</span>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-md-12 form-group">
+                                                    <label for="gateDescription" class="control-label">Gate description</label>
+                                                    <textarea id="gateDescription" data-ng-model="selectedGate.description" class="form-control" placeholder="No description yet"></textarea>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <div class="pull-right">
+                                                        <button type="button" class="btn btn-sm btn-success" data-ng-click="saveEditGateHeader(selectedProject, selectedGate)"
+                                                                data-ng-disabled="editGateHeaderForm.$invalid || isResolving">
+                                                            Save
+                                                        </button>
+                                                        <button type="button" class="btn btn-sm btn-danger" data-ng-click="deleteGate(selectedProject, selectedGate)"
+                                                                data-ng-hide="selectedGate.position === selectedProject.process.gates.length || selectedGate.position === 1"
+                                                                data-ng-disabled="isResolving">
+                                                            Delete Gate
+                                                        </button>
+                                                        <button type="button" class="btn btn-sm btn-info" data-ng-click="cancelEditGateHeader(selectedGate)">
+                                                            Cancel
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </div>
+                                    <hr style="margin: 10px">
+                                    <div data-ng-switch="switchPositionForm">
+                                        <form ng-switch-default="view">
+                                            <div class="row">
+                                                <div class="col-md-4 form-group">
+                                                    <label for="gatePosition" class="control-label">Gate position</label>
+                                                    <input disabled id="gatePosition" data-ng-model="selectedGate.position" class="form-control">
+                                                </div>
+                                            </div>
+                                            <div class="row" data-ng-show="vm.userHasAuthorization('edit', user, selectedProject) && !((selectedGate.position === selectedProject.process.gates.length) || (selectedGate.position === 1))">
+                                                <div class="col-md-12">
+                                                    <div class="pull-right">
+                                                        <button class="btn btn-success btn-sm" data-ng-click="editGatePosition(selectedGate)">Edit</button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </form>
+                                        <form ng-switch-when="edit" name="editGatePositionForm" novalidate>
+                                            <div class="row" data-ng-disabled="(selectedGate.position === selectedProject.process.gates.length) || (selectedGate.position === 1)">
+                                                <div class="col-md-4 form-group">
+                                                    <label for="gatePosition" class="control-label">Gate position</label>
+                                                    <select id="gatePosition" class="form-control" data-ng-model = "selectedGate.position"
+                                                            data-ng-options="position for position in getAllowedGatePositions(selectedProject)">
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <div class="pull-right">
+                                                        <button type="button" class="btn btn-sm btn-success" data-ng-click="saveEditGatePosition(selectedProject, selectedGate)"
+                                                                data-ng-disabled="editGatePositionForm.$invalid || isResolving">
+                                                            Save
+                                                        </button>
+                                                        <button type="button" class="btn btn-sm btn-info" data-ng-click="cancelEditGatePosition(selectedGate)">
+                                                            Cancel
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                                <div data-ng-show="gateDetails === 'outcomes'">
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="panel panel-default">
+                                                <div class="panel-heading">
+                                                    <h6 class="panel-title text-center">Outcomes</h6>
+                                                </div>
+                                                <div class="panel-body" style="min-height: 250px;">
+                                                    <div class="row">
+                                                        <div class="col-md-12 text-center">
+                                                            <button class="btn btn-xs btn-success" data-ng-click="createOutcome(selectedProject, selectedGate)"
+                                                                    data-ng-show="vm.userHasAuthorization('edit', user, selectedProject) && vm.isProcessEditable(selectedProject)" data-ng-disabled="isResolving">
+                                                                New outcome
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                    <hr style="margin: 10px">
+                                                    <div class="row" style="min-height: 200px; max-height: 200px; overflow-y: auto">
+                                                        <div class="col-md-12">
+                                                            <div data-ng-show="selectedGate.gateOutcomes.length === 0" class="alert alert-warning text-center">
+                                                                No outcomes yet
+                                                            </div>
+                                                            <button type="button"
+                                                                    data-ng-repeat="outcome in selectedGate.outcomes"
+                                                                    data-ng-click="selectOutcome(outcome)"
+                                                                    class="btn btn-default btn-sm center-block btn-block" style="overflow: hidden;"
+                                                                    data-ng-disabled="isResolving">
+                                                                <span data-ng-bind="outcome.name"></span>
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div data-ng-hide="selectedOutcome || selectedGate.outcomes.length === 0" class="alert alert-warning text-center">
+                                                Select an outcome to see its details
+                                            </div>
+                                            <div class="panel panel-default" data-ng-show="selectedOutcome">
+                                                <div class="panel-heading text-center">
+                                                    <h6 class="panel-title" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: normal; width: 100%;">
+                                                        {{selectedOutcome.name}}
+                                                    </h6>
+                                                </div>
+                                                <div class="panel-body" style="min-height: 270px; max-height: 270px; overflow-y: auto">
+                                                    <div data-ng-switch="switchOutcomeForm">
+                                                        <form ng-switch-default="view">
+                                                            <div class="row">
+                                                                <div class="col-md-12 form-group">
+                                                                    <label for="outcomeName" class="control-label">Outcome name</label>
+                                                                    <input disabled id="outcomeName" type="text" class="form-control" data-ng-model="selectedOutcome.name">
+                                                                </div>
+                                                            </div>
+                                                            <div class="row">
+                                                                <div class="col-md-12 form-group">
+                                                                    <label for="outcomeDescription" class="control-label">Outcome description</label>
+                                                                    <textarea disabled id="outcomeDescription" data-ng-model="selectedOutcome.description" class="form-control" placeholder="No description yet"></textarea>
+                                                                </div>
+                                                            </div>
+                                                            <div class="row" data-ng-show="vm.userHasAuthorization('edit', user, selectedProject) && vm.isProcessEditable(selectedProject)">
+                                                                <div class="col-md-12">
+                                                                    <div class="form-group pull-right">
+                                                                        <button class="btn btn-success btn-xs" data-ng-click="editOutcome(selectedOutcome)">Edit</button>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </form>
+                                                        <form ng-switch-when="edit" name="editOutcomeForm" novalidate>
+                                                            <div class="row">
+                                                                <div class="col-md-12 form-group">
+                                                                    <label for="outcomeNameEdit" class="control-label">Outcome name</label>
+                                                                    <input id="outcomeNameEdit" name="outcomeNameEdit" type="text" class="form-control" data-ng-model="selectedOutcome.name" required>
+																				<span data-ng-show="editOutcomeForm.outcomeNameEdit.$error.required">
+																					<em style="color: red">Name is required</em>
+																				</span>
+                                                                </div>
+                                                            </div>
+                                                            <div class="row">
+                                                                <div class="col-md-12 form-group">
+                                                                    <label for="outcomeDescription" class="control-label">Outcome description</label>
+                                                                    <textarea id="outcomeDescription" data-ng-model="selectedOutcome.description" class="form-control" placeholder="No description yet"></textarea>
+                                                                </div>
+                                                            </div>
+                                                            <div class="row">
+                                                                <div class="col-md-12">
+                                                                    <div class="form-group pull-right">
+                                                                        <button type="button" class="btn btn-xs btn-success" data-ng-click="saveEditOutcome(selectedProject, selectedGate, selectedOutcome)"
+                                                                                data-ng-disabled="editOutcomeForm.$invalid || isResolving">
+                                                                            Save
+                                                                        </button>
+                                                                        <button type="button" class="btn btn-xs btn-danger" data-ng-click="deleteOutcome(selectedProject, selectedGate, selectedOutcome)"
+                                                                                data-ng-disabled="isResolving">
+                                                                            Delete
+                                                                        </button>
+                                                                        <button type="button" class="btn btn-xs btn-info" data-ng-click="cancelEditOutcome(selectedOutcome)">
+                                                                            Cancel
+                                                                        </button>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </form>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div data-ng-show="processDetails === 'approval'">
+                <div class="row">
+                    <div class="col-md-12">
+                        <label>Current state</label>
+                        <br>
+                        <div class="form-control">
+                            <span data-ng-show="selectedProject.process.approval.currentRecord.approvalState === 'draft'">Drafted on </span>
+                            <span data-ng-show="selectedProject.process.approval.currentRecord.approvalState === 'submitted'">Submitted on </span>
+                            <span data-ng-show="selectedProject.process.approval.currentRecord.approvalState === 'approved'">Approved on </span>
+                            <span data-ng-show="selectedProject.process.approval.currentRecord.approvalState === 'rejected'">Rejected on </span>
+                            <span><em data-ng-bind="selectedProject.process.approval.currentRecord.created | date:'EEE d, MMM yyyy'"></em></span>
+                            <span> by </span>
+                            <span><em data-ng-bind="selectedProject.process.approval.currentRecord.user.displayName"></em></span>
+                        </div>
+                    </div>
+                </div>
+                <br>
+                <div class="row">
+                    <div class="col-md-6" data-ng-show="vm.userHasAuthorization('edit', user, selectedProject) && vm.isProcessEditable(selectedProject) && (selectedProject.process.approval.currentRecord.approvalState === 'draft') ">
+                        <button class="form-control btn btn-success" data-ng-click="submitProcess(selectedProject)"
+                                data-ng-disabled="isResolving">
+                            Submit process
+                        </button>
+                    </div>
+                    <div data-ng-show="vm.userHasAuthorization('edit', user, selectedProject) && vm.isProcessEditable(selectedProject) && selectedProject.process.approval.currentRecord.approvalState === 'submitted'">
+                        <div class="col-md-6">
+                            <button class="form-control btn btn-success" data-ng-click="approveProcess(selectedProject)"
+                                    data-ng-disabled="isResolving">
+                                Approve process
+                            </button>
+                        </div>
+                        <div class="col-md-6">
+                            <button class="form-control btn btn-danger" data-ng-click="rejectProcess(selectedProject)"
+                                    data-ng-disabled="isResolving">
+                                Reject process
+                            </button>
+                        </div>
+                    </div>
+                    <div class="col-md-6" data-ng-show="vm.userHasAuthorization('edit', user, selectedProject) && vm.isProcessEditable(selectedProject) && ((selectedProject.process.approval.currentRecord.approvalState === 'rejected') || (selectedProject.process.approval.currentRecord.approvalState === 'approved'))">
+                        <button class="form-control btn btn-success" data-ng-click="draftProcess(selectedProject)"
+                                data-ng-disabled="isResolving">
+                            Draft process
+                        </button>
+                    </div>
+                </div>
+                <hr>
+                <div class="row">
+                    <div class="col-md-12" data-ng-show="selectedProject.process.approval.history.length !== 0">
+                        <label>History</label>
+                        <br>
+                        <div data-ng-repeat="historyRecord in selectedProject.process.approval.history | orderBy: sortAppliedChanges : true">
+                            <span data-ng-show="historyRecord.approvalState === 'draft'">Drafted on </span>
+                            <span data-ng-show="historyRecord.approvalState === 'submitted'">Submitted on </span>
+                            <span data-ng-show="historyRecord.approvalState === 'approved'">Approved on </span>
+                            <span data-ng-show="historyRecord.approvalState === 'rejected'">Rejected on </span>
+                            <span><em data-ng-bind="historyRecord.created | date:'EEE d, MMM yyyy'"></em></span>
+                            <span> by </span>
+                            <span><em data-ng-bind="historyRecord.user.displayName"></em></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="center-block text-center">
+            <button class="btn btn-primary btn-sm"
+                    data-ng-click="cancelModal()"
+                    data-ng-disabled="vm.isResolving || isResolving">
+                Close
+            </button>
+        </div>
+    </div>
+    <br>
+    <div class="row"></div>
+</section>

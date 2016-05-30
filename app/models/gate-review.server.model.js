@@ -9,61 +9,102 @@ var mongoose = require('mongoose'),
 require('mongoose-multitenant');
 
 
-/**
- * Gate review Schema
- */
-
+// Outcome review
 
 var OutcomeReviewSchema = new Schema({
-    outcomeReview : {type: Schema.Types.ObjectId, ref: 'GateOutcomeReview', $tenant:true},
-    newScore : {type: Schema.Types.ObjectId, ref: 'GateOutcomeScore', $tenant:true},
-    reviewComment : {type: String}
+    outcome : {
+        _id: {type: Schema.Types.ObjectId, ref: 'Project.process.gates.outcomes', $tenant:true},
+        name: {type: String}
+    },
+    newScore : {type: Schema.Types.ObjectId, default: null, ref: 'GateOutcomeScore', $tenant:true},
+    reviewComment : {type: String, default: ''}
 });
 
+// Performances review
+
 var BaselineDurationReviewSchema = new Schema({
-    baselineDuration: {type: Schema.Types.ObjectId, ref: 'BaselineDuration', $tenant:true},
-    newDate : {type: Date}
+    baselineDuration: {
+        _id: {type: Schema.Types.ObjectId, ref: 'Project.process.gates.performances.duration.baselineDurations', $tenant:true},
+        targetGateName: {type: String},
+        targetGatePosition: {type: Number}
+    },
+    newDate : {type: Date, default: null}
 });
 
 var EstimateDurationReviewSchema = new Schema({
-    estimateDuration: {type: Schema.Types.ObjectId, ref: 'EstimateDuration', $tenant:true},
-    newDate : {type: Date}
+    estimateDuration: {
+        _id: {type: Schema.Types.ObjectId, ref: 'Project.process.gates.performances.duration.estimateDurations', $tenant: true},
+        targetGateName: {type: String},
+        targetGatePosition: {type: Number}
+    },
+    newDate : {type: Date, default: null}
 });
 
 var ActualDurationReviewSchema = new Schema({
-    actualDuration: {type: Schema.Types.ObjectId, ref: 'ActualDuration', $tenant:true},
-    newDate : {type: Date}
+    actualDuration: {
+        _id: {type: Schema.Types.ObjectId, ref: 'Project.process.gates.performances.duration.actualDurations', $tenant: true},
+        targetGateName: {type: String},
+        targetGatePosition: {type: Number}
+    },
+    newDate : {type: Date, default: null}
 });
 
 var BaselineCostReviewSchema = new Schema({
-    baselineCost: {type: Schema.Types.ObjectId, ref: 'BaselineCost', $tenant:true},
-    newCost : {type: Number}
+    baselineCost: {
+        _id: {type: Schema.Types.ObjectId, ref: 'Project.process.gates.performances.cost.baselineCosts', $tenant: true},
+        targetGateName: {type: String},
+        targetGatePosition: {type: Number}
+    },
+    newCost : {type: Number, default: null}
 });
 
 var EstimateCostReviewSchema = new Schema({
-    estimateCost: {type: Schema.Types.ObjectId, ref: 'EstimateCost', $tenant:true},
+    estimateCost: {
+        _id: {type: Schema.Types.ObjectId, ref: 'Project.process.gates.performances.cost.estimateCosts', $tenant: true},
+        targetGateName: {type: String},
+        targetGatePosition: {type: Number}
+    },
     newCost : {type: Number}
 });
 
 var ActualCostReviewSchema = new Schema({
-    actualCost: {type: Schema.Types.ObjectId, ref: 'ActualCost', $tenant:true},
-    newCost : {type: Number}
+    actualCost: {
+        _id: {type: Schema.Types.ObjectId, ref: 'Project.process.gates.performances.cost.actualCosts', $tenant: true},
+        targetGateName: {type: String},
+        targetGatePosition: {type: Number}
+    },
+    newCost : {type: Number, default: null}
 });
 
 var BaselineCompletionReviewSchema = new Schema({
-    baselineCompletion: {type: Schema.Types.ObjectId, ref: 'BaselineCompletion', $tenant:true},
-    newCompletion : {type: Number}
+    baselineCompletion: {
+        _id: {type: Schema.Types.ObjectId, ref: 'Project.process.gates.performances.completion.baselineCompletions', $tenant: true},
+        targetGateName: {type: String},
+        targetGatePosition: {type: Number}
+    },
+    newCompletion : {type: Number, default: null}
 });
 
 var EstimateCompletionReviewSchema = new Schema({
-    estimateCompletion: {type: Schema.Types.ObjectId, ref: 'EstimateCompletion', $tenant:true},
-    newCompletion : {type: Number}
+    estimateCompletion: {
+        _id: {type: Schema.Types.ObjectId, ref: 'Project.process.gates.performances.completion.estimateCompletions', $tenant: true},
+        targetGateName: {type: String},
+        targetGatePosition: {type: Number}
+    },
+    newCompletion : {type: Number, default: null}
 });
 
 var ActualCompletionReviewSchema = new Schema({
-    actualCompletion: {type: Schema.Types.ObjectId, ref: 'ActualCompletion', $tenant:true},
-    newCompletion : {type: Number}
+    actualCompletion: {
+        _id: {type: Schema.Types.ObjectId, ref: 'Project.process.gates.performances.completion.actualCompletions', $tenant: true},
+        targetGateName: {type: String},
+        targetGatePosition: {type: Number}
+    },
+    newCompletion : {type: Number, default: null}
 });
+
+
+// Approval
 
 var approvalRecord = {
     approvalState: {type: String, enum: ['draft', 'submitted', 'approved','rejected'], default:'draft', required:'Approval flag is required'},
@@ -71,10 +112,13 @@ var approvalRecord = {
     user: { type: Schema.ObjectId, ref: 'User' }
 };
 
+
+/* Gate review Schema */
+
 var GateReviewSchema = new Schema({
 
     project: {type: Schema.Types.ObjectId, ref: 'Project', $tenant:true, required:'Project for gate review required'},
-    gate : {type: Schema.Types.ObjectId, ref: 'Gate', $tenant:true, required:'Gate for gate review required'},
+    gate : {type: Schema.Types.ObjectId, ref: 'Project.process.gates', $tenant:true, required:'Gate for gate review required'},
 
     reviewDate : {type: Date, default: Date.now, required:'Review date required'},
     title : {type: String, default:'', required:'Review title required'},
@@ -85,22 +129,35 @@ var GateReviewSchema = new Schema({
         history : [approvalRecord]
     },
 
-    gateStatusAssignment: {type: Schema.Types.ObjectId, ref: 'GateStatusAssignment', $tenant:true},
-    status : {type: Schema.Types.ObjectId, ref: 'GateStatus', $tenant:true},
-    overallScore : {type: Schema.Types.ObjectId, ref: 'GateOutcomeScore', $tenant:true},
-    completed : {type: Boolean, default: false, required:'Completed flag required'},
-    budget : {type: Number, default: null},
+    outcomes : [OutcomeReviewSchema],
 
-    outcomeReviews : [OutcomeReviewSchema],
-    baselineDurationReviews : [BaselineDurationReviewSchema],
-    estimateDurationReviews : [EstimateDurationReviewSchema],
-    actualDurationReviews : [ActualDurationReviewSchema],
-    baselineCostReviews : [BaselineCostReviewSchema],
-    estimateCostReviews : [EstimateCostReviewSchema],
-    actualCostReviews : [ActualCostReviewSchema],
-    baselineCompletionReviews : [BaselineCompletionReviewSchema],
-    estimateCompletionReviews : [EstimateCompletionReviewSchema],
-    actualCompletionReviews : [ActualCompletionReviewSchema],
+    gateStatus: {
+        status : {type: Schema.Types.ObjectId, ref: 'GateStatus', default: null, $tenant:true},
+        overallScore : {type: Schema.Types.ObjectId, default: null, ref: 'GateOutcomeScore', $tenant:true},
+        completed : {type: Boolean, default: false, required:'Completed flag required'}
+    },
+    
+    budget : {
+        amount: {type: Number, default: null}
+    },
+    
+    performances: {
+        duration: {
+            baselineDurations: [BaselineDurationReviewSchema],
+            estimateDurations: [EstimateDurationReviewSchema],
+            actualDurations: [ActualDurationReviewSchema]
+        },
+        cost: {
+            baselineCosts: [BaselineCostReviewSchema],
+            estimateCosts: [EstimateCostReviewSchema],
+            actualCosts: [ActualCostReviewSchema]
+        },
+        completion: {
+            baselineCompletions: [BaselineCompletionReviewSchema],
+            estimateCompletions: [EstimateCompletionReviewSchema],
+            actualCompletions: [ActualCompletionReviewSchema]
+        }
+    },    
 
     created: { type: Date, default: Date.now },
     user: { type: Schema.ObjectId, ref: 'User' }

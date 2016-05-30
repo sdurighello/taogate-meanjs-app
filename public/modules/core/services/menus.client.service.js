@@ -234,7 +234,7 @@ angular.module('core').service('Menus', [
         this.addSubMenuItem('topbar', 'setup', 'Portfolio delivery', 'menuTitle','menuTitle',false,
             ['superAdmin','admin','pmo','projectManager','portfolioManager','executive'],20);
                 // Gate Process
-        this.addSubMenuItem('topbar', 'setup', 'Gate process', 'gate-management-setup','gate-management-setup',false,
+        this.addSubMenuItem('topbar', 'setup', 'Gate process templates', 'gate-process-templates','gate-process-templates',false,
             ['superAdmin','admin','pmo','projectManager','portfolioManager','executive'],21);
                 // Gate Review
         this.addSubMenuItem('topbar', 'setup', 'Gate review', 'gate-review-setup','gate-review-setup',false,
@@ -374,10 +374,10 @@ angular.module('core').service('Menus', [
         this.addSubMenuItem('topbar', 'delivery', 'Gate management', 'menuTitle','menuTitle',false,
             ['superAdmin','admin','pmo','projectManager','portfolioManager','executive'],0);
                 // Gate process assignment
-        this.addSubMenuItem('topbar', 'delivery', 'Gate process assignment', 'gate-management-assignment','gate-management-assignment',false,
+        this.addSubMenuItem('topbar', 'delivery', 'Gate process assignment', 'gate-process-assignment','gate-process-assignment',false,
             ['superAdmin','admin','pmo','projectManager','portfolioManager','executive'],1);
                 // Gate reviews
-        this.addSubMenuItem('topbar', 'delivery', 'Gate reviews', 'gate-management-review','gate-management-review',false,
+        this.addSubMenuItem('topbar', 'delivery', 'Gate reviews', 'gate-reviews','gate-reviews',false,
             ['superAdmin','admin','pmo','projectManager','portfolioManager','executive'],2);
                 // Delivery Performances
         this.addSubMenuItem('topbar', 'delivery', 'Delivery performances', 'gate-performances-portfolio','gate-performances-portfolio',false,

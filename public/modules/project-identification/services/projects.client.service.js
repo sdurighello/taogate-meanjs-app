@@ -43,11 +43,101 @@ angular.module('project-identification').factory('Projects', ['$resource',
 				url: 'projects/:projectId/stakeholders/:assignedGroupId/:assignedRoleId'
 				// req.body: {the whole "assignedRole" object}
 			},
-			updateProcessAssignment: {
-				method: 'PUT',
-				url: 'projects/:projectId/process'
-				// req.body: {processId: gate process id}
-			}
+
+            // ------- DELIVERY PROCESS -------
+
+            confirmAssignment: {
+                method: 'PUT',
+                url: 'projects/:projectId/confirmAssignment'
+                // req.body: {processId: gate process id}
+            },
+            customAssignment: {
+                method: 'PUT',
+                url: 'projects/:projectId/customAssignment'
+                // req.body: {processId: gate process id}
+            },
+            standardAssignment: {
+                method: 'PUT',
+                url: 'projects/:projectId/standardAssignment'
+                // req.body: {processId: gate process id}
+            },
+            removeAssignment: {
+                method: 'PUT',
+                url: 'projects/:projectId/removeAssignment'
+                // req.body: {processId: gate process id}
+            },
+
+            // --- Process header ---
+            
+            updateProcess: {
+                method: 'PUT',
+                url: 'projects/:projectId/updateProcess'
+            },
+            
+            // --- Gate ---
+
+            createGate: {
+                method: 'PUT',
+                url: 'projects/:projectId/createGate'
+            },
+            updateGateHeader: {
+                method: 'PUT',
+                url: 'projects/:projectId/project-gates/:projectGateId/updateHeader'
+            },
+            updateGatePosition: {
+                method: 'PUT',
+                url: 'projects/:projectId/project-gates/:projectGateId/updatePosition'
+            },
+            deleteGate: {
+                method: 'PUT',
+                url: 'projects/:projectId/project-gates/:projectGateId/delete'
+            },
+
+            // --- Outcome ---
+
+            createOutcome: {
+                method: 'PUT',
+                url: 'projects/:projectId/project-gates/:projectGateId/createOutcome'
+            },
+            updateOutcome: {
+                method: 'PUT',
+                url: 'projects/:projectId/project-gates/:projectGateId/project-outcomes/:projectOutcomeId/update'
+            },
+            deleteOutcome: {
+                method: 'PUT',
+                url: 'projects/:projectId/project-gates/:projectGateId/project-outcomes/:projectOutcomeId/delete'
+            },
+
+            // --- Approval --
+
+            submitProcess: {
+                method: 'PUT',
+                url: 'projects/:projectId/submitProcess'
+            },
+            approveProcess: {
+                method: 'PUT',
+                url: 'projects/:projectId/approveProcess'
+            },
+            rejectProcess: {
+                method: 'PUT',
+                url: 'projects/:projectId/rejectProcess'
+            },
+            draftProcess: {
+                method: 'PUT',
+                url: 'projects/:projectId/draftProcess'
+            },
+
+
+            // --- GATE REVIEWS --
+
+            createGateReview: {
+                method: 'PUT',
+                url: 'projects/:projectId/project-gates/:projectGateId/createGateReview'
+                // req.body: {new gate review object}
+            }
+            
+            
+            
 		});
 	}
 ]);

@@ -9,10 +9,7 @@ var mongoose = require('mongoose'),
 	_ = require('lodash');
 
 
-
-/**
- * Create a Project
- */
+/* PROJECT */
 
 exports.create = function(req, res) {
     require('./projects/projects.create.server.controller').create(req.user, req.body, function (err, project) {
@@ -26,17 +23,10 @@ exports.create = function(req, res) {
     });
 };
 
-/**
- * Show the current Project
- */
 exports.read = function(req, res) {
 	res.jsonp(req.project);
 };
 
-
-/**
- * Update a Project
- */
 exports.update = function(req, res) {
 	var project = req.project ;
     project.user = req.user;
@@ -55,23 +45,13 @@ exports.update = function(req, res) {
 	});
 };
 
-
-/**
- * Delete a Project
- */
-
 exports.delete = require('./projects/projects.delete.server.controller').delete;
-
-
-/**
- * List of Projects
- */
 
 exports.list = function(req, res) {
 
     var Project = mongoose.mtModel(req.user.tenantId + '.' + 'Project');
 
-    Project.find(req.query).deepPopulate(['process.gates', 'portfolio']).populate('user', 'displayName').exec(function(err, projects) {
+    Project.find(req.query).populate('portfolio').populate('user', 'displayName').exec(function(err, projects) {
         if (err) {
             return res.status(400).send({
                 message: errorHandler.getErrorMessage(err)
@@ -102,17 +82,54 @@ exports.updateRiskAssignment = require('./projects/projects.riskAnalysis.server.
 
 exports.updatePeopleAssignment = require('./projects/projects.stakeholderAnalysis.server.controller').updatePeopleAssignment;
 
-// ------------------------------ DELIVERY ------------------------------
+// ------------------------------ PROCESS ASSIGNMENT ------------------------------
 
-exports.updateProcessAssignment = require('./projects/projects.gateProcess.server.controller').updateProcessAssignment;
+exports.confirmAssignment = require('./projects/projects.gateProcess.server.controller').confirmAssignment;
+
+exports.customAssignment = require('./projects/projects.gateProcess.server.controller').customAssignment;
+
+exports.standardAssignment = require('./projects/projects.gateProcess.server.controller').standardAssignment;
+
+exports.removeAssignment = require('./projects/projects.gateProcess.server.controller').removeAssignment;
 
 
-// -----------------------------------------------------------------------
+exports.updateProcess = require('./projects/projects.gateProcess.server.controller').updateProcess;
 
 
-/**
- * Project middleware
- */
+exports.createGate = require('./projects/projects.gateProcess.server.controller').createGate;
+
+exports.updateGateHeader = require('./projects/projects.gateProcess.server.controller').updateGateHeader;
+
+exports.updateGatePosition = require('./projects/projects.gateProcess.server.controller').updateGatePosition;
+
+exports.deleteGate = require('./projects/projects.gateProcess.server.controller').deleteGate;
+
+
+exports.createOutcome = require('./projects/projects.gateProcess.server.controller').createOutcome;
+
+exports.updateOutcome = require('./projects/projects.gateProcess.server.controller').updateOutcome;
+
+exports.deleteOutcome = require('./projects/projects.gateProcess.server.controller').deleteOutcome;
+
+
+exports.submitProcess = require('./projects/projects.gateProcess.server.controller').submitProcess;
+
+exports.approveProcess = require('./projects/projects.gateProcess.server.controller').approveProcess;
+
+exports.rejectProcess = require('./projects/projects.gateProcess.server.controller').rejectProcess;
+
+exports.draftProcess = require('./projects/projects.gateProcess.server.controller').draftProcess;
+
+
+// ------------------------------ GATE REVIEWS ------------------------------
+
+exports.createGateReview = require('./projects/projects.gateReviews.server.controller').createGateReview;
+
+exports.updateGateReview = require('./projects/projects.gateReviews.server.controller').updateGateReview;
+
+exports.deleteGateReview = require('./projects/projects.gateReviews.server.controller').deleteGateReview;
+
+// ------------------------ MIDDLEWARE -----------------------------
 
 exports.projectByID = function(req, res, next, id) {
     var Project = mongoose.mtModel(req.user.tenantId + '.' + 'Project');
@@ -137,9 +154,7 @@ exports.projectByID = function(req, res, next, id) {
 
 };
 
-/**
- * Project authorization middleware
- */
+// ------------------------ AUTHORIZATION -----------------------------
 
 exports.hasCreateAuthorization = function(req, res, next) {
     if(!_.find(req.user.roles, function(role){
@@ -206,6 +221,7 @@ exports.hasEditAuthorization = function(req, res, next) {
     });
 };
 
+// Portfolio assignment
 exports.hasAssignmentAuthorization = function(req, res, next) {
     var Portfolio = mongoose.mtModel(req.user.tenantId + '.' + 'Portfolio');
 
