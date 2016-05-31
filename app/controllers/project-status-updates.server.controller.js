@@ -118,12 +118,7 @@ exports.list = function(req, res) {
 exports.projectStatusUpdateByID = function(req, res, next, id) {
 	var ProjectStatusUpdate = mongoose.mtModel(req.user.tenantId + '.' + 'ProjectStatusUpdate');
 	ProjectStatusUpdate.findById(id).deepPopulate([
-        'gateStatusUpdate.gateStatusAssignment',
-        'outcomeStatusUpdates.outcomeReview.outcome',
-        'statusAreaUpdates.projectAreaReview.statusArea',
-        'estimateDurationReviews.estimateDuration.targetGate',
-        'estimateCostReviews.estimateCost.targetGate',
-        'estimateCompletionReviews.estimateCompletion.targetGate'
+        
     ]).populate('user', 'displayName')
         .populate('approval.history.user', 'displayName')
         .populate('approval.currentRecord.user', 'displayName').exec(function(err, projectStatusUpdate) {

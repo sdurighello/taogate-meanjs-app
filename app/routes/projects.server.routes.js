@@ -103,10 +103,72 @@ module.exports = function(app) {
 
     app.route('/projects/:projectId/project-gates/:projectGateId/createGateReview')
         .put(users.requiresLogin, projects.hasEditAuthorization, projects.createGateReview);
-    app.route('/projects/:projectId/project-gates/:projectGateId/gate-reviews/:gateReviewId/update')
-        .put(users.requiresLogin, projects.hasEditAuthorization, projects.updateGateReview);
+    
     app.route('/projects/:projectId/project-gates/:projectGateId/gate-reviews/:gateReviewId/delete')
         .put(users.requiresLogin, projects.hasEditAuthorization, projects.deleteGateReview);
+
+    // Gate Reviews Approval
+
+    app.route('/projects/:projectId/project-gates/:projectGateId/gate-reviews/:gateReviewId/submit')
+        .put(users.requiresLogin, projects.hasEditAuthorization, projects.submitGateReview);
+
+    app.route('/projects/:projectId/project-gates/:projectGateId/gate-reviews/:gateReviewId/approve')
+        .put(users.requiresLogin, projects.hasApproveAuthorization, projects.approveGateReview);
+
+    app.route('/projects/:projectId/project-gates/:projectGateId/gate-reviews/:gateReviewId/reject')
+        .put(users.requiresLogin, projects.hasApproveAuthorization, projects.rejectGateReview);
+
+    app.route('/projects/:projectId/project-gates/:projectGateId/gate-reviews/:gateReviewId/draft')
+        .put(users.requiresLogin, projects.hasEditAuthorization, projects.draftGateReview);
+
+    // Gate Reviews Header & Status
+
+    app.route('/projects/:projectId/project-gates/:projectGateId/gate-reviews/:gateReviewId/header')
+        .put(users.requiresLogin, projects.hasEditAuthorization, projects.isGateReviewEditable, projects.updateGateReviewHeader);
+
+    app.route('/projects/:projectId/project-gates/:projectGateId/gate-reviews/:gateReviewId/status')
+        .put(users.requiresLogin, projects.hasEditAuthorization, projects.isGateReviewEditable,  projects.updateGateStatusReview);
+
+    app.route('/projects/:projectId/project-gates/:projectGateId/gate-reviews/:gateReviewId/budget')
+        .put(users.requiresLogin, projects.hasEditAuthorization, projects.isGateReviewEditable, projects.updateGateBudgetReview);
+
+    // Gate Reviews Outcomes
+
+    app.route('/projects/:projectId/project-gates/:projectGateId/gate-reviews/:gateReviewId/outcome-reviews/:outcomeReviewId')
+        .put(users.requiresLogin, projects.hasEditAuthorization, projects.isGateReviewEditable, projects.updateOutcomeReview);
+
+    // Gate Reviews Baseline
+
+    app.route('/projects/:projectId/project-gates/:projectGateId/gate-reviews/:gateReviewId/baseline-duration-reviews/:baselineDurationReviewId')
+        .put(users.requiresLogin, projects.hasEditAuthorization, projects.isGateReviewEditable, projects.updateBaselineDurationReview);
+
+    app.route('/projects/:projectId/project-gates/:projectGateId/gate-reviews/:gateReviewId/baseline-cost-reviews/:baselineCostReviewId')
+        .put(users.requiresLogin, projects.hasEditAuthorization, projects.isGateReviewEditable, projects.updateBaselineCostReview);
+
+    app.route('/projects/:projectId/project-gates/:projectGateId/gate-reviews/:gateReviewId/baseline-completion-reviews/:baselineCompletionReviewId')
+        .put(users.requiresLogin, projects.hasEditAuthorization, projects.isGateReviewEditable, projects.updateBaselineCompletionReview);
+
+    // Gate Reviews Estimate
+
+    app.route('/projects/:projectId/project-gates/:projectGateId/gate-reviews/:gateReviewId/estimate-duration-reviews/:estimateDurationReviewId')
+        .put(users.requiresLogin, projects.hasEditAuthorization, projects.isGateReviewEditable, projects.updateEstimateDurationReview);
+
+    app.route('/projects/:projectId/project-gates/:projectGateId/gate-reviews/:gateReviewId/estimate-cost-reviews/:estimateCostReviewId')
+        .put(users.requiresLogin, projects.hasEditAuthorization, projects.isGateReviewEditable, projects.updateEstimateCostReview);
+
+    app.route('/projects/:projectId/project-gates/:projectGateId/gate-reviews/:gateReviewId/estimate-completion-reviews/:estimateCompletionReviewId')
+        .put(users.requiresLogin, projects.hasEditAuthorization, projects.isGateReviewEditable, projects.updateEstimateCompletionReview);
+
+    // Gate Reviews Actual
+
+    app.route('/projects/:projectId/project-gates/:projectGateId/gate-reviews/:gateReviewId/actual-duration-reviews/:actualDurationReviewId')
+        .put(users.requiresLogin, projects.hasEditAuthorization, projects.isGateReviewEditable, projects.updateActualDurationReview);
+
+    app.route('/projects/:projectId/project-gates/:projectGateId/gate-reviews/:gateReviewId/actual-cost-reviews/:actualCostReviewId')
+        .put(users.requiresLogin, projects.hasEditAuthorization, projects.isGateReviewEditable, projects.updateActualCostReview);
+
+    app.route('/projects/:projectId/project-gates/:projectGateId/gate-reviews/:gateReviewId/actual-completion-reviews/:actualCompletionReviewId')
+        .put(users.requiresLogin, projects.hasEditAuthorization, projects.isGateReviewEditable, projects.updateActualCompletionReview);
 
 
     // Finish by binding the Project middleware

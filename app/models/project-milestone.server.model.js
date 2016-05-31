@@ -26,7 +26,7 @@ var statusReviewRecord = {
 
 var ProjectMilestoneSchema = new Schema({
     project: {type: Schema.Types.ObjectId, ref: 'Project', $tenant:true, required:'Project for milestone is required'},
-    gate: {type: Schema.Types.ObjectId, ref: 'Gate', $tenant:true, required:'Gate for milestone is required'},
+    gate: {type: Schema.Types.ObjectId, ref: 'Project.process.gates', $tenant:true, required:'Gate for milestone is required'},
     type : {type: Schema.Types.ObjectId, ref: 'ProjectMilestoneType', $tenant:true, required:'Type for milestone is required'},
 
     name : {type: String, default:'', trim: true, required:'Milestone name required'},

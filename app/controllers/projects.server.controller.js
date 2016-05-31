@@ -125,9 +125,47 @@ exports.draftProcess = require('./projects/projects.gateProcess.server.controlle
 
 exports.createGateReview = require('./projects/projects.gateReviews.server.controller').createGateReview;
 
-exports.updateGateReview = require('./projects/projects.gateReviews.server.controller').updateGateReview;
-
 exports.deleteGateReview = require('./projects/projects.gateReviews.server.controller').deleteGateReview;
+
+
+exports.updateGateReviewHeader = require('./projects/projects.gateReviews.server.controller').updateGateReviewHeader;
+
+exports.updateGateStatusReview = require('./projects/projects.gateReviews.server.controller').updateGateStatusReview;
+
+exports.updateGateBudgetReview = require('./projects/projects.gateReviews.server.controller').updateGateBudgetReview;
+
+
+exports.updateOutcomeReview = require('./projects/projects.gateReviews.server.controller').updateOutcomeReview;
+
+
+exports.updateActualCompletionReview = require('./projects/projects.gateReviews.server.controller').updateActualCompletionReview;
+
+exports.updateActualCostReview = require('./projects/projects.gateReviews.server.controller').updateActualCostReview;
+
+exports.updateActualDurationReview = require('./projects/projects.gateReviews.server.controller').updateActualDurationReview;
+
+
+exports.updateEstimateCompletionReview = require('./projects/projects.gateReviews.server.controller').updateEstimateCompletionReview;
+
+exports.updateEstimateCostReview = require('./projects/projects.gateReviews.server.controller').updateEstimateCostReview;
+
+exports.updateEstimateDurationReview = require('./projects/projects.gateReviews.server.controller').updateEstimateDurationReview;
+
+
+exports.updateBaselineCompletionReview = require('./projects/projects.gateReviews.server.controller').updateBaselineCompletionReview;
+
+exports.updateBaselineCostReview = require('./projects/projects.gateReviews.server.controller').updateBaselineCostReview;
+
+exports.updateBaselineDurationReview = require('./projects/projects.gateReviews.server.controller').updateBaselineDurationReview;
+
+
+exports.submitGateReview = require('./projects/projects.gateReviews.server.controller').submitGateReview;
+
+exports.approveGateReview = require('./projects/projects.gateReviews.server.controller').approveGateReview;
+
+exports.rejectGateReview = require('./projects/projects.gateReviews.server.controller').rejectGateReview;
+
+exports.draftGateReview = require('./projects/projects.gateReviews.server.controller').draftGateReview;
 
 // ------------------------ MIDDLEWARE -----------------------------
 
@@ -332,4 +370,14 @@ exports.hasAssignmentAuthorization = function(req, res, next) {
         }
         next();
     });
+};
+
+// Gate Reviews
+
+exports.hasApproveAuthorization = function(req, res, next){
+    next();
+};
+
+exports.isGateReviewEditable = function(req, res, next){
+    next();
 };

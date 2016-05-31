@@ -135,10 +135,6 @@ exports.changeRequestsForProject = require('./project-change-requests/project-ch
 exports.projectChangeRequestByID = function(req, res, next, id) {
     var ProjectChangeRequest = mongoose.mtModel(req.user.tenantId + '.' + 'ProjectChangeRequest');
 	ProjectChangeRequest.findById(id).deepPopulate([
-        'gateAssignmentReview.gateStatusAssignment',
-        'baselineDurationReviews.baselineDuration.targetGate', 'estimateDurationReviews.estimateDuration.targetGate', 'actualDurationReviews.actualDuration.targetGate',
-        'baselineCostReviews.baselineCost.targetGate', 'estimateCostReviews.estimateCost.targetGate', 'actualCostReviews.actualCost.targetGate',
-        'baselineCompletionReviews.baselineCompletion.targetGate', 'estimateCompletionReviews.estimateCompletion.targetGate', 'actualCompletionReviews.actualCompletion.targetGate'
     ]).populate('user', 'displayName').populate('approval.history.user', 'displayName').populate('approval.currentRecord.user', 'displayName').exec(function(err, projectChangeRequest) {
 		if (err) return next(err);
 		if (! projectChangeRequest) return next(new Error('Failed to load Project change request ' + id));

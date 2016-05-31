@@ -22,7 +22,7 @@ var areaReviewRecord = {
 
 var ProjectAreaReviewSchema = new Schema({
     project:{type: Schema.Types.ObjectId, ref: 'Project', $tenant:true, required:'Project reference in ProjectAreaReview required'},
-    gate:{type: Schema.Types.ObjectId, ref: 'Gate', $tenant:true, required:'Gate reference in ProjectAreaReview required'},
+    gate:{type: Schema.Types.ObjectId, ref: 'Project.process.gates', $tenant:true, required:'Gate reference in ProjectAreaReview required'},
     statusArea:{type: Schema.Types.ObjectId, ref: 'LogStatusArea', $tenant:true, required:'LogStatusArea reference in ProjectAreaReview required'},
 
     currentRecord: areaReviewRecord,

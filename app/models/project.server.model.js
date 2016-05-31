@@ -111,7 +111,7 @@ var approvalRecord = {
 var actualDurationReviewRecord = {
     gateDate: {type: Date, default: null},
     sourceChangeRequest: {type: Schema.Types.ObjectId, ref: 'ProjectChangeRequest', default:null, $tenant:true},
-    sourceGateReview: {type: Schema.Types.ObjectId, ref: 'GateReview', default:null, $tenant:true},
+    sourceGateReview: {type: Schema.Types.ObjectId, ref: 'Project.process.gates.gateReviews', default:null, $tenant:true},
     created: {type: Date, default: Date.now},
     user: {
         _id: {type: Schema.ObjectId, ref: 'User'},
@@ -121,7 +121,7 @@ var actualDurationReviewRecord = {
 
 var ActualDurationSchema = new Schema({
     targetGate:{
-        _id: {type: Schema.Types.ObjectId, ref: 'Project.gateData.gates', $tenant:true},
+        _id: {type: Schema.Types.ObjectId, ref: 'Project.process.gates', $tenant:true},
         name: { type: String, default: '', required: 'Please fill Gate name', trim: true },
         position:{ type: Number, required: 'Position for gate is required', min:1}
     },    
@@ -132,7 +132,7 @@ var ActualDurationSchema = new Schema({
 var estimateDurationReviewRecord = {
     gateDate: {type: Date, default: null},
     sourceStatusUpdate: {type: Schema.Types.ObjectId, ref: 'ProjectStatusUpdate', default:null, $tenant:true},
-    sourceGateReview: {type: Schema.Types.ObjectId, ref: 'GateReview', default:null, $tenant:true},
+    sourceGateReview: {type: Schema.Types.ObjectId, ref: 'Project.process.gates.gateReviews', default:null, $tenant:true},
     created: {type: Date, default: Date.now},
     user: {
         _id: {type: Schema.ObjectId, ref: 'User'},
@@ -142,7 +142,7 @@ var estimateDurationReviewRecord = {
 
 var EstimateDurationSchema = new Schema({
     targetGate:{
-        _id: {type: Schema.Types.ObjectId, ref: 'Project.gateData.gates', $tenant:true},
+        _id: {type: Schema.Types.ObjectId, ref: 'Project.process.gates', $tenant:true},
         name: { type: String, default: '', required: 'Please fill Gate name', trim: true },
         position:{ type: Number, required: 'Position for gate is required', min:1}
     },    
@@ -153,7 +153,7 @@ var EstimateDurationSchema = new Schema({
 var baselineDurationReviewRecord = {
     gateDate: {type: Date, default: null},
     sourceChangeRequest: {type: Schema.Types.ObjectId, ref: 'ProjectChangeRequest', default:null, $tenant:true},
-    sourceGateReview: {type: Schema.Types.ObjectId, ref: 'GateReview', default:null, $tenant:true},
+    sourceGateReview: {type: Schema.Types.ObjectId, ref: 'Project.process.gates.gateReviews', default:null, $tenant:true},
     created: {type: Date, default: Date.now},
     user: {
         _id: {type: Schema.ObjectId, ref: 'User'},
@@ -163,7 +163,7 @@ var baselineDurationReviewRecord = {
 
 var BaselineDurationSchema = new Schema({
     targetGate:{
-        _id: {type: Schema.Types.ObjectId, ref: 'Project.gateData.gates', $tenant:true},
+        _id: {type: Schema.Types.ObjectId, ref: 'Project.process.gates', $tenant:true},
         name: { type: String, default: '', required: 'Please fill Gate name', trim: true },
         position:{ type: Number, required: 'Position for gate is required', min:1}
     },    
@@ -176,7 +176,7 @@ var BaselineDurationSchema = new Schema({
 var actualCostReviewRecord = {
     cost: {type: Number, min:0, default: null},
     sourceChangeRequest: {type: Schema.Types.ObjectId, ref: 'ProjectChangeRequest', default:null, $tenant:true},
-    sourceGateReview: {type: Schema.Types.ObjectId, ref: 'GateReview', default:null, $tenant:true},
+    sourceGateReview: {type: Schema.Types.ObjectId, ref: 'Project.process.gates.gateReviews', default:null, $tenant:true},
     created: {type: Date, default: Date.now},
     user: {
         _id: {type: Schema.ObjectId, ref: 'User'},
@@ -186,7 +186,7 @@ var actualCostReviewRecord = {
 
 var ActualCostSchema = new Schema({
     targetGate:{
-        _id: {type: Schema.Types.ObjectId, ref: 'Project.gateData.gates', $tenant:true},
+        _id: {type: Schema.Types.ObjectId, ref: 'Project.process.gates', $tenant:true},
         name: { type: String, default: '', required: 'Please fill Gate name', trim: true },
         position:{ type: Number, required: 'Position for gate is required', min:1}
     },    
@@ -197,7 +197,7 @@ var ActualCostSchema = new Schema({
 var estimateCostReviewRecord = {
     cost: {type: Number, min:0, default: null},
     sourceStatusUpdate: {type: Schema.Types.ObjectId, ref: 'ProjectStatusUpdate', default:null, $tenant:true},
-    sourceGateReview: {type: Schema.Types.ObjectId, ref: 'GateReview', default:null, $tenant:true},
+    sourceGateReview: {type: Schema.Types.ObjectId, ref: 'Project.process.gates.gateReviews', default:null, $tenant:true},
     created: {type: Date, default: Date.now},
     user: {
         _id: {type: Schema.ObjectId, ref: 'User'},
@@ -207,7 +207,7 @@ var estimateCostReviewRecord = {
 
 var EstimateCostSchema = new Schema({
     targetGate:{
-        _id: {type: Schema.Types.ObjectId, ref: 'Project.gateData.gates', $tenant:true},
+        _id: {type: Schema.Types.ObjectId, ref: 'Project.process.gates', $tenant:true},
         name: { type: String, default: '', required: 'Please fill Gate name', trim: true },
         position:{ type: Number, required: 'Position for gate is required', min:1}
     },    
@@ -218,7 +218,7 @@ var EstimateCostSchema = new Schema({
 var baselineCostReviewRecord = {
     cost: {type: Number, min:0, default: null},
     sourceChangeRequest: {type: Schema.Types.ObjectId, ref: 'ProjectChangeRequest', default:null, $tenant:true},
-    sourceGateReview: {type: Schema.Types.ObjectId, ref: 'GateReview', default:null, $tenant:true},
+    sourceGateReview: {type: Schema.Types.ObjectId, ref: 'Project.process.gates.gateReviews', default:null, $tenant:true},
     created: {type: Date, default: Date.now},
     user: {
         _id: {type: Schema.ObjectId, ref: 'User'},
@@ -228,7 +228,7 @@ var baselineCostReviewRecord = {
 
 var BaselineCostSchema = new Schema({
     targetGate:{
-        _id: {type: Schema.Types.ObjectId, ref: 'Project.gateData.gates', $tenant:true},
+        _id: {type: Schema.Types.ObjectId, ref: 'Project.process.gates', $tenant:true},
         name: { type: String, default: '', required: 'Please fill Gate name', trim: true },
         position:{ type: Number, required: 'Position for gate is required', min:1}
     },    
@@ -241,7 +241,7 @@ var BaselineCostSchema = new Schema({
 var actualCompletionReviewRecord = {
     completion: {type: Number, min:0, default: null},
     sourceChangeRequest: {type: Schema.Types.ObjectId, ref: 'ProjectChangeRequest', default:null, $tenant:true},
-    sourceGateReview: {type: Schema.Types.ObjectId, ref: 'GateReview', default:null, $tenant:true},
+    sourceGateReview: {type: Schema.Types.ObjectId, ref: 'Project.process.gates.gateReviews', default:null, $tenant:true},
     created: {type: Date, default: Date.now},
     user: {
         _id: {type: Schema.ObjectId, ref: 'User'},
@@ -251,7 +251,7 @@ var actualCompletionReviewRecord = {
 
 var ActualCompletionSchema = new Schema({
     targetGate:{
-        _id: {type: Schema.Types.ObjectId, ref: 'Project.gateData.gates', $tenant:true},
+        _id: {type: Schema.Types.ObjectId, ref: 'Project.process.gates', $tenant:true},
         name: { type: String, default: '', required: 'Please fill Gate name', trim: true },
         position:{ type: Number, required: 'Position for gate is required', min:1}
     },    
@@ -262,7 +262,7 @@ var ActualCompletionSchema = new Schema({
 var estimateCompletionReviewRecord = {
     completion: {type: Number, min:0, default: null},
     sourceStatusUpdate: {type: Schema.Types.ObjectId, ref: 'ProjectStatusUpdate', default:null, $tenant:true},
-    sourceGateReview: {type: Schema.Types.ObjectId, ref: 'GateReview', default:null, $tenant:true},
+    sourceGateReview: {type: Schema.Types.ObjectId, ref: 'Project.process.gates.gateReviews', default:null, $tenant:true},
     created: {type: Date, default: Date.now},
     user: {
         _id: {type: Schema.ObjectId, ref: 'User'},
@@ -272,7 +272,7 @@ var estimateCompletionReviewRecord = {
 
 var EstimateCompletionSchema = new Schema({
     targetGate:{
-        _id: {type: Schema.Types.ObjectId, ref: 'Project.gateData.gates', $tenant:true},
+        _id: {type: Schema.Types.ObjectId, ref: 'Project.process.gates', $tenant:true},
         name: { type: String, default: '', required: 'Please fill Gate name', trim: true },
         position:{ type: Number, required: 'Position for gate is required', min:1}
     },    
@@ -283,7 +283,7 @@ var EstimateCompletionSchema = new Schema({
 var baselineCompletionReviewRecord = {
     completion: {type: Number, min:0, default: null},
     sourceChangeRequest: {type: Schema.Types.ObjectId, ref: 'ProjectChangeRequest', default:null, $tenant:true},
-    sourceGateReview: {type: Schema.Types.ObjectId, ref: 'GateReview', default:null, $tenant:true},
+    sourceGateReview: {type: Schema.Types.ObjectId, ref: 'Project.process.gates.gateReviews', default:null, $tenant:true},
     created: {type: Date, default: Date.now},
     user: {
         _id: {type: Schema.ObjectId, ref: 'User'},
@@ -293,7 +293,7 @@ var baselineCompletionReviewRecord = {
 
 var BaselineCompletionSchema = new Schema({
     targetGate:{
-        _id: {type: Schema.Types.ObjectId, ref: 'Project.gateData.gates', $tenant:true},
+        _id: {type: Schema.Types.ObjectId, ref: 'Project.process.gates', $tenant:true},
         name: { type: String, default: '', required: 'Please fill Gate name', trim: true },
         position:{ type: Number, required: 'Position for gate is required', min:1}
     },
@@ -304,7 +304,7 @@ var BaselineCompletionSchema = new Schema({
 /* OUTCOME */
 
 var scoreReviewRecord = {
-    sourceGateReview: {type: Schema.Types.ObjectId, ref: 'GateReview', default:null, $tenant:true},
+    sourceGateReview: {type: Schema.Types.ObjectId, ref: 'Project.process.gates.gateReviews', default:null, $tenant:true},
     score: {type: Schema.Types.ObjectId, ref: 'GateOutcomeScore', default:null, $tenant:true},
     comment :{type: String, trim:true, default:''},
     created: {type: Date, default: Date.now},
@@ -346,7 +346,7 @@ var gateStatusRecord = {
     currentGate : {type: Boolean, default: false},
     status : {type: Schema.Types.ObjectId, ref: 'GateStatus', default:null, $tenant:true},
     overallScore : {type: Schema.Types.ObjectId, ref: 'GateOutcomeScore', default:null, $tenant:true},
-    sourceGateReview: {type: Schema.Types.ObjectId, ref: 'GateReview', default:null, $tenant:true},
+    sourceGateReview: {type: Schema.Types.ObjectId, ref: 'Project.process.gates.gateReviews', default:null, $tenant:true},
     created: {type: Date, default: Date.now},
     user: {
         _id: {type: Schema.ObjectId, ref: 'User'},
@@ -359,7 +359,7 @@ var gateStatusRecord = {
 var budgetRecord = {
     amount: {type: Number, default: null},
     sourceChangeRequest: {type: Schema.Types.ObjectId, ref: 'ProjectChangeRequest', default:null, $tenant:true},
-    sourceGateReview: {type: Schema.Types.ObjectId, ref: 'GateReview', default:null, $tenant:true},
+    sourceGateReview: {type: Schema.Types.ObjectId, ref: 'Project.process.gates.gateReviews', default:null, $tenant:true},
     created: {type: Date, default: Date.now},
     user: {
         _id: {type: Schema.ObjectId, ref: 'User'},
@@ -440,7 +440,7 @@ var BaselineDurationReviewSchema = new Schema({
         targetGate: {
             _id: {type: Schema.Types.ObjectId, ref: 'Project.process.gates', $tenant:true},
             name: {type: String},
-            position: {type: Boolean}
+            position: {type: Number}
         }
     },
     newDate : {type: Date, default: null}
@@ -452,7 +452,7 @@ var EstimateDurationReviewSchema = new Schema({
         targetGate: {
             _id: {type: Schema.Types.ObjectId, ref: 'Project.process.gates', $tenant:true},
             name: {type: String},
-            position: {type: Boolean}
+            position: {type: Number}
         }
     },
     newDate : {type: Date, default: null}
@@ -464,7 +464,7 @@ var ActualDurationReviewSchema = new Schema({
         targetGate: {
             _id: {type: Schema.Types.ObjectId, ref: 'Project.process.gates', $tenant:true},
             name: {type: String},
-            position: {type: Boolean}
+            position: {type: Number}
         }
     },
     newDate : {type: Date, default: null}
@@ -476,7 +476,7 @@ var BaselineCostReviewSchema = new Schema({
         targetGate: {
             _id: {type: Schema.Types.ObjectId, ref: 'Project.process.gates', $tenant:true},
             name: {type: String},
-            position: {type: Boolean}
+            position: {type: Number}
         }
     },
     newCost : {type: Number, default: null}
@@ -488,7 +488,7 @@ var EstimateCostReviewSchema = new Schema({
         targetGate: {
             _id: {type: Schema.Types.ObjectId, ref: 'Project.process.gates', $tenant:true},
             name: {type: String},
-            position: {type: Boolean}
+            position: {type: Number}
         }
     },
     newCost : {type: Number}
@@ -500,7 +500,7 @@ var ActualCostReviewSchema = new Schema({
         targetGate: {
             _id: {type: Schema.Types.ObjectId, ref: 'Project.process.gates', $tenant:true},
             name: {type: String},
-            position: {type: Boolean}
+            position: {type: Number}
         }
     },
     newCost : {type: Number, default: null}
@@ -512,7 +512,7 @@ var BaselineCompletionReviewSchema = new Schema({
         targetGate: {
             _id: {type: Schema.Types.ObjectId, ref: 'Project.process.gates', $tenant:true},
             name: {type: String},
-            position: {type: Boolean}
+            position: {type: Number}
         }
     },
     newCompletion : {type: Number, default: null}
@@ -524,7 +524,7 @@ var EstimateCompletionReviewSchema = new Schema({
         targetGate: {
             _id: {type: Schema.Types.ObjectId, ref: 'Project.process.gates', $tenant:true},
             name: {type: String},
-            position: {type: Boolean}
+            position: {type: Number}
         }
     },
     newCompletion : {type: Number, default: null}
@@ -536,7 +536,7 @@ var ActualCompletionReviewSchema = new Schema({
         targetGate: {
             _id: {type: Schema.Types.ObjectId, ref: 'Project.process.gates', $tenant:true},
             name: {type: String},
-            position: {type: Boolean}
+            position: {type: Number}
         }
     },
     newCompletion : {type: Number, default: null}

@@ -796,9 +796,7 @@ exports.deleteOutcome = function(req, res) {
 // Approval
 
 exports.submitProcess = function(req, res) {
-
-    var GateProcessTemplate = mongoose.mtModel(req.user.tenantId + '.' + 'GateProcessTemplate');
-
+    
     var project = req.project;
 
     project.user = req.user;
@@ -831,9 +829,7 @@ exports.submitProcess = function(req, res) {
 };
 
 exports.approveProcess = function(req, res) {
-
-    var GateProcessTemplate = mongoose.mtModel(req.user.tenantId + '.' + 'GateProcessTemplate');
-
+    
     var project = req.project;
 
     project.user = req.user;
@@ -865,9 +861,7 @@ exports.approveProcess = function(req, res) {
 };
 
 exports.rejectProcess = function(req, res) {
-
-    var GateProcessTemplate = mongoose.mtModel(req.user.tenantId + '.' + 'GateProcessTemplate');
-
+    
     var project = req.project;
 
     project.user = req.user;
@@ -900,9 +894,7 @@ exports.rejectProcess = function(req, res) {
 };
 
 exports.draftProcess = function(req, res) {
-
-    var GateProcessTemplate = mongoose.mtModel(req.user.tenantId + '.' + 'GateProcessTemplate');
-
+    
     var project = req.project;
 
     project.user = req.user;

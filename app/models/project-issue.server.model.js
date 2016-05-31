@@ -26,7 +26,7 @@ var statusReviewRecord = {
 var ProjectIssueSchema = new Schema({
 
     project: {type: Schema.Types.ObjectId, ref: 'Project', $tenant:true, required:'Project is required'},
-    gate : {type: Schema.Types.ObjectId, ref: 'Gate', $tenant:true, required:'Gate is required'},
+    gate : {type: Schema.Types.ObjectId, ref: 'Project.process.gates', $tenant:true, required:'Gate is required'},
 
     raisedOnDate : {type: Date, default: Date.now, required:'Raised on date required'},
 

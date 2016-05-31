@@ -352,7 +352,7 @@ exports.getUserGateReviews = function(req, res) {
     var GateReview = mongoose.mtModel(req.user.tenantId + '.' + 'GateReview');
 
     GateReview.find({'approval.currentRecord.approvalState': 'submitted'})
-        .populate('project', 'identification').populate('gate').exec(function (err, reviews) {
+        .populate('project', 'identification').exec(function (err, reviews) {
         if (err) {
             return res.status(400).send({
                 message: errorHandler.getErrorMessage(err)

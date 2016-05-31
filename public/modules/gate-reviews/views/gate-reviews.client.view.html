@@ -234,10 +234,10 @@
                                                         </div>
                                                         <hr>
                                                         <div class="form-group-sm pull-right" >
-                                                            <button class="btn btn-success btn-xs" data-ng-click="saveEditHeader(selectedGateReview)" data-ng-disabled="isResolving">
+                                                            <button class="btn btn-success btn-xs" data-ng-click="saveEditHeader(selectedProject, selectedGate, selectedGateReview)" data-ng-disabled="isResolving">
                                                                 Save
                                                             </button>
-                                                            <button class="btn btn-danger btn-xs" data-ng-click="deleteGateReview(selectedGate, selectedGateReview)" data-ng-disabled="isResolving">
+                                                            <button class="btn btn-danger btn-xs" data-ng-click="deleteGateReview(selectedProject, selectedGate, selectedGateReview)" data-ng-disabled="isResolving">
                                                                 Delete gate review
                                                             </button>
                                                             <button class="btn btn-info btn-xs" data-ng-click="cancelEditHeader(selectedGateReview)" data-ng-disabled="isResolving">
@@ -252,7 +252,7 @@
                                                     <div class="col-md-6">
                                                         <div class="panel panel-default panel-body">
                                                             <div class="row">
-                                                                <div class="col-md-6 text-center">
+                                                                <div class="col-md-3 text-center">
                                                                     Current
                                                                 </div>
                                                             </div>
@@ -287,10 +287,10 @@
                                                     <div class="col-md-6" data-ng-switch="switchStatusForm[selectedGateReview._id]">
                                                         <div class="panel panel-default panel-body" data-ng-switch-default="view">
                                                             <div class="row">
-                                                                <div class="col-md-6 text-center">
+                                                                <div class="col-md-3 text-center">
                                                                     New
                                                                 </div>
-                                                                <div class="col-md-6">
+                                                                <div class="col-md-9">
                                                                     <div class="pull-right" data-ng-show="userHasAuthorization('edit', user, selectedProject) && (selectedGateReview.approval.currentRecord.approvalState === 'draft')">
                                                                         <button class="btn btn-success btn-xs" data-ng-click="editStatus(selectedGateReview)">
                                                                             Edit
@@ -327,12 +327,12 @@
                                                         </div>
                                                         <div class="panel panel-default panel-body" data-ng-switch-when="edit">
                                                             <div class="row">
-                                                                <div class="col-md-6 text-center">
+                                                                <div class="col-md-3 text-center">
                                                                     New
                                                                 </div>
-                                                                <div class="col-md-6">
+                                                                <div class="col-md-9">
                                                                     <div class="pull-right">
-                                                                        <button class="btn btn-success btn-xs" data-ng-click="saveEditStatus(selectedGateReview)"
+                                                                        <button class="btn btn-success btn-xs" data-ng-click="saveEditStatus(selectedProject, selectedGate, selectedGateReview)"
                                                                                 data-ng-disabled="isResolving">
                                                                             Save
                                                                         </button>
@@ -383,13 +383,13 @@
                                                             <div class="col-md-6">
                                                                 <div class="panel panel-default panel-body">
                                                                     <div class="row">
-                                                                        <div class="col-md-6 text-center">
+                                                                        <div class="col-md-3 text-center">
                                                                             Current
                                                                         </div>
                                                                     </div>
                                                                     <br>
                                                                     <div class="row">
-                                                                        <div class="form-group-sm col-md-8">
+                                                                        <div class="form-group-sm col-md-12">
                                                                             <select id="" class="form-control" data-ng-model = "outcomeReview.outcome.currentRecord.score"
                                                                                     ng-options="score._id as score.name for score in outcomeScores" disabled>
                                                                                 <option value="">No score yet</option>
@@ -407,10 +407,10 @@
                                                             <div class="col-md-6" data-ng-switch="switchOutcomeReviewForm[outcomeReview._id]">
                                                                 <div class="panel panel-default panel-body" data-ng-switch-default="view">
                                                                     <div class="row">
-                                                                        <div class="col-md-6 text-center">
+                                                                        <div class="col-md-3 text-center">
                                                                             New
                                                                         </div>
-                                                                        <div class="col-md-6">
+                                                                        <div class="col-md-9">
                                                                             <div class="pull-right" data-ng-show="userHasAuthorization('edit', user, selectedProject) && (selectedGateReview.approval.currentRecord.approvalState === 'draft')">
                                                                                 <button class="btn btn-success btn-xs" data-ng-click="editOutcomeReview(outcomeReview)">
                                                                                     Edit
@@ -420,7 +420,7 @@
                                                                     </div>
                                                                     <br>
                                                                     <div class="row">
-                                                                        <div class="form-group-sm col-md-8">
+                                                                        <div class="form-group-sm col-md-12">
                                                                             <select id="" class="form-control" data-ng-model = "outcomeReview.newScore"
                                                                                     ng-options="score._id as score.name for score in outcomeScores" disabled>
                                                                                 <option value="">No score yet</option>
@@ -436,13 +436,13 @@
                                                                 </div>
                                                                 <div class="panel panel-default panel-body" data-ng-switch-when="edit">
                                                                     <div class="row">
-                                                                        <div class="col-md-6 text-center">
+                                                                        <div class="col-md-3 text-center">
                                                                             New
                                                                         </div>
-                                                                        <div class="col-md-6">
+                                                                        <div class="col-md-9">
                                                                             <div class="pull-right">
                                                                                 <button class="btn btn-success btn-xs"
-                                                                                        data-ng-click="saveEditOutcomeReview(selectedGateReview, outcomeReview)"
+                                                                                        data-ng-click="saveEditOutcomeReview(selectedProject, selectedGate, selectedGateReview, outcomeReview)"
                                                                                         data-ng-disabled="isResolving">
                                                                                     Save
                                                                                 </button>
@@ -455,7 +455,7 @@
                                                                     </div>
                                                                     <br>
                                                                     <div class="row">
-                                                                        <div class="form-group-sm col-md-8">
+                                                                        <div class="form-group-sm col-md-12">
                                                                             <select id="" class="form-control" data-ng-model = "outcomeReview.newScore"
                                                                                     ng-options="score._id as score.name for score in outcomeScores" >
                                                                                 <option value="">--choose score</option>
@@ -514,7 +514,7 @@
                                                                     </span>
                                                                     </div>
                                                                     <br>
-                                                                    <button class="btn btn-success btn-xs" data-ng-click="saveEditBaselineDuration(selectedGateReview, baselineDurationReview)"
+                                                                    <button class="btn btn-success btn-xs" data-ng-click="saveEditBaselineDuration(selectedProject, selectedGate, selectedGateReview, baselineDurationReview)"
                                                                             data-ng-disabled="isResolving">
                                                                         <span class="glyphicon glyphicon-ok"></span>
                                                                     </button>
@@ -566,7 +566,7 @@
                                                                     </span>
                                                                     </div>
                                                                     <br>
-                                                                    <button class="btn btn-success btn-xs" data-ng-click="saveEditEstimateDuration(selectedGateReview, estimateDurationReview)"
+                                                                    <button class="btn btn-success btn-xs" data-ng-click="saveEditEstimateDuration(selectedProject, selectedGate, selectedGateReview, estimateDurationReview)"
                                                                             data-ng-disabled="isResolving">
                                                                         <span class="glyphicon glyphicon-ok"></span>
                                                                     </button>
@@ -618,7 +618,7 @@
                                                                     </span>
                                                                     </div>
                                                                     <br>
-                                                                    <button class="btn btn-success btn-xs" data-ng-click="saveEditActualDuration(selectedGateReview, actualDurationReview)"
+                                                                    <button class="btn btn-success btn-xs" data-ng-click="saveEditActualDuration(selectedProject, selectedGate, selectedGateReview, actualDurationReview)"
                                                                             data-ng-disabled="isResolving">
                                                                         <span class="glyphicon glyphicon-ok"></span>
                                                                     </button>
@@ -661,10 +661,10 @@
                                                                 </div>
                                                                 <div data-ng-switch-when="edit">
                                                                     <div class="input-group input-group-sm">
-                                                                        <input type="number" min="0" id="" class="form-control" data-ng-model="selectedGateReview.budget.amount">
+                                                                        <input type="number" min="0" id="" class="form-control" data-ng-model="selectedGateReview.budgetReview.newAmount">
                                                                     </div>
                                                                     <br>
-                                                                    <button class="btn btn-success btn-xs" data-ng-click="saveEditBudget(selectedGateReview)"
+                                                                    <button class="btn btn-success btn-xs" data-ng-click="saveEditBudget(selectedProject, selectedGate, selectedGateReview)"
                                                                             data-ng-disabled="isResolving">
                                                                         <span class="glyphicon glyphicon-ok"></span>
                                                                     </button>
@@ -712,7 +712,7 @@
                                                                         <input type="number" min="0" id="" class="form-control" data-ng-model="baselineCostReview.newCost">
                                                                     </div>
                                                                     <br>
-                                                                    <button class="btn btn-success btn-xs" data-ng-click="saveEditBaselineCost(selectedGateReview, baselineCostReview)"
+                                                                    <button class="btn btn-success btn-xs" data-ng-click="saveEditBaselineCost(selectedProject, selectedGate, selectedGateReview, baselineCostReview)"
                                                                             data-ng-disabled="isResolving">
                                                                         <span class="glyphicon glyphicon-ok"></span>
                                                                     </button>
@@ -760,7 +760,7 @@
                                                                         <input type="number" min="0" id="" class="form-control" data-ng-model="estimateCostReview.newCost">
                                                                     </div>
                                                                     <br>
-                                                                    <button class="btn btn-success btn-xs" data-ng-click="saveEditEstimateCost(selectedGateReview, estimateCostReview)"
+                                                                    <button class="btn btn-success btn-xs" data-ng-click="saveEditEstimateCost(selectedProject, selectedGate, selectedGateReview, estimateCostReview)"
                                                                             data-ng-disabled="isResolving">
                                                                         <span class="glyphicon glyphicon-ok"></span>
                                                                     </button>
@@ -808,7 +808,7 @@
                                                                         <input type="number" min="0" id="" class="form-control" data-ng-model="actualCostReview.newCost">
                                                                     </div>
                                                                     <br>
-                                                                    <button class="btn btn-success btn-xs" data-ng-click="saveEditActualCost(selectedGateReview, actualCostReview)"
+                                                                    <button class="btn btn-success btn-xs" data-ng-click="saveEditActualCost(selectedProject, selectedGate, selectedGateReview, actualCostReview)"
                                                                             data-ng-disabled="isResolving">
                                                                         <span class="glyphicon glyphicon-ok"></span>
                                                                     </button>
@@ -858,7 +858,7 @@
                                                                         <input type="number" min="0" id="" class="form-control" data-ng-model="baselineCompletionReview.newCompletion">
                                                                     </div>
                                                                     <br>
-                                                                    <button class="btn btn-success btn-xs" data-ng-click="saveEditBaselineCompletion(selectedGateReview, baselineCompletionReview)"
+                                                                    <button class="btn btn-success btn-xs" data-ng-click="saveEditBaselineCompletion(selectedProject, selectedGate, selectedGateReview, baselineCompletionReview)"
                                                                             data-ng-disabled="isResolving">
                                                                         <span class="glyphicon glyphicon-ok"></span>
                                                                     </button>
@@ -906,7 +906,7 @@
                                                                         <input type="number" min="0" id="" class="form-control" data-ng-model="estimateCompletionReview.newCompletion">
                                                                     </div>
                                                                     <br>
-                                                                    <button class="btn btn-success btn-xs" data-ng-click="saveEditEstimateCompletion(selectedGateReview, estimateCompletionReview)"
+                                                                    <button class="btn btn-success btn-xs" data-ng-click="saveEditEstimateCompletion(selectedProject, selectedGate, selectedGateReview, estimateCompletionReview)"
                                                                             data-ng-disabled="isResolving">
                                                                         <span class="glyphicon glyphicon-ok"></span>
                                                                     </button>
@@ -954,7 +954,7 @@
                                                                         <input type="number" min="0" id="" class="form-control" data-ng-model="actualCompletionReview.newCompletion">
                                                                     </div>
                                                                     <br>
-                                                                    <button class="btn btn-success btn-xs" data-ng-click="saveEditActualCompletion(selectedGateReview, actualCompletionReview)"
+                                                                    <button class="btn btn-success btn-xs" data-ng-click="saveEditActualCompletion(selectedProject, selectedGate, selectedGateReview, actualCompletionReview)"
                                                                             data-ng-disabled="isResolving">
                                                                         <span class="glyphicon glyphicon-ok"></span>
                                                                     </button>
@@ -973,39 +973,41 @@
                                                     <div class="col-md-12">
                                                         <label>Current state</label>
                                                         <br>
-                                                        <span data-ng-show="selectedGateReview.approval.currentRecord.approvalState === 'draft'">Drafted on </span>
-                                                        <span data-ng-show="selectedGateReview.approval.currentRecord.approvalState === 'submitted'">Submitted on </span>
-                                                        <span data-ng-show="selectedGateReview.approval.currentRecord.approvalState === 'approved'">Approved on </span>
-                                                        <span data-ng-show="selectedGateReview.approval.currentRecord.approvalState === 'rejected'">Rejected on </span>
-                                                        <span><em data-ng-bind="selectedGateReview.approval.currentRecord.created | date:'EEE d, MMM yyyy'"></em></span>
-                                                        <span> by </span>
-                                                        <span><em data-ng-bind="selectedGateReview.approval.currentRecord.user.displayName"></em></span>
+                                                        <div class="form-control">
+                                                            <span data-ng-show="selectedGateReview.approval.currentRecord.approvalState === 'draft'">Drafted on </span>
+                                                            <span data-ng-show="selectedGateReview.approval.currentRecord.approvalState === 'submitted'">Submitted on </span>
+                                                            <span data-ng-show="selectedGateReview.approval.currentRecord.approvalState === 'approved'">Approved on </span>
+                                                            <span data-ng-show="selectedGateReview.approval.currentRecord.approvalState === 'rejected'">Rejected on </span>
+                                                            <span><em data-ng-bind="selectedGateReview.approval.currentRecord.created | date:'EEE d, MMM yyyy'"></em></span>
+                                                            <span> by </span>
+                                                            <span><em data-ng-bind="selectedGateReview.approval.currentRecord.user.displayName"></em></span>
+                                                        </div>
                                                     </div>
                                                 </div>
                                                 <br>
                                                 <div class="row">
                                                     <div class="col-md-6" data-ng-show="userHasAuthorization('edit', user, selectedProject) && (selectedGateReview.approval.currentRecord.approvalState === 'draft') ">
-                                                        <button class="form-control btn btn-success" data-ng-click="submit(selectedProject, selectedGateReview)"
+                                                        <button class="form-control btn btn-success" data-ng-click="submit(selectedProject, selectedGate, selectedGateReview)"
                                                                 data-ng-disabled="isResolving">
                                                             Submit gate review
                                                         </button>
                                                     </div>
                                                     <div data-ng-show="userHasAuthorization('approve', user, selectedProject) && selectedGateReview.approval.currentRecord.approvalState === 'submitted'">
                                                         <div class="col-md-6">
-                                                            <button class="form-control btn btn-success" data-ng-click="approve(selectedProject, selectedGateReview)"
+                                                            <button class="form-control btn btn-success" data-ng-click="approve(selectedProject, selectedGate, selectedGateReview)"
                                                                     data-ng-disabled="isResolving">
                                                                 Approve gate review
                                                             </button>
                                                         </div>
                                                         <div class="col-md-6">
-                                                            <button class="form-control btn btn-danger" data-ng-click="reject(selectedProject, selectedGateReview)"
+                                                            <button class="form-control btn btn-danger" data-ng-click="reject(selectedProject, selectedGate, selectedGateReview)"
                                                                     data-ng-disabled="isResolving">
                                                                 Reject gate review
                                                             </button>
                                                         </div>
                                                     </div>
                                                     <div class="col-md-6" data-ng-show="userHasAuthorization('edit', user, selectedProject) && selectedGateReview.approval.currentRecord.approvalState === 'rejected'">
-                                                        <button class="form-control btn btn-success" data-ng-click="draft(selectedProject, selectedGateReview)"
+                                                        <button class="form-control btn btn-success" data-ng-click="draft(selectedProject, selectedGate, selectedGateReview)"
                                                                 data-ng-disabled="isResolving">
                                                             Draft gate review
                                                         </button>

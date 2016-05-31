@@ -128,14 +128,125 @@ angular.module('project-identification').factory('Projects', ['$resource',
             },
 
 
-            // --- GATE REVIEWS --
+            // ----------------- GATE REVIEWS ---------------------
 
             createGateReview: {
                 method: 'PUT',
                 url: 'projects/:projectId/project-gates/:projectGateId/createGateReview'
-                // req.body: {new gate review object}
-            }
+                // req.body: {gate review object}
+            },
+
+            deleteGateReview: {
+                method: 'PUT',
+                url: 'projects/:projectId/project-gates/:projectGateId/gate-reviews/:gateReviewId/delete'
+                // req.body: {gate review object}
+            },
             
+            // --- Header & Status --
+
+            updateGateReviewHeader: {
+                method: 'PUT',
+                url: 'projects/:projectId/project-gates/:projectGateId/gate-reviews/:gateReviewId/header'
+                // req.body: {whole gate review object}
+            },
+            updateGateStatusReview: {
+                method: 'PUT',
+                url: 'projects/:projectId/project-gates/:projectGateId/gate-reviews/:gateReviewId/status'
+                // req.body: {whole gate review object}
+            },
+            updateGateBudgetReview: {
+                method: 'PUT',
+                url: 'projects/:projectId/project-gates/:projectGateId/gate-reviews/:gateReviewId/budget'
+                // req.body: {whole gate review object}
+            },
+
+            // --- Outcomes --
+
+            updateOutcomeReview: {
+                method: 'PUT',
+                url: 'projects/:projectId/project-gates/:projectGateId/gate-reviews/:gateReviewId/outcome-reviews/:outcomeReviewId'
+                // req.body: {outcomeReview object}
+            },
+
+            // --- Actuals --
+
+            updateActualCompletionReview: {
+                method: 'PUT',
+                url: 'projects/:projectId/project-gates/:projectGateId/gate-reviews/:gateReviewId/actual-completion-reviews/:actualCompletionReviewId'
+                // req.body: {actual-completion-review object}
+            },
+            updateActualCostReview: {
+                method: 'PUT',
+                url: 'projects/:projectId/project-gates/:projectGateId/gate-reviews/:gateReviewId/actual-cost-reviews/:actualCostReviewId'
+                // req.body: {actual-cost-review object}
+            },
+            updateActualDurationReview: {
+                method: 'PUT',
+                url: 'projects/:projectId/project-gates/:projectGateId/gate-reviews/:gateReviewId/actual-duration-reviews/:actualDurationReviewId'
+                // req.body: {actual-duration-review object}
+            },
+
+            // --- Estimates --
+
+            updateEstimateCompletionReview: {
+                method: 'PUT',
+                url: 'projects/:projectId/project-gates/:projectGateId/gate-reviews/:gateReviewId/estimate-completion-reviews/:estimateCompletionReviewId'
+                // req.body: {estimate-completion-review object}
+            },
+            updateEstimateCostReview: {
+                method: 'PUT',
+                url: 'projects/:projectId/project-gates/:projectGateId/gate-reviews/:gateReviewId/estimate-cost-reviews/:estimateCostReviewId'
+                // req.body: {estimate-cost-review object}
+            },
+            updateEstimateDurationReview: {
+                method: 'PUT',
+                url: 'projects/:projectId/project-gates/:projectGateId/gate-reviews/:gateReviewId/estimate-duration-reviews/:estimateDurationReviewId'
+                // req.body: {estimate-duration-review object}
+            },
+
+            // --- Baseline --
+
+            updateBaselineCompletionReview: {
+                method: 'PUT',
+                url: 'projects/:projectId/project-gates/:projectGateId/gate-reviews/:gateReviewId/baseline-completion-reviews/:baselineCompletionReviewId'
+                // req.body: {baseline-completion-review object}
+            },
+            updateBaselineCostReview: {
+                method: 'PUT',
+                url: 'projects/:projectId/project-gates/:projectGateId/gate-reviews/:gateReviewId/baseline-cost-reviews/:baselineCostReviewId'
+                // req.body: {baseline-cost-review object}
+            },
+            updateBaselineDurationReview: {
+                method: 'PUT',
+                url: 'projects/:projectId/project-gates/:projectGateId/gate-reviews/:gateReviewId/baseline-duration-reviews/:baselineDurationReviewId'
+                // req.body: {baselineDurationReview object}
+            },
+
+            // --- Approval --
+
+            submitGateReview: {
+                method: 'PUT',
+                url: 'projects/:projectId/project-gates/:projectGateId/gate-reviews/:gateReviewId/submit'
+                // req.body: {whole gate review object}
+            },
+
+            approveGateReview: {
+                method: 'PUT',
+                url: 'projects/:projectId/project-gates/:projectGateId/gate-reviews/:gateReviewId/approve'
+                // req.body: {whole gate review object}
+            },
+
+            rejectGateReview: {
+                method: 'PUT',
+                url: 'projects/:projectId/project-gates/:projectGateId/gate-reviews/:gateReviewId/reject'
+                // req.body: {whole gate review object}
+            },
+
+            draftGateReview: {
+                method: 'PUT',
+                url: 'projects/:projectId/project-gates/:projectGateId/gate-reviews/:gateReviewId/draft'
+                // req.body: {whole gate review object}
+            }
             
             
 		});
