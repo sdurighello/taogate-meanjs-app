@@ -229,16 +229,14 @@ angular.module('gate-reviews').controller('GateReviewsController', ['$rootScope'
 
 
         $scope.selectGate = function(gate){
-            $scope.selectedGate = gate;
-            originalGate[gate._id] = _.cloneDeep(gate);
-        };
-
-        $scope.changeGate = function(){
+            // Delete previous selections
             $scope.error = null;
             $scope.cancelNewGateReview();
             $scope.selectedGateReview = null;
+            // Set new selected gate
+            $scope.selectedGate = gate;
+            originalGate[gate._id] = _.cloneDeep(gate);
         };
-
 
         // ----------- NEW GATE REVIEW ------------
 
@@ -271,6 +269,7 @@ angular.module('gate-reviews').controller('GateReviewsController', ['$rootScope'
                     gate.gateReviews.push(res);
                     $scope.newGateReview = {};
                     $scope.showNewGateReviewForm = false;
+                    $scope.selectGateReview(res);
                 },
                 function(err){
                     $scope.isResolving = false;
@@ -851,13 +850,175 @@ angular.module('gate-reviews').controller('GateReviewsController', ['$rootScope'
 
         // -------------------------------------------------------- APPROVAL -------------------------------------------------
 
+        // Check that all fields are filled in before proceeding, if not, return (except for Reject and Draft)
+        $scope.submitMissingFields = {};
+        var setSubmitMissingFields = function(gateReview){
+            
+            var missingFields = [];
+
+            if(!gateReview.budgetReview.newAmount){
+                missingFields.push('Budget amount');
+            }
+
+            _.each(gateReview.performances.duration.baselineDurationReviews, function(performanceReview){
+                if(!performanceReview.newDate){
+                    missingFields.push('Baseline date for ' + performanceReview.baselineDuration.targetGate.name);
+                }
+            });
+            _.each(gateReview.performances.duration.estimateDurationReviews, function(performanceReview){
+                if(!performanceReview.newDate){
+                    missingFields.push('Estimate date for ' + performanceReview.estimateDuration.targetGate.name);
+                }
+            });
+            _.each(gateReview.performances.duration.actualDurationReviews, function(performanceReview){
+                if(!performanceReview.newDate && gateReview.gateStatusReview.newCompleted){
+                    missingFields.push('Actual date for ' + performanceReview.baselineDuration.targetGate.name);
+                }
+            });
+
+            _.each(gateReview.performances.cost.baselineCostReviews, function(performanceReview){
+                if(!performanceReview.newCost){
+                    missingFields.push('Baseline cost for ' + performanceReview.baselineCost.targetGate.name);
+                }
+            });
+            _.each(gateReview.performances.cost.estimateCostReviews, function(performanceReview){
+                if(!performanceReview.newCost){
+                    missingFields.push('Estimate cost for ' + performanceReview.estimateCost.targetGate.name);
+                }
+            });
+            _.each(gateReview.performances.cost.actualCostReviews, function(performanceReview){
+                if(!performanceReview.newCost && gateReview.gateStatusReview.newCompleted){
+                    missingFields.push('Actual cost for ' + performanceReview.baselineCost.targetGate.name);
+                }
+            });
+
+            _.each(gateReview.performances.completion.baselineCompletionReviews, function(performanceReview){
+                if(!performanceReview.newCompletion){
+                    missingFields.push('Baseline completion for ' + performanceReview.baselineCompletion.targetGate.name);
+                }
+            });
+            _.each(gateReview.performances.completion.estimateCompletionReviews, function(performanceReview){
+                if(!performanceReview.newCompletion){
+                    missingFields.push('Estimate completion for ' + performanceReview.estimateCompletion.targetGate.name);
+                }
+            });
+            _.each(gateReview.performances.completion.actualCompletionReviews, function(performanceReview){
+                if(!performanceReview.newCompletion && gateReview.gateStatusReview.newCompleted){
+                    missingFields.push('Actual completion for ' + performanceReview.baselineCompletion.targetGate.name);
+                }
+            });
+            
+            return missingFields;
+        };
+
+        // Check that date are consistent with current dates of previous and next gates
+        $scope.dateConsistencyErrors = {};
+        var checkDateConsistency = function(editedGateReview, editedGate, project){
+            // Check that this gate baseline/estimate/actual are not earlier than previous gate or later than next gate
+
+            var gates = project.process.gates;
+
+            var dateConsistencyErrors = [];
+
+            // Gate Review new dates
+
+            var thisGate_BaselineDurationReview_NewDate = _.find(editedGateReview.performances.duration.baselineDurationReviews, function(performanceReview){
+                return performanceReview.baselineDuration.targetGate._id === (editedGate._id);
+            }).newDate;
+            thisGate_BaselineDurationReview_NewDate = thisGate_BaselineDurationReview_NewDate && new Date(thisGate_BaselineDurationReview_NewDate);
+
+            var thisGate_EstimateDurationReview_NewDate = _.find(editedGateReview.performances.duration.estimateDurationReviews, function(performanceReview){
+                return performanceReview.estimateDuration.targetGate._id === (editedGate._id);
+            }).newDate;
+            thisGate_EstimateDurationReview_NewDate = thisGate_EstimateDurationReview_NewDate && new Date(thisGate_EstimateDurationReview_NewDate);
+
+            var thisGate_ActualDurationReview_NewDate = _.find(editedGateReview.performances.duration.actualDurationReviews, function(performanceReview){
+                return performanceReview.actualDuration.targetGate._id === (editedGate._id);
+            }).newDate;
+            thisGate_ActualDurationReview_NewDate = thisGate_ActualDurationReview_NewDate && new Date(thisGate_ActualDurationReview_NewDate);
+
+            _.each(gates, function(gate){
+
+                // PREVIOUS gates dates (for itself as a target). Skip if editedGate is START
+                if((gate.position < editedGate.position) && (editedGate._id !== project.process.startGate)){
+
+                    var previousGate_BaselineDuration_CurrentDate = _.find(gate.performances.duration.baselineDurations, function(performance){
+                        return performance.targetGate._id === (gate._id);
+                    }).currentRecord.gateDate;
+                    previousGate_BaselineDuration_CurrentDate = previousGate_BaselineDuration_CurrentDate && new Date(previousGate_BaselineDuration_CurrentDate);
+
+                    var previousGate_EstimateDuration_CurrentDate = _.find(gate.performances.duration.estimateDurations, function(performance){
+                        return performance.targetGate._id === (gate._id);
+                    }).currentRecord.gateDate;
+                    previousGate_EstimateDuration_CurrentDate = previousGate_EstimateDuration_CurrentDate && new Date(previousGate_EstimateDuration_CurrentDate);
+
+                    var previousGate_ActualDuration_CurrentDate = _.find(gate.performances.duration.actualDurations, function(performance){
+                        return performance.targetGate._id === (gate._id);
+                    }).currentRecord.gateDate;
+                    previousGate_ActualDuration_CurrentDate = previousGate_ActualDuration_CurrentDate && new Date(previousGate_ActualDuration_CurrentDate);
+
+                    if(previousGate_BaselineDuration_CurrentDate && thisGate_BaselineDurationReview_NewDate && (previousGate_BaselineDuration_CurrentDate > thisGate_BaselineDurationReview_NewDate)){
+                        dateConsistencyErrors.push(editedGate.name + ' Baseline date ' + thisGate_BaselineDurationReview_NewDate.toDateString() + ' cannot be earlier than previous gate ' + gate.name + ' ' + previousGate_BaselineDuration_CurrentDate.toDateString());
+                    }
+
+                    if(previousGate_EstimateDuration_CurrentDate && thisGate_EstimateDurationReview_NewDate && (previousGate_EstimateDuration_CurrentDate > thisGate_EstimateDurationReview_NewDate)){
+                        dateConsistencyErrors.push(editedGate.name + ' Estimate date ' + thisGate_EstimateDurationReview_NewDate.toDateString() + ' cannot be earlier than previous gate ' + gate.name + ' ' + previousGate_EstimateDuration_CurrentDate.toDateString());
+                    }
+
+                    if(previousGate_ActualDuration_CurrentDate && thisGate_ActualDurationReview_NewDate && (previousGate_ActualDuration_CurrentDate > thisGate_ActualDurationReview_NewDate)){
+                        dateConsistencyErrors.push(editedGate.name + ' Actual date ' + thisGate_ActualDurationReview_NewDate.toDateString() + ' cannot be earlier than previous gate ' + gate.name + ' ' + previousGate_ActualDuration_CurrentDate.toDateString());
+                    }
+                }
+
+                // NEXT gates dates (for next gate as a target). Skip is editedGate is END
+                if((gate.position > editedGate.position) && (editedGate._id !== project.process.endGate)){
+
+                    var nextGate_BaselineDuration_CurrentDate = _.find(gate.performances.duration.baselineDurations, function(performance){
+                        return performance.targetGate._id === (gate._id);
+                    }).currentRecord.gateDate;
+                    nextGate_BaselineDuration_CurrentDate = nextGate_BaselineDuration_CurrentDate && new Date(nextGate_BaselineDuration_CurrentDate);
+
+                    var nextGate_EstimateDuration_CurrentDate = _.find(gate.performances.duration.estimateDurations, function(performance){
+                        return performance.targetGate._id === (gate._id);
+                    }).currentRecord.gateDate;
+                    nextGate_EstimateDuration_CurrentDate = nextGate_EstimateDuration_CurrentDate && new Date(nextGate_EstimateDuration_CurrentDate);
+
+                    var nextGate_ActualDuration_CurrentDate = _.find(gate.performances.duration.actualDurations, function(performance){
+                        return performance.targetGate._id === (gate._id);
+                    }).currentRecord.gateDate;
+                    nextGate_ActualDuration_CurrentDate = nextGate_ActualDuration_CurrentDate && new Date(nextGate_ActualDuration_CurrentDate);
+
+                    if(nextGate_BaselineDuration_CurrentDate && thisGate_BaselineDurationReview_NewDate && (nextGate_BaselineDuration_CurrentDate < thisGate_BaselineDurationReview_NewDate)){
+                        dateConsistencyErrors.push(editedGate.name + ' Baseline date ' + thisGate_BaselineDurationReview_NewDate.toDateString() + ' cannot be later than next gate ' + gate.name + ' ' + nextGate_BaselineDuration_CurrentDate.toDateString());
+                    }
+
+                    if(nextGate_EstimateDuration_CurrentDate && thisGate_EstimateDurationReview_NewDate && (nextGate_EstimateDuration_CurrentDate < thisGate_EstimateDurationReview_NewDate)){
+                        dateConsistencyErrors.push(editedGate.name + ' Estimate date ' + thisGate_EstimateDurationReview_NewDate.toDateString() + ' cannot be later than next gate ' + gate.name + ' ' + nextGate_EstimateDuration_CurrentDate.toDateString());
+                    }
+
+                    if(nextGate_ActualDuration_CurrentDate && thisGate_ActualDurationReview_NewDate && (nextGate_ActualDuration_CurrentDate < thisGate_ActualDurationReview_NewDate)){
+                        dateConsistencyErrors.push(editedGate.name + ' Actual date ' + thisGate_ActualDurationReview_NewDate.toDateString() + ' cannot be later than next gate ' + gate.name + ' ' + nextGate_ActualDuration_CurrentDate.toDateString());
+                    }
+                }
+
+            });
+
+            return dateConsistencyErrors;
+        };
 
         $scope.submit = function(project, gate, gateReview){
+
+            $scope.submitMissingFields[gateReview._id] = setSubmitMissingFields(gateReview);
+            $scope.dateConsistencyErrors[gateReview._id] = checkDateConsistency(gateReview, gate, project);
+
+            if(($scope.submitMissingFields[gateReview._id].length > 0) || ($scope.dateConsistencyErrors[gateReview._id].length > 0)){
+                return; // Must exit
+            }
+
             $scope.error = null;
             $scope.isResolving = true;
             Projects.submitGateReview(
                 {
-
                     projectId: project._id,
                     projectGateId: gate._id,
                     gateReviewId : gateReview._id
@@ -874,6 +1035,14 @@ angular.module('gate-reviews').controller('GateReviewsController', ['$rootScope'
         };
 
         $scope.approve = function(project, gate, gateReview){
+
+            $scope.submitMissingFields[gateReview._id] = setSubmitMissingFields(gateReview);
+            $scope.dateConsistencyErrors[gateReview._id] = checkDateConsistency(gateReview, gate, project);
+
+            if(($scope.submitMissingFields[gateReview._id].length > 0) || ($scope.dateConsistencyErrors[gateReview._id].length > 0)){
+                return; // Must exit
+            }
+            
             $scope.error = null;
             $scope.isResolving = true;
             Projects.approveGateReview(
@@ -894,6 +1063,7 @@ angular.module('gate-reviews').controller('GateReviewsController', ['$rootScope'
         };
 
         $scope.reject = function(project, gate, gateReview){
+
             $scope.error = null;
             $scope.isResolving = true;
             Projects.rejectGateReview(
@@ -914,6 +1084,7 @@ angular.module('gate-reviews').controller('GateReviewsController', ['$rootScope'
         };
 
         $scope.draft = function(project, gate, gateReview){
+            
             $scope.error = null;
             $scope.isResolving = true;
             Projects.draftGateReview(

@@ -41,8 +41,8 @@ exports.createGateReview = function(req, res){
         },
 
         budgetReview : {
-            currentAmount: editedGate.budget.amount,
-            newAmount: editedGate.budget.amount
+            currentAmount: editedGate.budget.currentRecord.amount,
+            newAmount: editedGate.budget.currentRecord.amount
         },
         outcomeReviews : [],
         performances: {
@@ -390,27 +390,35 @@ exports.updateOutcomeReview = function(req, res){
 // Performances
 
 var gateDateCheck = function(performanceName, performanceReviewsArray, editedPerformanceReview, newDate){
-    /* 
-    * DURATION ONLY
-    * For each type of performance (baseline, estimate, actual):
-    * - This gate cannot be AFTER of NEXT gate
-    * - This gate cannot be BEFORE of PREVIOUS gate
-    */
 
-    var errorMsg = null;
-    
-    _.each(performanceReviewsArray, function(p){
-        // NewDate must be >= of date from gate BEFORE
-        if((p[performanceName].targetGate.position === (editedPerformanceReview[performanceName].targetGate.position - 1)) && (new Date(newDate) < new Date(editedPerformanceReview.newDate))){
-            errorMsg = {message: 'New date cannot be less than previous gate'};
-        }
-        // NewDate must be <= of date from gate AFTER
-        if((p[performanceName].targetGate.position === (editedPerformanceReview[performanceName].targetGate.position + 1)) && (new Date(newDate) > new Date(editedPerformanceReview.newDate))){
-            errorMsg = {message: 'New date cannot be greater than next gate'};
-        }
-    });
+    var errDateCheck = null;
 
-    return errorMsg;
+    // Skip check if newDate is null ( new Date(null) is today!)
+    if(newDate){
+        _.each(performanceReviewsArray, function(performanceReview){
+
+            // Skip if checked date is null
+            if(performanceReview.newDate){
+
+                // Date from any gate BEFORE must be <= of NewDate (all dates refer to gateReview newDates and not current)
+                if(performanceReview[performanceName].targetGate.position < editedPerformanceReview[performanceName].targetGate.position){
+                    if(performanceReview.newDate > new Date(newDate)){
+                        errDateCheck = new Error('New date cannot be earlier than previous gates');
+                    }
+                }
+
+                // Date from any gate AFTER must be >= of NewDate
+                if(performanceReview[performanceName].targetGate.position > editedPerformanceReview[performanceName].targetGate.position){
+                    if(performanceReview.newDate < new Date(newDate)){
+                        errDateCheck = new Error('New date cannot be later than later gates');
+                    }
+                }
+
+            }
+        });
+    }
+
+    return errDateCheck;
     
 };
 
@@ -423,23 +431,26 @@ exports.updateBaselineDurationReview = function(req, res){
     });
 
     var editedGateReview = editedGate.gateReviews.id(req.params.gateReviewId);
-    
+    editedGateReview.user = req.user;
+    editedGateReview.created = Date.now();
+
+    var performanceName = 'baselineDuration';
+
     var performanceReviewsArray = editedGateReview.performances.duration.baselineDurationReviews;
 
     var editedPerformanceReview = performanceReviewsArray.id(req.params.baselineDurationReviewId);
     
     var newDate = req.body.newDate;
 
-    var gateDateCheckErrorMsg = gateDateCheck('baselineDuration', performanceReviewsArray, editedPerformanceReview, newDate);
-
-    if(gateDateCheckErrorMsg){
-        return res.status(400).send(gateDateCheckErrorMsg);
-    }
-
-    editedGateReview.user = req.user;
-    editedGateReview.created = Date.now();
-
     editedPerformanceReview.newDate = newDate;
+
+    var errDateCheck = gateDateCheck(performanceName, performanceReviewsArray, editedPerformanceReview, newDate);
+
+    if(errDateCheck){
+        return res.status(400).send({
+            message: errorHandler.getErrorMessage(errDateCheck)
+        });
+    }
 
     project.save(function(err){
         if (err) {
@@ -462,13 +473,26 @@ exports.updateEstimateDurationReview = function(req, res){
     });
 
     var editedGateReview = editedGate.gateReviews.id(req.params.gateReviewId);
-
-    var editedPerformanceReview = editedGateReview.performances.duration.estimateDurationReviews.id(req.params.estimateDurationReviewId);
-
     editedGateReview.user = req.user;
     editedGateReview.created = Date.now();
 
-    editedPerformanceReview.newDate = req.body.newDate;
+    var performanceName = 'estimateDuration';
+
+    var performanceReviewsArray = editedGateReview.performances.duration.estimateDurationReviews;
+
+    var editedPerformanceReview = performanceReviewsArray.id(req.params.estimateDurationReviewId);
+
+    var newDate = req.body.newDate;
+
+    editedPerformanceReview.newDate = newDate;
+
+    var errDateCheck = gateDateCheck(performanceName, performanceReviewsArray, editedPerformanceReview, newDate);
+
+    if(errDateCheck){
+        return res.status(400).send({
+            message: errorHandler.getErrorMessage(errDateCheck)
+        });
+    }
 
     project.save(function(err){
         if (err) {
@@ -491,13 +515,26 @@ exports.updateActualDurationReview = function(req, res){
     });
 
     var editedGateReview = editedGate.gateReviews.id(req.params.gateReviewId);
-
-    var editedPerformanceReview = editedGateReview.performances.duration.actualDurationReviews.id(req.params.actualDurationReviewId);
-
     editedGateReview.user = req.user;
     editedGateReview.created = Date.now();
 
-    editedPerformanceReview.newDate = req.body.newDate;
+    var performanceName = 'actualDuration';
+
+    var performanceReviewsArray = editedGateReview.performances.duration.actualDurationReviews;
+
+    var editedPerformanceReview = performanceReviewsArray.id(req.params.actualDurationReviewId);
+
+    var newDate = req.body.newDate;
+
+    editedPerformanceReview.newDate = newDate;
+
+    var errDateCheck = gateDateCheck(performanceName, performanceReviewsArray, editedPerformanceReview, newDate);
+
+    if(errDateCheck){
+        return res.status(400).send({
+            message: errorHandler.getErrorMessage(errDateCheck)
+        });
+    }
 
     project.save(function(err){
         if (err) {
@@ -689,11 +726,152 @@ exports.updateActualCompletionReview = function(req, res){
 
 // Approval
 
+var setSubmitMissingFields = function(gateReview){
+
+    var missingFields = [];
+
+    if(!gateReview.budgetReview.newAmount){
+        missingFields.push('Budget amount');
+    }
+
+    _.each(gateReview.performances.duration.baselineDurationReviews, function(performanceReview){
+        if(!performanceReview.newDate){
+            missingFields.push('Baseline date for ' + performanceReview.baselineDuration.targetGate.name);
+        }
+    });
+    _.each(gateReview.performances.duration.estimateDurationReviews, function(performanceReview){
+        if(!performanceReview.newDate){
+            missingFields.push('Estimate date for ' + performanceReview.estimateDuration.targetGate.name);
+        }
+    });
+    _.each(gateReview.performances.duration.actualDurationReviews, function(performanceReview){
+        if(!performanceReview.newDate && gateReview.gateStatusReview.newCompleted){
+            missingFields.push('Actual date for ' + performanceReview.baselineDuration.targetGate.name);
+        }
+    });
+
+    _.each(gateReview.performances.cost.baselineCostReviews, function(performanceReview){
+        if(!performanceReview.newCost){
+            missingFields.push('Baseline cost for ' + performanceReview.baselineCost.targetGate.name);
+        }
+    });
+    _.each(gateReview.performances.cost.estimateCostReviews, function(performanceReview){
+        if(!performanceReview.newCost){
+            missingFields.push('Estimate cost for ' + performanceReview.estimateCost.targetGate.name);
+        }
+    });
+    _.each(gateReview.performances.cost.actualCostReviews, function(performanceReview){
+        if(!performanceReview.newCost && gateReview.gateStatusReview.newCompleted){
+            missingFields.push('Actual cost for ' + performanceReview.baselineCost.targetGate.name);
+        }
+    });
+
+    _.each(gateReview.performances.completion.baselineCompletionReviews, function(performanceReview){
+        if(!performanceReview.newCompletion){
+            missingFields.push('Baseline completion for ' + performanceReview.baselineCompletion.targetGate.name);
+        }
+    });
+    _.each(gateReview.performances.completion.estimateCompletionReviews, function(performanceReview){
+        if(!performanceReview.newCompletion){
+            missingFields.push('Estimate completion for ' + performanceReview.estimateCompletion.targetGate.name);
+        }
+    });
+    _.each(gateReview.performances.completion.actualCompletionReviews, function(performanceReview){
+        if(!performanceReview.newCompletion && gateReview.gateStatusReview.newCompleted){
+            missingFields.push('Actual completion for ' + performanceReview.baselineCompletion.targetGate.name);
+        }
+    });
+
+    return missingFields;
+};
+
+var checkDateConsistency = function(editedGateReview, editedGate, gates){
+    // Check that this gate baseline/estimate/actual are not earlier than previous gate or later than next gate
+
+    var dateConsistencyErrors = [];
+
+    // Gate Review new dates
+
+    var thisGate_BaselineDurationReview_NewDate = _.find(editedGateReview.performances.duration.baselineDurationReviews, function(performanceReview){
+        return performanceReview.baselineDuration.targetGate._id.equals(editedGate._id);
+    }).newDate;
+    var thisGate_EstimateDurationReview_NewDate = _.find(editedGateReview.performances.duration.estimateDurationReviews, function(performanceReview){
+        return performanceReview.estimateDuration.targetGate._id.equals(editedGate._id);
+    }).newDate;
+    var thisGate_ActualDurationReview_NewDate = _.find(editedGateReview.performances.duration.actualDurationReviews, function(performanceReview){
+        return performanceReview.actualDuration.targetGate._id.equals(editedGate._id);
+    }).newDate;
+
+    _.each(gates, function(gate){
+
+        // PREVIOUS gates dates (for itself as a target)
+        if(gate.position < editedGate.position){
+
+            var previousGate_BaselineDuration_CurrentDate = _.find(gate.performances.duration.baselineDurations, function(performance){
+                return performance.targetGate._id.equals(gate._id);
+            }).currentRecord.gateDate;
+
+            var previousGate_EstimateDuration_CurrentDate = _.find(gate.performances.duration.estimateDurations, function(performance){
+                return performance.targetGate._id.equals(gate._id);
+            }).currentRecord.gateDate;
+
+            var previousGate_ActualDuration_CurrentDate = _.find(gate.performances.duration.actualDurations, function(performance){
+                return performance.targetGate._id.equals(gate._id);
+            }).currentRecord.gateDate;
+
+            if(previousGate_BaselineDuration_CurrentDate && thisGate_BaselineDurationReview_NewDate && (previousGate_BaselineDuration_CurrentDate > thisGate_BaselineDurationReview_NewDate)){
+                dateConsistencyErrors.push('Baseline date ' + thisGate_BaselineDurationReview_NewDate + 'cannot be earlier than gate ' + gate.name + ' ' + previousGate_BaselineDuration_CurrentDate);
+            }
+
+            if(previousGate_EstimateDuration_CurrentDate && thisGate_EstimateDurationReview_NewDate && (previousGate_EstimateDuration_CurrentDate > thisGate_EstimateDurationReview_NewDate)){
+                dateConsistencyErrors.push('Estimate date ' + thisGate_EstimateDurationReview_NewDate + 'cannot be earlier than gate ' + gate.name + ' ' + previousGate_EstimateDuration_CurrentDate);
+            }
+
+            if(previousGate_ActualDuration_CurrentDate && thisGate_ActualDurationReview_NewDate && (previousGate_ActualDuration_CurrentDate > thisGate_ActualDurationReview_NewDate)){
+                dateConsistencyErrors.push('Actual date ' + thisGate_ActualDurationReview_NewDate + 'cannot be earlier than gate ' + gate.name + ' ' + previousGate_ActualDuration_CurrentDate);
+            }
+        }
+
+        // NEXT gates dates (for itself as a target)
+        if(gate.position > editedGate.position){
+
+            var nextGate_BaselineDuration_CurrentDate = _.find(gate.performances.duration.baselineDurations, function(performance){
+                return performance.targetGate._id.equals(gate._id);
+            }).currentRecord.gateDate;
+
+            var nextGate_EstimateDuration_CurrentDate = _.find(gate.performances.duration.estimateDurations, function(performance){
+                return performance.targetGate._id.equals(gate._id);
+            }).currentRecord.gateDate;
+
+            var nextGate_ActualDuration_CurrentDate = _.find(gate.performances.duration.actualDurations, function(performance){
+                return performance.targetGate._id.equals(gate._id);
+            }).currentRecord.gateDate;
+
+            if(nextGate_BaselineDuration_CurrentDate && thisGate_BaselineDurationReview_NewDate && (nextGate_BaselineDuration_CurrentDate < thisGate_BaselineDurationReview_NewDate)){
+                dateConsistencyErrors.push('Baseline date ' + thisGate_BaselineDurationReview_NewDate + 'cannot be earlier than gate ' + gate.name + ' ' + nextGate_BaselineDuration_CurrentDate);
+            }
+
+            if(nextGate_EstimateDuration_CurrentDate && thisGate_EstimateDurationReview_NewDate && (nextGate_EstimateDuration_CurrentDate < thisGate_EstimateDurationReview_NewDate)){
+                dateConsistencyErrors.push('Estimate date ' + thisGate_EstimateDurationReview_NewDate + 'cannot be earlier than gate ' + gate.name + ' ' + nextGate_EstimateDuration_CurrentDate);
+            }
+
+            if(nextGate_ActualDuration_CurrentDate && thisGate_ActualDurationReview_NewDate && (nextGate_ActualDuration_CurrentDate < thisGate_ActualDurationReview_NewDate)){
+                dateConsistencyErrors.push('Actual date ' + thisGate_ActualDurationReview_NewDate + 'cannot be earlier than gate ' + gate.name + ' ' + nextGate_ActualDuration_CurrentDate);
+            }
+        }
+
+    });
+
+    return dateConsistencyErrors;
+};
+
 exports.submitGateReview = function(req, res) {
 
     var project = req.project ;
 
-    var editedGate = _.find(project.process.gates, function(gate){
+    var gates = project.process.gates;
+
+    var editedGate = _.find(gates, function(gate){
         return gate._id.equals(req.params.projectGateId);
     });
 
@@ -712,6 +890,27 @@ exports.submitGateReview = function(req, res) {
     editedGateReview.approval.currentRecord.user = {_id: req.user._id, displayName: req.user.displayName};
     editedGateReview.approval.currentRecord.created = Date.now();
 
+    // Missing fields check
+
+    var missingFields = setSubmitMissingFields(editedGateReview);
+    
+    if(missingFields.length > 0){
+        console.log(missingFields);
+        return res.status(400).send({
+            message: missingFields.toString()
+        });
+    }
+
+    // Date consistency check
+
+    var dateConsistencyError = checkDateConsistency(editedGateReview, editedGate, gates);
+    if(missingFields.length > 0){
+        console.log(dateConsistencyError);
+        return res.status(400).send({
+            message: dateConsistencyError.toString()
+        });
+    }
+
     project.save(function(err){
         if (err) {
             console.log(err);
@@ -729,11 +928,35 @@ exports.approveGateReview = function(req, res) {
 
     var project = req.project ;
 
-    var editedGate = _.find(project.process.gates, function(gate){
+    var gates = project.process.gates;
+
+    var editedGate = _.find(gates, function(gate){
         return gate._id.equals(req.params.projectGateId);
     });
 
     var editedGateReview = editedGate.gateReviews.id(req.params.gateReviewId);
+
+    // Missing fields check
+
+    var missingFields = setSubmitMissingFields(editedGateReview);
+    if(missingFields.length > 0){
+        console.log(missingFields);
+        return res.status(400).send({
+            message: missingFields.toString()
+        });
+    }
+
+    // Date consistency check
+
+    var dateConsistencyErrors = checkDateConsistency(editedGateReview, editedGate, gates);
+    if(missingFields.length > 0){
+        console.log(dateConsistencyErrors);
+        return res.status(400).send({
+            message: dateConsistencyErrors.toString()
+        });
+    }
+
+    // Update editedGateReview with req.body information
 
     editedGateReview.approval.history.push({
         approvalState : editedGateReview.approval.currentRecord.approvalState,
@@ -747,6 +970,235 @@ exports.approveGateReview = function(req, res) {
     editedGateReview.approval.currentRecord.approvalState = 'approved';
     editedGateReview.approval.currentRecord.user = {_id: req.user._id, displayName: req.user.displayName};
     editedGateReview.approval.currentRecord.created = Date.now();
+
+    // Apply changes to OUTCOMES
+
+    _.each(editedGateReview.outcomeReviews, function(outcomeReview){
+        var editedOutcome = editedGate.outcomes.id(outcomeReview.outcome._id);
+        editedOutcome.score.history.push({
+            sourceGateReview : editedOutcome.score.currentRecord.sourceGateReview,
+            score: editedOutcome.score.currentRecord.score,
+            comment: editedOutcome.score.currentRecord.comment,
+            created: editedOutcome.score.currentRecord.created,
+            user: editedOutcome.score.currentRecord.user
+        });
+        editedOutcome.score.currentRecord.sourceGateReview = editedGateReview._id;
+        editedOutcome.score.currentRecord.score = outcomeReview.newScore;
+        editedOutcome.score.currentRecord.comment = outcomeReview.newComment;
+        editedOutcome.score.currentRecord.created = Date.now();
+        editedOutcome.score.currentRecord.user = {_id: req.user._id, displayName: req.user.displayName};
+    });
+
+    // Apply changes to GATE STATUS
+
+    editedGate.gateStatus.history.push({
+        sourceGateReview : editedGate.gateStatus.currentRecord.sourceGateReview,
+        completed : editedGate.gateStatus.currentRecord.completed,
+        currentGate : editedGate.gateStatus.currentRecord.currentGate,
+        status: editedGate.gateStatus.currentRecord.status,
+        overallScore : editedGate.gateStatus.currentRecord.overallScore,
+        created: editedGate.gateStatus.currentRecord.created,
+        user: editedGate.gateStatus.currentRecord.user
+    });
+    editedGate.gateStatus.currentRecord.sourceGateReview = editedGateReview._id;
+    editedGate.gateStatus.currentRecord.completed = editedGateReview.gateStatusReview.newCompleted;
+    //editedGate.gateStatus.currentRecord.currentGate = ... ;
+    editedGate.gateStatus.currentRecord.status = editedGateReview.gateStatusReview.newStatus;
+    editedGate.gateStatus.currentRecord.overallScore = editedGateReview.gateStatusReview.newOverallScore;
+    editedGate.gateStatus.currentRecord.created = Date.now();
+    editedGate.gateStatus.currentRecord.user = {_id: req.user._id, displayName: req.user.displayName};
+
+    // Set the CURRENT GATE flag
+
+    // Reset the current gate flag for all the others
+    _.each(gates, function(gate){
+        gate.gateStatus.currentRecord.currentGate = false;
+    });
+    // Get all the completed gates. No one may be completed.
+    var completedGates = _.filter(gates, function(gate){
+        return gate.gateStatus.currentRecord.completed;
+    });
+    // If none is completed, set the START as current
+    if(_.isEmpty(completedGates)){
+        gates.id(project.process.startGate).gateStatus.currentRecord.currentGate = true;
+    } else {
+        // Else required because _.max is funny with null array
+        // Get the max position among the completed
+        var lastCompletedGate = _.max(completedGates, function(gate){
+            return gate.position;
+        });
+        // If the last completed is END, set it as current
+        if(lastCompletedGate._id.equals(project.process.endGate)){
+            gates.id(project.process.endGate).gateStatus.currentRecord.currentGate = true;
+        } else {
+            // Otherwise, the next one in position will be set as completed.
+            _.find(gates, function(gate){
+                return gate.position === (lastCompletedGate.position + 1);
+            }).gateStatus.currentRecord.currentGate = true;
+        }
+
+    }
+
+    // Apply changes to BUDGET
+
+    editedGate.budget.history.push({
+        sourceGateReview : editedGate.budget.currentRecord.sourceGateReview,
+        sourceChangeRequest : editedGate.budget.currentRecord.sourceChangeRequest,
+        amount : editedGate.budget.currentRecord.amount,
+        created: editedGate.budget.currentRecord.created,
+        user: editedGate.budget.currentRecord.user
+    });
+    editedGate.budget.currentRecord.sourceGateReview = editedGateReview._id;
+    editedGate.budget.currentRecord.sourceChangeRequest = null;
+    editedGate.budget.currentRecord.amount = editedGateReview.budgetReview.newAmount;
+    editedGate.budget.currentRecord.created = Date.now();
+    editedGate.budget.currentRecord.user = {_id: req.user._id, displayName: req.user.displayName};
+
+    // Apply changes to DURATION
+
+    _.each(editedGateReview.performances.duration.baselineDurationReviews, function(performanceReview){
+        var editedPerformance = editedGate.performances.duration.baselineDurations.id(performanceReview.baselineDuration._id);
+        editedPerformance.history.push({
+            sourceGateReview : editedPerformance.currentRecord.sourceGateReview,
+            sourceChangeRequest : editedPerformance.currentRecord.sourceChangeRequest,
+            gateDate: editedPerformance.currentRecord.gateDate,
+            created: editedPerformance.currentRecord.created,
+            user: editedPerformance.currentRecord.user
+        });
+        editedPerformance.currentRecord.sourceGateReview = editedGateReview._id;
+        editedPerformance.currentRecord.sourceChangeRequest = null;
+        editedPerformance.currentRecord.gateDate = performanceReview.newDate;
+        editedPerformance.currentRecord.created = Date.now();
+        editedPerformance.currentRecord.user = {_id: req.user._id, displayName: req.user.displayName};
+    });
+    _.each(editedGateReview.performances.duration.estimateDurationReviews, function(performanceReview){
+        var editedPerformance = editedGate.performances.duration.estimateDurations.id(performanceReview.estimateDuration._id);
+        editedPerformance.history.push({
+            sourceGateReview : editedPerformance.currentRecord.sourceGateReview,
+            sourceChangeRequest : editedPerformance.currentRecord.sourceChangeRequest,
+            gateDate: editedPerformance.currentRecord.gateDate,
+            created: editedPerformance.currentRecord.created,
+            user: editedPerformance.currentRecord.user
+        });
+        editedPerformance.currentRecord.sourceGateReview = editedGateReview._id;
+        editedPerformance.currentRecord.sourceChangeRequest = null;
+        editedPerformance.currentRecord.gateDate = performanceReview.newDate;
+        editedPerformance.currentRecord.created = Date.now();
+        editedPerformance.currentRecord.user = {_id: req.user._id, displayName: req.user.displayName};
+    });
+    _.each(editedGateReview.performances.duration.actualDurationReviews, function(performanceReview){
+        var editedPerformance = editedGate.performances.duration.actualDurations.id(performanceReview.actualDuration._id);
+        editedPerformance.history.push({
+            sourceGateReview : editedPerformance.currentRecord.sourceGateReview,
+            sourceChangeRequest : editedPerformance.currentRecord.sourceChangeRequest,
+            gateDate: editedPerformance.currentRecord.gateDate,
+            created: editedPerformance.currentRecord.created,
+            user: editedPerformance.currentRecord.user
+        });
+        editedPerformance.currentRecord.sourceGateReview = editedGateReview._id;
+        editedPerformance.currentRecord.sourceChangeRequest = null;
+        editedPerformance.currentRecord.gateDate = performanceReview.newDate;
+        editedPerformance.currentRecord.created = Date.now();
+        editedPerformance.currentRecord.user = {_id: req.user._id, displayName: req.user.displayName};
+    });
+
+    // Apply changes to COST
+
+    _.each(editedGateReview.performances.cost.baselineCostReviews, function(performanceReview){
+        var editedPerformance = editedGate.performances.cost.baselineCosts.id(performanceReview.baselineCost._id);
+        editedPerformance.history.push({
+            sourceGateReview : editedPerformance.currentRecord.sourceGateReview,
+            sourceChangeRequest : editedPerformance.currentRecord.sourceChangeRequest,
+            cost: editedPerformance.currentRecord.cost,
+            created: editedPerformance.currentRecord.created,
+            user: editedPerformance.currentRecord.user
+        });
+        editedPerformance.currentRecord.sourceGateReview = editedGateReview._id;
+        editedPerformance.currentRecord.sourceChangeRequest = null;
+        editedPerformance.currentRecord.cost = performanceReview.newCost;
+        editedPerformance.currentRecord.created = Date.now();
+        editedPerformance.currentRecord.user = {_id: req.user._id, displayName: req.user.displayName};
+    });
+    _.each(editedGateReview.performances.cost.estimateCostReviews, function(performanceReview){
+        var editedPerformance = editedGate.performances.cost.estimateCosts.id(performanceReview.estimateCost._id);
+        editedPerformance.history.push({
+            sourceGateReview : editedPerformance.currentRecord.sourceGateReview,
+            sourceChangeRequest : editedPerformance.currentRecord.sourceChangeRequest,
+            cost: editedPerformance.currentRecord.cost,
+            created: editedPerformance.currentRecord.created,
+            user: editedPerformance.currentRecord.user
+        });
+        editedPerformance.currentRecord.sourceGateReview = editedGateReview._id;
+        editedPerformance.currentRecord.sourceChangeRequest = null;
+        editedPerformance.currentRecord.cost = performanceReview.newCost;
+        editedPerformance.currentRecord.created = Date.now();
+        editedPerformance.currentRecord.user = {_id: req.user._id, displayName: req.user.displayName};
+    });
+    _.each(editedGateReview.performances.cost.actualCostReviews, function(performanceReview){
+        var editedPerformance = editedGate.performances.cost.actualCosts.id(performanceReview.actualCost._id);
+        editedPerformance.history.push({
+            sourceGateReview : editedPerformance.currentRecord.sourceGateReview,
+            sourceChangeRequest : editedPerformance.currentRecord.sourceChangeRequest,
+            cost: editedPerformance.currentRecord.cost,
+            created: editedPerformance.currentRecord.created,
+            user: editedPerformance.currentRecord.user
+        });
+        editedPerformance.currentRecord.sourceGateReview = editedGateReview._id;
+        editedPerformance.currentRecord.sourceChangeRequest = null;
+        editedPerformance.currentRecord.cost = performanceReview.newCost;
+        editedPerformance.currentRecord.created = Date.now();
+        editedPerformance.currentRecord.user = {_id: req.user._id, displayName: req.user.displayName};
+    });
+
+    // Apply changes to COMPLETION
+
+    _.each(editedGateReview.performances.completion.baselineCompletionReviews, function(performanceReview){
+        var editedPerformance = editedGate.performances.completion.baselineCompletions.id(performanceReview.baselineCompletion._id);
+        editedPerformance.history.push({
+            sourceGateReview : editedPerformance.currentRecord.sourceGateReview,
+            sourceChangeRequest : editedPerformance.currentRecord.sourceChangeRequest,
+            completion: editedPerformance.currentRecord.completion,
+            created: editedPerformance.currentRecord.created,
+            user: editedPerformance.currentRecord.user
+        });
+        editedPerformance.currentRecord.sourceGateReview = editedGateReview._id;
+        editedPerformance.currentRecord.sourceChangeRequest = null;
+        editedPerformance.currentRecord.completion = performanceReview.newCompletion;
+        editedPerformance.currentRecord.created = Date.now();
+        editedPerformance.currentRecord.user = {_id: req.user._id, displayName: req.user.displayName};
+    });
+    _.each(editedGateReview.performances.completion.estimateCompletionReviews, function(performanceReview){
+        var editedPerformance = editedGate.performances.completion.estimateCompletions.id(performanceReview.estimateCompletion._id);
+        editedPerformance.history.push({
+            sourceGateReview : editedPerformance.currentRecord.sourceGateReview,
+            sourceChangeRequest : editedPerformance.currentRecord.sourceChangeRequest,
+            completion: editedPerformance.currentRecord.completion,
+            created: editedPerformance.currentRecord.created,
+            user: editedPerformance.currentRecord.user
+        });
+        editedPerformance.currentRecord.sourceGateReview = editedGateReview._id;
+        editedPerformance.currentRecord.sourceChangeRequest = null;
+        editedPerformance.currentRecord.completion = performanceReview.newCompletion;
+        editedPerformance.currentRecord.created = Date.now();
+        editedPerformance.currentRecord.user = {_id: req.user._id, displayName: req.user.displayName};
+    });
+    _.each(editedGateReview.performances.completion.actualCompletionReviews, function(performanceReview){
+        var editedPerformance = editedGate.performances.completion.actualCompletions.id(performanceReview.actualCompletion._id);
+        editedPerformance.history.push({
+            sourceGateReview : editedPerformance.currentRecord.sourceGateReview,
+            sourceChangeRequest : editedPerformance.currentRecord.sourceChangeRequest,
+            completion: editedPerformance.currentRecord.completion,
+            created: editedPerformance.currentRecord.created,
+            user: editedPerformance.currentRecord.user
+        });
+        editedPerformance.currentRecord.sourceGateReview = editedGateReview._id;
+        editedPerformance.currentRecord.sourceChangeRequest = null;
+        editedPerformance.currentRecord.completion = performanceReview.newCompletion;
+        editedPerformance.currentRecord.created = Date.now();
+        editedPerformance.currentRecord.user = {_id: req.user._id, displayName: req.user.displayName};
+    });
+
+    // Save project
 
     project.save(function(err){
         if (err) {
@@ -782,6 +1234,8 @@ exports.rejectGateReview = function(req, res) {
     editedGateReview.approval.currentRecord.approvalState = 'rejected';
     editedGateReview.approval.currentRecord.user = {_id: req.user._id, displayName: req.user.displayName};
     editedGateReview.approval.currentRecord.created = Date.now();
+    
+    // No missing fields check
 
     project.save(function(err){
         if (err) {
@@ -818,6 +1272,8 @@ exports.draftGateReview = function(req, res) {
     editedGateReview.approval.currentRecord.approvalState = 'draft';
     editedGateReview.approval.currentRecord.user = {_id: req.user._id, displayName: req.user.displayName};
     editedGateReview.approval.currentRecord.created = Date.now();
+
+    // No missing fields check
 
     project.save(function(err){
         if (err) {

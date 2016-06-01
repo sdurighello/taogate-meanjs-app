@@ -441,6 +441,9 @@ var BaselineDurationReviewSchema = new Schema({
             _id: {type: Schema.Types.ObjectId, ref: 'Project.process.gates', $tenant:true},
             name: {type: String},
             position: {type: Number}
+        },
+        currentRecord: {
+            gateDate: {type: Date, default: null}
         }
     },
     newDate : {type: Date, default: null}
@@ -453,6 +456,9 @@ var EstimateDurationReviewSchema = new Schema({
             _id: {type: Schema.Types.ObjectId, ref: 'Project.process.gates', $tenant:true},
             name: {type: String},
             position: {type: Number}
+        },
+        currentRecord: {
+            gateDate: {type: Date, default: null}
         }
     },
     newDate : {type: Date, default: null}
@@ -465,6 +471,9 @@ var ActualDurationReviewSchema = new Schema({
             _id: {type: Schema.Types.ObjectId, ref: 'Project.process.gates', $tenant:true},
             name: {type: String},
             position: {type: Number}
+        },
+        currentRecord: {
+            gateDate: {type: Date, default: null}
         }
     },
     newDate : {type: Date, default: null}
@@ -477,6 +486,9 @@ var BaselineCostReviewSchema = new Schema({
             _id: {type: Schema.Types.ObjectId, ref: 'Project.process.gates', $tenant:true},
             name: {type: String},
             position: {type: Number}
+        },
+        currentRecord: {
+            cost: {type: Number, default: null}
         }
     },
     newCost : {type: Number, default: null}
@@ -489,6 +501,9 @@ var EstimateCostReviewSchema = new Schema({
             _id: {type: Schema.Types.ObjectId, ref: 'Project.process.gates', $tenant:true},
             name: {type: String},
             position: {type: Number}
+        },
+        currentRecord: {
+            cost: {type: Number, default: null}
         }
     },
     newCost : {type: Number}
@@ -501,6 +516,9 @@ var ActualCostReviewSchema = new Schema({
             _id: {type: Schema.Types.ObjectId, ref: 'Project.process.gates', $tenant:true},
             name: {type: String},
             position: {type: Number}
+        },
+        currentRecord: {
+            cost: {type: Number, default: null}
         }
     },
     newCost : {type: Number, default: null}
@@ -513,6 +531,9 @@ var BaselineCompletionReviewSchema = new Schema({
             _id: {type: Schema.Types.ObjectId, ref: 'Project.process.gates', $tenant:true},
             name: {type: String},
             position: {type: Number}
+        },
+        currentRecord: {
+            completion: {type: Number, default: null}
         }
     },
     newCompletion : {type: Number, default: null}
@@ -525,6 +546,9 @@ var EstimateCompletionReviewSchema = new Schema({
             _id: {type: Schema.Types.ObjectId, ref: 'Project.process.gates', $tenant:true},
             name: {type: String},
             position: {type: Number}
+        },
+        currentRecord: {
+            completion: {type: Number, default: null}
         }
     },
     newCompletion : {type: Number, default: null}
@@ -537,6 +561,9 @@ var ActualCompletionReviewSchema = new Schema({
             _id: {type: Schema.Types.ObjectId, ref: 'Project.process.gates', $tenant:true},
             name: {type: String},
             position: {type: Number}
+        },
+        currentRecord: {
+            completion: {type: Number, default: null}
         }
     },
     newCompletion : {type: Number, default: null}
