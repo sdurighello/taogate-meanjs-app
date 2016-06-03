@@ -11,22 +11,6 @@ var mongoose = require('mongoose'),
 
 // ------------------ UTILITIES ----------------
 
-var deleteOldDocuments = function(req, res, callback){
-
-    var project = req.project ;
-
-    project.process.gateReviews = [];
-
-    project.save(function(err){
-        if (err) {
-            callback(err);
-        } else {
-            callback(null);
-        }
-    });
-
-};
-
 var createGatePerformances = function(req, gateArray){
     _.each(gateArray, function(sourceGate){
         // Reset the gate data to beginning
@@ -238,15 +222,6 @@ var createBlueprintedProcess = function(req, res, callback){
             project.process.gates = _.sortBy(project.process.gates, 'position');
 
             callback(null);
-        },
-        // Delete OLD gate bounded documents, in parallel
-        function(callback){
-            deleteOldDocuments(req, res, function(err){
-                if(err){
-                    return callback(err);
-                }
-                callback(null);
-            });
         },
         // Save project object
         function(callback) {
@@ -533,16 +508,7 @@ exports.removeAssignment = function(req, res){
                 message: errorHandler.getErrorMessage(err)
             });
         }
-        deleteOldDocuments(req, res, function(err){
-            if (err) {
-                console.log(err);
-                return res.status(400).send({
-                    message: errorHandler.getErrorMessage(err)
-                });
-            } else {
-                res.jsonp(project);
-            }
-        });
+        res.jsonp(project);
     });
 
 };

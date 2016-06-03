@@ -10,13 +10,13 @@ var mongoose = require('mongoose'),
 
 
 
-exports.createGateReview = function(req, res){
+exports.createStatusUpdate = function(req, res){
     var project = req.project;
-    
+
     var editedGate = _.find(project.process.gates, function(gate){
         return gate._id.equals(req.params.projectGateId);
     });
-    
+
     var newGateReview = editedGate.gateReviews.create({
         reviewDate : req.body.reviewDate,
         title : req.body.title,
@@ -248,8 +248,8 @@ exports.createGateReview = function(req, res){
 
 };
 
-exports.deleteGateReview = function(req, res){
-    
+exports.deleteStatusUpdate = function(req, res){
+
     var project = req.project ;
 
     var editedGate = _.find(project.process.gates, function(gate){
@@ -270,9 +270,9 @@ exports.deleteGateReview = function(req, res){
     });
 };
 
-// Header, Gate Status, Budget
+// Header, Delivery Status
 
-exports.updateGateReviewHeader = function(req, res){
+exports.updateStatusUpdateHeader = function(req, res){
 
     var project = req.project ;
 
@@ -300,7 +300,7 @@ exports.updateGateReviewHeader = function(req, res){
     });
 };
 
-exports.updateGateStatusReview = function(req, res){
+exports.updateDeliveryStatus = function(req, res){
 
     var project = req.project ;
 
@@ -329,7 +329,10 @@ exports.updateGateStatusReview = function(req, res){
 
 };
 
-exports.updateGateBudgetReview = function(req, res){
+
+// Log Status Areas
+
+exports.updateStatusAreaReview = function(req, res){
 
     var project = req.project ;
 
@@ -338,11 +341,13 @@ exports.updateGateBudgetReview = function(req, res){
     });
 
     var editedGateReview = editedGate.gateReviews.id(req.params.gateReviewId);
+    var editedOutcomeReview = editedGateReview.outcomeReviews.id(req.params.outcomeReviewId);
 
     editedGateReview.user = req.user;
     editedGateReview.created = Date.now();
 
-    editedGateReview.budgetReview.newAmount = req.body.budgetReview.newAmount;
+    editedOutcomeReview.newScore = req.body.newScore;
+    editedOutcomeReview.newComment = req.body.newComment;
 
     project.save(function(err){
         if (err) {
@@ -350,15 +355,16 @@ exports.updateGateBudgetReview = function(req, res){
                 message: errorHandler.getErrorMessage(err)
             });
         } else {
-            res.jsonp(editedGateReview);
+            res.jsonp(editedOutcomeReview);
         }
     });
 
 };
 
+
 // Outcomes
 
-exports.updateOutcomeReview = function(req, res){
+exports.updateOutcomeReviewForSU = function(req, res){
 
     var project = req.project ;
 
@@ -419,52 +425,10 @@ var gateDateCheck = function(performanceName, performanceReviewsArray, editedPer
     }
 
     return errDateCheck;
-    
-};
-
-exports.updateBaselineDurationReview = function(req, res){
-
-    var project = req.project ;
-
-    var editedGate = _.find(project.process.gates, function(gate){
-        return gate._id.equals(req.params.projectGateId);
-    });
-
-    var editedGateReview = editedGate.gateReviews.id(req.params.gateReviewId);
-    editedGateReview.user = req.user;
-    editedGateReview.created = Date.now();
-
-    var performanceName = 'baselineDuration';
-
-    var performanceReviewsArray = editedGateReview.performances.duration.baselineDurationReviews;
-
-    var editedPerformanceReview = performanceReviewsArray.id(req.params.baselineDurationReviewId);
-    
-    var newDate = req.body.newDate;
-
-    editedPerformanceReview.newDate = newDate;
-
-    var errDateCheck = gateDateCheck(performanceName, performanceReviewsArray, editedPerformanceReview, newDate);
-
-    if(errDateCheck){
-        return res.status(400).send({
-            message: errorHandler.getErrorMessage(errDateCheck)
-        });
-    }
-
-    project.save(function(err){
-        if (err) {
-            return res.status(400).send({
-                message: errorHandler.getErrorMessage(err)
-            });
-        } else {
-            res.jsonp(editedPerformanceReview);
-        }
-    });
 
 };
 
-exports.updateEstimateDurationReview = function(req, res){
+exports.updateEstimateDurationReviewForSU = function(req, res){
 
     var project = req.project ;
 
@@ -506,79 +470,7 @@ exports.updateEstimateDurationReview = function(req, res){
 
 };
 
-exports.updateActualDurationReview = function(req, res){
-
-    var project = req.project ;
-
-    var editedGate = _.find(project.process.gates, function(gate){
-        return gate._id.equals(req.params.projectGateId);
-    });
-
-    var editedGateReview = editedGate.gateReviews.id(req.params.gateReviewId);
-    editedGateReview.user = req.user;
-    editedGateReview.created = Date.now();
-
-    var performanceName = 'actualDuration';
-
-    var performanceReviewsArray = editedGateReview.performances.duration.actualDurationReviews;
-
-    var editedPerformanceReview = performanceReviewsArray.id(req.params.actualDurationReviewId);
-
-    var newDate = req.body.newDate;
-
-    editedPerformanceReview.newDate = newDate;
-
-    var errDateCheck = gateDateCheck(performanceName, performanceReviewsArray, editedPerformanceReview, newDate);
-
-    if(errDateCheck){
-        return res.status(400).send({
-            message: errorHandler.getErrorMessage(errDateCheck)
-        });
-    }
-
-    project.save(function(err){
-        if (err) {
-            return res.status(400).send({
-                message: errorHandler.getErrorMessage(err)
-            });
-        } else {
-            res.jsonp(editedPerformanceReview);
-        }
-    });
-
-};
-
-
-exports.updateBaselineCostReview = function(req, res){
-
-    var project = req.project ;
-
-    var editedGate = _.find(project.process.gates, function(gate){
-        return gate._id.equals(req.params.projectGateId);
-    });
-
-    var editedGateReview = editedGate.gateReviews.id(req.params.gateReviewId);
-
-    var editedPerformanceReview = editedGateReview.performances.cost.baselineCostReviews.id(req.params.baselineCostReviewId);
-
-    editedGateReview.user = req.user;
-    editedGateReview.created = Date.now();
-
-    editedPerformanceReview.newCost = req.body.newCost;
-
-    project.save(function(err){
-        if (err) {
-            return res.status(400).send({
-                message: errorHandler.getErrorMessage(err)
-            });
-        } else {
-            res.jsonp(editedPerformanceReview);
-        }
-    });
-
-};
-
-exports.updateEstimateCostReview = function(req, res){
+exports.updateEstimateCostReviewForSU = function(req, res){
 
     var project = req.project ;
 
@@ -607,66 +499,7 @@ exports.updateEstimateCostReview = function(req, res){
 
 };
 
-exports.updateActualCostReview = function(req, res){
-
-    var project = req.project ;
-
-    var editedGate = _.find(project.process.gates, function(gate){
-        return gate._id.equals(req.params.projectGateId);
-    });
-
-    var editedGateReview = editedGate.gateReviews.id(req.params.gateReviewId);
-
-    var editedPerformanceReview = editedGateReview.performances.cost.actualCostReviews.id(req.params.actualCostReviewId);
-
-    editedGateReview.user = req.user;
-    editedGateReview.created = Date.now();
-
-    editedPerformanceReview.newCost = req.body.newCost;
-
-    project.save(function(err){
-        if (err) {
-            return res.status(400).send({
-                message: errorHandler.getErrorMessage(err)
-            });
-        } else {
-            res.jsonp(editedPerformanceReview);
-        }
-    });
-
-};
-
-
-exports.updateBaselineCompletionReview = function(req, res){
-
-    var project = req.project ;
-
-    var editedGate = _.find(project.process.gates, function(gate){
-        return gate._id.equals(req.params.projectGateId);
-    });
-
-    var editedGateReview = editedGate.gateReviews.id(req.params.gateReviewId);
-
-    var editedPerformanceReview = editedGateReview.performances.completion.baselineCompletionReviews.id(req.params.baselineCompletionReviewId);
-
-    editedGateReview.user = req.user;
-    editedGateReview.created = Date.now();
-
-    editedPerformanceReview.newCompletion = req.body.newCompletion;
-
-    project.save(function(err){
-        if (err) {
-            return res.status(400).send({
-                message: errorHandler.getErrorMessage(err)
-            });
-        } else {
-            res.jsonp(editedPerformanceReview);
-        }
-    });
-
-};
-
-exports.updateEstimateCompletionReview = function(req, res){
+exports.updateEstimateCompletionReviewForSU = function(req, res){
 
     var project = req.project ;
 
@@ -677,35 +510,6 @@ exports.updateEstimateCompletionReview = function(req, res){
     var editedGateReview = editedGate.gateReviews.id(req.params.gateReviewId);
 
     var editedPerformanceReview = editedGateReview.performances.completion.estimateCompletionReviews.id(req.params.estimateCompletionReviewId);
-
-    editedGateReview.user = req.user;
-    editedGateReview.created = Date.now();
-
-    editedPerformanceReview.newCompletion = req.body.newCompletion;
-
-    project.save(function(err){
-        if (err) {
-            return res.status(400).send({
-                message: errorHandler.getErrorMessage(err)
-            });
-        } else {
-            res.jsonp(editedPerformanceReview);
-        }
-    });
-
-};
-
-exports.updateActualCompletionReview = function(req, res){
-
-    var project = req.project ;
-
-    var editedGate = _.find(project.process.gates, function(gate){
-        return gate._id.equals(req.params.projectGateId);
-    });
-
-    var editedGateReview = editedGate.gateReviews.id(req.params.gateReviewId);
-
-    var editedPerformanceReview = editedGateReview.performances.completion.actualCompletionReviews.id(req.params.actualCompletionReviewId);
 
     editedGateReview.user = req.user;
     editedGateReview.created = Date.now();
@@ -880,7 +684,7 @@ var checkDateConsistency = function(editedGateReview, editedGate, project){
 
 // -----
 
-exports.submitGateReview = function(req, res) {
+exports.submitStatusUpdate = function(req, res) {
 
     var project = req.project ;
 
@@ -909,7 +713,7 @@ exports.submitGateReview = function(req, res) {
 
     var missingFields = setSubmitMissingFields(editedGateReview);
     var dateConsistencyErrors = checkDateConsistency(editedGateReview, editedGate, project);
-    
+
     if((missingFields.length > 0) || (dateConsistencyErrors.length > 0)){
         console.log(missingFields);
         console.log(dateConsistencyErrors);
@@ -933,7 +737,7 @@ exports.submitGateReview = function(req, res) {
 
 };
 
-exports.approveGateReview = function(req, res) {
+exports.approveStatusUpdate = function(req, res) {
 
     var project = req.project ;
 
@@ -1214,7 +1018,7 @@ exports.approveGateReview = function(req, res) {
     });
 };
 
-exports.rejectGateReview = function(req, res) {
+exports.rejectStatusUpdate = function(req, res) {
 
     var project = req.project ;
 
@@ -1236,7 +1040,7 @@ exports.rejectGateReview = function(req, res) {
     editedGateReview.approval.currentRecord.approvalState = 'rejected';
     editedGateReview.approval.currentRecord.user = {_id: req.user._id, displayName: req.user.displayName};
     editedGateReview.approval.currentRecord.created = Date.now();
-    
+
     // No missing fields check
 
     project.save(function(err){
@@ -1252,7 +1056,7 @@ exports.rejectGateReview = function(req, res) {
 
 };
 
-exports.draftGateReview = function(req, res) {
+exports.draftStatusUpdate = function(req, res) {
 
     var project = req.project ;
 

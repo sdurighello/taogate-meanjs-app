@@ -166,87 +166,87 @@ exports.getUserProjectChangeRequests = function(req, res) {
 * All change requests for all projects in the portfolio that need to be approved by the user because
 * it is either the Portfolio Manager for that portfolio or a SuperHero
 */
-    var Portfolio = mongoose.mtModel(req.user.tenantId + '.' + 'Portfolio');
-    var Project = mongoose.mtModel(req.user.tenantId + '.' + 'Project');
-    var ProjectChangeRequest = mongoose.mtModel(req.user.tenantId + '.' + 'ProjectChangeRequest');
-
-    async.waterfall([
-        // Find all portfolios where the user is either the Portfolio Manager or the Backup Portfolio Manager
-        function(callback) {
-            var portfolioIds = [];
-            Portfolio.find({
-                $or:[
-                    {'portfolioManager':req.user._id},
-                    {'backupPortfolioManager':req.user._id}
-                ]
-            }).exec(function (err, portfolios) {
-                if (err) {
-                    return callback(err);
-                }
-                // If portfolios is empty, return it empty to the next step to satisfy a Superhero with no portfolios
-                if(portfolios){
-                    _.each(portfolios, function (portfolio) {
-                        portfolioIds.push(portfolio._id);
-                    });
-                }
-                callback(null, portfolioIds);
-            });
-        },
-        // Find all the projects belonging to those portfolios.
-        // If Superhero, add also the projects without portfolio.
-        function(portfolioIds, callback) {
-
-            var projectIds = [];
-
-            var isSuperhero = !!_.find(req.user.roles, function(role){
-                return (role === 'superAdmin' || role === 'admin' || role === 'pmo');
-            });
-
-            var queryObj;
-            if(isSuperhero){
-                queryObj = {$or:[
-                    {'portfolio': {$in: portfolioIds}},
-                    {'portfolio': null}
-                ]};
-            } else {
-                queryObj = {'portfolio': {$in: portfolioIds}};
-            }
-
-            Project.find(queryObj).exec(function (err, projects) {
-                if (err) {
-                    return callback(err);
-                }
-                if(projects){
-                    _.each(projects, function (project) {
-                        projectIds.push(project._id);
-                    });
-                }
-                callback(null, projectIds);
-            });
-        },
-        // Find the change requests for all projects in those portfolios that need to be approved.
-        function(projectIds, callback) {
-            ProjectChangeRequest.find({
-                $and: [
-                    {'project': {$in: projectIds}},
-                    {'approval.currentRecord.approvalState' : 'submitted'}
-                ]
-            }).populate('project', 'identification').exec(function (err, changeRequests) {
-                if (err) {
-                    return callback(err);
-                }
-                callback(null, changeRequests);
-            });
-        }
-    ], function (err, changeRequests) {
-        if (err) {
-            return res.status(400).send({
-                message: errorHandler.getErrorMessage(err)
-            });
-        } else {
-            res.jsonp(changeRequests);
-        }
-    });
+    // var Portfolio = mongoose.mtModel(req.user.tenantId + '.' + 'Portfolio');
+    // var Project = mongoose.mtModel(req.user.tenantId + '.' + 'Project');
+    // var ProjectChangeRequest = mongoose.mtModel(req.user.tenantId + '.' + 'ProjectChangeRequest');
+    //
+    // async.waterfall([
+    //     // Find all portfolios where the user is either the Portfolio Manager or the Backup Portfolio Manager
+    //     function(callback) {
+    //         var portfolioIds = [];
+    //         Portfolio.find({
+    //             $or:[
+    //                 {'portfolioManager':req.user._id},
+    //                 {'backupPortfolioManager':req.user._id}
+    //             ]
+    //         }).exec(function (err, portfolios) {
+    //             if (err) {
+    //                 return callback(err);
+    //             }
+    //             // If portfolios is empty, return it empty to the next step to satisfy a Superhero with no portfolios
+    //             if(portfolios){
+    //                 _.each(portfolios, function (portfolio) {
+    //                     portfolioIds.push(portfolio._id);
+    //                 });
+    //             }
+    //             callback(null, portfolioIds);
+    //         });
+    //     },
+    //     // Find all the projects belonging to those portfolios.
+    //     // If Superhero, add also the projects without portfolio.
+    //     function(portfolioIds, callback) {
+    //
+    //         var projectIds = [];
+    //
+    //         var isSuperhero = !!_.find(req.user.roles, function(role){
+    //             return (role === 'superAdmin' || role === 'admin' || role === 'pmo');
+    //         });
+    //
+    //         var queryObj;
+    //         if(isSuperhero){
+    //             queryObj = {$or:[
+    //                 {'portfolio': {$in: portfolioIds}},
+    //                 {'portfolio': null}
+    //             ]};
+    //         } else {
+    //             queryObj = {'portfolio': {$in: portfolioIds}};
+    //         }
+    //
+    //         Project.find(queryObj).exec(function (err, projects) {
+    //             if (err) {
+    //                 return callback(err);
+    //             }
+    //             if(projects){
+    //                 _.each(projects, function (project) {
+    //                     projectIds.push(project._id);
+    //                 });
+    //             }
+    //             callback(null, projectIds);
+    //         });
+    //     },
+    //     // Find the change requests for all projects in those portfolios that need to be approved.
+    //     function(projectIds, callback) {
+    //         ProjectChangeRequest.find({
+    //             $and: [
+    //                 {'project': {$in: projectIds}},
+    //                 {'approval.currentRecord.approvalState' : 'submitted'}
+    //             ]
+    //         }).populate('project', 'identification').exec(function (err, changeRequests) {
+    //             if (err) {
+    //                 return callback(err);
+    //             }
+    //             callback(null, changeRequests);
+    //         });
+    //     }
+    // ], function (err, changeRequests) {
+    //     if (err) {
+    //         return res.status(400).send({
+    //             message: errorHandler.getErrorMessage(err)
+    //         });
+    //     } else {
+    //         res.jsonp(changeRequests);
+    //     }
+    // });
 
 
 };
@@ -257,87 +257,87 @@ exports.getUserProjectStatusUpdates = function(req, res) {
      * All status updates for all projects in the portfolio that need to be approved by the user because
      * it is either the Portfolio Manager for that portfolio or a SuperHero
      */
-    var Portfolio = mongoose.mtModel(req.user.tenantId + '.' + 'Portfolio');
-    var Project = mongoose.mtModel(req.user.tenantId + '.' + 'Project');
-    var ProjectStatusUpdate = mongoose.mtModel(req.user.tenantId + '.' + 'ProjectStatusUpdate');
-
-    async.waterfall([
-        // Find all portfolios where the user is either the Portfolio Manager or the Backup Portfolio Manager
-        function(callback) {
-            var portfolioIds = [];
-            Portfolio.find({
-                $or:[
-                    {'portfolioManager':req.user._id},
-                    {'backupPortfolioManager':req.user._id}
-                ]
-            }).exec(function (err, portfolios) {
-                if (err) {
-                    return callback(err);
-                }
-                // If portfolios is empty, return it empty to the next step to satisfy a Superhero with no portfolios
-                if(portfolios){
-                    _.each(portfolios, function (portfolio) {
-                        portfolioIds.push(portfolio._id);
-                    });
-                }
-                callback(null, portfolioIds);
-            });
-        },
-        // Find all the projects belonging to those portfolios.
-        // If Superhero, add also the projects without portfolio.
-        function(portfolioIds, callback) {
-
-            var projectIds = [];
-
-            var isSuperhero = !!_.find(req.user.roles, function(role){
-                return (role === 'superAdmin' || role === 'admin' || role === 'pmo');
-            });
-
-            var queryObj;
-            if(isSuperhero){
-                queryObj = {$or:[
-                    {'portfolio': {$in: portfolioIds}},
-                    {'portfolio': null}
-                ]};
-            } else {
-                queryObj = {'portfolio': {$in: portfolioIds}};
-            }
-
-            Project.find(queryObj).exec(function (err, projects) {
-                if (err) {
-                    return callback(err);
-                }
-                if(projects){
-                    _.each(projects, function (project) {
-                        projectIds.push(project._id);
-                    });
-                }
-                callback(null, projectIds);
-            });
-        },
-        // Find the status updates for all projects in those portfolios that need to be approved.
-        function(projectIds, callback) {
-            ProjectStatusUpdate.find({
-                $and: [
-                    {'project': {$in: projectIds}},
-                    {'approval.currentRecord.approvalState' : 'submitted'}
-                ]
-            }).populate('project', 'identification').exec(function (err, statusUpdates) {
-                if (err) {
-                    return callback(err);
-                }
-                callback(null, statusUpdates);
-            });
-        }
-    ], function (err, statusUpdates) {
-        if (err) {
-            return res.status(400).send({
-                message: errorHandler.getErrorMessage(err)
-            });
-        } else {
-            res.jsonp(statusUpdates);
-        }
-    });
+    // var Portfolio = mongoose.mtModel(req.user.tenantId + '.' + 'Portfolio');
+    // var Project = mongoose.mtModel(req.user.tenantId + '.' + 'Project');
+    // var ProjectStatusUpdate = mongoose.mtModel(req.user.tenantId + '.' + 'ProjectStatusUpdate');
+    //
+    // async.waterfall([
+    //     // Find all portfolios where the user is either the Portfolio Manager or the Backup Portfolio Manager
+    //     function(callback) {
+    //         var portfolioIds = [];
+    //         Portfolio.find({
+    //             $or:[
+    //                 {'portfolioManager':req.user._id},
+    //                 {'backupPortfolioManager':req.user._id}
+    //             ]
+    //         }).exec(function (err, portfolios) {
+    //             if (err) {
+    //                 return callback(err);
+    //             }
+    //             // If portfolios is empty, return it empty to the next step to satisfy a Superhero with no portfolios
+    //             if(portfolios){
+    //                 _.each(portfolios, function (portfolio) {
+    //                     portfolioIds.push(portfolio._id);
+    //                 });
+    //             }
+    //             callback(null, portfolioIds);
+    //         });
+    //     },
+    //     // Find all the projects belonging to those portfolios.
+    //     // If Superhero, add also the projects without portfolio.
+    //     function(portfolioIds, callback) {
+    //
+    //         var projectIds = [];
+    //
+    //         var isSuperhero = !!_.find(req.user.roles, function(role){
+    //             return (role === 'superAdmin' || role === 'admin' || role === 'pmo');
+    //         });
+    //
+    //         var queryObj;
+    //         if(isSuperhero){
+    //             queryObj = {$or:[
+    //                 {'portfolio': {$in: portfolioIds}},
+    //                 {'portfolio': null}
+    //             ]};
+    //         } else {
+    //             queryObj = {'portfolio': {$in: portfolioIds}};
+    //         }
+    //
+    //         Project.find(queryObj).exec(function (err, projects) {
+    //             if (err) {
+    //                 return callback(err);
+    //             }
+    //             if(projects){
+    //                 _.each(projects, function (project) {
+    //                     projectIds.push(project._id);
+    //                 });
+    //             }
+    //             callback(null, projectIds);
+    //         });
+    //     },
+    //     // Find the status updates for all projects in those portfolios that need to be approved.
+    //     function(projectIds, callback) {
+    //         ProjectStatusUpdate.find({
+    //             $and: [
+    //                 {'project': {$in: projectIds}},
+    //                 {'approval.currentRecord.approvalState' : 'submitted'}
+    //             ]
+    //         }).populate('project', 'identification').exec(function (err, statusUpdates) {
+    //             if (err) {
+    //                 return callback(err);
+    //             }
+    //             callback(null, statusUpdates);
+    //         });
+    //     }
+    // ], function (err, statusUpdates) {
+    //     if (err) {
+    //         return res.status(400).send({
+    //             message: errorHandler.getErrorMessage(err)
+    //         });
+    //     } else {
+    //         res.jsonp(statusUpdates);
+    //     }
+    // });
 
 
 };

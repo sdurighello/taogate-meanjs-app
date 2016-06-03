@@ -167,6 +167,81 @@ exports.rejectGateReview = require('./projects/projects.gateReviews.server.contr
 
 exports.draftGateReview = require('./projects/projects.gateReviews.server.controller').draftGateReview;
 
+
+// ------------------------------ CHANGE REQUESTS ------------------------------
+
+exports.createChangeRequest = require('./projects/projects.changeRequests.server.controller').createChangeRequest;
+
+exports.deleteChangeRequest = require('./projects/projects.changeRequests.server.controller').deleteChangeRequest;
+
+
+exports.updateChangeRequestHeader = require('./projects/projects.changeRequests.server.controller').updateChangeRequestHeader;
+
+exports.updateChangeRequestStatus = require('./projects/projects.changeRequests.server.controller').updateChangeRequestStatus;
+
+exports.updateGateBudgetReviewForCR = require('./projects/projects.changeRequests.server.controller').updateGateBudgetReviewForCR;
+
+
+exports.updateOutcomeReviewForCR = require('./projects/projects.changeRequests.server.controller').updateOutcomeReviewForCR;
+
+
+exports.updateActualCompletionReviewForCR = require('./projects/projects.changeRequests.server.controller').updateActualCompletionReviewForCR;
+
+exports.updateActualCostReviewForCR = require('./projects/projects.changeRequests.server.controller').updateActualCostReviewForCR;
+
+exports.updateActualDurationReviewForCR = require('./projects/projects.changeRequests.server.controller').updateActualDurationReviewForCR;
+
+
+exports.updateBaselineCompletionReviewForCR = require('./projects/projects.changeRequests.server.controller').updateBaselineCompletionReviewForCR;
+
+exports.updateBaselineCostReviewForCR = require('./projects/projects.changeRequests.server.controller').updateBaselineCostReviewForCR;
+
+exports.updateBaselineDurationReviewForCR = require('./projects/projects.changeRequests.server.controller').updateBaselineDurationReviewForCR;
+
+
+exports.submitChangeRequest = require('./projects/projects.changeRequests.server.controller').submitChangeRequest;
+
+exports.approveChangeRequest = require('./projects/projects.changeRequests.server.controller').approveChangeRequest;
+
+exports.rejectChangeRequest = require('./projects/projects.changeRequests.server.controller').rejectChangeRequest;
+
+exports.draftChangeRequest = require('./projects/projects.changeRequests.server.controller').draftChangeRequest;
+
+
+// ------------------------------ PROJECT STATUS UPDATES ------------------------------
+
+exports.createStatusUpdate = require('./projects/projects.statusUpdates.server.controller').createStatusUpdate;
+
+exports.deleteStatusUpdate = require('./projects/projects.statusUpdates.server.controller').deleteStatusUpdate;
+
+
+exports.updateStatusUpdateHeader = require('./projects/projects.statusUpdates.server.controller').updateStatusUpdateHeader;
+
+exports.updateDeliveryStatus = require('./projects/projects.statusUpdates.server.controller').updateDeliveryStatus;
+
+
+exports.updateStatusAreaReview = require('./projects/projects.statusUpdates.server.controller').updateStatusAreaReview;
+
+
+exports.updateOutcomeReviewForSU = require('./projects/projects.statusUpdates.server.controller').updateOutcomeReviewForSU;
+
+
+exports.updateEstimateCompletionReviewForSU = require('./projects/projects.statusUpdates.server.controller').updateEstimateCompletionReviewForSU;
+
+exports.updateEstimateCostReviewForSU = require('./projects/projects.statusUpdates.server.controller').updateEstimateCostReviewForSU;
+
+exports.updateEstimateDurationReviewForSU = require('./projects/projects.statusUpdates.server.controller').updateEstimateDurationReviewForSU;
+
+
+exports.submitStatusUpdate = require('./projects/projects.statusUpdates.server.controller').submitStatusUpdate;
+
+exports.approveStatusUpdate = require('./projects/projects.statusUpdates.server.controller').approveStatusUpdate;
+
+exports.rejectStatusUpdate = require('./projects/projects.statusUpdates.server.controller').rejectStatusUpdate;
+
+exports.draftStatusUpdate = require('./projects/projects.statusUpdates.server.controller').draftStatusUpdate;
+
+
 // ------------------------ MIDDLEWARE -----------------------------
 
 exports.projectByID = function(req, res, next, id) {
@@ -372,12 +447,21 @@ exports.hasAssignmentAuthorization = function(req, res, next) {
     });
 };
 
-// Gate Reviews
-
+// Gate Reviews approval
 exports.hasApproveAuthorization = function(req, res, next){
     next();
 };
 
+// Editable Objects
+
 exports.isGateReviewEditable = function(req, res, next){
+    next();
+};
+
+exports.isChangeRequestEditable = function(req, res, next){
+    next();
+};
+
+exports.isStatusUpdateEditable = function(req, res, next){
     next();
 };

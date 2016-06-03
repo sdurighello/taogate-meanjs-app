@@ -5,7 +5,8 @@
  */
 var mongoose = require('mongoose'),
 	Schema = mongoose.Schema,
-	deepPopulate = require('mongoose-deep-populate')(mongoose);
+    _ = require('lodash'),
+deepPopulate = require('mongoose-deep-populate')(mongoose);
 require('mongoose-multitenant');
 
 /**
@@ -13,7 +14,7 @@ require('mongoose-multitenant');
  */
 
 
-// ------------------------------------------------ SUB-SCHEMAS --------------------------------------------------
+// ------------------------------------------------ DEFINITION --------------------------------------------------
 
 
     // --- Categorization ---
@@ -92,10 +93,10 @@ var AssignedPeopleProjectGroupSchema = new Schema({
 });
 
 
-    // -------------- Delivery --------------
+// ------------------------------------------------ DELIVERY --------------------------------------------------
 
 
-// APPROVAL
+    // --- Approval ---
 
 var approvalRecord = {
     approvalState: {type: String, enum: ['draft', 'submitted', 'approved','rejected'], default:'draft'},
@@ -106,11 +107,27 @@ var approvalRecord = {
     }
 };
 
-/* DURATION */
+    // --- Status Review ---
 
-var actualDurationReviewRecord = {
+var statusReviewRecord = {
+
+    baselineDeliveryDate : {type: Date, default: null},
+    estimateDeliveryDate : {type: Date, default: null},
+    actualDeliveryDate : {type: Date, default: null},
+
+    completed : {type: Boolean, default: false, required:'Completed flag is required'},
+    status: {type: Schema.Types.ObjectId, default: null, ref: 'LogStatusIndicator', $tenant:true},
+    comment : {type: String, default:'', trim: true},
+
+    created: { type: Date, default: Date.now },
+    user: { _id: {type: Schema.ObjectId, ref: 'User'}, displayName:{type:String} }
+};
+
+    // --- Duration ---
+
+var actualDurationRecord = {
     gateDate: {type: Date, default: null},
-    sourceChangeRequest: {type: Schema.Types.ObjectId, ref: 'ProjectChangeRequest', default:null, $tenant:true},
+    sourceChangeRequest: {type: Schema.Types.ObjectId, ref: 'Project.process.gates.projectChangeRequests', default:null, $tenant:true},
     sourceGateReview: {type: Schema.Types.ObjectId, ref: 'Project.process.gates.gateReviews', default:null, $tenant:true},
     created: {type: Date, default: Date.now},
     user: {
@@ -125,343 +142,8 @@ var ActualDurationSchema = new Schema({
         name: { type: String, default: '', required: 'Please fill Gate name', trim: true },
         position:{ type: Number, required: 'Position for gate is required', min:1}
     },    
-    currentRecord: actualDurationReviewRecord,
-    history:[actualDurationReviewRecord]
-});
-
-var estimateDurationReviewRecord = {
-    gateDate: {type: Date, default: null},
-    sourceStatusUpdate: {type: Schema.Types.ObjectId, ref: 'ProjectStatusUpdate', default:null, $tenant:true},
-    sourceGateReview: {type: Schema.Types.ObjectId, ref: 'Project.process.gates.gateReviews', default:null, $tenant:true},
-    created: {type: Date, default: Date.now},
-    user: {
-        _id: {type: Schema.ObjectId, ref: 'User'},
-        displayName : {type:String}
-    }
-};
-
-var EstimateDurationSchema = new Schema({
-    targetGate:{
-        _id: {type: Schema.Types.ObjectId, ref: 'Project.process.gates', $tenant:true},
-        name: { type: String, default: '', required: 'Please fill Gate name', trim: true },
-        position:{ type: Number, required: 'Position for gate is required', min:1}
-    },    
-    currentRecord: estimateDurationReviewRecord,
-    history:[estimateDurationReviewRecord]
-});
-
-var baselineDurationReviewRecord = {
-    gateDate: {type: Date, default: null},
-    sourceChangeRequest: {type: Schema.Types.ObjectId, ref: 'ProjectChangeRequest', default:null, $tenant:true},
-    sourceGateReview: {type: Schema.Types.ObjectId, ref: 'Project.process.gates.gateReviews', default:null, $tenant:true},
-    created: {type: Date, default: Date.now},
-    user: {
-        _id: {type: Schema.ObjectId, ref: 'User'},
-        displayName : {type:String}
-    }
-};
-
-var BaselineDurationSchema = new Schema({
-    targetGate:{
-        _id: {type: Schema.Types.ObjectId, ref: 'Project.process.gates', $tenant:true},
-        name: { type: String, default: '', required: 'Please fill Gate name', trim: true },
-        position:{ type: Number, required: 'Position for gate is required', min:1}
-    },    
-    currentRecord: baselineDurationReviewRecord,
-    history:[baselineDurationReviewRecord]
-});
-
-/* COST */
-
-var actualCostReviewRecord = {
-    cost: {type: Number, min:0, default: null},
-    sourceChangeRequest: {type: Schema.Types.ObjectId, ref: 'ProjectChangeRequest', default:null, $tenant:true},
-    sourceGateReview: {type: Schema.Types.ObjectId, ref: 'Project.process.gates.gateReviews', default:null, $tenant:true},
-    created: {type: Date, default: Date.now},
-    user: {
-        _id: {type: Schema.ObjectId, ref: 'User'},
-        displayName : {type:String}
-    }
-};
-
-var ActualCostSchema = new Schema({
-    targetGate:{
-        _id: {type: Schema.Types.ObjectId, ref: 'Project.process.gates', $tenant:true},
-        name: { type: String, default: '', required: 'Please fill Gate name', trim: true },
-        position:{ type: Number, required: 'Position for gate is required', min:1}
-    },    
-    currentRecord: actualCostReviewRecord,
-    history:[actualCostReviewRecord]
-});
-
-var estimateCostReviewRecord = {
-    cost: {type: Number, min:0, default: null},
-    sourceStatusUpdate: {type: Schema.Types.ObjectId, ref: 'ProjectStatusUpdate', default:null, $tenant:true},
-    sourceGateReview: {type: Schema.Types.ObjectId, ref: 'Project.process.gates.gateReviews', default:null, $tenant:true},
-    created: {type: Date, default: Date.now},
-    user: {
-        _id: {type: Schema.ObjectId, ref: 'User'},
-        displayName : {type:String}
-    }
-};
-
-var EstimateCostSchema = new Schema({
-    targetGate:{
-        _id: {type: Schema.Types.ObjectId, ref: 'Project.process.gates', $tenant:true},
-        name: { type: String, default: '', required: 'Please fill Gate name', trim: true },
-        position:{ type: Number, required: 'Position for gate is required', min:1}
-    },    
-    currentRecord: estimateCostReviewRecord,
-    history:[estimateCostReviewRecord]
-});
-
-var baselineCostReviewRecord = {
-    cost: {type: Number, min:0, default: null},
-    sourceChangeRequest: {type: Schema.Types.ObjectId, ref: 'ProjectChangeRequest', default:null, $tenant:true},
-    sourceGateReview: {type: Schema.Types.ObjectId, ref: 'Project.process.gates.gateReviews', default:null, $tenant:true},
-    created: {type: Date, default: Date.now},
-    user: {
-        _id: {type: Schema.ObjectId, ref: 'User'},
-        displayName : {type:String}
-    }
-};
-
-var BaselineCostSchema = new Schema({
-    targetGate:{
-        _id: {type: Schema.Types.ObjectId, ref: 'Project.process.gates', $tenant:true},
-        name: { type: String, default: '', required: 'Please fill Gate name', trim: true },
-        position:{ type: Number, required: 'Position for gate is required', min:1}
-    },    
-    currentRecord: baselineCostReviewRecord,
-    history:[baselineCostReviewRecord]
-});
-
-/* COMPLETION */
-
-var actualCompletionReviewRecord = {
-    completion: {type: Number, min:0, default: null},
-    sourceChangeRequest: {type: Schema.Types.ObjectId, ref: 'ProjectChangeRequest', default:null, $tenant:true},
-    sourceGateReview: {type: Schema.Types.ObjectId, ref: 'Project.process.gates.gateReviews', default:null, $tenant:true},
-    created: {type: Date, default: Date.now},
-    user: {
-        _id: {type: Schema.ObjectId, ref: 'User'},
-        displayName : {type:String}
-    }
-};
-
-var ActualCompletionSchema = new Schema({
-    targetGate:{
-        _id: {type: Schema.Types.ObjectId, ref: 'Project.process.gates', $tenant:true},
-        name: { type: String, default: '', required: 'Please fill Gate name', trim: true },
-        position:{ type: Number, required: 'Position for gate is required', min:1}
-    },    
-    currentRecord: actualCompletionReviewRecord,
-    history:[actualCompletionReviewRecord]
-});
-
-var estimateCompletionReviewRecord = {
-    completion: {type: Number, min:0, default: null},
-    sourceStatusUpdate: {type: Schema.Types.ObjectId, ref: 'ProjectStatusUpdate', default:null, $tenant:true},
-    sourceGateReview: {type: Schema.Types.ObjectId, ref: 'Project.process.gates.gateReviews', default:null, $tenant:true},
-    created: {type: Date, default: Date.now},
-    user: {
-        _id: {type: Schema.ObjectId, ref: 'User'},
-        displayName : {type:String}
-    }
-};
-
-var EstimateCompletionSchema = new Schema({
-    targetGate:{
-        _id: {type: Schema.Types.ObjectId, ref: 'Project.process.gates', $tenant:true},
-        name: { type: String, default: '', required: 'Please fill Gate name', trim: true },
-        position:{ type: Number, required: 'Position for gate is required', min:1}
-    },    
-    currentRecord: estimateCompletionReviewRecord,
-    history:[estimateCompletionReviewRecord]
-});
-
-var baselineCompletionReviewRecord = {
-    completion: {type: Number, min:0, default: null},
-    sourceChangeRequest: {type: Schema.Types.ObjectId, ref: 'ProjectChangeRequest', default:null, $tenant:true},
-    sourceGateReview: {type: Schema.Types.ObjectId, ref: 'Project.process.gates.gateReviews', default:null, $tenant:true},
-    created: {type: Date, default: Date.now},
-    user: {
-        _id: {type: Schema.ObjectId, ref: 'User'},
-        displayName : {type:String}
-    }
-};
-
-var BaselineCompletionSchema = new Schema({
-    targetGate:{
-        _id: {type: Schema.Types.ObjectId, ref: 'Project.process.gates', $tenant:true},
-        name: { type: String, default: '', required: 'Please fill Gate name', trim: true },
-        position:{ type: Number, required: 'Position for gate is required', min:1}
-    },
-    currentRecord: baselineCompletionReviewRecord,
-    history:[baselineCompletionReviewRecord]
-});
-
-/* OUTCOME */
-
-var scoreReviewRecord = {
-    sourceGateReview: {type: Schema.Types.ObjectId, ref: 'Project.process.gates.gateReviews', default:null, $tenant:true},
-    score: {type: Schema.Types.ObjectId, ref: 'GateOutcomeScore', default:null, $tenant:true},
-    comment :{type: String, trim:true, default:''},
-    created: {type: Date, default: Date.now},
-    user: {
-        _id: {type: Schema.ObjectId, ref: 'User'},
-        displayName : {type:String}
-    }
-};
-
-var outcomeStatusReviewRecord = {
-    sourceStatusUpdate: {type: Schema.Types.ObjectId, ref: 'ProjectStatusUpdate', default:null, $tenant:true},
-    status: {type: Schema.Types.ObjectId, ref: 'LogStatusIndicator', default:null, $tenant:true},
-    comment :{type: String, trim:true, default:''},
-    created: {type: Date, default: Date.now},
-    user: {
-        _id: {type: Schema.ObjectId, ref: 'User'},
-        displayName : {type:String}
-    }
-};
-
-var ProjectOutcomeSchema = new Schema({
-    _id: {type: Schema.Types.ObjectId, ref: 'GateProcessTemplate.gates.outcomes', $tenant:true},
-    name: { type: String, default: '', required: 'Gate outcome name is required', trim: true },
-    description: { type: String, default: '', trim: true },
-    score: {
-        currentRecord: scoreReviewRecord,
-        history:[scoreReviewRecord]
-    },
-    status: {
-        currentStatus: outcomeStatusReviewRecord,
-        historyStatus:[outcomeStatusReviewRecord]
-    }
-});
-
-/* GATE STATUS */
-
-var gateStatusRecord = {
-    completed: {type: Boolean, default: false},
-    currentGate : {type: Boolean, default: false},
-    status : {type: Schema.Types.ObjectId, ref: 'GateStatus', default:null, $tenant:true},
-    overallScore : {type: Schema.Types.ObjectId, ref: 'GateOutcomeScore', default:null, $tenant:true},
-    sourceGateReview: {type: Schema.Types.ObjectId, ref: 'Project.process.gates.gateReviews', default:null, $tenant:true},
-    created: {type: Date, default: Date.now},
-    user: {
-        _id: {type: Schema.ObjectId, ref: 'User'},
-        displayName : {type:String}
-    }
-};
-
-/* BUDGET */
-
-var budgetRecord = {
-    amount: {type: Number, default: null},
-    sourceChangeRequest: {type: Schema.Types.ObjectId, ref: 'ProjectChangeRequest', default:null, $tenant:true},
-    sourceGateReview: {type: Schema.Types.ObjectId, ref: 'Project.process.gates.gateReviews', default:null, $tenant:true},
-    created: {type: Date, default: Date.now},
-    user: {
-        _id: {type: Schema.ObjectId, ref: 'User'},
-        displayName : {type:String}
-    }
-};
-
-/* DELIVERY STATUS */
-
-var overallStatusRecord = {
-    status: {type: Schema.Types.ObjectId, ref: 'LogStatusIndicator', default:null, $tenant:true},
-    sourceStatusUpdate: {type: Schema.Types.ObjectId, ref: 'ProjectStatusUpdate', default:null, $tenant:true},
-    comment :{type: String, trim:true, default:''},
-    created: {type: Date, default: Date.now},
-    user: {
-        _id: {type: Schema.ObjectId, ref: 'User'},
-        displayName : {type:String}
-    }
-};
-
-var durationStatusRecord = {
-    status: {type: Schema.Types.ObjectId, ref: 'LogStatusIndicator', default:null, $tenant:true},
-    sourceStatusUpdate: {type: Schema.Types.ObjectId, ref: 'ProjectStatusUpdate', default:null, $tenant:true},
-    comment :{type: String, trim:true, default:''},
-    created: {type: Date, default: Date.now},
-    user: {
-        _id: {type: Schema.ObjectId, ref: 'User'},
-        displayName : {type:String}
-    }
-};
-
-var costStatusRecord = {
-    status: {type: Schema.Types.ObjectId, ref: 'LogStatusIndicator', default:null, $tenant:true},
-    sourceStatusUpdate: {type: Schema.Types.ObjectId, ref: 'ProjectStatusUpdate', default:null, $tenant:true},
-    comment :{type: String, trim:true, default:''},
-    created: {type: Date, default: Date.now},
-    user: {
-        _id: {type: Schema.ObjectId, ref: 'User'},
-        displayName : {type:String}
-    }
-};
-
-var completionStatusRecord = {
-    status: {type: Schema.Types.ObjectId, ref: 'LogStatusIndicator', default:null, $tenant:true},
-    sourceStatusUpdate: {type: Schema.Types.ObjectId, ref: 'ProjectStatusUpdate', default:null, $tenant:true},
-    comment :{type: String, trim:true, default:''},
-    created: {type: Date, default: Date.now},
-    user: {
-        _id: {type: Schema.ObjectId, ref: 'User'},
-        displayName : {type:String}
-    }
-};
-
-// ----------------- GATE REVIEW ---------------
-
-// Outcome review
-
-var OutcomeReviewSchema = new Schema({
-    outcome : {
-        _id: {type: Schema.Types.ObjectId, ref: 'Project.process.gates.outcomes', $tenant:true},
-        name: {type: String},
-        score: {
-            currentRecord: {
-                score: {type: Schema.Types.ObjectId, ref: 'GateOutcomeScore', default:null, $tenant:true},
-                comment :{type: String, trim:true, default:''}
-            }
-        }
-    },
-    newScore : {type: Schema.Types.ObjectId, default: null, ref: 'GateOutcomeScore', $tenant:true},
-    newComment : {type: String, default: ''}
-});
-
-// Performances review
-
-var BaselineDurationReviewSchema = new Schema({
-    baselineDuration: {
-        _id: {type: Schema.Types.ObjectId, ref: 'Project.process.gates.performances.duration.baselineDurations', $tenant:true},
-        targetGate: {
-            _id: {type: Schema.Types.ObjectId, ref: 'Project.process.gates', $tenant:true},
-            name: {type: String},
-            position: {type: Number}
-        },
-        currentRecord: {
-            gateDate: {type: Date, default: null}
-        }
-    },
-    newDate : {type: Date, default: null}
-});
-
-var EstimateDurationReviewSchema = new Schema({
-    estimateDuration: {
-        _id: {type: Schema.Types.ObjectId, ref: 'Project.process.gates.performances.duration.estimateDurations', $tenant: true},
-        targetGate: {
-            _id: {type: Schema.Types.ObjectId, ref: 'Project.process.gates', $tenant:true},
-            name: {type: String},
-            position: {type: Number}
-        },
-        currentRecord: {
-            gateDate: {type: Date, default: null}
-        }
-    },
-    newDate : {type: Date, default: null}
+    currentRecord: actualDurationRecord,
+    history:[actualDurationRecord]
 });
 
 var ActualDurationReviewSchema = new Schema({
@@ -476,37 +158,107 @@ var ActualDurationReviewSchema = new Schema({
             gateDate: {type: Date, default: null}
         }
     },
-    newDate : {type: Date, default: null}
+    newDate : {type: Date, default: null},
+    dateChange: {type: Number, default: null}
 });
 
-var BaselineCostReviewSchema = new Schema({
-    baselineCost: {
-        _id: {type: Schema.Types.ObjectId, ref: 'Project.process.gates.performances.cost.baselineCosts', $tenant: true},
+
+var estimateDurationRecord = {
+    gateDate: {type: Date, default: null},
+    sourceStatusUpdate: {type: Schema.Types.ObjectId, ref: 'Project.process.gates.gateReviews.projectStatusUpdates', default:null, $tenant:true},
+    sourceGateReview: {type: Schema.Types.ObjectId, ref: 'Project.process.gates.gateReviews', default:null, $tenant:true},
+    created: {type: Date, default: Date.now},
+    user: {
+        _id: {type: Schema.ObjectId, ref: 'User'},
+        displayName : {type:String}
+    }
+};
+
+var EstimateDurationSchema = new Schema({
+    targetGate:{
+        _id: {type: Schema.Types.ObjectId, ref: 'Project.process.gates', $tenant:true},
+        name: { type: String, default: '', required: 'Please fill Gate name', trim: true },
+        position:{ type: Number, required: 'Position for gate is required', min:1}
+    },    
+    currentRecord: estimateDurationRecord,
+    history:[estimateDurationRecord]
+});
+
+var EstimateDurationReviewSchema = new Schema({
+    estimateDuration: {
+        _id: {type: Schema.Types.ObjectId, ref: 'Project.process.gates.performances.duration.estimateDurations', $tenant: true},
         targetGate: {
             _id: {type: Schema.Types.ObjectId, ref: 'Project.process.gates', $tenant:true},
             name: {type: String},
             position: {type: Number}
         },
         currentRecord: {
-            cost: {type: Number, default: null}
+            gateDate: {type: Date, default: null}
         }
     },
-    newCost : {type: Number, default: null}
+    newDate : {type: Date, default: null},
+    dateChange: {type: Number, default: null}
 });
 
-var EstimateCostReviewSchema = new Schema({
-    estimateCost: {
-        _id: {type: Schema.Types.ObjectId, ref: 'Project.process.gates.performances.cost.estimateCosts', $tenant: true},
+
+var baselineDurationRecord = {
+    gateDate: {type: Date, default: null},
+    sourceChangeRequest: {type: Schema.Types.ObjectId, ref: 'Project.process.gates.projectChangeRequests', default:null, $tenant:true},
+    sourceGateReview: {type: Schema.Types.ObjectId, ref: 'Project.process.gates.gateReviews', default:null, $tenant:true},
+    created: {type: Date, default: Date.now},
+    user: {
+        _id: {type: Schema.ObjectId, ref: 'User'},
+        displayName : {type:String}
+    }
+};
+
+var BaselineDurationSchema = new Schema({
+    targetGate:{
+        _id: {type: Schema.Types.ObjectId, ref: 'Project.process.gates', $tenant:true},
+        name: { type: String, default: '', required: 'Please fill Gate name', trim: true },
+        position:{ type: Number, required: 'Position for gate is required', min:1}
+    },    
+    currentRecord: baselineDurationRecord,
+    history:[baselineDurationRecord]
+});
+
+var BaselineDurationReviewSchema = new Schema({
+    baselineDuration: {
+        _id: {type: Schema.Types.ObjectId, ref: 'Project.process.gates.performances.duration.baselineDurations', $tenant:true},
         targetGate: {
             _id: {type: Schema.Types.ObjectId, ref: 'Project.process.gates', $tenant:true},
             name: {type: String},
             position: {type: Number}
         },
         currentRecord: {
-            cost: {type: Number, default: null}
+            gateDate: {type: Date, default: null}
         }
     },
-    newCost : {type: Number}
+    newDate : {type: Date, default: null},
+    dateChange: {type: Number, default: null}
+});
+
+    // --- Cost ---
+
+var actualCostRecord = {
+    cost: {type: Number, min:0, default: null},
+    sourceChangeRequest: {type: Schema.Types.ObjectId, ref: 'Project.process.gates.projectChangeRequests', default:null, $tenant:true},
+    sourceGateReview: {type: Schema.Types.ObjectId, ref: 'Project.process.gates.gateReviews', default:null, $tenant:true},
+    created: {type: Date, default: Date.now},
+    user: {
+        _id: {type: Schema.ObjectId, ref: 'User'},
+        displayName : {type:String}
+    }
+};
+
+var ActualCostSchema = new Schema({
+    targetGate:{
+        _id: {type: Schema.Types.ObjectId, ref: 'Project.process.gates', $tenant:true},
+        name: { type: String, default: '', required: 'Please fill Gate name', trim: true },
+        position:{ type: Number, required: 'Position for gate is required', min:1}
+    },    
+    currentRecord: actualCostRecord,
+    history:[actualCostRecord]
 });
 
 var ActualCostReviewSchema = new Schema({
@@ -521,37 +273,107 @@ var ActualCostReviewSchema = new Schema({
             cost: {type: Number, default: null}
         }
     },
-    newCost : {type: Number, default: null}
+    newCost : {type: Number, default: null},
+    costChange: {type: Number, default: null}
 });
 
-var BaselineCompletionReviewSchema = new Schema({
-    baselineCompletion: {
-        _id: {type: Schema.Types.ObjectId, ref: 'Project.process.gates.performances.completion.baselineCompletions', $tenant: true},
+
+var estimateCostRecord = {
+    cost: {type: Number, min:0, default: null},
+    sourceStatusUpdate: {type: Schema.Types.ObjectId, ref: 'Project.process.gates.projectStatusUpdates', default:null, $tenant:true},
+    sourceGateReview: {type: Schema.Types.ObjectId, ref: 'Project.process.gates.gateReviews', default:null, $tenant:true},
+    created: {type: Date, default: Date.now},
+    user: {
+        _id: {type: Schema.ObjectId, ref: 'User'},
+        displayName : {type:String}
+    }
+};
+
+var EstimateCostSchema = new Schema({
+    targetGate:{
+        _id: {type: Schema.Types.ObjectId, ref: 'Project.process.gates', $tenant:true},
+        name: { type: String, default: '', required: 'Please fill Gate name', trim: true },
+        position:{ type: Number, required: 'Position for gate is required', min:1}
+    },    
+    currentRecord: estimateCostRecord,
+    history:[estimateCostRecord]
+});
+
+var EstimateCostReviewSchema = new Schema({
+    estimateCost: {
+        _id: {type: Schema.Types.ObjectId, ref: 'Project.process.gates.performances.cost.estimateCosts', $tenant: true},
         targetGate: {
             _id: {type: Schema.Types.ObjectId, ref: 'Project.process.gates', $tenant:true},
             name: {type: String},
             position: {type: Number}
         },
         currentRecord: {
-            completion: {type: Number, default: null}
+            cost: {type: Number, default: null}
         }
     },
-    newCompletion : {type: Number, default: null}
+    newCost : {type: Number},
+    costChange: {type: Number, default: null}
 });
 
-var EstimateCompletionReviewSchema = new Schema({
-    estimateCompletion: {
-        _id: {type: Schema.Types.ObjectId, ref: 'Project.process.gates.performances.completion.estimateCompletions', $tenant: true},
+
+var baselineCostRecord = {
+    cost: {type: Number, min:0, default: null},
+    sourceChangeRequest: {type: Schema.Types.ObjectId, ref: 'Project.process.gates.projectChangeRequests', default:null, $tenant:true},
+    sourceGateReview: {type: Schema.Types.ObjectId, ref: 'Project.process.gates.gateReviews', default:null, $tenant:true},
+    created: {type: Date, default: Date.now},
+    user: {
+        _id: {type: Schema.ObjectId, ref: 'User'},
+        displayName : {type:String}
+    }
+};
+
+var BaselineCostSchema = new Schema({
+    targetGate:{
+        _id: {type: Schema.Types.ObjectId, ref: 'Project.process.gates', $tenant:true},
+        name: { type: String, default: '', required: 'Please fill Gate name', trim: true },
+        position:{ type: Number, required: 'Position for gate is required', min:1}
+    },    
+    currentRecord: baselineCostRecord,
+    history:[baselineCostRecord]
+});
+
+var BaselineCostReviewSchema = new Schema({
+    baselineCost: {
+        _id: {type: Schema.Types.ObjectId, ref: 'Project.process.gates.performances.cost.baselineCosts', $tenant: true},
         targetGate: {
             _id: {type: Schema.Types.ObjectId, ref: 'Project.process.gates', $tenant:true},
             name: {type: String},
             position: {type: Number}
         },
         currentRecord: {
-            completion: {type: Number, default: null}
+            cost: {type: Number, default: null}
         }
     },
-    newCompletion : {type: Number, default: null}
+    newCost : {type: Number, default: null},
+    costChange: {type: Number, default: null}
+});
+
+    // --- Completion ---
+
+var actualCompletionRecord = {
+    completion: {type: Number, min:0, default: null},
+    sourceChangeRequest: {type: Schema.Types.ObjectId, ref: 'Project.process.gates.projectChangeRequests', default:null, $tenant:true},
+    sourceGateReview: {type: Schema.Types.ObjectId, ref: 'Project.process.gates.gateReviews', default:null, $tenant:true},
+    created: {type: Date, default: Date.now},
+    user: {
+        _id: {type: Schema.ObjectId, ref: 'User'},
+        displayName : {type:String}
+    }
+};
+
+var ActualCompletionSchema = new Schema({
+    targetGate:{
+        _id: {type: Schema.Types.ObjectId, ref: 'Project.process.gates', $tenant:true},
+        name: { type: String, default: '', required: 'Please fill Gate name', trim: true },
+        position:{ type: Number, required: 'Position for gate is required', min:1}
+    },    
+    currentRecord: actualCompletionRecord,
+    history:[actualCompletionRecord]
 });
 
 var ActualCompletionReviewSchema = new Schema({
@@ -566,10 +388,261 @@ var ActualCompletionReviewSchema = new Schema({
             completion: {type: Number, default: null}
         }
     },
-    newCompletion : {type: Number, default: null}
+    newCompletion : {type: Number, default: null},
+    completionChange: {type: Number, default: null}
 });
 
-// Gate review
+
+var estimateCompletionRecord = {
+    completion: {type: Number, min:0, default: null},
+    sourceStatusUpdate: {type: Schema.Types.ObjectId, ref: 'Project.process.gates.projectStatusUpdates', default:null, $tenant:true},
+    sourceGateReview: {type: Schema.Types.ObjectId, ref: 'Project.process.gates.gateReviews', default:null, $tenant:true},
+    created: {type: Date, default: Date.now},
+    user: {
+        _id: {type: Schema.ObjectId, ref: 'User'},
+        displayName : {type:String}
+    }
+};
+
+var EstimateCompletionSchema = new Schema({
+    targetGate:{
+        _id: {type: Schema.Types.ObjectId, ref: 'Project.process.gates', $tenant:true},
+        name: { type: String, default: '', required: 'Please fill Gate name', trim: true },
+        position:{ type: Number, required: 'Position for gate is required', min:1}
+    },    
+    currentRecord: estimateCompletionRecord,
+    history:[estimateCompletionRecord]
+});
+
+var EstimateCompletionReviewSchema = new Schema({
+    estimateCompletion: {
+        _id: {type: Schema.Types.ObjectId, ref: 'Project.process.gates.performances.completion.estimateCompletions', $tenant: true},
+        targetGate: {
+            _id: {type: Schema.Types.ObjectId, ref: 'Project.process.gates', $tenant:true},
+            name: {type: String},
+            position: {type: Number}
+        },
+        currentRecord: {
+            completion: {type: Number, default: null}
+        }
+    },
+    newCompletion : {type: Number, default: null},
+    completionChange: {type: Number, default: null}
+});
+
+
+var baselineCompletionRecord = {
+    completion: {type: Number, min:0, default: null},
+    sourceChangeRequest: {type: Schema.Types.ObjectId, ref: 'Project.process.gates.projectChangeRequests', default:null, $tenant:true},
+    sourceGateReview: {type: Schema.Types.ObjectId, ref: 'Project.process.gates.gateReviews', default:null, $tenant:true},
+    created: {type: Date, default: Date.now},
+    user: {
+        _id: {type: Schema.ObjectId, ref: 'User'},
+        displayName : {type:String}
+    }
+};
+
+var BaselineCompletionSchema = new Schema({
+    targetGate:{
+        _id: {type: Schema.Types.ObjectId, ref: 'Project.process.gates', $tenant:true},
+        name: { type: String, default: '', required: 'Please fill Gate name', trim: true },
+        position:{ type: Number, required: 'Position for gate is required', min:1}
+    },
+    currentRecord: baselineCompletionRecord,
+    history:[baselineCompletionRecord]
+});
+
+var BaselineCompletionReviewSchema = new Schema({
+    baselineCompletion: {
+        _id: {type: Schema.Types.ObjectId, ref: 'Project.process.gates.performances.completion.baselineCompletions', $tenant: true},
+        targetGate: {
+            _id: {type: Schema.Types.ObjectId, ref: 'Project.process.gates', $tenant:true},
+            name: {type: String},
+            position: {type: Number}
+        },
+        currentRecord: {
+            completion: {type: Number, default: null}
+        }
+    },
+    newCompletion : {type: Number, default: null},
+    completionChange: {type: Number, default: null}
+});
+
+    // --- Outcomes ---
+
+var outcomeScoreRecord = {
+    sourceGateReview: {type: Schema.Types.ObjectId, ref: 'Project.process.gates.gateReviews', default:null, $tenant:true},
+    score: {type: Schema.Types.ObjectId, ref: 'GateOutcomeScore', default:null, $tenant:true},
+    comment :{type: String, trim:true, default:''},
+    created: {type: Date, default: Date.now},
+    user: {
+        _id: {type: Schema.ObjectId, ref: 'User'},
+        displayName : {type:String}
+    }
+};
+
+var outcomeStatusRecord = {
+    sourceStatusUpdate: {type: Schema.Types.ObjectId, ref: 'Project.process.gates.projectStatusUpdates', default:null, $tenant:true},
+    status: {type: Schema.Types.ObjectId, ref: 'LogStatusIndicator', default:null, $tenant:true},
+    comment :{type: String, trim:true, default:''},
+    created: {type: Date, default: Date.now},
+    user: {
+        _id: {type: Schema.ObjectId, ref: 'User'},
+        displayName : {type:String}
+    }
+};
+
+var ProjectOutcomeSchema = new Schema({
+    _id: {type: Schema.Types.ObjectId, ref: 'GateProcessTemplate.gates.outcomes', $tenant:true},
+    name: { type: String, default: '', required: 'Gate outcome name is required', trim: true },
+    description: { type: String, default: '', trim: true },
+    score: {
+        currentRecord: outcomeScoreRecord,
+        history:[outcomeScoreRecord]
+    },
+    status: {
+        currentStatus: outcomeStatusRecord,
+        historyStatus:[outcomeStatusRecord]
+    }
+});
+
+var OutcomeScoreReviewSchema = new Schema({
+    outcome : {
+        _id: {type: Schema.Types.ObjectId, ref: 'Project.process.gates.outcomes', $tenant:true},
+        name: {type: String},
+        score: {
+            currentRecord: {
+                score: {type: Schema.Types.ObjectId, ref: 'GateOutcomeScore', default:null, $tenant:true},
+                comment :{type: String, trim:true, default:''}
+            }
+        }
+    },
+    newScore : {type: Schema.Types.ObjectId, default: null, ref: 'GateOutcomeScore', $tenant:true},
+    newComment : {type: String, default: ''}
+});
+
+var OutcomeStatusReviewSchema = new Schema({
+    outcome : {
+        _id: {type: Schema.Types.ObjectId, ref: 'Project.process.gates.outcomes', $tenant:true},
+        name: {type: String},
+        status: {
+            currentRecord: {
+                status: {type: Schema.Types.ObjectId, ref: 'LogStatusIndicator', default:null, $tenant:true},
+                comment :{type: String, trim:true, default:''}
+            }
+        }
+    },
+    newStatus : {type: Schema.Types.ObjectId, ref: 'LogStatusIndicator', default:null, $tenant:true},
+    newComment : {type: String, trim:true, default: ''}
+});
+
+    // --- Gate Status ---
+
+var gateStatusRecord = {
+    completed: {type: Boolean, default: false},
+    currentGate : {type: Boolean, default: false},
+    status : {type: Schema.Types.ObjectId, ref: 'GateStatus', default:null, $tenant:true},
+    overallScore : {type: Schema.Types.ObjectId, ref: 'GateOutcomeScore', default:null, $tenant:true},
+    sourceGateReview: {type: Schema.Types.ObjectId, ref: 'Project.process.gates.gateReviews', default:null, $tenant:true},
+    created: {type: Date, default: Date.now},
+    user: {
+        _id: {type: Schema.ObjectId, ref: 'User'},
+        displayName : {type:String}
+    }
+};
+
+    // --- Gate Budget
+
+var budgetRecord = {
+    amount: {type: Number, default: null},
+    sourceChangeRequest: {type: Schema.Types.ObjectId, ref: 'Project.process.gates.projectChangeRequests', default:null, $tenant:true},
+    sourceGateReview: {type: Schema.Types.ObjectId, ref: 'Project.process.gates.gateReviews', default:null, $tenant:true},
+    created: {type: Date, default: Date.now},
+    user: {
+        _id: {type: Schema.ObjectId, ref: 'User'},
+        displayName : {type:String}
+    }
+};
+
+    // --- Delivery Status ---
+
+var overallStatusRecord = {
+    status: {type: Schema.Types.ObjectId, ref: 'LogStatusIndicator', default:null, $tenant:true},
+    sourceStatusUpdate: {type: Schema.Types.ObjectId, ref: 'Project.process.gates.projectStatusUpdates', default:null, $tenant:true},
+    comment :{type: String, trim:true, default:''},
+    created: {type: Date, default: Date.now},
+    user: {
+        _id: {type: Schema.ObjectId, ref: 'User'},
+        displayName : {type:String}
+    }
+};
+
+var durationStatusRecord = {
+    status: {type: Schema.Types.ObjectId, ref: 'LogStatusIndicator', default:null, $tenant:true},
+    sourceStatusUpdate: {type: Schema.Types.ObjectId, ref: 'Project.process.gates.projectStatusUpdates', default:null, $tenant:true},
+    comment :{type: String, trim:true, default:''},
+    created: {type: Date, default: Date.now},
+    user: {
+        _id: {type: Schema.ObjectId, ref: 'User'},
+        displayName : {type:String}
+    }
+};
+
+var costStatusRecord = {
+    status: {type: Schema.Types.ObjectId, ref: 'LogStatusIndicator', default:null, $tenant:true},
+    sourceStatusUpdate: {type: Schema.Types.ObjectId, ref: 'Project.process.gates.projectStatusUpdates', default:null, $tenant:true},
+    comment :{type: String, trim:true, default:''},
+    created: {type: Date, default: Date.now},
+    user: {
+        _id: {type: Schema.ObjectId, ref: 'User'},
+        displayName : {type:String}
+    }
+};
+
+var completionStatusRecord = {
+    status: {type: Schema.Types.ObjectId, ref: 'LogStatusIndicator', default:null, $tenant:true},
+    sourceStatusUpdate: {type: Schema.Types.ObjectId, ref: 'Project.process.gates.projectStatusUpdates', default:null, $tenant:true},
+    comment :{type: String, trim:true, default:''},
+    created: {type: Date, default: Date.now},
+    user: { _id: {type: Schema.ObjectId, ref: 'User'}, displayName : {type:String} }
+};
+
+    // --- Project Area ---
+
+var projectAreaRecord = {
+    status: {type: Schema.Types.ObjectId, ref: 'LogStatusIndicator', default:null, $tenant:true},
+    sourceStatusUpdate: {type: Schema.Types.ObjectId, ref: 'Project.process.gates.projectStatusUpdates', default:null, $tenant:true},
+    comment :{type: String, trim:true, default:''},
+    created: {type: Date, default: Date.now},
+    user: { _id: {type: Schema.ObjectId, ref: 'User', default:null}, displayName: {type: String} }
+};
+
+var ProjectAreaSchema = new Schema({
+    statusArea:{
+        _id: {type: Schema.Types.ObjectId, ref: 'LogStatusArea', $tenant:true},
+        name: {type: String}
+    },
+    currentRecord: projectAreaRecord,
+    history:[projectAreaRecord]
+});
+
+var ProjectAreaUpdateSchema = new Schema({
+    projectArea : {
+        _id: {type: Schema.Types.ObjectId, ref: 'Project.process.gates.deliveryStatus.projectAreas', $tenant:true},
+        statusArea: {
+            _id: {type: Schema.Types.ObjectId, ref: 'LogStatusArea', $tenant:true},
+            name: {type: String}
+        },
+        currentRecord: {
+            status: {type: Schema.Types.ObjectId, ref: 'LogStatusIndicator', default:null, $tenant:true},
+            comment :{type: String, trim:true, default:''}
+        }
+    },
+    newStatus : {type: Schema.Types.ObjectId, ref: 'LogStatusIndicator', $tenant:true},
+    newComment : {type: String, trim: true}
+});
+
+    // --- Gate review ---
 
 var GateReviewSchema = new Schema({
 
@@ -582,7 +655,7 @@ var GateReviewSchema = new Schema({
         history : [approvalRecord]
     },
 
-    outcomeReviews : [OutcomeReviewSchema],
+    outcomeReviews : [OutcomeScoreReviewSchema],
 
     gateStatusReview: {
         gateStatus :{
@@ -599,7 +672,8 @@ var GateReviewSchema = new Schema({
 
     budgetReview : {
         currentAmount: {type: Number, default: null},
-        newAmount: {type: Number, default: null}
+        newAmount: {type: Number, default: null},
+        budgetChange : {type: Number, default: null}
     },
 
     performances: {
@@ -619,6 +693,121 @@ var GateReviewSchema = new Schema({
             actualCompletionReviews: [ActualCompletionReviewSchema]
         }
     },
+
+    created: { type: Date, default: Date.now },
+    user: { type: Schema.ObjectId, ref: 'User' }
+});
+
+    // --- Project Change Request ---
+
+var ProjectChangeRequestSchema = new Schema({
+
+    raisedOnDate : {type: Date, default: Date.now, required:'Date required'},
+    title : {type: String, default:'', required:'Title required'},
+    description : {type: String, default:''},
+
+    reason : {type: Schema.Types.ObjectId, default: null, ref: 'LogReason', $tenant:true},
+    state : {type: Schema.Types.ObjectId, default: null, ref: 'ChangeRequestState', $tenant:true},
+    priority : {type: Schema.Types.ObjectId, default: null, ref: 'LogPriority', $tenant:true},
+
+    deliveryStatus : {
+        currentRecord : statusReviewRecord,
+        history : [statusReviewRecord]
+    },
+
+    approval : {
+        currentRecord : approvalRecord,
+        history : [approvalRecord]
+    },
+
+    budgetReview : {
+        currentAmount: {type: Number, default: null},
+        newAmount: {type: Number, default: null},
+        budgetChange : {type: Number, default: null}
+    },
+
+    performances: {
+        duration: {
+            baselineDurationReviews: [BaselineDurationReviewSchema],
+            actualDurationReviews: [ActualDurationReviewSchema]
+        },
+        cost: {
+            baselineCostReviews: [BaselineCostReviewSchema],
+            actualCostReviews: [ActualCostReviewSchema]
+        },
+        completion: {
+            baselineCompletionReviews: [BaselineCompletionReviewSchema],
+            actualCompletionReviews: [ActualCompletionReviewSchema]
+        }
+    },
+
+    created: { type: Date, default: Date.now },
+    user: { type: Schema.ObjectId, ref: 'User' }
+});
+
+    // ---- Project Status Update ---
+
+var ProjectStatusUpdateSchema = new Schema({
+
+    updateDate : {type: Date, default: Date.now, required:'Date required'},
+    title : {type: String, default:'', required:'Title required'},
+    description : {type: String, default:''},
+
+    approval : {
+        currentRecord : approvalRecord,
+        history : [approvalRecord]
+    },
+
+    outcomeStatusReviews : [OutcomeStatusReviewSchema],
+
+    deliveryStatus: {
+        overallStatusReview : {
+            currentRecord: {
+                status: {type: Schema.Types.ObjectId, ref: 'LogStatusIndicator', default:null, $tenant:true},
+                comment :{type: String, trim:true, default:''}
+            },
+            newStatus: {type: Schema.Types.ObjectId, ref: 'LogStatusIndicator', default:null, $tenant:true},
+            newComment :{type: String, trim:true, default:''}
+        },
+        durationStatusReview : {
+            currentRecord: {
+                status: {type: Schema.Types.ObjectId, ref: 'LogStatusIndicator', default:null, $tenant:true},
+                comment :{type: String, trim:true, default:''}
+            },
+            newStatus: {type: Schema.Types.ObjectId, ref: 'LogStatusIndicator', default:null, $tenant:true},
+            newComment :{type: String, trim:true, default:''}
+        },
+        costStatusReview : {
+            currentRecord: {
+                status: {type: Schema.Types.ObjectId, ref: 'LogStatusIndicator', default:null, $tenant:true},
+                comment :{type: String, trim:true, default:''}
+            },
+            newStatus: {type: Schema.Types.ObjectId, ref: 'LogStatusIndicator', default:null, $tenant:true},
+            newComment :{type: String, trim:true, default:''}
+        },
+        completionStatusReview : {
+            currentRecord: {
+                status: {type: Schema.Types.ObjectId, ref: 'LogStatusIndicator', default:null, $tenant:true},
+                comment :{type: String, trim:true, default:''}
+            },
+            newStatus: {type: Schema.Types.ObjectId, ref: 'LogStatusIndicator', default:null, $tenant:true},
+            newComment :{type: String, trim:true, default:''}
+        }
+    },
+
+    performances: {
+        duration: {
+            estimateDurationReviews: [EstimateDurationReviewSchema]
+        },
+        cost: {
+            estimateCostReviews: [EstimateCostReviewSchema]
+        },
+        completion: {
+            estimateCompletionReviews: [EstimateCompletionReviewSchema]
+        }
+    },
+
+    statusAreaUpdates : [ProjectAreaUpdateSchema],
 
     created: { type: Date, default: Date.now },
     user: { type: Schema.ObjectId, ref: 'User' }
@@ -673,9 +862,12 @@ var ProjectGateSchema = new Schema({
         completionStatus : {
             currentRecord: completionStatusRecord,
             history:[completionStatusRecord]
-        }
+        },
+        projectAreas : [ProjectAreaSchema]
     },
-    gateReviews : [GateReviewSchema]
+    gateReviews : [GateReviewSchema],
+    projectChangeRequests : [ProjectChangeRequestSchema],
+    projectStatusUpdates : [ProjectStatusUpdateSchema]
 });
 
 // ------------------------------------------------ BIG FAT SCHEMA --------------------------------------------------
@@ -760,6 +952,143 @@ var ProjectSchema = new Schema({
     }
 
 
+});
+
+// Calculate "changes" in performances at every save
+
+ProjectSchema.pre('save', function (next) {
+    var millisecondsPerDay = 1000 * 60 * 60 * 24;
+    if(this.process && this.process.gates){
+        _.each(this.process.gates, function(gate){
+
+            // Gate Reviews
+
+            _.each(gate.gateReviews, function(document){
+
+                if(document.budgetReview.currentAmount && document.budgetReview.newAmount){
+                    document.budgetReview.budgetChange = document.budgetReview.newAmount - document.budgetReview.currentAmount;
+                }
+
+                _.each(document.performances.duration.baselineDurationReviews, function(review){
+                    if(review.newDate && review.baselineDuration.currentRecord.gateDate){
+                        review.dateChange = (review.newDate - review.baselineDuration.currentRecord.gateDate) / millisecondsPerDay;
+                    }
+                });
+                _.each(document.performances.duration.estimateDurationReviews, function(review){
+                    if(review.newDate && review.estimateDuration.currentRecord.gateDate){
+                        review.dateChange = (review.newDate - review.estimateDuration.currentRecord.gateDate) / millisecondsPerDay;
+                    }
+                });
+                _.each(document.performances.duration.actualDurationReviews, function(review){
+                    if(review.newDate && review.actualDuration.currentRecord.gateDate){
+                        review.dateChange = (review.newDate - review.actualDuration.currentRecord.gateDate) / millisecondsPerDay;
+                    }
+                });
+
+                _.each(document.performances.cost.baselineCostReviews, function(review){
+                    if(review.newCost && review.baselineCost.currentRecord.cost){
+                        review.costChange = review.newCost - review.baselineCost.currentRecord.cost;
+                    }
+                });
+                _.each(document.performances.cost.estimateCostReviews, function(review){
+                    if(review.newCost && review.estimateCost.currentRecord.cost){
+                        review.costChange = review.newCost - review.estimateCost.currentRecord.cost;
+                    }
+                });
+                _.each(document.performances.cost.actualCostReviews, function(review){
+                    if(review.newCost && review.actualCost.currentRecord.cost){
+                        review.costChange = review.newCost - review.actualCost.currentRecord.cost;
+                    }
+                });
+
+                _.each(document.performances.completion.baselineCompletionReviews, function(review){
+                    if(review.newCompletion && review.baselineCompletion.currentRecord.completion){
+                        review.completionChange = review.newCompletion - review.baselineCompletion.currentRecord.completion;
+                    }
+                });
+                _.each(document.performances.completion.estimateCompletionReviews, function(review){
+                    if(review.newCompletion && review.estimateCompletion.currentRecord.completion){
+                        review.completionChange = review.newCompletion - review.estimateCompletion.currentRecord.completion;
+                    }
+                });
+                _.each(document.performances.completion.actualCompletionReviews, function(review){
+                    if(review.newCompletion && review.actualCompletion.currentRecord.completion){
+                        review.completionChange = review.newCompletion - review.actualCompletion.currentRecord.completion;
+                    }
+                });
+
+            });
+
+            // Project Change Requests
+
+            _.each(gate.projectChangeRequests, function(document){
+
+                if(document.budgetReview.currentAmount && document.budgetReview.newAmount){
+                    document.budgetReview.budgetChange = document.budgetReview.newAmount - document.budgetReview.currentAmount;
+                }
+
+                _.each(document.performances.duration.baselineDurationReviews, function(review){
+                    if(review.newDate && review.baselineDuration.currentRecord.gateDate){
+                        review.dateChange = (review.newDate - review.baselineDuration.currentRecord.gateDate) / millisecondsPerDay;
+                    }
+                });
+                _.each(document.performances.duration.actualDurationReviews, function(review){
+                    if(review.newDate && review.actualDuration.currentRecord.gateDate){
+                        review.dateChange = (review.newDate - review.actualDuration.currentRecord.gateDate) / millisecondsPerDay;
+                    }
+                });
+
+                _.each(document.performances.cost.baselineCostReviews, function(review){
+                    if(review.newCost && review.baselineCost.currentRecord.cost){
+                        review.costChange = review.newCost - review.baselineCost.currentRecord.cost;
+                    }
+                });
+                _.each(document.performances.cost.actualCostReviews, function(review){
+                    if(review.newCost && review.actualCost.currentRecord.cost){
+                        review.costChange = review.newCost - review.actualCost.currentRecord.cost;
+                    }
+                });
+
+                _.each(document.performances.completion.baselineCompletionReviews, function(review){
+                    if(review.newCompletion && review.baselineCompletion.currentRecord.completion){
+                        review.completionChange = review.newCompletion - review.baselineCompletion.currentRecord.completion;
+                    }
+                });
+                _.each(document.performances.completion.actualCompletionReviews, function(review){
+                    if(review.newCompletion && review.actualCompletion.currentRecord.completion){
+                        review.completionChange = review.newCompletion - review.actualCompletion.currentRecord.completion;
+                    }
+                });
+
+            });
+
+            // Project Status Updates
+
+            _.each(gate.projectStatusUpdates, function(document){
+
+                _.each(document.performances.duration.estimateDurationReviews, function(review){
+                    if(review.newDate && review.estimateDuration.currentRecord.gateDate){
+                        review.dateChange = (review.newDate - review.estimateDuration.currentRecord.gateDate) / millisecondsPerDay;
+                    }
+                });
+
+                _.each(document.performances.cost.estimateCostReviews, function(review){
+                    if(review.newCost && review.estimateCost.currentRecord.cost){
+                        review.costChange = review.newCost - review.estimateCost.currentRecord.cost;
+                    }
+                });
+
+                _.each(document.performances.completion.estimateCompletionReviews, function(review){
+                    if(review.newCompletion && review.estimateCompletion.currentRecord.completion){
+                        review.completionChange = review.newCompletion - review.estimateCompletion.currentRecord.completion;
+                    }
+                });
+
+            });
+
+        });
+    }
+    next();
 });
 
 ProjectSchema.plugin(deepPopulate);

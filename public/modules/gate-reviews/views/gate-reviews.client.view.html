@@ -482,8 +482,8 @@
                                                     <tr>
                                                         <th>Target gate</th>
                                                         <th>Current date</th>
-                                                        <th>New date</th>
-                                                        <th> </th>
+                                                        <th colspan="2">New date</th>
+                                                        <th>Change</th>
                                                     </tr>
                                                     <tr data-ng-repeat="baselineDurationReview in selectedGateReview.performances.duration.baselineDurationReviews | orderBy: 'baselineDuration.targetGate.position'">
                                                         <td>
@@ -507,7 +507,7 @@
                                                                 </div>
                                                                 <div data-ng-switch-when="edit">
                                                                     <div class="input-group input-group-sm">
-                                                                        <input type="text" id="" class="form-control" datepicker-popup="dd-MMMM-yyyy" data-ng-model="baselineDurationReview.newDate"
+                                                                        <input type="text" title="datePicker" class="form-control" datepicker-popup="dd-MMMM-yyyy" data-ng-model="baselineDurationReview.newDate"
                                                                                is-open="$parent.baselineDurationDateOpened[baselineDurationReview._id]"/>
                                                                     <span class="input-group-btn">
                                                                         <button type="button" class="btn btn-default" data-ng-click="openBaselineDurationDate(baselineDurationReview, $event)"><i class="glyphicon glyphicon-calendar"></i></button>
@@ -525,6 +525,14 @@
                                                                 </div>
                                                             </div>
                                                         </td>
+                                                        <td>
+                                                            <span data-ng-show="baselineDurationReview.baselineDuration.currentRecord.gateDate && baselineDurationReview.newDate">
+                                                                {{getDaysChange(baselineDurationReview.baselineDuration.currentRecord.gateDate, baselineDurationReview.newDate) | number:0}} d
+                                                            </span>
+                                                            <span data-ng-show="!baselineDurationReview.baselineDuration.currentRecord.gateDate && baselineDurationReview.newDate" class="text-center">
+                                                                -
+                                                            </span>
+                                                        </td>
                                                     </tr>
                                                 </table>
                                                 <table class="table small">
@@ -534,8 +542,8 @@
                                                     <tr>
                                                         <th>Target gate</th>
                                                         <th>Current date</th>
-                                                        <th>New date</th>
-                                                        <th> </th>
+                                                        <th colspan="2">New date</th>
+                                                        <th>Change</th>
                                                     </tr>
                                                     <tr data-ng-repeat="estimateDurationReview in selectedGateReview.performances.duration.estimateDurationReviews | orderBy: 'estimateDuration.targetGate.position'">
                                                         <td>
@@ -577,6 +585,14 @@
                                                                 </div>
                                                             </div>
                                                         </td>
+                                                        <td>
+                                                            <span data-ng-show="estimateDurationReview.estimateDuration.currentRecord.gateDate && estimateDurationReview.newDate">
+                                                                {{getDaysChange(estimateDurationReview.estimateDuration.currentRecord.gateDate, estimateDurationReview.newDate) | number:0}} d
+                                                            </span>
+                                                            <span data-ng-show="!estimateDurationReview.estimateDuration.currentRecord.gateDate && estimateDurationReview.newDate" class="text-center">
+                                                                -
+                                                            </span>
+                                                        </td>
                                                     </tr>
                                                 </table>
                                                 <table class="table small">
@@ -586,8 +602,8 @@
                                                     <tr>
                                                         <th>Target gate</th>
                                                         <th>Current date</th>
-                                                        <th>New date</th>
-                                                        <th> </th>
+                                                        <th colspan="2">New date</th>
+                                                        <th>Change</th>
                                                     </tr>
                                                     <tr data-ng-repeat="actualDurationReview in selectedGateReview.performances.duration.actualDurationReviews | orderBy: 'actualDuration.targetGate.position'">
                                                         <td>
@@ -629,6 +645,14 @@
                                                                 </div>
                                                             </div>
                                                         </td>
+                                                        <td>
+                                                            <span data-ng-show="actualDurationReview.actualDuration.currentRecord.gateDate && actualDurationReview.newDate">
+                                                                {{getDaysChange(actualDurationReview.actualDuration.currentRecord.gateDate, actualDurationReview.newDate) | number:0}} d
+                                                            </span>
+                                                            <span data-ng-show="!actualDurationReview.actualDuration.currentRecord.gateDate && actualDurationReview.newDate" class="text-center">
+                                                                -
+                                                            </span>
+                                                        </td>
                                                     </tr>
                                                 </table>
                                             </div>
@@ -639,15 +663,15 @@
                                                     </caption>
                                                     <tr>
                                                         <th>Current budget</th>
-                                                        <th>New budget</th>
-                                                        <th> </th>
+                                                        <th colspan="2">New budget</th>
+                                                        <th>Change</th>
                                                     </tr>
                                                     <tr>
                                                         <td>
                                                             <span data-ng-hide="selectedGateReview.budgetReview.currentAmount">No amount</span>
                                                             <span data-ng-bind="selectedGateReview.budgetReview.currentAmount"></span>
                                                         </td>
-                                                        <td>
+                                                        <td colspan="2">
                                                             <div data-ng-switch="switchBudgetForm[selectedGateReview._id]">
                                                                 <div data-ng-switch-default="view">
                                                                     <span data-ng-hide="selectedGateReview.budgetReview.newAmount">No amount</span>
@@ -675,6 +699,14 @@
                                                                 </div>
                                                             </div>
                                                         </td>
+                                                        <td>
+                                                            <span data-ng-show="selectedGateReview.budgetReview.currentAmount && selectedGateReview.budgetReview.newAmount">
+                                                                {{(selectedGateReview.budgetReview.newAmount - selectedGateReview.budgetReview.currentAmount) | number:0}}
+                                                            </span>
+                                                            <span data-ng-show="!selectedGateReview.budgetReview.currentAmount && selectedGateReview.budgetReview.newAmount" class="text-center">
+                                                                -
+                                                            </span>
+                                                        </td>
                                                     </tr>
                                                 </table>
                                                 <table class="table small">
@@ -684,8 +716,8 @@
                                                     <tr>
                                                         <th>Target gate</th>
                                                         <th>Current cost</th>
-                                                        <th>New cost</th>
-                                                        <th> </th>
+                                                        <th colspan="2">New cost</th>
+                                                        <th>Change</th>
                                                     </tr>
                                                     <tr data-ng-repeat="baselineCostReview in selectedGateReview.performances.cost.baselineCostReviews | orderBy: 'baselineCost.targetGate.position'">
                                                         <td>
@@ -723,6 +755,14 @@
                                                                 </div>
                                                             </div>
                                                         </td>
+                                                        <td>
+                                                            <span data-ng-show="baselineCostReview.baselineCost.currentRecord.cost && baselineCostReview.newCost">
+                                                                {{(baselineCostReview.newCost - baselineCostReview.baselineCost.currentRecord.cost) | number:0}}
+                                                            </span>
+                                                            <span data-ng-show="!baselineCostReview.baselineCost.currentRecord.cost && baselineCostReview.newCost" class="text-center">
+                                                                -
+                                                            </span>
+                                                        </td>
                                                     </tr>
                                                 </table>
                                                 <table class="table small">
@@ -732,8 +772,8 @@
                                                     <tr>
                                                         <th>Target gate</th>
                                                         <th>Current cost</th>
-                                                        <th>New cost</th>
-                                                        <th> </th>
+                                                        <th colspan="2">New cost</th>
+                                                        <th>Change</th>
                                                     </tr>
                                                     <tr data-ng-repeat="estimateCostReview in selectedGateReview.performances.cost.estimateCostReviews | orderBy: 'estimateCost.targetGate.position'">
                                                         <td>
@@ -771,6 +811,14 @@
                                                                 </div>
                                                             </div>
                                                         </td>
+                                                        <td>
+                                                            <span data-ng-show="estimateCostReview.estimateCost.currentRecord.cost && estimateCostReview.newCost">
+                                                                {{(estimateCostReview.newCost - estimateCostReview.estimateCost.currentRecord.cost) | number:0}}
+                                                            </span>
+                                                            <span data-ng-show="!estimateCostReview.estimateCost.currentRecord.cost && estimateCostReview.newCost" class="text-center">
+                                                                -
+                                                            </span>
+                                                        </td>
                                                     </tr>
                                                 </table>
                                                 <table class="table small">
@@ -780,8 +828,8 @@
                                                     <tr>
                                                         <th>Target gate</th>
                                                         <th>Current cost</th>
-                                                        <th>New cost</th>
-                                                        <th> </th>
+                                                        <th colspan="2">New cost</th>
+                                                        <th>Change</th>
                                                     </tr>
                                                     <tr data-ng-repeat="actualCostReview in selectedGateReview.performances.cost.actualCostReviews | orderBy: 'actualCost.targetGate.position'">
                                                         <td>
@@ -819,6 +867,14 @@
                                                                 </div>
                                                             </div>
                                                         </td>
+                                                        <td>
+                                                            <span data-ng-show="actualCostReview.actualCost.currentRecord.cost && actualCostReview.newCost">
+                                                                {{(actualCostReview.newCost - actualCostReview.actualCost.currentRecord.cost) | number:0}}
+                                                            </span>
+                                                            <span data-ng-show="!actualCostReview.actualCost.currentRecord.cost && actualCostReview.newCost" class="text-center">
+                                                                -
+                                                            </span>
+                                                        </td>
                                                     </tr>
                                                 </table>
                                             </div>
@@ -830,8 +886,8 @@
                                                     <tr>
                                                         <th>Target gate</th>
                                                         <th>Current completion</th>
-                                                        <th>New completion</th>
-                                                        <th> </th>
+                                                        <th colspan="2">New completion</th>
+                                                        <th>Change</th>
                                                     </tr>
                                                     <tr data-ng-repeat="baselineCompletionReview in selectedGateReview.performances.completion.baselineCompletionReviews | orderBy: 'baselineCompletion.targetGate.position'">
                                                         <td>
@@ -869,6 +925,14 @@
                                                                 </div>
                                                             </div>
                                                         </td>
+                                                        <td>
+                                                            <span data-ng-show="baselineCompletionReview.baselineCompletion.currentRecord.completion && baselineCompletionReview.newCompletion">
+                                                                {{(baselineCompletionReview.newCompletion - baselineCompletionReview.baselineCompletion.currentRecord.completion) | number:0}}
+                                                            </span>
+                                                            <span data-ng-show="!baselineCompletionReview.baselineCompletion.currentRecord.completion && baselineCompletionReview.newCompletion" class="text-center">
+                                                                -
+                                                            </span>
+                                                        </td>
                                                     </tr>
                                                 </table>
                                                 <table class="table small">
@@ -878,8 +942,8 @@
                                                     <tr>
                                                         <th>Target gate</th>
                                                         <th>Current completion</th>
-                                                        <th>New completion</th>
-                                                        <th> </th>
+                                                        <th colspan="2">New completion</th>
+                                                        <th>Change</th>
                                                     </tr>
                                                     <tr data-ng-repeat="estimateCompletionReview in selectedGateReview.performances.completion.estimateCompletionReviews | orderBy: 'estimateCompletion.targetGate.position'">
                                                         <td>
@@ -917,6 +981,14 @@
                                                                 </div>
                                                             </div>
                                                         </td>
+                                                        <td>
+                                                            <span data-ng-show="estimateCompletionReview.estimateCompletion.currentRecord.completion && estimateCompletionReview.newCompletion">
+                                                                {{(estimateCompletionReview.newCompletion - estimateCompletionReview.estimateCompletion.currentRecord.completion) | number:0}}
+                                                            </span>
+                                                            <span data-ng-show="!estimateCompletionReview.estimateCompletion.currentRecord.completion && estimateCompletionReview.newCompletion" class="text-center">
+                                                                -
+                                                            </span>
+                                                        </td>
                                                     </tr>
                                                 </table>
                                                 <table class="table small">
@@ -926,8 +998,8 @@
                                                     <tr>
                                                         <th>Target gate</th>
                                                         <th>Current completion</th>
-                                                        <th>New completion</th>
-                                                        <th> </th>
+                                                        <th colspan="2">New completion</th>
+                                                        <th>Change</th>
                                                     </tr>
                                                     <tr data-ng-repeat="actualCompletionReview in selectedGateReview.performances.completion.actualCompletionReviews | orderBy: 'actualCompletion.targetGate.position'">
                                                         <td>
@@ -964,6 +1036,14 @@
                                                                     </button>
                                                                 </div>
                                                             </div>
+                                                        </td>
+                                                        <td>
+                                                            <span data-ng-show="actualCompletionReview.actualCompletion.currentRecord.completion && actualCompletionReview.newCompletion">
+                                                                {{(actualCompletionReview.newCompletion - actualCompletionReview.actualCompletion.currentRecord.completion) | number:0}}
+                                                            </span>
+                                                            <span data-ng-show="!actualCompletionReview.actualCompletion.currentRecord.completion && actualCompletionReview.newCompletion" class="text-center">
+                                                                -
+                                                            </span>
                                                         </td>
                                                     </tr>
                                                 </table>

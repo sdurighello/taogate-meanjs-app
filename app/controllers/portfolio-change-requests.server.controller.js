@@ -236,44 +236,44 @@ exports.draft = function(req, res) {
 
 exports.availableProjectChangeRequests = function(req, res) {
 
-	var Project = mongoose.mtModel(req.user.tenantId + '.' + 'Project');
-	var ProjectChangeRequest = mongoose.mtModel(req.user.tenantId + '.' + 'ProjectChangeRequest');
-
-	async.waterfall([
-		// Find all projects belonging to that portfolio
-		function(callback){
-			var projectIds = [];
-			Project.find({portfolio: req.params.portfolioId}).exec(function(err, projects){
-				if(err){ return callback(err); }
-				async.each(projects, function(project, callback){
-					projectIds.push(project._id);
-					callback();
-				});
-				callback(null, projectIds);
-			});
-		},
-		// For all projects, extract all the changes that: are "not draft", and aren't already associated
-		function(projectIds, callback){
-            ProjectChangeRequest.find({
-				_id: {$nin: req.portfolioChangeRequest.associatedProjectChangeRequests},
-				project: {$in: projectIds},
-				approval: {$ne: 'draft'}
-			}).exec(function(err, availableProjectChangeRequests){
-				if(err){
-					return callback(err);
-				}
-				callback(null, availableProjectChangeRequests);
-			});
-		}
-	], function(err, availableProjectChangeRequests){
-		if (err) {
-			return res.status(400).send({
-				message: errorHandler.getErrorMessage(err)
-			});
-		} else {
-			res.jsonp(availableProjectChangeRequests);
-		}
-	});
+	// var Project = mongoose.mtModel(req.user.tenantId + '.' + 'Project');
+	// var ProjectChangeRequest = mongoose.mtModel(req.user.tenantId + '.' + 'ProjectChangeRequest');
+    //
+	// async.waterfall([
+	// 	// Find all projects belonging to that portfolio
+	// 	function(callback){
+	// 		var projectIds = [];
+	// 		Project.find({portfolio: req.params.portfolioId}).exec(function(err, projects){
+	// 			if(err){ return callback(err); }
+	// 			async.each(projects, function(project, callback){
+	// 				projectIds.push(project._id);
+	// 				callback();
+	// 			});
+	// 			callback(null, projectIds);
+	// 		});
+	// 	},
+	// 	// For all projects, extract all the changes that: are "not draft", and aren't already associated
+	// 	function(projectIds, callback){
+     //        ProjectChangeRequest.find({
+	// 			_id: {$nin: req.portfolioChangeRequest.associatedProjectChangeRequests},
+	// 			project: {$in: projectIds},
+	// 			approval: {$ne: 'draft'}
+	// 		}).exec(function(err, availableProjectChangeRequests){
+	// 			if(err){
+	// 				return callback(err);
+	// 			}
+	// 			callback(null, availableProjectChangeRequests);
+	// 		});
+	// 	}
+	// ], function(err, availableProjectChangeRequests){
+	// 	if (err) {
+	// 		return res.status(400).send({
+	// 			message: errorHandler.getErrorMessage(err)
+	// 		});
+	// 	} else {
+	// 		res.jsonp(availableProjectChangeRequests);
+	// 	}
+	// });
 
 
 };
@@ -381,20 +381,20 @@ exports.deleteFundingRequest = function(req, res) {
  * Portfolio change request middleware
  */
 exports.portfolioChangeRequestByID = function(req, res, next, id) {
-    var ProjectChangeRequest = mongoose.mtModel(req.user.tenantId + '.' + 'ProjectChangeRequest');
-    var BaselineCost = mongoose.mtModel(req.user.tenantId + '.' + 'BaselineCost');
-    var ActualCost = mongoose.mtModel(req.user.tenantId + '.' + 'ActualCost');
-
-    var PortfolioChangeRequest = mongoose.mtModel(req.user.tenantId + '.' + 'PortfolioChangeRequest');
-    PortfolioChangeRequest.findById(id).deepPopulate([
-        'associatedProjectChangeRequests'
-    ]).populate('user', 'displayName').populate('approval.currentRecord.user', 'displayName').populate('approval.history.user', 'displayName')
-        .exec(function(err, portfolioChangeRequest) {
-		if (err){ return next(err); }
-		if (! portfolioChangeRequest){ return next(new Error({message:'Failed to load Portfolio change request ' + id})); }
-        req.portfolioChangeRequest = portfolioChangeRequest ;
-        next();
-	});
+    // var ProjectChangeRequest = mongoose.mtModel(req.user.tenantId + '.' + 'ProjectChangeRequest');
+    // var BaselineCost = mongoose.mtModel(req.user.tenantId + '.' + 'BaselineCost');
+    // var ActualCost = mongoose.mtModel(req.user.tenantId + '.' + 'ActualCost');
+    //
+    // var PortfolioChangeRequest = mongoose.mtModel(req.user.tenantId + '.' + 'PortfolioChangeRequest');
+    // PortfolioChangeRequest.findById(id).deepPopulate([
+     //    'associatedProjectChangeRequests'
+    // ]).populate('user', 'displayName').populate('approval.currentRecord.user', 'displayName').populate('approval.history.user', 'displayName')
+     //    .exec(function(err, portfolioChangeRequest) {
+	// 	if (err){ return next(err); }
+	// 	if (! portfolioChangeRequest){ return next(new Error({message:'Failed to load Portfolio change request ' + id})); }
+     //    req.portfolioChangeRequest = portfolioChangeRequest ;
+     //    next();
+	// });
 };
 
 /**

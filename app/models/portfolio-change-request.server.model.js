@@ -46,7 +46,7 @@ var PortfolioChangeRequestSchema = new Schema({
         history : [approvalRecord]
     },
 
-    associatedProjectChangeRequests : [{type: Schema.Types.ObjectId, ref: 'ProjectChangeRequest', $tenant:true}],
+    // associatedProjectChangeRequests : [{type: Schema.Types.ObjectId, ref: 'ProjectChangeRequest', $tenant:true}],
 
     fundingRequests : [fundingRequestSchema],
 

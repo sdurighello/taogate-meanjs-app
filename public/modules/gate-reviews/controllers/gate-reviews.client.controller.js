@@ -188,12 +188,7 @@ angular.module('gate-reviews').controller('GateReviewsController', ['$rootScope'
         };
 
 
-
         // ------------------- UTILITIES ---------------------
-
-        var allowNull = function(obj){
-            if(obj){return obj._id;} else {return null;}
-        };
 
         $scope.sortGateReviews = function(gateReview) {
             return new Date(gateReview.reviewDate);
@@ -201,6 +196,11 @@ angular.module('gate-reviews').controller('GateReviewsController', ['$rootScope'
 
         $scope.sortAppliedChanges = function(record) {
             return new Date(record.created);
+        };
+
+        $scope.getDaysChange = function(stringDate1, stringDate2){
+            var millisecondsPerDay = 1000 * 60 * 60 * 24;
+            return - (new Date(stringDate1) - new Date(stringDate2)) / millisecondsPerDay;
         };
 
 
@@ -212,8 +212,6 @@ angular.module('gate-reviews').controller('GateReviewsController', ['$rootScope'
 
         $scope.activeTab = {};
 
-        var originalGate = {}, originalGateReview = {};
-
 
 
         // ------------- SELECT PROJECT ------------
@@ -221,6 +219,9 @@ angular.module('gate-reviews').controller('GateReviewsController', ['$rootScope'
 
         $scope.selectProject = function(project) {
             $scope.error = null;
+            $scope.cancelNewGateReview();
+            $scope.selectedGate = null;
+            $scope.selectedGateReview = null;
             $scope.selectedProject = project;
         };
 
@@ -235,7 +236,6 @@ angular.module('gate-reviews').controller('GateReviewsController', ['$rootScope'
             $scope.selectedGateReview = null;
             // Set new selected gate
             $scope.selectedGate = gate;
-            originalGate[gate._id] = _.cloneDeep(gate);
         };
 
         // ----------- NEW GATE REVIEW ------------
@@ -280,6 +280,7 @@ angular.module('gate-reviews').controller('GateReviewsController', ['$rootScope'
 
         $scope.cancelNewGateReview = function(){
             $scope.error = null;
+            $scope.showNewGateReviewForm = false;
             $scope.newGateReview = {};
         };
 
@@ -289,7 +290,6 @@ angular.module('gate-reviews').controller('GateReviewsController', ['$rootScope'
 
         $scope.selectGateReview = function(gateReview){
             $scope.selectedGateReview = gateReview;
-            originalGateReview[gateReview._id] = _.cloneDeep(gateReview);
         };
 
 
@@ -302,8 +302,15 @@ angular.module('gate-reviews').controller('GateReviewsController', ['$rootScope'
             $scope.headerDateOpened[gateReview._id] = true;
         };
 
+        var originalGateHeader = {};
+
         $scope.editHeader = function(gateReview){
-          $scope.selectHeaderForm('edit', gateReview);
+            originalGateHeader[gateReview._id] = {
+                reviewDate: gateReview.reviewDate,
+                title : gateReview.title,
+                overallComment : gateReview.overallComment
+            };
+            $scope.selectHeaderForm('edit', gateReview);
         };
 
         $scope.saveEditHeader = function(project, gate, gateReview){
@@ -318,9 +325,9 @@ angular.module('gate-reviews').controller('GateReviewsController', ['$rootScope'
                 function(res){
                     $scope.isResolving = false;
                     // Update details pane view with new saved details
-                    originalGateReview[gateReview._id].reviewDate = gateReview.reviewDate;
-                    originalGateReview[gateReview._id].title = gateReview.title;
-                    originalGateReview[gateReview._id].overallComment = gateReview.overallComment;
+                    originalGateHeader[gateReview._id].reviewDate = gateReview.reviewDate;
+                    originalGateHeader[gateReview._id].title = gateReview.title;
+                    originalGateHeader[gateReview._id].overallComment = gateReview.overallComment;
                     // Close edit header form and back to view
                     $scope.selectHeaderForm('view', gateReview);
                 },
@@ -333,9 +340,9 @@ angular.module('gate-reviews').controller('GateReviewsController', ['$rootScope'
 
         $scope.cancelEditHeader = function(gateReview){
             $scope.error = null;
-            gateReview.reviewDate = originalGateReview[gateReview._id].reviewDate;
-            gateReview.title = originalGateReview[gateReview._id].title;
-            gateReview.overallComment = originalGateReview[gateReview._id].overallComment;
+            gateReview.reviewDate = originalGateHeader[gateReview._id].reviewDate;
+            gateReview.title = originalGateHeader[gateReview._id].title;
+            gateReview.overallComment = originalGateHeader[gateReview._id].overallComment;
             $scope.selectHeaderForm('view', gateReview);
         };
 
@@ -349,11 +356,10 @@ angular.module('gate-reviews').controller('GateReviewsController', ['$rootScope'
                     projectGateId: gate._id,
                     gateReviewId: gateReview._id
                 }, gateReview, function(res){
-                $scope.isResolving = false;
-                gate.gateReviews = _.without(gate.gateReviews, gateReview);
-                $scope.cancelNewGateReview();
-                $scope.selectedGateReview = null;
-                originalGateReview = {};
+                    $scope.isResolving = false;
+                    gate.gateReviews = _.without(gate.gateReviews, gateReview);
+                    $scope.cancelNewGateReview();
+                    $scope.selectedGateReview = null;
             }, function(err){
                 $scope.isResolving = false;
                 $scope.error = err.data.message;
@@ -362,7 +368,14 @@ angular.module('gate-reviews').controller('GateReviewsController', ['$rootScope'
         
         // -------------------------------------------------------- STATUS -------------------------------------------------
 
+        var originalGateStatus = {};
+
         $scope.editStatus = function(gateReview){
+            originalGateStatus[gateReview._id] = {
+                newOverallScore : gateReview.gateStatusReview.newOverallScore,
+                newStatus : gateReview.gateStatusReview.newStatus,
+                newCompleted : gateReview.gateStatusReview.newCompleted
+            };
             $scope.selectStatusForm('edit', gateReview);
         };
 
@@ -377,9 +390,9 @@ angular.module('gate-reviews').controller('GateReviewsController', ['$rootScope'
                 }, gateReview,
                 function(res){
                     $scope.isResolving = false;
-                    originalGateReview[gateReview._id].gateStatusReview.newOverallScore = gateReview.gateStatusReview.newOverallScore;
-                    originalGateReview[gateReview._id].gateStatusReview.newStatus = gateReview.gateStatusReview.newStatus;
-                    originalGateReview[gateReview._id].gateStatusReview.newCompleted = gateReview.gateStatusReview.newCompleted;
+                    originalGateStatus[gateReview._id].newOverallScore = gateReview.gateStatusReview.newOverallScore;
+                    originalGateStatus[gateReview._id].newStatus = gateReview.gateStatusReview.newStatus;
+                    originalGateStatus[gateReview._id].newCompleted = gateReview.gateStatusReview.newCompleted;
                     $scope.selectStatusForm('view', gateReview);
                 },
                 function(err){
@@ -391,9 +404,9 @@ angular.module('gate-reviews').controller('GateReviewsController', ['$rootScope'
 
         $scope.cancelEditStatus = function(gateReview){
             $scope.error = null;
-            gateReview.gateStatusReview.newOverallScore = originalGateReview[gateReview._id].gateStatusReview.newOverallScore;
-            gateReview.gateStatusReview.newStatus = originalGateReview[gateReview._id].gateStatusReview.newStatus;
-            gateReview.gateStatusReview.newCompleted = originalGateReview[gateReview._id].gateStatusReview.newCompleted;
+            gateReview.gateStatusReview.newOverallScore = originalGateStatus[gateReview._id].newOverallScore;
+            gateReview.gateStatusReview.newStatus = originalGateStatus[gateReview._id].newStatus;
+            gateReview.gateStatusReview.newCompleted = originalGateStatus[gateReview._id].newCompleted;
             $scope.selectStatusForm('view', gateReview);
         };
 
@@ -401,7 +414,12 @@ angular.module('gate-reviews').controller('GateReviewsController', ['$rootScope'
 
         // -------------------------------------------------------- BUDGET -------------------------------------------------
 
+        var originalGateBudget = {};
+
         $scope.editBudget = function(gateReview){
+            originalGateBudget[gateReview._id] = {
+                newAmount : gateReview.budgetReview.newAmount
+            };
             $scope.selectBudgetForm('edit', gateReview);
         };
 
@@ -416,7 +434,7 @@ angular.module('gate-reviews').controller('GateReviewsController', ['$rootScope'
                 }, gateReview,
                 function(res){
                     $scope.isResolving = false;
-                    originalGateReview[gateReview._id].budgetReview.newAmount = gateReview.budgetReview.newAmount;
+                    originalGateBudget[gateReview._id].newAmount = gateReview.budgetReview.newAmount;
                     $scope.selectBudgetForm('view', gateReview);
                 },
                 function(err){
@@ -428,7 +446,7 @@ angular.module('gate-reviews').controller('GateReviewsController', ['$rootScope'
 
         $scope.cancelEditBudget = function(gateReview){
             $scope.error = null;
-            gateReview.budgetReview.newAmount = originalGateReview[gateReview._id].budgetReview.newAmount;
+            gateReview.budgetReview.newAmount = originalGateBudget[gateReview._id].newAmount;
             $scope.selectBudgetForm('view', gateReview);
         };
 
