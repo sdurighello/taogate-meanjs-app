@@ -710,7 +710,7 @@ var ProjectChangeRequestSchema = new Schema({
     state : {type: Schema.Types.ObjectId, default: null, ref: 'ChangeRequestState', $tenant:true},
     priority : {type: Schema.Types.ObjectId, default: null, ref: 'LogPriority', $tenant:true},
 
-    deliveryStatus : {
+    changeStatus : {
         currentRecord : statusReviewRecord,
         history : [statusReviewRecord]
     },

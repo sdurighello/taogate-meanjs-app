@@ -358,37 +358,6 @@ exports.updateGateBudgetReviewForCR = function(req, res){
 
 };
 
-// Outcomes
-
-exports.updateOutcomeReviewForCR = function(req, res){
-
-    var project = req.project ;
-
-    var editedGate = _.find(project.process.gates, function(gate){
-        return gate._id.equals(req.params.projectGateId);
-    });
-
-    var editedGateReview = editedGate.gateReviews.id(req.params.gateReviewId);
-    var editedOutcomeReview = editedGateReview.outcomeReviews.id(req.params.outcomeReviewId);
-
-    editedGateReview.user = req.user;
-    editedGateReview.created = Date.now();
-
-    editedOutcomeReview.newScore = req.body.newScore;
-    editedOutcomeReview.newComment = req.body.newComment;
-
-    project.save(function(err){
-        if (err) {
-            return res.status(400).send({
-                message: errorHandler.getErrorMessage(err)
-            });
-        } else {
-            res.jsonp(editedOutcomeReview);
-        }
-    });
-
-};
-
 // Performances
 
 var gateDateCheck = function(performanceName, performanceReviewsArray, editedPerformanceReview, newDate){

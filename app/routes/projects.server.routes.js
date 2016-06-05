@@ -210,11 +210,6 @@ module.exports = function(app) {
     app.route('/projects/:projectId/project-gates/:projectGateId/project-change-requests/:projectChangeRequestId/budget')
         .put(users.requiresLogin, projects.hasEditAuthorization, projects.isChangeRequestEditable, projects.updateGateBudgetReviewForCR);
 
-    // Change Requests - Outcomes
-
-    app.route('/projects/:projectId/project-gates/:projectGateId/project-change-requests/:projectChangeRequestId/outcome-reviews/:outcomeReviewId')
-        .put(users.requiresLogin, projects.hasEditAuthorization, projects.isChangeRequestEditable, projects.updateOutcomeReviewForCR);
-
     // Change Requests - Baseline
 
     app.route('/projects/:projectId/project-gates/:projectGateId/project-change-requests/:projectChangeRequestId/baseline-duration-reviews/:baselineDurationReviewId')
@@ -264,13 +259,24 @@ module.exports = function(app) {
     app.route('/projects/:projectId/project-gates/:projectGateId/project-status-updates/:projectStatusUpdateId/draft')
         .put(users.requiresLogin, projects.hasEditAuthorization, projects.draftStatusUpdate);
 
-    // Status Updates - Header, Delivery Status
+    // Status Updates - Header
 
     app.route('/projects/:projectId/project-gates/:projectGateId/project-status-updates/:projectStatusUpdateId/header')
         .put(users.requiresLogin, projects.hasEditAuthorization, projects.isStatusUpdateEditable, projects.updateStatusUpdateHeader);
 
-    app.route('/projects/:projectId/project-gates/:projectGateId/project-status-updates/:projectStatusUpdateId/deliveryStatus')
-        .put(users.requiresLogin, projects.hasEditAuthorization, projects.isStatusUpdateEditable, projects.updateDeliveryStatus);
+    // Status Updates - Delivery Status
+
+    app.route('/projects/:projectId/project-gates/:projectGateId/project-status-updates/:projectStatusUpdateId/overallDeliveryStatus')
+        .put(users.requiresLogin, projects.hasEditAuthorization, projects.isStatusUpdateEditable, projects.updateOverallDeliveryStatus);
+
+    app.route('/projects/:projectId/project-gates/:projectGateId/project-status-updates/:projectStatusUpdateId/durationDeliveryStatus')
+        .put(users.requiresLogin, projects.hasEditAuthorization, projects.isStatusUpdateEditable, projects.updateDurationDeliveryStatus);
+
+    app.route('/projects/:projectId/project-gates/:projectGateId/project-status-updates/:projectStatusUpdateId/costDeliveryStatus')
+        .put(users.requiresLogin, projects.hasEditAuthorization, projects.isStatusUpdateEditable, projects.updateCostDeliveryStatus);
+
+    app.route('/projects/:projectId/project-gates/:projectGateId/project-status-updates/:projectStatusUpdateId/completionDeliveryStatus')
+        .put(users.requiresLogin, projects.hasEditAuthorization, projects.isStatusUpdateEditable, projects.updateCompletionDeliveryStatus);
 
     // Status Updates - Log Status Areas
 

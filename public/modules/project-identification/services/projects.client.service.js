@@ -127,7 +127,6 @@ angular.module('project-identification').factory('Projects', ['$resource',
                 url: 'projects/:projectId/draftProcess'
             },
 
-
             // ----------------- GATE REVIEWS ---------------------
 
             createGateReview: {
@@ -141,8 +140,8 @@ angular.module('project-identification').factory('Projects', ['$resource',
                 url: 'projects/:projectId/project-gates/:projectGateId/gate-reviews/:gateReviewId/delete'
                 // req.body: {gate review object}
             },
-            
-            // --- Header & Status --
+
+            // --- Header & Status & Budget--
 
             updateGateReviewHeader: {
                 method: 'PUT',
@@ -246,6 +245,191 @@ angular.module('project-identification').factory('Projects', ['$resource',
                 method: 'PUT',
                 url: 'projects/:projectId/project-gates/:projectGateId/gate-reviews/:gateReviewId/draft'
                 // req.body: {whole gate review object}
+            },
+
+            // ----------------- PROJECT CHANGE REQUESTS ---------------------
+
+            createChangeRequest: {
+                method: 'PUT',
+                url: 'projects/:projectId/project-gates/:projectGateId/createChangeRequest'
+                // req.body: {gate review object}
+            },
+
+            deleteChangeRequest: {
+                method: 'PUT',
+                url: 'projects/:projectId/project-gates/:projectGateId/project-change-requests/:projectChangeRequestId/delete'
+                // req.body: {gate review object}
+            },
+
+            // --- Header & Status --
+
+            updateChangeRequestHeader: {
+                method: 'PUT',
+                url: 'projects/:projectId/project-gates/:projectGateId/project-change-requests/:projectChangeRequestId/header'
+                // req.body: {whole gate review object}
+            },
+            updateChangeRequestStatus: {
+                method: 'PUT',
+                url: 'projects/:projectId/project-gates/:projectGateId/project-change-requests/:projectChangeRequestId/status'
+                // req.body: {whole gate review object}
+            },
+            
+            // --- Budget ---
+
+            updateGateBudgetReviewForCR: {
+                method: 'PUT',
+                url: 'projects/:projectId/project-gates/:projectGateId/project-change-requests/:projectChangeRequestId/budget'
+                // req.body: {whole gate review object}
+            },
+
+            // --- Actuals --
+
+            updateActualCompletionReviewForCR: {
+                method: 'PUT',
+                url: 'projects/:projectId/project-gates/:projectGateId/project-change-requests/:projectChangeRequestId/actual-completion-reviews/:actualCompletionReviewId'
+                // req.body: {actual-completion-review object}
+            },
+            updateActualCostReviewForCR: {
+                method: 'PUT',
+                url: 'projects/:projectId/project-gates/:projectGateId/project-change-requests/:projectChangeRequestId/actual-cost-reviews/:actualCostReviewId'
+                // req.body: {actual-cost-review object}
+            },
+            updateActualDurationReviewForCR: {
+                method: 'PUT',
+                url: 'projects/:projectId/project-gates/:projectGateId/project-change-requests/:projectChangeRequestId/actual-duration-reviews/:actualDurationReviewId'
+                // req.body: {actual-duration-review object}
+            },
+            
+            // --- Baseline --
+
+            updateBaselineCompletionReviewForCR: {
+                method: 'PUT',
+                url: 'projects/:projectId/project-gates/:projectGateId/project-change-requests/:projectChangeRequestId/baseline-completion-reviews/:baselineCompletionReviewId'
+                // req.body: {baseline-completion-review object}
+            },
+            updateBaselineCostReviewForCR: {
+                method: 'PUT',
+                url: 'projects/:projectId/project-gates/:projectGateId/project-change-requests/:projectChangeRequestId/baseline-cost-reviews/:baselineCostReviewId'
+                // req.body: {baseline-cost-review object}
+            },
+            updateBaselineDurationReviewForCR: {
+                method: 'PUT',
+                url: 'projects/:projectId/project-gates/:projectGateId/project-change-requests/:projectChangeRequestId/baseline-duration-reviews/:baselineDurationReviewId'
+                // req.body: {baselineDurationReview object}
+            },
+
+            // --- Approval --
+
+            submitChangeRequest: {
+                method: 'PUT',
+                url: 'projects/:projectId/project-gates/:projectGateId/project-change-requests/:projectChangeRequestId/submit'
+            },
+
+            approveChangeRequest: {
+                method: 'PUT',
+                url: 'projects/:projectId/project-gates/:projectGateId/project-change-requests/:projectChangeRequestId/approve'
+            },
+
+            rejectChangeRequest: {
+                method: 'PUT',
+                url: 'projects/:projectId/project-gates/:projectGateId/project-change-requests/:projectChangeRequestId/reject'
+            },
+
+            draftChangeRequest: {
+                method: 'PUT',
+                url: 'projects/:projectId/project-gates/:projectGateId/project-change-requests/:projectChangeRequestId/draft'
+            },
+
+            // ----------------- PROJECT STATUS UPDATES ---------------------
+
+            createStatusUpdate: {
+                method: 'PUT',
+                url: 'projects/:projectId/project-gates/:projectGateId/createStatusUpdate'
+            },
+
+            deleteStatusUpdate: {
+                method: 'PUT',
+                url: 'projects/:projectId/project-gates/:projectGateId/project-status-updates/:projectStatusUpdateId/delete'
+            },
+
+            // --- Header ---
+
+            updateStatusUpdateHeader: {
+                method: 'PUT',
+                url: 'projects/:projectId/project-gates/:projectGateId/project-status-updates/:projectStatusUpdateId/header'
+            },
+            
+            // --- Overall Delivery Status ---
+            
+            updateOverallDeliveryStatus: {
+                method: 'PUT',
+                url: 'projects/:projectId/project-gates/:projectGateId/project-status-updates/:projectStatusUpdateId/overallDeliveryStatus'
+            },
+
+            updateDurationDeliveryStatus: {
+                method: 'PUT',
+                url: 'projects/:projectId/project-gates/:projectGateId/project-status-updates/:projectStatusUpdateId/durationDeliveryStatus'
+            },
+
+            updateCostDeliveryStatus: {
+                method: 'PUT',
+                url: 'projects/:projectId/project-gates/:projectGateId/project-status-updates/:projectStatusUpdateId/costDeliveryStatus'
+            },
+
+            updateCompletionDeliveryStatus: {
+                method: 'PUT',
+                url: 'projects/:projectId/project-gates/:projectGateId/project-status-updates/:projectStatusUpdateId/completionDeliveryStatus'
+            },
+            
+            // --- Log status area
+
+            updateStatusAreaReview: {
+                method: 'PUT',
+                url: 'projects/:projectId/project-gates/:projectGateId/project-status-updates/:projectStatusUpdateId/status-area-reviews/:statusAreaReviewId'
+            },
+
+            // --- Outcomes --
+
+            updateOutcomeReviewForSU: {
+                method: 'PUT',
+                url: 'projects/:projectId/project-gates/:projectGateId/project-status-updates/:projectStatusUpdateId/outcome-reviews/:outcomeReviewId'
+            },
+
+            // --- Estimates --
+
+            updateEstimateCompletionReviewForSU: {
+                method: 'PUT',
+                url: 'projects/:projectId/project-gates/:projectGateId/project-status-updates/:projectStatusUpdateId/estimate-completion-reviews/:estimateCompletionReviewId'
+            },
+            updateEstimateCostReviewForSU: {
+                method: 'PUT',
+                url: 'projects/:projectId/project-gates/:projectGateId/project-status-updates/:projectStatusUpdateId/estimate-cost-reviews/:estimateCostReviewId'
+            },
+            updateEstimateDurationReviewForSU: {
+                method: 'PUT',
+                url: 'projects/:projectId/project-gates/:projectGateId/project-status-updates/:projectStatusUpdateId/estimate-duration-reviews/:estimateDurationReviewId'
+            },
+
+            // --- Approval --
+
+            submitStatusUpdate: {
+                method: 'PUT',
+                url: 'projects/:projectId/project-gates/:projectGateId/project-status-updates/:projectStatusUpdateId/submit'
+            },
+
+            approveStatusUpdate: {
+                method: 'PUT',
+                url: 'projects/:projectId/project-gates/:projectGateId/project-status-updates/:projectStatusUpdateId/approve'
+            },
+
+            rejectStatusUpdate: {
+                method: 'PUT',
+                url: 'projects/:projectId/project-gates/:projectGateId/project-status-updates/:projectStatusUpdateId/reject'
+            },
+
+            draftStatusUpdate: {
+                method: 'PUT',
+                url: 'projects/:projectId/project-gates/:projectGateId/project-status-updates/:projectStatusUpdateId/draft'
             }
             
             

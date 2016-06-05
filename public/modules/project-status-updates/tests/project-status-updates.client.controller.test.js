@@ -2,9 +2,9 @@
 
 (function() {
 	// Project status management Controller Spec
-	describe('Project status management Controller Tests', function() {
+	describe('Project status updates Controller Tests', function() {
 		// Initialize global variables
-		var ProjectStatusManagementController,
+		var ProjectStatusUpdatesController,
 			scope,
 			$httpBackend,
 			$stateParams,
@@ -45,7 +45,7 @@
 			$location = _$location_;
 
 			// Initialize the Project status management controller.
-			ProjectStatusManagementController = $controller('ProjectStatusManagementController', {
+			ProjectStatusUpdatesController = $controller('ProjectStatusUpdatesController', {
 				$scope: scope
 			});
 		}));

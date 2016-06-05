@@ -1,16 +1,16 @@
-<section data-ng-controller="GateReviewsController"  data-ng-init="init()">
-    <br>
-    <div class="row">
-        <div class="col-sm-12">
-            <div class="panel-heading">
-                <ol class="breadcrumb">
-                    <li>Portfolio delivery</li>
-                    <li>Gate management</li>
-                    <li class="active">Gate reviews</li>
-                </ol>
-            </div>
-        </div>
-    </div>
+<section data-ng-controller="ProjectStatusUpdatesController"  data-ng-init="init()">
+	<br>
+	<div class="row">
+		<div class="col-sm-12">
+			<div class="panel-heading">
+				<ol class="breadcrumb">
+					<li>Portfolio delivery</li>
+					<li>Status</li>
+					<li class="active">Project status update</li>
+				</ol>
+			</div>
+		</div>
+	</div>
     <div data-ng-show="initError" class="text-danger">
         <strong data-ng-repeat="item in initError" data-ng-bind="item.data.message"></strong>
     </div>
@@ -43,7 +43,7 @@
                                             data-ng-class="{'active' : gate === selectedGate}" style="margin-bottom: 2px">
                                             <div class="nav-wedge" data-ng-hide="$index === 0"></div>
                                             <a class="btn-link" data-ng-click="selectGate(gate)"
-                                                    data-ng-disabled="isResolving">
+                                               data-ng-disabled="isResolving">
                                                 {{gate.name}}
                                             </a>
                                             <div class="nav-arrow" data-ng-hide="$index === selectedProject.process.gates.length-1"></div>
@@ -69,9 +69,9 @@
                                                                data-ng-model="selectedGate.name" disabled>
                                                     </div>
                                                     <div class="form-group-sm col-md-4">
-                                                        <label for="">Review date</label>
+                                                        <label for="">Update date</label>
                                                         <div class="input-group">
-                                                            <input type="text" id="" class="form-control" datepicker-popup="dd-MMMM-yyyy" data-ng-model="newDocument.reviewDate"
+                                                            <input type="text" id="" class="form-control" datepicker-popup="dd-MMMM-yyyy" data-ng-model="newDocument.updateDate"
                                                                    is-open="newHeaderDateOpened[selectedGate._id]" >
                                                                 <span class="input-group-btn">
                                                                     <button type="button" class="btn btn-default btn-sm" ng-click="openNewHeaderDate(selectedGate, $event)"><i class="glyphicon glyphicon-calendar"></i></button>
@@ -79,8 +79,8 @@
                                                         </div>
                                                     </div>
                                                     <div class="form-group-sm col-md-4">
-                                                        <label for="reviewTitleNew">Review title</label>
-                                                        <input id="reviewTitleNew" name="reviewTitleNew" class="form-control" type="text" placeholder="Enter review title"
+                                                        <label for="reviewTitleNew">Update title</label>
+                                                        <input id="reviewTitleNew" name="reviewTitleNew" class="form-control" type="text" placeholder="Enter title"
                                                                data-ng-model="newDocument.title" >
                                                     </div>
                                                 </div>
@@ -99,44 +99,44 @@
                                 </div>
                             </div>
                             <div data-ng-show="!selectedGate" class="alert alert-warning text-center">
-                                <span>Select a gate to see its gate reviews</span>
+                                <span>Select a gate to see its status updates</span>
                             </div>
                             <div class="row" data-ng-show="selectedGate && !showNewDocumentForm">
                                 <div class="col-md-3">
                                     <div class="panel panel-default">
                                         <div class="panel-heading">
-                                            <h6 class="panel-title text-center">Gate reviews</h6>
+                                            <h6 class="panel-title text-center">Status updates</h6>
                                         </div>
                                         <div class="panel-body" style="min-height: 410px;">
                                             <div class="row">
                                                 <div class="col-md-12 text-center">
                                                     <button class="btn btn-xs btn-success" data-ng-click="showNewDocumentForm = true"
                                                             data-ng-show="userHasAuthorization('edit', user, selectedProject)">
-                                                        New gate review
+                                                        New update
                                                     </button>
                                                 </div>
                                             </div>
                                             <hr style="margin: 10px">
                                             <div class="row" style="min-height: 335px; max-height: 335px; overflow-y: auto">
-                                                <div class="col-md-12" data-ng-show="selectedGate.gateReviews.length === 0">
+                                                <div class="col-md-12" data-ng-show="selectedGate.projectStatusUpdates.length === 0">
                                                     <div class="alert alert-warning text-center">
-                                                        There are no gate reviews for this gate
+                                                        There are no status updates for this gate
                                                     </div>
                                                 </div>
                                                 <div class="col-md-12">
                                                     <button type="button"
-                                                            data-ng-repeat="gateReview in selectedGate.gateReviews | orderBy: sortGateReviews : true"
-                                                            data-ng-click="selectDocument(gateReview)"
+                                                            data-ng-repeat="statusUpdate in selectedGate.projectStatusUpdates | orderBy: sortChangeRequests : true"
+                                                            data-ng-click="selectDocument(statusUpdate)"
                                                             class="btn btn-sm center-block btn-block" style="overflow: hidden;"
                                                             data-ng-class="{
-                                                            'btn-info' : gateReview.approval.currentRecord.approvalState === 'draft',
-                                                            'btn-warning' : gateReview.approval.currentRecord.approvalState === 'submitted',
-                                                            'btn-success' : gateReview.approval.currentRecord.approvalState === 'approved',
-                                                            'btn-danger' : gateReview.approval.currentRecord.approvalState === 'rejected'}"
+                                                            'btn-info' : statusUpdate.approval.currentRecord.approvalState === 'draft',
+                                                            'btn-warning' : statusUpdate.approval.currentRecord.approvalState === 'submitted',
+                                                            'btn-success' : statusUpdate.approval.currentRecord.approvalState === 'approved',
+                                                            'btn-danger' : statusUpdate.approval.currentRecord.approvalState === 'rejected'}"
                                                             data-ng-disabled="isResolving">
-                                                        <span class="small">{{gateReview.title}}</span>
+                                                        <span class="small">{{statusUpdate.title}}</span>
                                                         <br>
-                                                        <span class="small">{{gateReview.reviewDate | date:'EEE d, MMM yyyy'}}</span>
+                                                        <span class="small">{{statusUpdate.updateDate | date:'EEE d, MMM yyyy'}}</span>
                                                     </button>
                                                 </div>
                                             </div>
@@ -144,7 +144,7 @@
                                     </div>
                                 </div>
                                 <div class="col-md-9">
-                                    <div data-ng-hide="selectedDocument || selectedGate.gateReviews.length === 0" class="alert alert-warning text-center">
+                                    <div data-ng-hide="selectedDocument || selectedGate.projectStatusUpdates.length === 0" class="alert alert-warning text-center">
                                         Select a gate review to see its details
                                     </div>
                                     <div class="panel panel-default" data-ng-show="selectedDocument">
@@ -184,20 +184,20 @@
                                                     <form data-ng-switch-default="view">
                                                         <div class="row">
                                                             <div class="form-group-sm col-md-6">
-                                                                <label for="">Review date</label>
-                                                                <input type="text" id="" class="form-control" datepicker-popup="dd-MMMM-yyyy" data-ng-model="selectedDocument.reviewDate" disabled />
+                                                                <label for="">Date</label>
+                                                                <input type="text" id="" class="form-control" datepicker-popup="dd-MMMM-yyyy" data-ng-model="selectedDocument.updateDate" disabled />
                                                             </div>
                                                             <div class="form-group-sm col-md-6">
-                                                                <label for="reviewTitleEdit">Review title</label>
-                                                                <input id="reviewTitleEdit" name="reviewTitleNew" class="form-control" type="text" placeholder="Enter review title"
+                                                                <label for="reviewTitleEdit">Title</label>
+                                                                <input id="reviewTitleEdit" name="reviewTitleNew" class="form-control" type="text" placeholder="Enter title"
                                                                        data-ng-model="selectedDocument.title" disabled>
                                                             </div>
                                                         </div>
                                                         <br>
                                                         <div class="row">
                                                             <div class="form-group-sm col-md-12">
-                                                                <label for="">Review comment</label>
-                                                                <textarea id="" class="form-control" placeholder="Enter comment" data-ng-model="selectedDocument.overallComment" disabled></textarea>
+                                                                <label for="">Description</label>
+                                                                <textarea id="" class="form-control" placeholder="Enter description" data-ng-model="selectedDocument.description" disabled></textarea>
                                                             </div>
                                                         </div>
                                                         <hr>
@@ -210,9 +210,9 @@
                                                     <form data-ng-switch-when="edit">
                                                         <div class="row">
                                                             <div class="form-group-sm col-md-6">
-                                                                <label for="">Review date</label>
+                                                                <label for="">Date</label>
                                                                 <div class="input-group">
-                                                                    <input type="text" id="" class="form-control" datepicker-popup="dd-MMMM-yyyy" data-ng-model="selectedDocument.reviewDate"
+                                                                    <input type="text" id="" class="form-control" datepicker-popup="dd-MMMM-yyyy" data-ng-model="selectedDocument.updateDate"
                                                                            is-open="$parent.headerDateOpened[selectedDocument._id]" >
                                                                 <span class="input-group-btn">
                                                                     <button type="button" class="btn btn-default btn-sm" ng-click="openHeaderDate(selectedDocument, $event)"><i class="glyphicon glyphicon-calendar"></i></button>
@@ -220,16 +220,16 @@
                                                                 </div>
                                                             </div>
                                                             <div class="form-group-sm col-md-6">
-                                                                <label for="reviewTitleEdit">Review title</label>
-                                                                <input id="reviewTitleEdit" name="reviewTitleNew" class="form-control" type="text" placeholder="Enter review title"
+                                                                <label for="reviewTitleEdit">Title</label>
+                                                                <input id="reviewTitleEdit" name="reviewTitleNew" class="form-control" type="text" placeholder="Enter title"
                                                                        data-ng-model="selectedDocument.title" >
                                                             </div>
                                                         </div>
                                                         <br>
                                                         <div class="row">
                                                             <div class="form-group-sm col-md-12">
-                                                                <label for="">Review comment</label>
-                                                                <textarea id="" class="form-control" placeholder="Enter comment" data-ng-model="selectedDocument.overallComment"></textarea>
+                                                                <label for="">Description</label>
+                                                                <textarea id="" class="form-control" placeholder="Enter description" data-ng-model="selectedDocument.description"></textarea>
                                                             </div>
                                                         </div>
                                                         <hr>
@@ -238,7 +238,7 @@
                                                                 Save
                                                             </button>
                                                             <button class="btn btn-danger btn-xs" data-ng-click="deleteDocument(selectedProject, selectedGate, selectedDocument)" data-ng-disabled="isResolving">
-                                                                Delete gate review
+                                                                Delete status update
                                                             </button>
                                                             <button class="btn btn-info btn-xs" data-ng-click="cancelEditHeader(selectedDocument)" data-ng-disabled="isResolving">
                                                                 Cancel
@@ -537,66 +537,6 @@
                                                 </table>
                                                 <table class="table small">
                                                     <caption>
-                                                        Estimate duration
-                                                    </caption>
-                                                    <tr>
-                                                        <th>Target gate</th>
-                                                        <th>Current date</th>
-                                                        <th colspan="2">New date</th>
-                                                        <th>Change</th>
-                                                    </tr>
-                                                    <tr data-ng-repeat="estimateDurationReview in selectedDocument.performances.duration.estimateDurationReviews | orderBy: 'estimateDuration.targetGate.position'">
-                                                        <td>
-                                                            <span data-ng-bind="estimateDurationReview.estimateDuration.targetGate.name"></span>
-                                                        </td>
-                                                        <td>
-                                                            <span data-ng-show="!estimateDurationReview.estimateDuration.currentRecord.gateDate">No estimate yet</span>
-                                                            <span data-ng-bind="estimateDurationReview.estimateDuration.currentRecord.gateDate | date:'EEE d, MMM yyyy'"></span>
-                                                        </td>
-                                                        <td colspan="2">
-                                                            <div data-ng-switch="switchEstimateDurationForm[estimateDurationReview._id]">
-                                                                <div data-ng-switch-default="view">
-                                                                    <span data-ng-show="!estimateDurationReview.newDate">No new estimate yet</span>
-                                                                    <span data-ng-bind="estimateDurationReview.newDate | date:'EEE d, MMM yyyy'"></span>
-                                                                    <button class="btn btn-success btn-xs"
-                                                                            data-ng-show="userHasAuthorization('edit', user, selectedProject) &&
-                                                                            (selectedDocument.approval.currentRecord.approvalState === 'draft')"
-                                                                            data-ng-click="editEstimateDuration(estimateDurationReview)">
-                                                                        <span class="glyphicon glyphicon-pencil"></span>
-                                                                    </button>
-                                                                </div>
-                                                                <div data-ng-switch-when="edit">
-                                                                    <div class="input-group input-group-sm">
-                                                                        <input type="text" id="" class="form-control" datepicker-popup="dd-MMMM-yyyy" data-ng-model="estimateDurationReview.newDate"
-                                                                               is-open="$parent.estimateDurationDateOpened[estimateDurationReview._id]"/>
-                                                                    <span class="input-group-btn">
-                                                                        <button type="button" class="btn btn-default" data-ng-click="openEstimateDurationDate(estimateDurationReview, $event)"><i class="glyphicon glyphicon-calendar"></i></button>
-                                                                    </span>
-                                                                    </div>
-                                                                    <br>
-                                                                    <button class="btn btn-success btn-xs" data-ng-click="saveEditEstimateDuration(selectedProject, selectedGate, selectedDocument, estimateDurationReview)"
-                                                                            data-ng-disabled="isResolving">
-                                                                        <span class="glyphicon glyphicon-ok"></span>
-                                                                    </button>
-                                                                    <button class="btn btn-info btn-xs" data-ng-click="cancelEditEstimateDuration(estimateDurationReview)"
-                                                                            data-ng-disabled="isResolving">
-                                                                        <span class="glyphicon glyphicon-remove"></span>
-                                                                    </button>
-                                                                </div>
-                                                            </div>
-                                                        </td>
-                                                        <td>
-                                                            <span data-ng-show="estimateDurationReview.estimateDuration.currentRecord.gateDate && estimateDurationReview.newDate">
-                                                                {{getDaysChange(estimateDurationReview.estimateDuration.currentRecord.gateDate, estimateDurationReview.newDate) | number:0}} d
-                                                            </span>
-                                                            <span data-ng-show="!estimateDurationReview.estimateDuration.currentRecord.gateDate && estimateDurationReview.newDate" class="text-center">
-                                                                -
-                                                            </span>
-                                                        </td>
-                                                    </tr>
-                                                </table>
-                                                <table class="table small">
-                                                    <caption>
                                                         Actual duration
                                                     </caption>
                                                     <tr>
@@ -767,62 +707,6 @@
                                                 </table>
                                                 <table class="table small">
                                                     <caption>
-                                                        Estimate cost
-                                                    </caption>
-                                                    <tr>
-                                                        <th>Target gate</th>
-                                                        <th>Current cost</th>
-                                                        <th colspan="2">New cost</th>
-                                                        <th>Change</th>
-                                                    </tr>
-                                                    <tr data-ng-repeat="estimateCostReview in selectedDocument.performances.cost.estimateCostReviews | orderBy: 'estimateCost.targetGate.position'">
-                                                        <td>
-                                                            <span data-ng-bind="estimateCostReview.estimateCost.targetGate.name"></span>
-                                                        </td>
-                                                        <td>
-                                                            <span data-ng-show="!estimateCostReview.estimateCost.currentRecord.cost">No estimate yet</span>
-                                                            <span data-ng-bind="estimateCostReview.estimateCost.currentRecord.cost"></span>
-                                                        </td>
-                                                        <td colspan="2">
-                                                            <div data-ng-switch="switchEstimateCostForm[estimateCostReview._id]">
-                                                                <div data-ng-switch-default="view">
-                                                                    <span data-ng-show="!estimateCostReview.newCost">No new estimate yet</span>
-                                                                    <span data-ng-bind="estimateCostReview.newCost"></span>
-                                                                    <button class="btn btn-success btn-xs"
-                                                                            data-ng-show="userHasAuthorization('edit', user, selectedProject) &&
-                                                                            (selectedDocument.approval.currentRecord.approvalState === 'draft')"
-                                                                            data-ng-click="editEstimateCost(estimateCostReview)">
-                                                                        <span class="glyphicon glyphicon-pencil"></span>
-                                                                    </button>
-                                                                </div>
-                                                                <div data-ng-switch-when="edit">
-                                                                    <div class="input-group input-group-sm">
-                                                                        <input type="number" min="0" id="" class="form-control" data-ng-model="estimateCostReview.newCost">
-                                                                    </div>
-                                                                    <br>
-                                                                    <button class="btn btn-success btn-xs" data-ng-click="saveEditEstimateCost(selectedProject, selectedGate, selectedDocument, estimateCostReview)"
-                                                                            data-ng-disabled="isResolving">
-                                                                        <span class="glyphicon glyphicon-ok"></span>
-                                                                    </button>
-                                                                    <button class="btn btn-info btn-xs" data-ng-click="cancelEditEstimateCost(estimateCostReview)"
-                                                                            data-ng-disabled="isResolving">
-                                                                        <span class="glyphicon glyphicon-remove"></span>
-                                                                    </button>
-                                                                </div>
-                                                            </div>
-                                                        </td>
-                                                        <td>
-                                                            <span data-ng-show="estimateCostReview.estimateCost.currentRecord.cost && estimateCostReview.newCost">
-                                                                {{(estimateCostReview.newCost - estimateCostReview.estimateCost.currentRecord.cost) | number:0}}
-                                                            </span>
-                                                            <span data-ng-show="!estimateCostReview.estimateCost.currentRecord.cost && estimateCostReview.newCost" class="text-center">
-                                                                -
-                                                            </span>
-                                                        </td>
-                                                    </tr>
-                                                </table>
-                                                <table class="table small">
-                                                    <caption>
                                                         Actual cost
                                                     </caption>
                                                     <tr>
@@ -930,62 +814,6 @@
                                                                 {{(baselineCompletionReview.newCompletion - baselineCompletionReview.baselineCompletion.currentRecord.completion) | number:0}}
                                                             </span>
                                                             <span data-ng-show="!baselineCompletionReview.baselineCompletion.currentRecord.completion && baselineCompletionReview.newCompletion" class="text-center">
-                                                                -
-                                                            </span>
-                                                        </td>
-                                                    </tr>
-                                                </table>
-                                                <table class="table small">
-                                                    <caption>
-                                                        Estimate completion
-                                                    </caption>
-                                                    <tr>
-                                                        <th>Target gate</th>
-                                                        <th>Current completion</th>
-                                                        <th colspan="2">New completion</th>
-                                                        <th>Change</th>
-                                                    </tr>
-                                                    <tr data-ng-repeat="estimateCompletionReview in selectedDocument.performances.completion.estimateCompletionReviews | orderBy: 'estimateCompletion.targetGate.position'">
-                                                        <td>
-                                                            <span data-ng-bind="estimateCompletionReview.estimateCompletion.targetGate.name"></span>
-                                                        </td>
-                                                        <td>
-                                                            <span data-ng-show="!estimateCompletionReview.estimateCompletion.currentRecord.completion">No estimate yet</span>
-                                                            <span data-ng-bind="estimateCompletionReview.estimateCompletion.currentRecord.completion"></span>
-                                                        </td>
-                                                        <td colspan="2">
-                                                            <div data-ng-switch="switchEstimateCompletionForm[estimateCompletionReview._id]">
-                                                                <div data-ng-switch-default="view">
-                                                                    <span data-ng-show="!estimateCompletionReview.newCompletion">No new estimate yet</span>
-                                                                    <span data-ng-bind="estimateCompletionReview.newCompletion"></span>
-                                                                    <button class="btn btn-success btn-xs"
-                                                                            data-ng-show="userHasAuthorization('edit', user, selectedProject) &&
-                                                                            (selectedDocument.approval.currentRecord.approvalState === 'draft')"
-                                                                            data-ng-click="editEstimateCompletion(estimateCompletionReview)">
-                                                                        <span class="glyphicon glyphicon-pencil"></span>
-                                                                    </button>
-                                                                </div>
-                                                                <div data-ng-switch-when="edit">
-                                                                    <div class="input-group input-group-sm">
-                                                                        <input type="number" min="0" id="" class="form-control" data-ng-model="estimateCompletionReview.newCompletion">
-                                                                    </div>
-                                                                    <br>
-                                                                    <button class="btn btn-success btn-xs" data-ng-click="saveEditEstimateCompletion(selectedProject, selectedGate, selectedDocument, estimateCompletionReview)"
-                                                                            data-ng-disabled="isResolving">
-                                                                        <span class="glyphicon glyphicon-ok"></span>
-                                                                    </button>
-                                                                    <button class="btn btn-info btn-xs" data-ng-click="cancelEditEstimateCompletion(estimateCompletionReview)"
-                                                                            data-ng-disabled="isResolving">
-                                                                        <span class="glyphicon glyphicon-remove"></span>
-                                                                    </button>
-                                                                </div>
-                                                            </div>
-                                                        </td>
-                                                        <td>
-                                                            <span data-ng-show="estimateCompletionReview.estimateCompletion.currentRecord.completion && estimateCompletionReview.newCompletion">
-                                                                {{(estimateCompletionReview.newCompletion - estimateCompletionReview.estimateCompletion.currentRecord.completion) | number:0}}
-                                                            </span>
-                                                            <span data-ng-show="!estimateCompletionReview.estimateCompletion.currentRecord.completion && estimateCompletionReview.newCompletion" class="text-center">
                                                                 -
                                                             </span>
                                                         </td>
