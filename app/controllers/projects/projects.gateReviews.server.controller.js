@@ -31,13 +31,25 @@ exports.createGateReview = function(req, res){
             gateState :{
                 currentRecord:{
                     completed: editedGate.gateState.currentRecord.completed,
-                    state : editedGate.gateState.currentRecord.state,
-                    overallScore : editedGate.gateState.currentRecord.overallScore
+                    state : {
+                        _id : editedGate.gateState.currentRecord.state._id,
+                        name: editedGate.gateState.currentRecord.state.name
+                    },
+                    overallScore : {
+                        _id : editedGate.gateState.currentRecord.overallScore._id,
+                        name: editedGate.gateState.currentRecord.overallScore.name
+                    }
                 }
             },
             newCompleted: editedGate.gateState.currentRecord.completed,
-            newState : editedGate.gateState.currentRecord.state,
-            newOverallScore : editedGate.gateState.currentRecord.overallScore
+            newState : {
+                _id : editedGate.gateState.currentRecord.state._id,
+                name : editedGate.gateState.currentRecord.state.name
+            },
+            newOverallScore : {
+                _id : editedGate.gateState.currentRecord.overallScore._id,
+                name : editedGate.gateState.currentRecord.overallScore.name
+            }
         },
 
         budgetReview : {
@@ -73,12 +85,18 @@ exports.createGateReview = function(req, res){
                 name: outcome.name,
                 score: {
                     currentRecord: {
-                        score: outcome.score.currentRecord.score,
+                        score: {
+                            _id : outcome.score.currentRecord.score._id,
+                            name : outcome.score.currentRecord.score.name
+                        },
                         comment :outcome.score.currentRecord.comment
                     }
                 }
             },
-            newScore:  outcome.score.currentRecord.score,
+            newScore:  {
+                _id : outcome.score.currentRecord.score._id,
+                name : outcome.score.currentRecord.score.name
+            },
             newComment:  outcome.score.currentRecord.comment
         });
     });

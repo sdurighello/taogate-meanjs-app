@@ -2,7 +2,7 @@
     <br>
     <div class="row">
         <div class="col-sm-12">
-            <div class="panel-heading">
+            <div class="panel-heading" style="padding: 0">
                 <ol class="breadcrumb">
                     <li>Portfolio delivery</li>
                     <li>Change Requests</li>
@@ -18,10 +18,10 @@
         <strong data-ng-bind="parentCtrl.error"></strong>
     </div>
     <div class="row">
-        <div class="col-sm-3"><!-- PORTFOLIO LIST -->
+        <div class="col-sm-3" style="padding-right: 5px;"><!-- PORTFOLIO LIST -->
             <portfolio-tree portfolios="parentCtrl.portfolios" portfolio-trees="parentCtrl.portfolioTrees" select-portfolio="parentCtrl.selectPortfolio" is-resolving="parentCtrl.isResolving"></portfolio-tree>
         </div>
-        <div class="col-md-9">
+        <div class="col-md-9" style="padding-left: 5px;">
             <div class="row" data-ng-hide="parentCtrl.selectedPortfolio || parentCtrl.portfolios.length === 0" >
                 <div class="col-md-12">
                     <div class="alert alert-warning text-center">
@@ -83,7 +83,7 @@
                                 </div>
                             </div>
                             <div class="row" data-ng-show="!parentCtrl.showNewPortfolioChangeRequestForm && parentCtrl.selectedPortfolio">
-                                <div class="col-md-3">
+                                <div class="col-md-3" style="padding-left: 10px; padding-right: 5px;">
                                     <div class="panel panel-default">
                                         <div class="panel-heading">
                                             <h6 class="panel-title text-center">Changes</h6>
@@ -124,7 +124,7 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div class="col-md-9">
+                                <div class="col-md-9" style="padding-left: 5px; padding-right: 10px;">
                                     <div data-ng-hide="parentCtrl.selectedPortfolioChangeRequest || parentCtrl.portfolioChangeRequests.length === 0" class="alert alert-warning text-center">
                                         Select a change request to see its details
                                     </div>

@@ -31,34 +31,66 @@ exports.createStatusUpdate = function(req, res){
         deliveryStatus : {
             overallStatusReview : {
                 currentRecord: {
-                    status: editedGate.deliveryStatus.overallStatus.currentRecord.status,
+                    status: {
+                        _id : editedGate.deliveryStatus.overallStatus.currentRecord.status._id,
+                        name : editedGate.deliveryStatus.overallStatus.currentRecord.status.name,
+                        color : editedGate.deliveryStatus.overallStatus.currentRecord.status.color
+                    },
                     comment : editedGate.deliveryStatus.overallStatus.currentRecord.comment
                 },
-                newStatus: editedGate.deliveryStatus.overallStatus.currentRecord.status,
+                newStatus: {
+                    _id : editedGate.deliveryStatus.overallStatus.currentRecord.status._id,
+                    name : editedGate.deliveryStatus.overallStatus.currentRecord.status.name,
+                    color : editedGate.deliveryStatus.overallStatus.currentRecord.status.color
+                },
                 newComment : editedGate.deliveryStatus.overallStatus.currentRecord.comment
             },
             durationStatusReview : {
                 currentRecord: {
-                    status: editedGate.deliveryStatus.durationStatus.currentRecord.status,
+                    status: {
+                        _id : editedGate.deliveryStatus.durationStatus.currentRecord.status._id,
+                        name : editedGate.deliveryStatus.durationStatus.currentRecord.status.name,
+                        color : editedGate.deliveryStatus.durationStatus.currentRecord.status.color
+                    },
                     comment : editedGate.deliveryStatus.durationStatus.currentRecord.comment
                 },
-                newStatus: editedGate.deliveryStatus.durationStatus.currentRecord.status,
+                newStatus: {
+                    _id : editedGate.deliveryStatus.durationStatus.currentRecord.status._id,
+                    name : editedGate.deliveryStatus.durationStatus.currentRecord.status.name,
+                    color : editedGate.deliveryStatus.durationStatus.currentRecord.status.color
+                },
                 newComment : editedGate.deliveryStatus.durationStatus.currentRecord.comment
             },
             costStatusReview : {
                 currentRecord: {
-                    status: editedGate.deliveryStatus.costStatus.currentRecord.status,
+                    status: {
+                        _id : editedGate.deliveryStatus.costStatus.currentRecord.status._id,
+                        name : editedGate.deliveryStatus.costStatus.currentRecord.status.name,
+                        color : editedGate.deliveryStatus.costStatus.currentRecord.status.color
+                    },
                     comment : editedGate.deliveryStatus.costStatus.currentRecord.comment
                 },
-                newStatus: editedGate.deliveryStatus.costStatus.currentRecord.status,
+                newStatus: {
+                    _id : editedGate.deliveryStatus.costStatus.currentRecord.status._id,
+                    name : editedGate.deliveryStatus.costStatus.currentRecord.status.name,
+                    color : editedGate.deliveryStatus.costStatus.currentRecord.status.color
+                },
                 newComment : editedGate.deliveryStatus.costStatus.currentRecord.comment
             },
             completionStatusReview : {
                 currentRecord: {
-                    status: editedGate.deliveryStatus.completionStatus.currentRecord.status,
+                    status: {
+                        _id : editedGate.deliveryStatus.completionStatus.currentRecord.status._id,
+                        name : editedGate.deliveryStatus.completionStatus.currentRecord.status.name,
+                        color : editedGate.deliveryStatus.completionStatus.currentRecord.status.color
+                    },
                     comment : editedGate.deliveryStatus.completionStatus.currentRecord.comment
                 },
-                newStatus: editedGate.deliveryStatus.completionStatus.currentRecord.status,
+                newStatus: {
+                    _id : editedGate.deliveryStatus.completionStatus.currentRecord.status._id,
+                    name : editedGate.deliveryStatus.completionStatus.currentRecord.status.name,
+                    color : editedGate.deliveryStatus.completionStatus.currentRecord.status.color
+                },
                 newComment : editedGate.deliveryStatus.completionStatus.currentRecord.comment
             },
             projectStatusAreaReviews : []
@@ -85,12 +117,20 @@ exports.createStatusUpdate = function(req, res){
                 name: outcome.name,
                 status: {
                     currentRecord: {
-                        status: outcome.status.currentRecord.status,
+                        status: {
+                            _id : outcome.status.currentRecord.status._id,
+                            name : outcome.status.currentRecord.status.name,
+                            color : outcome.status.currentRecord.status.color
+                        },
                         comment :outcome.status.currentRecord.comment
                     }
                 }
             },
-            newStatus:  outcome.status.currentRecord.status,
+            newStatus:  {
+                _id : outcome.status.currentRecord.status._id,
+                name : outcome.status.currentRecord.status.name,
+                color : outcome.status.currentRecord.status.color
+            },
             newComment:  outcome.status.currentRecord.comment
         });
     });
@@ -105,11 +145,19 @@ exports.createStatusUpdate = function(req, res){
                     name: area.statusArea.name
                 },
                 currentRecord: {
-                    status: area.currentRecord.status,
+                    status: {
+                        _id : area.currentRecord.status._id,
+                        name : area.currentRecord.status.name,
+                        color : area.currentRecord.status.color
+                    },
                     comment : area.currentRecord.comment
                 }
             },
-            newStatus:  area.currentRecord.status,
+            newStatus:  {
+                _id : area.currentRecord.status._id,
+                name : area.currentRecord.status.name,
+                color : area.currentRecord.status.color
+            },
             newComment:  area.currentRecord.comment
         });
     });

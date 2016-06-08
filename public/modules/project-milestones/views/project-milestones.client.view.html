@@ -2,7 +2,7 @@
     <br>
     <div class="row">
         <div class="col-sm-12">
-            <div class="panel-heading">
+            <div class="panel-heading" style="padding: 0">
                 <ol class="breadcrumb">
                     <li>Portfolio delivery</li>
                     <li>Milestones</li>
@@ -18,10 +18,10 @@
         <strong data-ng-bind="error"></strong>
     </div>
     <div class="row">
-        <div class="col-md-3">
+        <div class="col-md-3" style="padding-right: 5px;">
             <project-list projects="projects" select-project="selectProject" portfolios="portfolios" gate-processes="gateProcesses" is-resolving="isResolving"></project-list>
         </div>
-        <div class="col-md-9">
+        <div class="col-md-9" style="padding-left: 5px;">
             <div class="row">
                 <div class="col-md-12">
                     <div data-ng-hide="selectedProject || projects.length === 0" class="alert alert-warning text-center">
@@ -96,7 +96,7 @@
                                 <span>Select a gate to see its milestones</span>
                             </div>
                             <div class="row" data-ng-show="selectedGate && !showNewProjectMilestoneForm">
-                                <div class="col-md-3">
+                                <div class="col-md-3" style="padding-left: 10px; padding-right: 5px;">
                                     <div class="panel panel-default">
                                         <div class="panel-heading">
                                             <h6 class="panel-title text-center">Milestones</h6>
@@ -140,7 +140,7 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div class="col-md-9">
+                                <div class="col-md-9" style="padding-left: 5px; padding-right: 10px;">
                                     <div data-ng-hide="selectedProjectMilestone || projectMilestones.length === 0" class="alert alert-warning text-center">
                                         Select a milestone to see its details
                                     </div>
