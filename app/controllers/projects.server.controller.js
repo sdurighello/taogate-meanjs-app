@@ -130,12 +130,12 @@ exports.deleteGateReview = require('./projects/projects.gateReviews.server.contr
 
 exports.updateGateReviewHeader = require('./projects/projects.gateReviews.server.controller').updateGateReviewHeader;
 
-exports.updateGateStatusReview = require('./projects/projects.gateReviews.server.controller').updateGateStatusReview;
+exports.updateGateStateReview = require('./projects/projects.gateReviews.server.controller').updateGateStateReview;
 
 exports.updateGateBudgetReview = require('./projects/projects.gateReviews.server.controller').updateGateBudgetReview;
 
 
-exports.updateOutcomeReview = require('./projects/projects.gateReviews.server.controller').updateOutcomeReview;
+exports.updateOutcomeScoreReview = require('./projects/projects.gateReviews.server.controller').updateOutcomeScoreReview;
 
 
 exports.updateActualCompletionReview = require('./projects/projects.gateReviews.server.controller').updateActualCompletionReview;
@@ -182,9 +182,6 @@ exports.updateChangeRequestStatus = require('./projects/projects.changeRequests.
 exports.updateGateBudgetReviewForCR = require('./projects/projects.changeRequests.server.controller').updateGateBudgetReviewForCR;
 
 
-exports.updateOutcomeReviewForCR = require('./projects/projects.changeRequests.server.controller').updateOutcomeReviewForCR;
-
-
 exports.updateActualCompletionReviewForCR = require('./projects/projects.changeRequests.server.controller').updateActualCompletionReviewForCR;
 
 exports.updateActualCostReviewForCR = require('./projects/projects.changeRequests.server.controller').updateActualCostReviewForCR;
@@ -214,17 +211,29 @@ exports.createStatusUpdate = require('./projects/projects.statusUpdates.server.c
 
 exports.deleteStatusUpdate = require('./projects/projects.statusUpdates.server.controller').deleteStatusUpdate;
 
+// Header
 
 exports.updateStatusUpdateHeader = require('./projects/projects.statusUpdates.server.controller').updateStatusUpdateHeader;
 
-exports.updateDeliveryStatus = require('./projects/projects.statusUpdates.server.controller').updateDeliveryStatus;
+// Delivery Status
 
+exports.updateOverallDeliveryStatus = require('./projects/projects.statusUpdates.server.controller').updateOverallDeliveryStatus;
+
+exports.updateDurationDeliveryStatus = require('./projects/projects.statusUpdates.server.controller').updateDurationDeliveryStatus;
+
+exports.updateCostDeliveryStatus = require('./projects/projects.statusUpdates.server.controller').updateCostDeliveryStatus;
+
+exports.updateCompletionDeliveryStatus = require('./projects/projects.statusUpdates.server.controller').updateCompletionDeliveryStatus;
+
+// Status Areas
 
 exports.updateStatusAreaReview = require('./projects/projects.statusUpdates.server.controller').updateStatusAreaReview;
 
+// Outcome Status
 
-exports.updateOutcomeReviewForSU = require('./projects/projects.statusUpdates.server.controller').updateOutcomeReviewForSU;
+exports.updateOutcomeStatusReview = require('./projects/projects.statusUpdates.server.controller').updateOutcomeStatusReview;
 
+// Estimates
 
 exports.updateEstimateCompletionReviewForSU = require('./projects/projects.statusUpdates.server.controller').updateEstimateCompletionReviewForSU;
 
@@ -232,6 +241,7 @@ exports.updateEstimateCostReviewForSU = require('./projects/projects.statusUpdat
 
 exports.updateEstimateDurationReviewForSU = require('./projects/projects.statusUpdates.server.controller').updateEstimateDurationReviewForSU;
 
+// Approval
 
 exports.submitStatusUpdate = require('./projects/projects.statusUpdates.server.controller').submitStatusUpdate;
 

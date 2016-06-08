@@ -2,9 +2,9 @@
 
 angular.module('gate-reviews').controller('GateReviewsController', ['$rootScope', '$scope','$stateParams', '$location',
     'Authentication', 'Projects', 'Portfolios','$q', '_',
-    'GateProcessTemplates', 'GateOutcomeScores', 'GateStatuses',
+    'GateProcessTemplates', 'GateOutcomeScores', 'GateStates',
     function($rootScope, $scope, $stateParams, $location, Authentication, Projects, Portfolios, $q, _,
-             GateProcessTemplates, GateOutcomeScores, GateStatuses) {
+             GateProcessTemplates, GateOutcomeScores, GateStates) {
 
         $rootScope.staticMenu = false;
 
@@ -51,8 +51,8 @@ angular.module('gate-reviews').controller('GateReviewsController', ['$rootScope'
                 $scope.initError.push(err.data.message);
             });
 
-            GateStatuses.query(function(gateStatuses){
-                $scope.gateStatuses = gateStatuses;
+            GateStates.query(function(res){
+                $scope.gateStates = res;
             }, function(err){
                 $scope.initError.push(err.data.message);
             });
@@ -101,10 +101,10 @@ angular.module('gate-reviews').controller('GateReviewsController', ['$rootScope'
             if(string === 'edit'){$scope.switchBudgetForm[document._id] = 'edit';}
         };
 
-        $scope.switchStatusForm = {};
-        $scope.selectStatusForm = function(string, document){
-            if(string === 'view'){ $scope.switchStatusForm[document._id] = 'view';}
-            if(string === 'edit'){$scope.switchStatusForm[document._id] = 'edit';}
+        $scope.switchStateForm = {};
+        $scope.selectStateForm = function(string, document){
+            if(string === 'view'){ $scope.switchStateForm[document._id] = 'view';}
+            if(string === 'edit'){$scope.switchStateForm[document._id] = 'edit';}
         };
 
         $scope.switchOutcomeReviewForm = {};
@@ -229,7 +229,7 @@ angular.module('gate-reviews').controller('GateReviewsController', ['$rootScope'
 
         $scope.newHeaderDateOpened = {};
 
-        $scope.newHeaderDateOpened = function(gate, $event){
+        $scope.openNewHeaderDate = function(gate, $event){
             $event.preventDefault();
             $event.stopPropagation();
             $scope.newHeaderDateOpened[gate._id] = true;
@@ -352,23 +352,23 @@ angular.module('gate-reviews').controller('GateReviewsController', ['$rootScope'
             });
         };
         
-        // -------------------------------------------------------- STATUS -------------------------------------------------
+        // -------------------------------------------------------- STATE -------------------------------------------------
 
-        var originalStatus = {};
+        var originalState = {};
 
-        $scope.editStatus = function(gateReview){
-            originalStatus[gateReview._id] = {
-                newOverallScore : gateReview.gateStatusReview.newOverallScore,
-                newStatus : gateReview.gateStatusReview.newStatus,
-                newCompleted : gateReview.gateStatusReview.newCompleted
+        $scope.editState = function(gateReview){
+            originalState[gateReview._id] = {
+                newOverallScore : gateReview.gateStateReview.newOverallScore,
+                newState : gateReview.gateStateReview.newState,
+                newCompleted : gateReview.gateStateReview.newCompleted
             };
-            $scope.selectStatusForm('edit', gateReview);
+            $scope.selectStateForm('edit', gateReview);
         };
 
-        $scope.saveEditStatus = function(project, gate, gateReview){
+        $scope.saveEditState = function(project, gate, gateReview){
             $scope.error = null;
             $scope.isResolving = true;
-            Projects.updateGateStatusReview(
+            Projects.updateGateStateReview(
                 {
                     projectId : project._id,
                     projectGateId: gate._id,
@@ -376,10 +376,10 @@ angular.module('gate-reviews').controller('GateReviewsController', ['$rootScope'
                 }, gateReview,
                 function(res){
                     $scope.isResolving = false;
-                    originalStatus[gateReview._id].newOverallScore = gateReview.gateStatusReview.newOverallScore;
-                    originalStatus[gateReview._id].newStatus = gateReview.gateStatusReview.newStatus;
-                    originalStatus[gateReview._id].newCompleted = gateReview.gateStatusReview.newCompleted;
-                    $scope.selectStatusForm('view', gateReview);
+                    originalState[gateReview._id].newOverallScore = gateReview.gateStateReview.newOverallScore;
+                    originalState[gateReview._id].newState = gateReview.gateStateReview.newState;
+                    originalState[gateReview._id].newCompleted = gateReview.gateStateReview.newCompleted;
+                    $scope.selectStateForm('view', gateReview);
                 },
                 function(err){
                     $scope.isResolving = false;
@@ -388,12 +388,12 @@ angular.module('gate-reviews').controller('GateReviewsController', ['$rootScope'
             );
         };
 
-        $scope.cancelEditStatus = function(gateReview){
+        $scope.cancelEditState = function(gateReview){
             $scope.error = null;
-            gateReview.gateStatusReview.newOverallScore = originalStatus[gateReview._id].newOverallScore;
-            gateReview.gateStatusReview.newStatus = originalStatus[gateReview._id].newStatus;
-            gateReview.gateStatusReview.newCompleted = originalStatus[gateReview._id].newCompleted;
-            $scope.selectStatusForm('view', gateReview);
+            gateReview.gateStateReview.newOverallScore = originalState[gateReview._id].newOverallScore;
+            gateReview.gateStateReview.newState = originalState[gateReview._id].newState;
+            gateReview.gateStateReview.newCompleted = originalState[gateReview._id].newCompleted;
+            $scope.selectStateForm('view', gateReview);
         };
 
 
@@ -451,12 +451,12 @@ angular.module('gate-reviews').controller('GateReviewsController', ['$rootScope'
         $scope.saveEditOutcomeReview = function(project, gate, gateReview, outcomeReview){
             $scope.error = null;
             $scope.isResolving = true;
-            Projects.updateOutcomeReview(
+            Projects.updateOutcomeScoreReview(
                 {
                     projectId: project._id,
                     projectGateId: gate._id,
                     gateReviewId: gateReview._id,
-                    outcomeReviewId : outcomeReview._id
+                    outcomeScoreReviewId : outcomeReview._id
                 }, outcomeReview,
                 function(res){
                     $scope.isResolving = false;
@@ -875,7 +875,7 @@ angular.module('gate-reviews').controller('GateReviewsController', ['$rootScope'
                 }
             });
             _.each(gateReview.performances.duration.actualDurationReviews, function(performanceReview){
-                if(!performanceReview.newDate && gateReview.gateStatusReview.newCompleted){
+                if(!performanceReview.newDate && gateReview.gateStateReview.newCompleted){
                     missingFields.push('Actual date for ' + performanceReview.baselineDuration.targetGate.name);
                 }
             });
@@ -891,7 +891,7 @@ angular.module('gate-reviews').controller('GateReviewsController', ['$rootScope'
                 }
             });
             _.each(gateReview.performances.cost.actualCostReviews, function(performanceReview){
-                if(!performanceReview.newCost && gateReview.gateStatusReview.newCompleted){
+                if(!performanceReview.newCost && gateReview.gateStateReview.newCompleted){
                     missingFields.push('Actual cost for ' + performanceReview.baselineCost.targetGate.name);
                 }
             });
@@ -907,7 +907,7 @@ angular.module('gate-reviews').controller('GateReviewsController', ['$rootScope'
                 }
             });
             _.each(gateReview.performances.completion.actualCompletionReviews, function(performanceReview){
-                if(!performanceReview.newCompletion && gateReview.gateStatusReview.newCompleted){
+                if(!performanceReview.newCompletion && gateReview.gateStateReview.newCompleted){
                     missingFields.push('Actual completion for ' + performanceReview.baselineCompletion.targetGate.name);
                 }
             });

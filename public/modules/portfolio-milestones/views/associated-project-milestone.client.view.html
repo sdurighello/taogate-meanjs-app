@@ -30,6 +30,19 @@
                     <br>
                     <div class="row">
                         <div class="form-group-sm col-md-4">
+                            <label>Project</label>
+                            <select title="project" class="form-control" data-ng-model = "selectedProjectMilestone.project"
+                                    ng-options="project._id as project.identification.name for project in availableProjects" disabled>
+                            </select>
+                        </div>
+                        <div class="form-group-sm col-md-4">
+                            <label>Gate</label>
+                            <input title="gate" disabled class="form-control" data-ng-model = "selectedProjectMilestone.gate.name">
+                        </div>
+                    </div>
+                    <br>
+                    <div class="row">
+                        <div class="form-group-sm col-md-4">
                             <label for="">Type</label>
                             <select id="" class="form-control" data-ng-model = "selectedProjectMilestone.type"
                                     ng-options="type._id as type.name for type in projectMilestoneTypes" disabled>

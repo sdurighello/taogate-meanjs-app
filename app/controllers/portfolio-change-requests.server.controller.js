@@ -236,45 +236,73 @@ exports.draft = function(req, res) {
 
 exports.availableProjectChangeRequests = function(req, res) {
 
-	// var Project = mongoose.mtModel(req.user.tenantId + '.' + 'Project');
-	// var ProjectChangeRequest = mongoose.mtModel(req.user.tenantId + '.' + 'ProjectChangeRequest');
-    //
-	// async.waterfall([
-	// 	// Find all projects belonging to that portfolio
-	// 	function(callback){
-	// 		var projectIds = [];
-	// 		Project.find({portfolio: req.params.portfolioId}).exec(function(err, projects){
-	// 			if(err){ return callback(err); }
-	// 			async.each(projects, function(project, callback){
-	// 				projectIds.push(project._id);
-	// 				callback();
-	// 			});
-	// 			callback(null, projectIds);
-	// 		});
-	// 	},
-	// 	// For all projects, extract all the changes that: are "not draft", and aren't already associated
-	// 	function(projectIds, callback){
-     //        ProjectChangeRequest.find({
-	// 			_id: {$nin: req.portfolioChangeRequest.associatedProjectChangeRequests},
-	// 			project: {$in: projectIds},
-	// 			approval: {$ne: 'draft'}
-	// 		}).exec(function(err, availableProjectChangeRequests){
-	// 			if(err){
-	// 				return callback(err);
-	// 			}
-	// 			callback(null, availableProjectChangeRequests);
-	// 		});
-	// 	}
-	// ], function(err, availableProjectChangeRequests){
-	// 	if (err) {
-	// 		return res.status(400).send({
-	// 			message: errorHandler.getErrorMessage(err)
-	// 		});
-	// 	} else {
-	// 		res.jsonp(availableProjectChangeRequests);
-	// 	}
-	// });
+	var Project = mongoose.mtModel(req.user.tenantId + '.' + 'Project');
 
+    Project.find(
+        {
+            'selection.active': true, 'selection.selectedForDelivery': true, 
+            'process.assignmentConfirmed': true,
+            'portfolio': req.params.portfolioId
+        }
+    ).exec(function(err, projects){
+        if(err){
+            return res.status(400).send({
+                message: errorHandler.getErrorMessage(err)
+            }); 
+        }
+        var availableProjectChangeRequests = [];
+        _.each(projects, function(project){
+            _.each(project.process.gates, function(gate){
+                _.each(gate.projectChangeRequests, function(projectChangeRequest){
+                    var notAlreadyAssociated = !_.some(req.portfolioChangeRequest.associatedProjectChangeRequests, function(associatedCR){
+                        return associatedCR._id.equals(projectChangeRequest._id);
+                    });
+                    var isNotDraft = projectChangeRequest.approval.currentRecord.approvalState !== 'draft';
+                    
+                    if(notAlreadyAssociated && isNotDraft){
+                        availableProjectChangeRequests.push({
+                            _id : projectChangeRequest._id,
+                            project: {
+                                _id: project._id,
+                                name: project.identification.name
+                            },
+                            gate : {
+                                _id: gate._id,
+                                name: gate.name
+                            },
+                            raisedOnDate : projectChangeRequest.raisedOnDate,
+                            title : projectChangeRequest.title,
+                            description : projectChangeRequest.description,
+
+                            reason : projectChangeRequest.reason,
+                            state : projectChangeRequest.state,
+                            priority : projectChangeRequest.priority,
+
+                            changeStatus : {
+                                currentRecord : {
+                                    status: projectChangeRequest.changeStatus.currentRecord.status
+                                }
+                            },
+
+                            approval : {
+                                currentRecord : {
+                                    approvalState: projectChangeRequest.changeStatus.currentRecord.approvalState
+                                }
+                            },
+
+                            budgetReview : {
+                                budgetChange : projectChangeRequest.budgetReview.budgetChange
+                            }
+                        });
+                    }
+                                        
+                });
+            });
+        });
+
+        res.jsonp(availableProjectChangeRequests);
+
+    });
 
 };
 
@@ -282,7 +310,7 @@ exports.availableProjectChangeRequests = function(req, res) {
 exports.addProjectChangeRequest = function(req, res) {
 
 	var portfolioChangeRequest = req.portfolioChangeRequest;
-    portfolioChangeRequest.associatedProjectChangeRequests.push(req.params.projectChangeRequestId);
+    portfolioChangeRequest.associatedProjectChangeRequests.push(req.body);
     portfolioChangeRequest.save(function(err){
 		if (err) {
 			return res.status(400).send({
@@ -296,8 +324,11 @@ exports.addProjectChangeRequest = function(req, res) {
 };
 
 exports.removeProjectChangeRequest = function(req, res) {
+
 	var portfolioChangeRequest = req.portfolioChangeRequest;
-    portfolioChangeRequest.associatedProjectChangeRequests.splice(portfolioChangeRequest.associatedProjectChangeRequests.indexOf(req.params.projectChangeRequestId), 1);
+
+    portfolioChangeRequest.associatedProjectChangeRequests.id(req.params.projectChangeRequestId).remove();
+
     portfolioChangeRequest.save(function(err){
 		if (err) {
 			return res.status(400).send({
@@ -381,20 +412,16 @@ exports.deleteFundingRequest = function(req, res) {
  * Portfolio change request middleware
  */
 exports.portfolioChangeRequestByID = function(req, res, next, id) {
-    // var ProjectChangeRequest = mongoose.mtModel(req.user.tenantId + '.' + 'ProjectChangeRequest');
-    // var BaselineCost = mongoose.mtModel(req.user.tenantId + '.' + 'BaselineCost');
-    // var ActualCost = mongoose.mtModel(req.user.tenantId + '.' + 'ActualCost');
-    //
-    // var PortfolioChangeRequest = mongoose.mtModel(req.user.tenantId + '.' + 'PortfolioChangeRequest');
-    // PortfolioChangeRequest.findById(id).deepPopulate([
-     //    'associatedProjectChangeRequests'
-    // ]).populate('user', 'displayName').populate('approval.currentRecord.user', 'displayName').populate('approval.history.user', 'displayName')
-     //    .exec(function(err, portfolioChangeRequest) {
-	// 	if (err){ return next(err); }
-	// 	if (! portfolioChangeRequest){ return next(new Error({message:'Failed to load Portfolio change request ' + id})); }
-     //    req.portfolioChangeRequest = portfolioChangeRequest ;
-     //    next();
-	// });
+
+    var PortfolioChangeRequest = mongoose.mtModel(req.user.tenantId + '.' + 'PortfolioChangeRequest');
+
+    PortfolioChangeRequest.findById(id)
+        .exec(function(err, portfolioChangeRequest) {
+		if (err){ return next(err); }
+		if (! portfolioChangeRequest){ return next(new Error({message:'Failed to load Portfolio change request ' + id})); }
+        req.portfolioChangeRequest = portfolioChangeRequest ;
+        next();
+	});
 };
 
 /**

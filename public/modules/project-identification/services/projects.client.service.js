@@ -148,9 +148,9 @@ angular.module('project-identification').factory('Projects', ['$resource',
                 url: 'projects/:projectId/project-gates/:projectGateId/gate-reviews/:gateReviewId/header'
                 // req.body: {whole gate review object}
             },
-            updateGateStatusReview: {
+            updateGateStateReview: {
                 method: 'PUT',
-                url: 'projects/:projectId/project-gates/:projectGateId/gate-reviews/:gateReviewId/status'
+                url: 'projects/:projectId/project-gates/:projectGateId/gate-reviews/:gateReviewId/state'
                 // req.body: {whole gate review object}
             },
             updateGateBudgetReview: {
@@ -161,10 +161,9 @@ angular.module('project-identification').factory('Projects', ['$resource',
 
             // --- Outcomes --
 
-            updateOutcomeReview: {
+            updateOutcomeScoreReview: {
                 method: 'PUT',
-                url: 'projects/:projectId/project-gates/:projectGateId/gate-reviews/:gateReviewId/outcome-reviews/:outcomeReviewId'
-                // req.body: {outcomeReview object}
+                url: 'projects/:projectId/project-gates/:projectGateId/gate-reviews/:gateReviewId/outcome-score-reviews/:outcomeScoreReviewId'
             },
 
             // --- Actuals --
@@ -390,9 +389,9 @@ angular.module('project-identification').factory('Projects', ['$resource',
 
             // --- Outcomes --
 
-            updateOutcomeReviewForSU: {
+            updateOutcomeStatusReview: {
                 method: 'PUT',
-                url: 'projects/:projectId/project-gates/:projectGateId/project-status-updates/:projectStatusUpdateId/outcome-reviews/:outcomeReviewId'
+                url: 'projects/:projectId/project-gates/:projectGateId/project-status-updates/:projectStatusUpdateId/outcome-status-reviews/:outcomeStatusReviewId'
             },
 
             // --- Estimates --

@@ -708,7 +708,7 @@ angular.module('project-change-requests').controller('ProjectChangeRequestsContr
 
         // Check that all fields are filled in before proceeding, if not, return (except for Reject and Draft)
         $scope.submitMissingFields = {};
-        var setSubmitMissingFields = function(changeRequest){
+        var setSubmitMissingFields = function(changeRequest, gate){
 
             var missingFields = [];
 
@@ -722,7 +722,7 @@ angular.module('project-change-requests').controller('ProjectChangeRequestsContr
                 }
             });
             _.each(changeRequest.performances.duration.actualDurationReviews, function(performanceReview){
-                if(!performanceReview.newDate && changeRequest.gateStatusReview.newCompleted){
+                if(!performanceReview.newDate && gate.gateState.currentRecord.completed){
                     missingFields.push('Actual date for ' + performanceReview.baselineDuration.targetGate.name);
                 }
             });
@@ -733,7 +733,7 @@ angular.module('project-change-requests').controller('ProjectChangeRequestsContr
                 }
             });
             _.each(changeRequest.performances.cost.actualCostReviews, function(performanceReview){
-                if(!performanceReview.newCost && changeRequest.gateStatusReview.newCompleted){
+                if(!performanceReview.newCost && gate.gateState.currentRecord.completed){
                     missingFields.push('Actual cost for ' + performanceReview.baselineCost.targetGate.name);
                 }
             });
@@ -744,7 +744,7 @@ angular.module('project-change-requests').controller('ProjectChangeRequestsContr
                 }
             });
             _.each(changeRequest.performances.completion.actualCompletionReviews, function(performanceReview){
-                if(!performanceReview.newCompletion && changeRequest.gateStatusReview.newCompleted){
+                if(!performanceReview.newCompletion && gate.gateState.currentRecord.completed){
                     missingFields.push('Actual completion for ' + performanceReview.baselineCompletion.targetGate.name);
                 }
             });
@@ -826,7 +826,7 @@ angular.module('project-change-requests').controller('ProjectChangeRequestsContr
 
         $scope.submit = function(project, gate, changeRequest){
 
-            $scope.submitMissingFields[changeRequest._id] = setSubmitMissingFields(changeRequest);
+            $scope.submitMissingFields[changeRequest._id] = setSubmitMissingFields(changeRequest, gate);
             $scope.dateConsistencyErrors[changeRequest._id] = checkDateConsistency(changeRequest, gate, project);
 
             if(($scope.submitMissingFields[changeRequest._id].length > 0) || ($scope.dateConsistencyErrors[changeRequest._id].length > 0)){
@@ -854,7 +854,7 @@ angular.module('project-change-requests').controller('ProjectChangeRequestsContr
 
         $scope.approve = function(project, gate, changeRequest){
 
-            $scope.submitMissingFields[changeRequest._id] = setSubmitMissingFields(changeRequest);
+            $scope.submitMissingFields[changeRequest._id] = setSubmitMissingFields(changeRequest, gate);
             $scope.dateConsistencyErrors[changeRequest._id] = checkDateConsistency(changeRequest, gate, project);
 
             if(($scope.submitMissingFields[changeRequest._id].length > 0) || ($scope.dateConsistencyErrors[changeRequest._id].length > 0)){

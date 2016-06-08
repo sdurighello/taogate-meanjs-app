@@ -21,12 +21,6 @@
                     <form data-ng-switch-default="view">
                         <div class="row">
                             <div class="form-group-sm col-md-3">
-                                <label for="">Gate</label>
-                                <select id="" class="form-control" data-ng-model = "selectedProjectIssue.gate"
-                                        ng-options="gate as gate.name for gate in selectedProject.process.gates track by gate._id" disabled>
-                                </select>
-                            </div>
-                            <div class="form-group-sm col-md-3">
                                 <label for="">Raised on date</label>
                                 <input type="text" id="" class="form-control" datepicker-popup="dd-MMMM-yyyy" data-ng-model="selectedProjectIssue.raisedOnDate" disabled />
                             </div>
@@ -73,13 +67,6 @@
                     </form>
                     <form data-ng-switch-when="edit" name="editProjectIssueForm">
                         <div class="row">
-                            <div class="form-group-sm col-md-3">
-                                <label for="">Gate</label>
-                                <select id="" class="form-control" data-ng-model = "selectedProjectIssue.gate"
-                                        data-ng-options="gate as gate.name for gate in selectedProject.process.gates | orderBy: 'position' track by gate._id" required>
-                                    <option value="">--choose gate</option>
-                                </select>
-                            </div>
                             <div class="form-group-sm col-md-3">
                                 <label for="">Raised on date</label>
                                 <div class="input-group">

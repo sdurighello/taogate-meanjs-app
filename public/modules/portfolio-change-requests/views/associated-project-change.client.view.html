@@ -48,19 +48,19 @@
                         <div class="form-group-sm col-md-4">
                             <label for="">Reason for change</label>
                             <select id="" class="form-control" data-ng-model = "selectedProjectChangeRequest.reason"
-                                    ng-options="reason._id as reason.name for reason in logReasons" disabled>
+                                    ng-options="reason as reason.name for reason in logReasons track by reason._id" disabled>
                             </select>
                         </div>
                         <div class="form-group-sm col-md-4">
                             <label for="">Priority</label>
                             <select id="" class="form-control" data-ng-model = "selectedProjectChangeRequest.priority"
-                                    ng-options="priority._id as priority.name for priority in logPriorities" disabled>
+                                    ng-options="priority as priority.name for priority in logPriorities track by priority._id" disabled>
                             </select>
                         </div>
                         <div class="form-group-sm col-md-4">
                             <label for="">State</label>
                             <select id="" class="form-control" data-ng-model = "selectedProjectChangeRequest.state"
-                                    ng-options="state._id as state.name for state in changeRequestStates" disabled>
+                                    ng-options="state as state.name for state in changeRequestStates track by state._id" disabled>
                             </select>
                         </div>
                     </div>
@@ -94,7 +94,7 @@
                         <div class="form-group-sm col-md-5">
                             <label for="">Status</label>
                             <select id="" class="form-control" data-ng-model = "selectedProjectChangeRequest.statusReview.currentRecord.status"
-                                    ng-options="status._id as status.name for status in logStatuses" disabled>
+                                    ng-options="status as status.name for status in logStatuses track by status._id" disabled>
                             </select>
                         </div>
                         <br>

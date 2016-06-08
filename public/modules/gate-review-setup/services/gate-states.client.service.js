@@ -1,9 +1,9 @@
 'use strict';
 
 //Gate statuses service used to communicate Gate statuses REST endpoints
-angular.module('gate-review-setup').factory('GateStatuses', ['$resource',
+angular.module('gate-review-setup').factory('GateStates', ['$resource',
 	function($resource) {
-		return $resource('gate-statuses/:gateStatusId', { gateStatusId: '@_id'
+		return $resource('gate-states/:gateStateId', { gateStateId: '@_id'
 		}, {
 			update: {
 				method: 'PUT'

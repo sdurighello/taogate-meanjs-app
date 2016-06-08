@@ -395,16 +395,10 @@
                                                                             <div class="row" data-ng-show="!showMilestoneFiltersA">
                                                                                 <div class="col-md-12 small">
                                                                                     <a data-ng-click="showMilestoneFiltersA = true"><b>Filters</b></a><br>
-
                                                                                     <span data-ng-show="projectMilestoneFilterA.project"><b>Project: </b><i>"{{projectMilestoneFilterA.project.identification.name}}" | </i></span>
-
                                                                                     <span data-ng-show="projectMilestoneFilterA.name"><b>Title: </b><i>"{{projectMilestoneFilterA.name}}" | </i></span>
-
-                                                                                    <span data-ng-show="projectMilestoneFilterA.type"><b>Priority: </b><i>"{{projectMilestoneFilterA.priority.type}}" | </i></span>
-
+                                                                                    <span data-ng-show="projectMilestoneFilterA.type"><b>Priority: </b><i>"{{projectMilestoneFilterA.type.name}}" | </i></span>
                                                                                     <span data-ng-show="projectMilestoneFilterA.state"><b>State: </b><i>"{{projectMilestoneFilterA.state.name}}" | </i></span>
-
-                                                                                    <span data-ng-show="projectMilestoneFilterA.gate"><b>Reason: </b><i>"{{projectMilestoneFilterA.reason.gate}}" | </i></span>
                                                                                 </div>
                                                                             </div>
                                                                             <div data-ng-show="showMilestoneFiltersA">
@@ -433,12 +427,6 @@
                                                                                         <select class="form-control input-sm" data-ng-model = "projectMilestoneFilterA.state"
                                                                                                 data-ng-options="state as state.name for state in parentCtrl.milestoneStates">
                                                                                             <option value="">--filter by state</option>
-                                                                                        </select>
-                                                                                    </div>
-                                                                                    <div class="col-md-12" style="margin-bottom: 2px">
-                                                                                        <select class="form-control input-sm" data-ng-model = "projectMilestoneFilterA.gate"
-                                                                                                data-ng-options="gate as gate.name for gate in parentCtrl.logReasons">
-                                                                                            <option value="">--filter by gate</option>
                                                                                         </select>
                                                                                     </div>
                                                                                 </div>
@@ -489,16 +477,10 @@
                                                                             <div class="row" data-ng-show="!showMilestoneFiltersNA">
                                                                                 <div class="col-md-12 small">
                                                                                     <a data-ng-click="showMilestoneFiltersNA = true"><b>Filters</b></a><br>
-
                                                                                     <span data-ng-show="projectMilestoneFilterNA.project"><b>Project: </b><i>"{{projectMilestoneFilterNA.project.identification.name}}" | </i></span>
-
                                                                                     <span data-ng-show="projectMilestoneFilterNA.name"><b>Title: </b><i>"{{projectMilestoneFilterNA.name}}" | </i></span>
-
-                                                                                    <span data-ng-show="projectMilestoneFilterNA.priority"><b>Priority: </b><i>"{{projectMilestoneFilterNA.priority.name}}" | </i></span>
-
+                                                                                    <span data-ng-show="projectMilestoneFilterNA.type"><b>State: </b><i>"{{projectMilestoneFilterNA.type.name}}" | </i></span>
                                                                                     <span data-ng-show="projectMilestoneFilterNA.state"><b>State: </b><i>"{{projectMilestoneFilterNA.state.name}}" | </i></span>
-
-                                                                                    <span data-ng-show="projectMilestoneFilterNA.reason"><b>Reason: </b><i>"{{projectMilestoneFilterNA.reason.name}}" | </i></span>
                                                                                 </div>
                                                                             </div>
                                                                             <div data-ng-show="showMilestoneFiltersNA">
@@ -518,21 +500,15 @@
                                                                                         </select>
                                                                                     </div>
                                                                                     <div class="col-md-12" style="margin-bottom: 2px">
-                                                                                        <select class="form-control input-sm" data-ng-model = "projectMilestoneFilterNA.priority"
-                                                                                                data-ng-options="priority as priority.name for priority in parentCtrl.logPriorities">
-                                                                                            <option value="">--filter by priority</option>
+                                                                                        <select class="form-control input-sm" data-ng-model = "projectMilestoneFilterNA.type"
+                                                                                                data-ng-options="type as type.name for type in parentCtrl.projectMilestoneTypes">
+                                                                                            <option value="">--filter by type</option>
                                                                                         </select>
                                                                                     </div>
                                                                                     <div class="col-md-12" style="margin-bottom: 2px">
                                                                                         <select class="form-control input-sm" data-ng-model = "projectMilestoneFilterNA.state"
                                                                                                 data-ng-options="state as state.name for state in parentCtrl.milestoneStates">
                                                                                             <option value="">--filter by state</option>
-                                                                                        </select>
-                                                                                    </div>
-                                                                                    <div class="col-md-12" style="margin-bottom: 2px">
-                                                                                        <select class="form-control input-sm" data-ng-model = "projectMilestoneFilterA.reason"
-                                                                                                data-ng-options="reason as reason.name for reason in parentCtrl.logReasons">
-                                                                                            <option value="">--filter by reason</option>
                                                                                         </select>
                                                                                     </div>
                                                                                 </div>

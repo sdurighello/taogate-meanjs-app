@@ -77,14 +77,14 @@
                             </h6>
                         </div>
                         <div class="panel-body" style="min-height: 545px;  max-height: 545px; overflow-y: auto; overflow-x: auto">
-                            <div class="row" data-ng-show="!vm.qualitativeSummaryView.length">
+                            <div class="row" data-ng-show="!vm.projects.length">
                                 <div class="col-md-12">
                                     <div class="alert alert-warning text-center">
-                                        No ranking to show
+                                        No status updates to show
                                     </div>
                                 </div>
                             </div>
-                            <div class="row" data-ng-show="vm.qualitativeSummaryView.length">
+                            <div class="row" data-ng-show="vm.projects.length">
                                 <div class="col-md-12">
                                     <div class="table-responsive">
                                         <table class="table table-bordered table-hover table-condensed small">
@@ -103,25 +103,28 @@
                                             </tr>
                                             </thead>
                                             <tbody>
-                                            <tr data-ng-repeat="profile in vm.qualitativeSummaryView" data-ng-click="vm.selectProjectProfile(profile)">
-                                                <td class="btn-link">{{profile.identification.name}}</td>
-                                                <td class="text-center">{{profile.currentGate.name}}</td>
-                                                <td class="text-center" style="background-color: {{profile.gateStatusAssignment.overallStatus.currentRecord.status.color}}">
-                                                    {{profile.gateStatusAssignment.overallStatus.currentRecord.status.name}}
+                                            <tr data-ng-repeat="project in vm.projects" data-ng-click="vm.selectProjectProfile(project)">
+                                                <td class="btn-link">{{project.identification.name}}</td>
+                                                <td class="text-center">{{project.currentGate.name}}</td>
+                                                <td class="text-center"
+                                                    data-ng-repeat="gate in project.process.gates"
+                                                    data-ng-if="gate.gateState.currentRecord.currentGate"
+                                                    style="background-color: {{gate.deliveryStatus.overallStatus.currentRecord.status.color}}">
+                                                    {{gate.deliveryStatus.overallStatus.currentRecord.status}}
                                                 </td>
-                                                <td class="text-center" style="background-color: {{profile.gateStatusAssignment.durationStatus.currentRecord.status.color}}">
-                                                    {{profile.gateStatusAssignment.durationStatus.currentRecord.status.name}}
-                                                </td>
-                                                <td class="text-center" style="background-color: {{profile.gateStatusAssignment.costStatus.currentRecord.status.color}}">
-                                                    {{profile.gateStatusAssignment.costStatus.currentRecord.status.name}}
-                                                </td>
-                                                <td class="text-center" style="background-color: {{profile.gateStatusAssignment.completionStatus.currentRecord.status.color}}">
-                                                    {{profile.gateStatusAssignment.completionStatus.currentRecord.status.name}}
-                                                </td>
-                                                <td class="text-center" data-ng-repeat="areaReview in profile.projectAreaReviews"
-                                                    style="background-color: {{areaReview.currentRecord.status.color}}">
-                                                    {{areaReview.currentRecord.status.name}}
-                                                </td>
+                                                <!--<td class="text-center" style="background-color: {{project.gateStatusAssignment.durationStatus.currentRecord.status.color}}">-->
+                                                    <!--{{project.gateStatusAssignment.durationStatus.currentRecord.status.name}}-->
+                                                <!--</td>-->
+                                                <!--<td class="text-center" style="background-color: {{project.gateStatusAssignment.costStatus.currentRecord.status.color}}">-->
+                                                    <!--{{project.gateStatusAssignment.costStatus.currentRecord.status.name}}-->
+                                                <!--</td>-->
+                                                <!--<td class="text-center" style="background-color: {{project.gateStatusAssignment.completionStatus.currentRecord.status.color}}">-->
+                                                    <!--{{project.gateStatusAssignment.completionStatus.currentRecord.status.name}}-->
+                                                <!--</td>-->
+                                                <!--<td class="text-center" data-ng-repeat="areaReview in project.projectAreaReviews"-->
+                                                    <!--style="background-color: {{areaReview.currentRecord.status.color}}">-->
+                                                    <!--{{areaReview.currentRecord.status.name}}-->
+                                                <!--</td>-->
                                             </tr>
                                             </tbody>
                                         </table>

@@ -17,8 +17,8 @@ exports.createStatusUpdate = function(req, res){
         return gate._id.equals(req.params.projectGateId);
     });
 
-    var newGateReview = editedGate.gateReviews.create({
-        reviewDate : req.body.reviewDate,
+    var newStatusUpdate = editedGate.projectStatusUpdates.create({
+        updateDate : req.body.updateDate,
         title : req.body.title,
         approval : {
             currentRecord : {
@@ -27,98 +27,97 @@ exports.createStatusUpdate = function(req, res){
             },
             history : []
         },
-        gateStatusReview: {
-            gateStatus :{
-                currentRecord:{
-                    completed: editedGate.gateStatus.currentRecord.completed,
-                    status : editedGate.gateStatus.currentRecord.status,
-                    overallScore : editedGate.gateStatus.currentRecord.overallScore
-                }
+        outcomeStatusReviews : [],
+        deliveryStatus : {
+            overallStatusReview : {
+                currentRecord: {
+                    status: editedGate.deliveryStatus.overallStatus.currentRecord.status,
+                    comment : editedGate.deliveryStatus.overallStatus.currentRecord.comment
+                },
+                newStatus: editedGate.deliveryStatus.overallStatus.currentRecord.status,
+                newComment : editedGate.deliveryStatus.overallStatus.currentRecord.comment
             },
-            newCompleted: editedGate.gateStatus.currentRecord.completed,
-            newStatus : editedGate.gateStatus.currentRecord.status,
-            newOverallScore : editedGate.gateStatus.currentRecord.overallScore
+            durationStatusReview : {
+                currentRecord: {
+                    status: editedGate.deliveryStatus.durationStatus.currentRecord.status,
+                    comment : editedGate.deliveryStatus.durationStatus.currentRecord.comment
+                },
+                newStatus: editedGate.deliveryStatus.durationStatus.currentRecord.status,
+                newComment : editedGate.deliveryStatus.durationStatus.currentRecord.comment
+            },
+            costStatusReview : {
+                currentRecord: {
+                    status: editedGate.deliveryStatus.costStatus.currentRecord.status,
+                    comment : editedGate.deliveryStatus.costStatus.currentRecord.comment
+                },
+                newStatus: editedGate.deliveryStatus.costStatus.currentRecord.status,
+                newComment : editedGate.deliveryStatus.costStatus.currentRecord.comment
+            },
+            completionStatusReview : {
+                currentRecord: {
+                    status: editedGate.deliveryStatus.completionStatus.currentRecord.status,
+                    comment : editedGate.deliveryStatus.completionStatus.currentRecord.comment
+                },
+                newStatus: editedGate.deliveryStatus.completionStatus.currentRecord.status,
+                newComment : editedGate.deliveryStatus.completionStatus.currentRecord.comment
+            },
+            projectStatusAreaReviews : []
         },
-
-        budgetReview : {
-            currentAmount: editedGate.budget.currentRecord.amount,
-            newAmount: editedGate.budget.currentRecord.amount
-        },
-        outcomeReviews : [],
         performances: {
             duration: {
-                baselineDurationReviews: [],
-                estimateDurationReviews: [],
-                actualDurationReviews: []
+                estimateDurationReviews: []
             },
             cost: {
-                baselineCostReviews: [],
-                estimateCostReviews: [],
-                actualCostReviews: []
+                estimateCostReviews: []
             },
             completion: {
-                baselineCompletionReviews: [],
-                estimateCompletionReviews: [],
-                actualCompletionReviews: []
+                estimateCompletionReviews: []
             }
         },
         user: req.user._id
     });
 
-    // Create outcome reviews
+    // Create outcome status reviews
     _.each(editedGate.outcomes, function(outcome){
-        newGateReview.outcomeReviews.push({
+        newStatusUpdate.outcomeStatusReviews.push({
             outcome : {
                 _id: outcome._id,
                 name: outcome.name,
-                score: {
+                status: {
                     currentRecord: {
-                        score: outcome.score.currentRecord.score,
-                        comment :outcome.score.currentRecord.comment
+                        status: outcome.status.currentRecord.status,
+                        comment :outcome.status.currentRecord.comment
                     }
                 }
             },
-            newScore:  outcome.score.currentRecord.score,
-            newComment:  outcome.score.currentRecord.comment
+            newStatus:  outcome.status.currentRecord.status,
+            newComment:  outcome.status.currentRecord.comment
+        });
+    });
+
+    // Create project status areas reviews
+    _.each(editedGate.deliveryStatus.projectStatusAreas, function(area){
+        newStatusUpdate.deliveryStatus.projectStatusAreaReviews.push({
+            projectStatusArea : {
+                _id: area._id,
+                statusArea: {
+                    _id: area.statusArea._id,
+                    name: area.statusArea.name
+                },
+                currentRecord: {
+                    status: area.currentRecord.status,
+                    comment : area.currentRecord.comment
+                }
+            },
+            newStatus:  area.currentRecord.status,
+            newComment:  area.currentRecord.comment
         });
     });
 
     // Create durations
-    _.each(editedGate.performances.duration.baselineDurations, function(performance){
-        newGateReview.performances.duration.baselineDurationReviews.push({
-            baselineDuration: {
-                _id: performance._id,
-                currentRecord: {
-                    gateDate: performance.currentRecord.gateDate
-                },
-                targetGate:{
-                    _id: performance.targetGate._id,
-                    name: performance.targetGate.name,
-                    position: performance.targetGate.position
-                }
-            },
-            newDate: performance.currentRecord.gateDate
-        });
-    });
     _.each(editedGate.performances.duration.estimateDurations, function(performance){
-        newGateReview.performances.duration.estimateDurationReviews.push({
+        newStatusUpdate.performances.duration.estimateDurationReviews.push({
             estimateDuration: {
-                _id: performance._id,
-                currentRecord: {
-                    gateDate: performance.currentRecord.gateDate
-                },
-                targetGate:{
-                    _id: performance.targetGate._id,
-                    name: performance.targetGate.name,
-                    position: performance.targetGate.position
-                }
-            },
-            newDate: performance.currentRecord.gateDate
-        });
-    });
-    _.each(editedGate.performances.duration.actualDurations, function(performance){
-        newGateReview.performances.duration.actualDurationReviews.push({
-            actualDuration: {
                 _id: performance._id,
                 currentRecord: {
                     gateDate: performance.currentRecord.gateDate
@@ -134,24 +133,8 @@ exports.createStatusUpdate = function(req, res){
     });
 
     // Create costs
-    _.each(editedGate.performances.cost.baselineCosts, function(performance){
-        newGateReview.performances.cost.baselineCostReviews.push({
-            baselineCost:{
-                _id: performance._id,
-                currentRecord: {
-                    cost: performance.currentRecord.cost
-                },
-                targetGate:{
-                    _id: performance.targetGate._id,
-                    name: performance.targetGate.name,
-                    position: performance.targetGate.position
-                }
-            },
-            newCost: performance.currentRecord.cost
-        });
-    });
     _.each(editedGate.performances.cost.estimateCosts, function(performance){
-        newGateReview.performances.cost.estimateCostReviews.push({
+        newStatusUpdate.performances.cost.estimateCostReviews.push({
             estimateCost: {
                 _id: performance._id,
                 currentRecord: {
@@ -166,42 +149,11 @@ exports.createStatusUpdate = function(req, res){
             newCost: performance.currentRecord.cost
         });
     });
-    _.each(editedGate.performances.cost.actualCosts, function(performance){
-        newGateReview.performances.cost.actualCostReviews.push({
-            actualCost: {
-                _id: performance._id,
-                currentRecord: {
-                    cost: performance.currentRecord.cost
-                },
-                targetGate:{
-                    _id: performance.targetGate._id,
-                    name: performance.targetGate.name,
-                    position: performance.targetGate.position
-                }
-            },
-            newCost: performance.currentRecord.cost
-        });
-    });
+
 
     // Create completions
-    _.each(editedGate.performances.completion.baselineCompletions, function(performance){
-        newGateReview.performances.completion.baselineCompletionReviews.push({
-            baselineCompletion: {
-                _id: performance._id,
-                currentRecord: {
-                    completion: performance.currentRecord.completion
-                },
-                targetGate:{
-                    _id: performance.targetGate._id,
-                    name: performance.targetGate.name,
-                    position: performance.targetGate.position
-                }
-            },
-            newCompletion: performance.currentRecord.completion
-        });
-    });
     _.each(editedGate.performances.completion.estimateCompletions, function(performance){
-        newGateReview.performances.completion.estimateCompletionReviews.push({
+        newStatusUpdate.performances.completion.estimateCompletionReviews.push({
             estimateCompletion: {
                 _id: performance._id,
                 currentRecord: {
@@ -216,24 +168,8 @@ exports.createStatusUpdate = function(req, res){
             newCompletion: performance.currentRecord.completion
         });
     });
-    _.each(editedGate.performances.completion.actualCompletions, function(performance){
-        newGateReview.performances.completion.actualCompletionReviews.push({
-            actualCompletion: {
-                _id: performance._id,
-                currentRecord: {
-                    completion: performance.currentRecord.completion
-                },
-                targetGate:{
-                    _id: performance.targetGate._id,
-                    name: performance.targetGate.name,
-                    position: performance.targetGate.position
-                }
-            },
-            newCompletion: performance.currentRecord.completion
-        });
-    });
 
-    editedGate.gateReviews.push(newGateReview);
+    editedGate.projectStatusUpdates.push(newStatusUpdate);
 
     project.save(function(err){
         if (err) {
@@ -242,7 +178,7 @@ exports.createStatusUpdate = function(req, res){
                 message: errorHandler.getErrorMessage(err)
             });
         } else {
-            res.jsonp(newGateReview);
+            res.jsonp(newStatusUpdate);
         }
     });
 
@@ -256,7 +192,7 @@ exports.deleteStatusUpdate = function(req, res){
         return gate._id.equals(req.params.projectGateId);
     });
 
-    var deletedGateReview = editedGate.gateReviews.id(req.params.gateReviewId).remove();
+    var deletedDocument = editedGate.projectStatusUpdates.id(req.params.projectStatusUpdateId).remove();
 
     project.save(function(err) {
         if (err) {
@@ -265,7 +201,7 @@ exports.deleteStatusUpdate = function(req, res){
                 message: errorHandler.getErrorMessage(err)
             });
         } else {
-            res.jsonp(deletedGateReview);
+            res.jsonp(deletedDocument);
         }
     });
 };
@@ -281,14 +217,14 @@ exports.updateStatusUpdateHeader = function(req, res){
         return gate._id.equals(req.params.projectGateId);
     });
 
-    var editedGateReview = editedGate.gateReviews.id(req.params.gateReviewId);
+    var editedStatusUpdate = editedGate.projectStatusUpdates.id(req.params.projectStatusUpdateId);
 
-    editedGateReview.user = req.user;
-    editedGateReview.created = Date.now();
+    editedStatusUpdate.user = req.user;
+    editedStatusUpdate.created = Date.now();
 
-    editedGateReview.reviewDate = req.body.reviewDate;
-    editedGateReview.title = req.body.title;
-    editedGateReview.overallComment = req.body.overallComment;
+    editedStatusUpdate.updateDate = req.body.updateDate;
+    editedStatusUpdate.title = req.body.title;
+    editedStatusUpdate.description = req.body.description;
 
     project.save(function(err){
         if (err) {
@@ -296,7 +232,7 @@ exports.updateStatusUpdateHeader = function(req, res){
                 message: errorHandler.getErrorMessage(err)
             });
         } else {
-            res.jsonp(editedGateReview);
+            res.jsonp(editedStatusUpdate);
         }
     });
 };
@@ -312,13 +248,13 @@ exports.updateOverallDeliveryStatus = function(req, res){
         return gate._id.equals(req.params.projectGateId);
     });
 
-    var editedGateReview = editedGate.gateReviews.id(req.params.gateReviewId);
+    var editedStatusUpdate = editedGate.projectStatusUpdates.id(req.params.projectStatusUpdateId);
 
-    editedGateReview.user = req.user;
-    editedGateReview.created = Date.now();
+    editedStatusUpdate.user = req.user;
+    editedStatusUpdate.created = Date.now();
 
-    editedGateReview.gateStatusReview.newStatus = req.body.gateStatusReview.newStatus;
-    editedGateReview.gateStatusReview.newCompleted = req.body.gateStatusReview.newCompleted;
+    editedStatusUpdate.deliveryStatus.overallStatusReview.newStatus = req.body.deliveryStatus.overallStatusReview.newStatus;
+    editedStatusUpdate.deliveryStatus.overallStatusReview.newComment = req.body.deliveryStatus.overallStatusReview.newComment;
 
     project.save(function(err){
         if (err) {
@@ -326,7 +262,7 @@ exports.updateOverallDeliveryStatus = function(req, res){
                 message: errorHandler.getErrorMessage(err)
             });
         } else {
-            res.jsonp(editedGateReview);
+            res.jsonp(editedStatusUpdate);
         }
     });
 
@@ -340,13 +276,13 @@ exports.updateDurationDeliveryStatus = function(req, res){
         return gate._id.equals(req.params.projectGateId);
     });
 
-    var editedGateReview = editedGate.gateReviews.id(req.params.gateReviewId);
+    var editedStatusUpdate = editedGate.projectStatusUpdates.id(req.params.projectStatusUpdateId);
 
-    editedGateReview.user = req.user;
-    editedGateReview.created = Date.now();
+    editedStatusUpdate.user = req.user;
+    editedStatusUpdate.created = Date.now();
 
-    editedGateReview.gateStatusReview.newStatus = req.body.gateStatusReview.newStatus;
-    editedGateReview.gateStatusReview.newCompleted = req.body.gateStatusReview.newCompleted;
+    editedStatusUpdate.deliveryStatus.durationStatusReview.newStatus = req.body.deliveryStatus.durationStatusReview.newStatus;
+    editedStatusUpdate.deliveryStatus.durationStatusReview.newComment = req.body.deliveryStatus.durationStatusReview.newComment;
 
     project.save(function(err){
         if (err) {
@@ -354,7 +290,7 @@ exports.updateDurationDeliveryStatus = function(req, res){
                 message: errorHandler.getErrorMessage(err)
             });
         } else {
-            res.jsonp(editedGateReview);
+            res.jsonp(editedStatusUpdate);
         }
     });
 
@@ -368,13 +304,13 @@ exports.updateCostDeliveryStatus = function(req, res){
         return gate._id.equals(req.params.projectGateId);
     });
 
-    var editedGateReview = editedGate.gateReviews.id(req.params.gateReviewId);
+    var editedStatusUpdate = editedGate.projectStatusUpdates.id(req.params.projectStatusUpdateId);
 
-    editedGateReview.user = req.user;
-    editedGateReview.created = Date.now();
+    editedStatusUpdate.user = req.user;
+    editedStatusUpdate.created = Date.now();
 
-    editedGateReview.gateStatusReview.newStatus = req.body.gateStatusReview.newStatus;
-    editedGateReview.gateStatusReview.newCompleted = req.body.gateStatusReview.newCompleted;
+    editedStatusUpdate.deliveryStatus.costStatusReview.newStatus = req.body.deliveryStatus.costStatusReview.newStatus;
+    editedStatusUpdate.deliveryStatus.costStatusReview.newComment = req.body.deliveryStatus.costStatusReview.newComment;
 
     project.save(function(err){
         if (err) {
@@ -382,7 +318,7 @@ exports.updateCostDeliveryStatus = function(req, res){
                 message: errorHandler.getErrorMessage(err)
             });
         } else {
-            res.jsonp(editedGateReview);
+            res.jsonp(editedStatusUpdate);
         }
     });
 
@@ -396,13 +332,13 @@ exports.updateCompletionDeliveryStatus = function(req, res){
         return gate._id.equals(req.params.projectGateId);
     });
 
-    var editedGateReview = editedGate.gateReviews.id(req.params.gateReviewId);
+    var editedStatusUpdate = editedGate.projectStatusUpdates.id(req.params.projectStatusUpdateId);
 
-    editedGateReview.user = req.user;
-    editedGateReview.created = Date.now();
+    editedStatusUpdate.user = req.user;
+    editedStatusUpdate.created = Date.now();
 
-    editedGateReview.gateStatusReview.newStatus = req.body.gateStatusReview.newStatus;
-    editedGateReview.gateStatusReview.newCompleted = req.body.gateStatusReview.newCompleted;
+    editedStatusUpdate.deliveryStatus.completionStatusReview.newStatus = req.body.deliveryStatus.completionStatusReview.newStatus;
+    editedStatusUpdate.deliveryStatus.completionStatusReview.newComment = req.body.deliveryStatus.completionStatusReview.newComment;
 
     project.save(function(err){
         if (err) {
@@ -410,7 +346,7 @@ exports.updateCompletionDeliveryStatus = function(req, res){
                 message: errorHandler.getErrorMessage(err)
             });
         } else {
-            res.jsonp(editedGateReview);
+            res.jsonp(editedStatusUpdate);
         }
     });
 
@@ -427,14 +363,14 @@ exports.updateStatusAreaReview = function(req, res){
         return gate._id.equals(req.params.projectGateId);
     });
 
-    var editedGateReview = editedGate.gateReviews.id(req.params.gateReviewId);
-    var editedOutcomeReview = editedGateReview.outcomeReviews.id(req.params.outcomeReviewId);
+    var editedStatusUpdate = editedGate.projectStatusUpdates.id(req.params.projectStatusUpdateId);
+    var editedStatusAreaReview = editedStatusUpdate.deliveryStatus.projectStatusAreaReviews.id(req.params.statusAreaReviewId);
 
-    editedGateReview.user = req.user;
-    editedGateReview.created = Date.now();
+    editedStatusUpdate.user = req.user;
+    editedStatusUpdate.created = Date.now();
 
-    editedOutcomeReview.newScore = req.body.newScore;
-    editedOutcomeReview.newComment = req.body.newComment;
+    editedStatusAreaReview.newStatus = req.body.newStatus;
+    editedStatusAreaReview.newComment = req.body.newComment;
 
     project.save(function(err){
         if (err) {
@@ -442,7 +378,7 @@ exports.updateStatusAreaReview = function(req, res){
                 message: errorHandler.getErrorMessage(err)
             });
         } else {
-            res.jsonp(editedOutcomeReview);
+            res.jsonp(editedStatusAreaReview);
         }
     });
 
@@ -451,7 +387,7 @@ exports.updateStatusAreaReview = function(req, res){
 
 // Outcomes
 
-exports.updateOutcomeReviewForSU = function(req, res){
+exports.updateOutcomeStatusReview = function(req, res){
 
     var project = req.project ;
 
@@ -459,14 +395,14 @@ exports.updateOutcomeReviewForSU = function(req, res){
         return gate._id.equals(req.params.projectGateId);
     });
 
-    var editedGateReview = editedGate.gateReviews.id(req.params.gateReviewId);
-    var editedOutcomeReview = editedGateReview.outcomeReviews.id(req.params.outcomeReviewId);
+    var editedStatusUpdate = editedGate.projectStatusUpdates.id(req.params.projectStatusUpdateId);
+    var editedOutcomeStatusReview = editedStatusUpdate.outcomeStatusReviews.id(req.params.outcomeStatusReviewId);
 
-    editedGateReview.user = req.user;
-    editedGateReview.created = Date.now();
+    editedStatusUpdate.user = req.user;
+    editedStatusUpdate.created = Date.now();
 
-    editedOutcomeReview.newScore = req.body.newScore;
-    editedOutcomeReview.newComment = req.body.newComment;
+    editedOutcomeStatusReview.newStatus = req.body.newStatus;
+    editedOutcomeStatusReview.newComment = req.body.newComment;
 
     project.save(function(err){
         if (err) {
@@ -474,7 +410,7 @@ exports.updateOutcomeReviewForSU = function(req, res){
                 message: errorHandler.getErrorMessage(err)
             });
         } else {
-            res.jsonp(editedOutcomeReview);
+            res.jsonp(editedOutcomeStatusReview);
         }
     });
 
@@ -523,13 +459,13 @@ exports.updateEstimateDurationReviewForSU = function(req, res){
         return gate._id.equals(req.params.projectGateId);
     });
 
-    var editedGateReview = editedGate.gateReviews.id(req.params.gateReviewId);
-    editedGateReview.user = req.user;
-    editedGateReview.created = Date.now();
+    var editedStatusUpdate = editedGate.projectStatusUpdates.id(req.params.projectStatusUpdateId);
+    editedStatusUpdate.user = req.user;
+    editedStatusUpdate.created = Date.now();
 
     var performanceName = 'estimateDuration';
 
-    var performanceReviewsArray = editedGateReview.performances.duration.estimateDurationReviews;
+    var performanceReviewsArray = editedStatusUpdate.performances.duration.estimateDurationReviews;
 
     var editedPerformanceReview = performanceReviewsArray.id(req.params.estimateDurationReviewId);
 
@@ -565,12 +501,12 @@ exports.updateEstimateCostReviewForSU = function(req, res){
         return gate._id.equals(req.params.projectGateId);
     });
 
-    var editedGateReview = editedGate.gateReviews.id(req.params.gateReviewId);
+    var editedStatusUpdate = editedGate.projectStatusUpdates.id(req.params.projectStatusUpdateId);
 
-    var editedPerformanceReview = editedGateReview.performances.cost.estimateCostReviews.id(req.params.estimateCostReviewId);
+    var editedPerformanceReview = editedStatusUpdate.performances.cost.estimateCostReviews.id(req.params.estimateCostReviewId);
 
-    editedGateReview.user = req.user;
-    editedGateReview.created = Date.now();
+    editedStatusUpdate.user = req.user;
+    editedStatusUpdate.created = Date.now();
 
     editedPerformanceReview.newCost = req.body.newCost;
 
@@ -594,12 +530,12 @@ exports.updateEstimateCompletionReviewForSU = function(req, res){
         return gate._id.equals(req.params.projectGateId);
     });
 
-    var editedGateReview = editedGate.gateReviews.id(req.params.gateReviewId);
+    var editedStatusUpdate = editedGate.projectStatusUpdates.id(req.params.projectStatusUpdateId);
 
-    var editedPerformanceReview = editedGateReview.performances.completion.estimateCompletionReviews.id(req.params.estimateCompletionReviewId);
+    var editedPerformanceReview = editedStatusUpdate.performances.completion.estimateCompletionReviews.id(req.params.estimateCompletionReviewId);
 
-    editedGateReview.user = req.user;
-    editedGateReview.created = Date.now();
+    editedStatusUpdate.user = req.user;
+    editedStatusUpdate.created = Date.now();
 
     editedPerformanceReview.newCompletion = req.body.newCompletion;
 
@@ -621,62 +557,28 @@ var setSubmitMissingFields = function(gateReview){
 
     var missingFields = [];
 
-    if(!gateReview.budgetReview.newAmount){
-        missingFields.push('Budget amount');
-    }
-
-    _.each(gateReview.performances.duration.baselineDurationReviews, function(performanceReview){
-        if(!performanceReview.newDate){
-            missingFields.push('Baseline date for ' + performanceReview.baselineDuration.targetGate.name);
-        }
-    });
     _.each(gateReview.performances.duration.estimateDurationReviews, function(performanceReview){
         if(!performanceReview.newDate){
             missingFields.push('Estimate date for ' + performanceReview.estimateDuration.targetGate.name);
         }
     });
-    _.each(gateReview.performances.duration.actualDurationReviews, function(performanceReview){
-        if(!performanceReview.newDate && gateReview.gateStatusReview.newCompleted){
-            missingFields.push('Actual date for ' + performanceReview.baselineDuration.targetGate.name);
-        }
-    });
 
-    _.each(gateReview.performances.cost.baselineCostReviews, function(performanceReview){
-        if(!performanceReview.newCost){
-            missingFields.push('Baseline cost for ' + performanceReview.baselineCost.targetGate.name);
-        }
-    });
     _.each(gateReview.performances.cost.estimateCostReviews, function(performanceReview){
         if(!performanceReview.newCost){
             missingFields.push('Estimate cost for ' + performanceReview.estimateCost.targetGate.name);
         }
     });
-    _.each(gateReview.performances.cost.actualCostReviews, function(performanceReview){
-        if(!performanceReview.newCost && gateReview.gateStatusReview.newCompleted){
-            missingFields.push('Actual cost for ' + performanceReview.baselineCost.targetGate.name);
-        }
-    });
 
-    _.each(gateReview.performances.completion.baselineCompletionReviews, function(performanceReview){
-        if(!performanceReview.newCompletion){
-            missingFields.push('Baseline completion for ' + performanceReview.baselineCompletion.targetGate.name);
-        }
-    });
     _.each(gateReview.performances.completion.estimateCompletionReviews, function(performanceReview){
         if(!performanceReview.newCompletion){
             missingFields.push('Estimate completion for ' + performanceReview.estimateCompletion.targetGate.name);
-        }
-    });
-    _.each(gateReview.performances.completion.actualCompletionReviews, function(performanceReview){
-        if(!performanceReview.newCompletion && gateReview.gateStatusReview.newCompleted){
-            missingFields.push('Actual completion for ' + performanceReview.baselineCompletion.targetGate.name);
         }
     });
 
     return missingFields;
 };
 
-var checkDateConsistency = function(editedGateReview, editedGate, project){
+var checkDateConsistency = function(editedStatusUpdate, editedGate, project){
     // Check that this gate baseline/estimate/actual are not earlier than previous gate or later than next gate
 
     var gates = project.process.gates;
@@ -685,83 +587,40 @@ var checkDateConsistency = function(editedGateReview, editedGate, project){
 
     // Gate Review new dates
 
-    var thisGate_BaselineDurationReview_NewDate = _.find(editedGateReview.performances.duration.baselineDurationReviews, function(performanceReview){
-        return performanceReview.baselineDuration.targetGate._id.equals(editedGate._id);
-    }).newDate;
-    // thisGate_BaselineDurationReview_NewDate = thisGate_BaselineDurationReview_NewDate && new Date(thisGate_BaselineDurationReview_NewDate);
 
-    var thisGate_EstimateDurationReview_NewDate = _.find(editedGateReview.performances.duration.estimateDurationReviews, function(performanceReview){
+    var thisGate_EstimateDurationReview_NewDate = _.find(editedStatusUpdate.performances.duration.estimateDurationReviews, function(performanceReview){
         return performanceReview.estimateDuration.targetGate._id.equals(editedGate._id);
     }).newDate;
     // thisGate_EstimateDurationReview_NewDate = thisGate_EstimateDurationReview_NewDate && new Date(thisGate_EstimateDurationReview_NewDate);
-
-    var thisGate_ActualDurationReview_NewDate = _.find(editedGateReview.performances.duration.actualDurationReviews, function(performanceReview){
-        return performanceReview.actualDuration.targetGate._id.equals(editedGate._id);
-    }).newDate;
-    // thisGate_ActualDurationReview_NewDate = thisGate_ActualDurationReview_NewDate && new Date(thisGate_ActualDurationReview_NewDate);
 
     _.each(gates, function(gate){
 
         // PREVIOUS gates dates (for itself as a target). Skip if editedGate is START
         if((gate.position < editedGate.position) && (!editedGate._id.equals(project.process.startGate))){
 
-            var previousGate_BaselineDuration_CurrentDate = _.find(gate.performances.duration.baselineDurations, function(performance){
-                return performance.targetGate._id.equals(gate._id);
-            }).currentRecord.gateDate;
-            // previousGate_BaselineDuration_CurrentDate = previousGate_BaselineDuration_CurrentDate && new Date(previousGate_BaselineDuration_CurrentDate);
-
             var previousGate_EstimateDuration_CurrentDate = _.find(gate.performances.duration.estimateDurations, function(performance){
                 return performance.targetGate._id.equals(gate._id);
             }).currentRecord.gateDate;
             // previousGate_EstimateDuration_CurrentDate = previousGate_EstimateDuration_CurrentDate && new Date(previousGate_EstimateDuration_CurrentDate);
 
-            var previousGate_ActualDuration_CurrentDate = _.find(gate.performances.duration.actualDurations, function(performance){
-                return performance.targetGate._id.equals(gate._id);
-            }).currentRecord.gateDate;
-            // previousGate_ActualDuration_CurrentDate = previousGate_ActualDuration_CurrentDate && new Date(previousGate_ActualDuration_CurrentDate);
-
-            if(previousGate_BaselineDuration_CurrentDate && thisGate_BaselineDurationReview_NewDate && (previousGate_BaselineDuration_CurrentDate > thisGate_BaselineDurationReview_NewDate)){
-                dateConsistencyErrors.push(editedGate.name + ' Baseline date ' + thisGate_BaselineDurationReview_NewDate.toDateString() + ' cannot be earlier than previous gate ' + gate.name + ' ' + previousGate_BaselineDuration_CurrentDate.toDateString());
-            }
-
             if(previousGate_EstimateDuration_CurrentDate && thisGate_EstimateDurationReview_NewDate && (previousGate_EstimateDuration_CurrentDate > thisGate_EstimateDurationReview_NewDate)){
                 dateConsistencyErrors.push(editedGate.name + ' Estimate date ' + thisGate_EstimateDurationReview_NewDate.toDateString() + ' cannot be earlier than previous gate ' + gate.name + ' ' + previousGate_EstimateDuration_CurrentDate.toDateString());
             }
 
-            if(previousGate_ActualDuration_CurrentDate && thisGate_ActualDurationReview_NewDate && (previousGate_ActualDuration_CurrentDate > thisGate_ActualDurationReview_NewDate)){
-                dateConsistencyErrors.push(editedGate.name + ' Actual date ' + thisGate_ActualDurationReview_NewDate.toDateString() + ' cannot be earlier than previous gate ' + gate.name + ' ' + previousGate_ActualDuration_CurrentDate.toDateString());
-            }
         }
 
         // NEXT gates dates (for next gate as a target). Skip is editedGate is END
         if((gate.position > editedGate.position) && (!editedGate._id.equals(project.process.endGate))){
-
-            var nextGate_BaselineDuration_CurrentDate = _.find(gate.performances.duration.baselineDurations, function(performance){
-                return performance.targetGate._id.equals(gate._id);
-            }).currentRecord.gateDate;
-            // nextGate_BaselineDuration_CurrentDate = nextGate_BaselineDuration_CurrentDate && new Date(nextGate_BaselineDuration_CurrentDate);
 
             var nextGate_EstimateDuration_CurrentDate = _.find(gate.performances.duration.estimateDurations, function(performance){
                 return performance.targetGate._id.equals(gate._id);
             }).currentRecord.gateDate;
             // nextGate_EstimateDuration_CurrentDate = nextGate_EstimateDuration_CurrentDate && new Date(nextGate_EstimateDuration_CurrentDate);
 
-            var nextGate_ActualDuration_CurrentDate = _.find(gate.performances.duration.actualDurations, function(performance){
-                return performance.targetGate._id.equals(gate._id);
-            }).currentRecord.gateDate;
-            // nextGate_ActualDuration_CurrentDate = nextGate_ActualDuration_CurrentDate && new Date(nextGate_ActualDuration_CurrentDate);
-
-            if(nextGate_BaselineDuration_CurrentDate && thisGate_BaselineDurationReview_NewDate && (nextGate_BaselineDuration_CurrentDate < thisGate_BaselineDurationReview_NewDate)){
-                dateConsistencyErrors.push(editedGate.name + ' Baseline date ' + thisGate_BaselineDurationReview_NewDate.toDateString() + ' cannot be later than next gate ' + gate.name + ' ' + nextGate_BaselineDuration_CurrentDate.toDateString());
-            }
-
             if(nextGate_EstimateDuration_CurrentDate && thisGate_EstimateDurationReview_NewDate && (nextGate_EstimateDuration_CurrentDate < thisGate_EstimateDurationReview_NewDate)){
                 dateConsistencyErrors.push(editedGate.name + ' Estimate date ' + thisGate_EstimateDurationReview_NewDate.toDateString() + ' cannot be later than next gate ' + gate.name + ' ' + nextGate_EstimateDuration_CurrentDate.toDateString());
             }
 
-            if(nextGate_ActualDuration_CurrentDate && thisGate_ActualDurationReview_NewDate && (nextGate_ActualDuration_CurrentDate < thisGate_ActualDurationReview_NewDate)){
-                dateConsistencyErrors.push(editedGate.name + ' Actual date ' + thisGate_ActualDurationReview_NewDate.toDateString() + ' cannot be later than next gate ' + gate.name + ' ' + nextGate_ActualDuration_CurrentDate.toDateString());
-            }
         }
 
     });
@@ -781,25 +640,25 @@ exports.submitStatusUpdate = function(req, res) {
         return gate._id.equals(req.params.projectGateId);
     });
 
-    var editedGateReview = editedGate.gateReviews.id(req.params.gateReviewId);
+    var editedStatusUpdate = editedGate.projectStatusUpdates.id(req.params.projectStatusUpdateId);
 
-    editedGateReview.approval.history.push({
-        approvalState : editedGateReview.approval.currentRecord.approvalState,
+    editedStatusUpdate.approval.history.push({
+        approvalState : editedStatusUpdate.approval.currentRecord.approvalState,
         user : {
-            _id: editedGateReview.approval.currentRecord.user._id,
-            displayName: editedGateReview.approval.currentRecord.user.displayName
+            _id: editedStatusUpdate.approval.currentRecord.user._id,
+            displayName: editedStatusUpdate.approval.currentRecord.user.displayName
         },
-        created : editedGateReview.approval.currentRecord.created
+        created : editedStatusUpdate.approval.currentRecord.created
     });
 
-    editedGateReview.approval.currentRecord.approvalState = 'submitted';
-    editedGateReview.approval.currentRecord.user = {_id: req.user._id, displayName: req.user.displayName};
-    editedGateReview.approval.currentRecord.created = Date.now();
+    editedStatusUpdate.approval.currentRecord.approvalState = 'submitted';
+    editedStatusUpdate.approval.currentRecord.user = {_id: req.user._id, displayName: req.user.displayName};
+    editedStatusUpdate.approval.currentRecord.created = Date.now();
 
     // Checks
 
-    var missingFields = setSubmitMissingFields(editedGateReview);
-    var dateConsistencyErrors = checkDateConsistency(editedGateReview, editedGate, project);
+    var missingFields = setSubmitMissingFields(editedStatusUpdate);
+    var dateConsistencyErrors = checkDateConsistency(editedStatusUpdate, editedGate, project);
 
     if((missingFields.length > 0) || (dateConsistencyErrors.length > 0)){
         console.log(missingFields);
@@ -818,7 +677,7 @@ exports.submitStatusUpdate = function(req, res) {
                 message: errorHandler.getErrorMessage(err)
             });
         } else {
-            res.jsonp(editedGateReview);
+            res.jsonp(editedStatusUpdate);
         }
     });
 
@@ -834,12 +693,12 @@ exports.approveStatusUpdate = function(req, res) {
         return gate._id.equals(req.params.projectGateId);
     });
 
-    var editedGateReview = editedGate.gateReviews.id(req.params.gateReviewId);
+    var editedStatusUpdate = editedGate.projectStatusUpdates.id(req.params.projectStatusUpdateId);
 
     // Checks
 
-    var missingFields = setSubmitMissingFields(editedGateReview);
-    var dateConsistencyErrors = checkDateConsistency(editedGateReview, editedGate, project);
+    var missingFields = setSubmitMissingFields(editedStatusUpdate);
+    var dateConsistencyErrors = checkDateConsistency(editedStatusUpdate, editedGate, project);
 
     if((missingFields.length > 0) || (dateConsistencyErrors.length > 0)){
         console.log(missingFields);
@@ -849,147 +708,133 @@ exports.approveStatusUpdate = function(req, res) {
         });
     }
 
-    // Update editedGateReview with req.body information
+    // Update editedStatusUpdate with req.body information
 
-    editedGateReview.approval.history.push({
-        approvalState : editedGateReview.approval.currentRecord.approvalState,
+    editedStatusUpdate.approval.history.push({
+        approvalState : editedStatusUpdate.approval.currentRecord.approvalState,
         user : {
-            _id: editedGateReview.approval.currentRecord.user._id,
-            displayName: editedGateReview.approval.currentRecord.user.displayName
+            _id: editedStatusUpdate.approval.currentRecord.user._id,
+            displayName: editedStatusUpdate.approval.currentRecord.user.displayName
         },
-        created : editedGateReview.approval.currentRecord.created
+        created : editedStatusUpdate.approval.currentRecord.created
     });
 
-    editedGateReview.approval.currentRecord.approvalState = 'approved';
-    editedGateReview.approval.currentRecord.user = {_id: req.user._id, displayName: req.user.displayName};
-    editedGateReview.approval.currentRecord.created = Date.now();
+    editedStatusUpdate.approval.currentRecord.approvalState = 'approved';
+    editedStatusUpdate.approval.currentRecord.user = {_id: req.user._id, displayName: req.user.displayName};
+    editedStatusUpdate.approval.currentRecord.created = Date.now();
 
-    // Apply changes to OUTCOMES
+    // Apply changes to GATE OUTCOMES
 
-    _.each(editedGateReview.outcomeReviews, function(outcomeReview){
-        var editedOutcome = editedGate.outcomes.id(outcomeReview.outcome._id);
-        editedOutcome.score.history.push({
-            sourceGateReview : editedOutcome.score.currentRecord.sourceGateReview,
-            score: editedOutcome.score.currentRecord.score,
-            comment: editedOutcome.score.currentRecord.comment,
-            created: editedOutcome.score.currentRecord.created,
-            user: editedOutcome.score.currentRecord.user
+    _.each(editedStatusUpdate.outcomeStatusReviews, function(outcomeStatusReview){
+        var editedOutcome = editedGate.outcomes.id(outcomeStatusReview.outcome._id);
+        editedOutcome.status.history.push({
+            sourceStatusUpdate : editedOutcome.status.currentRecord.sourceStatusUpdate,
+            status: editedOutcome.status.currentRecord.status,
+            comment: editedOutcome.status.currentRecord.comment,
+            created: editedOutcome.status.currentRecord.created,
+            user: editedOutcome.status.currentRecord.user
         });
-        editedOutcome.score.currentRecord.sourceGateReview = editedGateReview._id;
-        editedOutcome.score.currentRecord.score = outcomeReview.newScore;
-        editedOutcome.score.currentRecord.comment = outcomeReview.newComment;
-        editedOutcome.score.currentRecord.created = Date.now();
-        editedOutcome.score.currentRecord.user = {_id: req.user._id, displayName: req.user.displayName};
+        editedOutcome.status.currentRecord.sourceStatusUpdate = editedStatusUpdate._id;
+        editedOutcome.status.currentRecord.status = outcomeStatusReview.newStatus;
+        editedOutcome.status.currentRecord.comment = outcomeStatusReview.newComment;
+        editedOutcome.status.currentRecord.created = Date.now();
+        editedOutcome.status.currentRecord.user = {_id: req.user._id, displayName: req.user.displayName};
     });
 
-    // Apply changes to GATE STATUS
 
-    editedGate.gateStatus.history.push({
-        sourceGateReview : editedGate.gateStatus.currentRecord.sourceGateReview,
-        completed : editedGate.gateStatus.currentRecord.completed,
-        currentGate : editedGate.gateStatus.currentRecord.currentGate,
-        status: editedGate.gateStatus.currentRecord.status,
-        overallScore : editedGate.gateStatus.currentRecord.overallScore,
-        created: editedGate.gateStatus.currentRecord.created,
-        user: editedGate.gateStatus.currentRecord.user
-    });
-    editedGate.gateStatus.currentRecord.sourceGateReview = editedGateReview._id;
-    editedGate.gateStatus.currentRecord.completed = editedGateReview.gateStatusReview.newCompleted;
-    //editedGate.gateStatus.currentRecord.currentGate = ... ;
-    editedGate.gateStatus.currentRecord.status = editedGateReview.gateStatusReview.newStatus;
-    editedGate.gateStatus.currentRecord.overallScore = editedGateReview.gateStatusReview.newOverallScore;
-    editedGate.gateStatus.currentRecord.created = Date.now();
-    editedGate.gateStatus.currentRecord.user = {_id: req.user._id, displayName: req.user.displayName};
+    // Apply changes to DELIVERY STATUS - Overall
 
-    // Set the CURRENT GATE flag
+    editedGate.deliveryStatus.overallStatus.history.push({
+        sourceStatusUpdate : editedGate.deliveryStatus.overallStatus.currentRecord.sourceStatusUpdate,
+        status: editedGate.deliveryStatus.overallStatus.currentRecord.status,
+        comment: editedGate.deliveryStatus.overallStatus.currentRecord.comment,
+        created: editedGate.deliveryStatus.overallStatus.currentRecord.created,
+        user: editedGate.deliveryStatus.overallStatus.currentRecord.user
+    });
+    editedGate.deliveryStatus.overallStatus.currentRecord.sourceStatusUpdate = editedStatusUpdate._id;
+    editedGate.deliveryStatus.overallStatus.currentRecord.status = editedStatusUpdate.deliveryStatus.overallStatusReview.newStatus;
+    editedGate.deliveryStatus.overallStatus.currentRecord.comment = editedStatusUpdate.deliveryStatus.overallStatusReview.newComment;
+    editedGate.deliveryStatus.overallStatus.currentRecord.created = Date.now();
+    editedGate.deliveryStatus.overallStatus.currentRecord.user = {_id: req.user._id, displayName: req.user.displayName};
 
-    // Reset the current gate flag for all the others
-    _.each(gates, function(gate){
-        gate.gateStatus.currentRecord.currentGate = false;
+    // Apply changes to DELIVERY STATUS - Duration
+
+    editedGate.deliveryStatus.durationStatus.history.push({
+        sourceStatusUpdate : editedGate.deliveryStatus.durationStatus.currentRecord.sourceStatusUpdate,
+        status: editedGate.deliveryStatus.durationStatus.currentRecord.status,
+        comment: editedGate.deliveryStatus.durationStatus.currentRecord.comment,
+        created: editedGate.deliveryStatus.durationStatus.currentRecord.created,
+        user: editedGate.deliveryStatus.durationStatus.currentRecord.user
     });
-    // Get all the completed gates. No one may be completed.
-    var completedGates = _.filter(gates, function(gate){
-        return gate.gateStatus.currentRecord.completed;
+    editedGate.deliveryStatus.durationStatus.currentRecord.sourceStatusUpdate = editedStatusUpdate._id;
+    editedGate.deliveryStatus.durationStatus.currentRecord.status = editedStatusUpdate.deliveryStatus.durationStatusReview.newStatus;
+    editedGate.deliveryStatus.durationStatus.currentRecord.comment = editedStatusUpdate.deliveryStatus.durationStatusReview.newComment;
+    editedGate.deliveryStatus.durationStatus.currentRecord.created = Date.now();
+    editedGate.deliveryStatus.durationStatus.currentRecord.user = {_id: req.user._id, displayName: req.user.displayName};
+
+    // Apply changes to DELIVERY STATUS - Cost
+
+    editedGate.deliveryStatus.costStatus.history.push({
+        sourceStatusUpdate : editedGate.deliveryStatus.costStatus.currentRecord.sourceStatusUpdate,
+        status: editedGate.deliveryStatus.costStatus.currentRecord.status,
+        comment: editedGate.deliveryStatus.costStatus.currentRecord.comment,
+        created: editedGate.deliveryStatus.costStatus.currentRecord.created,
+        user: editedGate.deliveryStatus.costStatus.currentRecord.user
     });
-    // If none is completed, set the START as current
-    if(_.isEmpty(completedGates)){
-        gates.id(project.process.startGate).gateStatus.currentRecord.currentGate = true;
-    } else {
-        // Else required because _.max is funny with null array
-        // Get the max position among the completed
-        var lastCompletedGate = _.max(completedGates, function(gate){
-            return gate.position;
+    editedGate.deliveryStatus.costStatus.currentRecord.sourceStatusUpdate = editedStatusUpdate._id;
+    editedGate.deliveryStatus.costStatus.currentRecord.status = editedStatusUpdate.deliveryStatus.costStatusReview.newStatus;
+    editedGate.deliveryStatus.costStatus.currentRecord.comment = editedStatusUpdate.deliveryStatus.costStatusReview.newComment;
+    editedGate.deliveryStatus.costStatus.currentRecord.created = Date.now();
+    editedGate.deliveryStatus.costStatus.currentRecord.user = {_id: req.user._id, displayName: req.user.displayName};
+
+    // Apply changes to DELIVERY STATUS - Completion
+
+    editedGate.deliveryStatus.completionStatus.history.push({
+        sourceStatusUpdate : editedGate.deliveryStatus.completionStatus.currentRecord.sourceStatusUpdate,
+        status: editedGate.deliveryStatus.completionStatus.currentRecord.status,
+        comment: editedGate.deliveryStatus.completionStatus.currentRecord.comment,
+        created: editedGate.deliveryStatus.completionStatus.currentRecord.created,
+        user: editedGate.deliveryStatus.completionStatus.currentRecord.user
+    });
+    editedGate.deliveryStatus.completionStatus.currentRecord.sourceStatusUpdate = editedStatusUpdate._id;
+    editedGate.deliveryStatus.completionStatus.currentRecord.status = editedStatusUpdate.deliveryStatus.completionStatusReview.newStatus;
+    editedGate.deliveryStatus.completionStatus.currentRecord.comment = editedStatusUpdate.deliveryStatus.completionStatusReview.newComment;
+    editedGate.deliveryStatus.completionStatus.currentRecord.created = Date.now();
+    editedGate.deliveryStatus.completionStatus.currentRecord.user = {_id: req.user._id, displayName: req.user.displayName};
+
+
+    // Apply changes to DELIVERY STATUS - Status Areas
+
+    _.each(editedStatusUpdate.deliveryStatus.projectStatusAreaReviews, function(statusAreaReview){
+        var editedProjectStatusArea = editedGate.deliveryStatus.projectStatusAreas.id(statusAreaReview.projectStatusArea._id);
+        editedProjectStatusArea.history.push({
+            sourceStatusUpdate : editedProjectStatusArea.currentRecord.sourceStatusUpdate,
+            status: editedProjectStatusArea.currentRecord.status,
+            comment: editedProjectStatusArea.currentRecord.comment,
+            created: editedProjectStatusArea.currentRecord.created,
+            user: editedProjectStatusArea.currentRecord.user
         });
-        // If the last completed is END, set it as current
-        if(lastCompletedGate._id.equals(project.process.endGate)){
-            gates.id(project.process.endGate).gateStatus.currentRecord.currentGate = true;
-        } else {
-            // Otherwise, the next one in position will be set as completed.
-            _.find(gates, function(gate){
-                return gate.position === (lastCompletedGate.position + 1);
-            }).gateStatus.currentRecord.currentGate = true;
-        }
-
-    }
-
-    // Apply changes to BUDGET
-
-    editedGate.budget.history.push({
-        sourceGateReview : editedGate.budget.currentRecord.sourceGateReview,
-        sourceChangeRequest : editedGate.budget.currentRecord.sourceChangeRequest,
-        amount : editedGate.budget.currentRecord.amount,
-        created: editedGate.budget.currentRecord.created,
-        user: editedGate.budget.currentRecord.user
+        editedProjectStatusArea.currentRecord.sourceStatusUpdate = editedStatusUpdate._id;
+        editedProjectStatusArea.currentRecord.status = statusAreaReview.newStatus;
+        editedProjectStatusArea.currentRecord.comment = statusAreaReview.newComment;
+        editedProjectStatusArea.currentRecord.created = Date.now();
+        editedProjectStatusArea.currentRecord.user = {_id: req.user._id, displayName: req.user.displayName};
     });
-    editedGate.budget.currentRecord.sourceGateReview = editedGateReview._id;
-    editedGate.budget.currentRecord.sourceChangeRequest = null;
-    editedGate.budget.currentRecord.amount = editedGateReview.budgetReview.newAmount;
-    editedGate.budget.currentRecord.created = Date.now();
-    editedGate.budget.currentRecord.user = {_id: req.user._id, displayName: req.user.displayName};
+
 
     // Apply changes to DURATION
 
-    _.each(editedGateReview.performances.duration.baselineDurationReviews, function(performanceReview){
-        var editedPerformance = editedGate.performances.duration.baselineDurations.id(performanceReview.baselineDuration._id);
-        editedPerformance.history.push({
-            sourceGateReview : editedPerformance.currentRecord.sourceGateReview,
-            sourceChangeRequest : editedPerformance.currentRecord.sourceChangeRequest,
-            gateDate: editedPerformance.currentRecord.gateDate,
-            created: editedPerformance.currentRecord.created,
-            user: editedPerformance.currentRecord.user
-        });
-        editedPerformance.currentRecord.sourceGateReview = editedGateReview._id;
-        editedPerformance.currentRecord.sourceChangeRequest = null;
-        editedPerformance.currentRecord.gateDate = performanceReview.newDate;
-        editedPerformance.currentRecord.created = Date.now();
-        editedPerformance.currentRecord.user = {_id: req.user._id, displayName: req.user.displayName};
-    });
-    _.each(editedGateReview.performances.duration.estimateDurationReviews, function(performanceReview){
+    _.each(editedStatusUpdate.performances.duration.estimateDurationReviews, function(performanceReview){
         var editedPerformance = editedGate.performances.duration.estimateDurations.id(performanceReview.estimateDuration._id);
         editedPerformance.history.push({
             sourceGateReview : editedPerformance.currentRecord.sourceGateReview,
-            sourceChangeRequest : editedPerformance.currentRecord.sourceChangeRequest,
+            sourceStatusUpdate : editedPerformance.currentRecord.sourceStatusUpdate,
             gateDate: editedPerformance.currentRecord.gateDate,
             created: editedPerformance.currentRecord.created,
             user: editedPerformance.currentRecord.user
         });
-        editedPerformance.currentRecord.sourceGateReview = editedGateReview._id;
-        editedPerformance.currentRecord.sourceChangeRequest = null;
-        editedPerformance.currentRecord.gateDate = performanceReview.newDate;
-        editedPerformance.currentRecord.created = Date.now();
-        editedPerformance.currentRecord.user = {_id: req.user._id, displayName: req.user.displayName};
-    });
-    _.each(editedGateReview.performances.duration.actualDurationReviews, function(performanceReview){
-        var editedPerformance = editedGate.performances.duration.actualDurations.id(performanceReview.actualDuration._id);
-        editedPerformance.history.push({
-            sourceGateReview : editedPerformance.currentRecord.sourceGateReview,
-            sourceChangeRequest : editedPerformance.currentRecord.sourceChangeRequest,
-            gateDate: editedPerformance.currentRecord.gateDate,
-            created: editedPerformance.currentRecord.created,
-            user: editedPerformance.currentRecord.user
-        });
-        editedPerformance.currentRecord.sourceGateReview = editedGateReview._id;
-        editedPerformance.currentRecord.sourceChangeRequest = null;
+        editedPerformance.currentRecord.sourceGateReview = null;
+        editedPerformance.currentRecord.sourceChangeRequest = editedStatusUpdate._id;
         editedPerformance.currentRecord.gateDate = performanceReview.newDate;
         editedPerformance.currentRecord.created = Date.now();
         editedPerformance.currentRecord.user = {_id: req.user._id, displayName: req.user.displayName};
@@ -997,47 +842,17 @@ exports.approveStatusUpdate = function(req, res) {
 
     // Apply changes to COST
 
-    _.each(editedGateReview.performances.cost.baselineCostReviews, function(performanceReview){
-        var editedPerformance = editedGate.performances.cost.baselineCosts.id(performanceReview.baselineCost._id);
-        editedPerformance.history.push({
-            sourceGateReview : editedPerformance.currentRecord.sourceGateReview,
-            sourceChangeRequest : editedPerformance.currentRecord.sourceChangeRequest,
-            cost: editedPerformance.currentRecord.cost,
-            created: editedPerformance.currentRecord.created,
-            user: editedPerformance.currentRecord.user
-        });
-        editedPerformance.currentRecord.sourceGateReview = editedGateReview._id;
-        editedPerformance.currentRecord.sourceChangeRequest = null;
-        editedPerformance.currentRecord.cost = performanceReview.newCost;
-        editedPerformance.currentRecord.created = Date.now();
-        editedPerformance.currentRecord.user = {_id: req.user._id, displayName: req.user.displayName};
-    });
-    _.each(editedGateReview.performances.cost.estimateCostReviews, function(performanceReview){
+    _.each(editedStatusUpdate.performances.cost.estimateCostReviews, function(performanceReview){
         var editedPerformance = editedGate.performances.cost.estimateCosts.id(performanceReview.estimateCost._id);
         editedPerformance.history.push({
             sourceGateReview : editedPerformance.currentRecord.sourceGateReview,
-            sourceChangeRequest : editedPerformance.currentRecord.sourceChangeRequest,
+            sourceStatusUpdate : editedPerformance.currentRecord.sourceStatusUpdate,
             cost: editedPerformance.currentRecord.cost,
             created: editedPerformance.currentRecord.created,
             user: editedPerformance.currentRecord.user
         });
-        editedPerformance.currentRecord.sourceGateReview = editedGateReview._id;
-        editedPerformance.currentRecord.sourceChangeRequest = null;
-        editedPerformance.currentRecord.cost = performanceReview.newCost;
-        editedPerformance.currentRecord.created = Date.now();
-        editedPerformance.currentRecord.user = {_id: req.user._id, displayName: req.user.displayName};
-    });
-    _.each(editedGateReview.performances.cost.actualCostReviews, function(performanceReview){
-        var editedPerformance = editedGate.performances.cost.actualCosts.id(performanceReview.actualCost._id);
-        editedPerformance.history.push({
-            sourceGateReview : editedPerformance.currentRecord.sourceGateReview,
-            sourceChangeRequest : editedPerformance.currentRecord.sourceChangeRequest,
-            cost: editedPerformance.currentRecord.cost,
-            created: editedPerformance.currentRecord.created,
-            user: editedPerformance.currentRecord.user
-        });
-        editedPerformance.currentRecord.sourceGateReview = editedGateReview._id;
-        editedPerformance.currentRecord.sourceChangeRequest = null;
+        editedPerformance.currentRecord.sourceGateReview = null;
+        editedPerformance.currentRecord.sourceStatusUpdate = editedStatusUpdate._id;
         editedPerformance.currentRecord.cost = performanceReview.newCost;
         editedPerformance.currentRecord.created = Date.now();
         editedPerformance.currentRecord.user = {_id: req.user._id, displayName: req.user.displayName};
@@ -1045,47 +860,17 @@ exports.approveStatusUpdate = function(req, res) {
 
     // Apply changes to COMPLETION
 
-    _.each(editedGateReview.performances.completion.baselineCompletionReviews, function(performanceReview){
-        var editedPerformance = editedGate.performances.completion.baselineCompletions.id(performanceReview.baselineCompletion._id);
-        editedPerformance.history.push({
-            sourceGateReview : editedPerformance.currentRecord.sourceGateReview,
-            sourceChangeRequest : editedPerformance.currentRecord.sourceChangeRequest,
-            completion: editedPerformance.currentRecord.completion,
-            created: editedPerformance.currentRecord.created,
-            user: editedPerformance.currentRecord.user
-        });
-        editedPerformance.currentRecord.sourceGateReview = editedGateReview._id;
-        editedPerformance.currentRecord.sourceChangeRequest = null;
-        editedPerformance.currentRecord.completion = performanceReview.newCompletion;
-        editedPerformance.currentRecord.created = Date.now();
-        editedPerformance.currentRecord.user = {_id: req.user._id, displayName: req.user.displayName};
-    });
-    _.each(editedGateReview.performances.completion.estimateCompletionReviews, function(performanceReview){
+    _.each(editedStatusUpdate.performances.completion.estimateCompletionReviews, function(performanceReview){
         var editedPerformance = editedGate.performances.completion.estimateCompletions.id(performanceReview.estimateCompletion._id);
         editedPerformance.history.push({
             sourceGateReview : editedPerformance.currentRecord.sourceGateReview,
-            sourceChangeRequest : editedPerformance.currentRecord.sourceChangeRequest,
+            sourceStatusUpdate : editedPerformance.currentRecord.sourceStatusUpdate,
             completion: editedPerformance.currentRecord.completion,
             created: editedPerformance.currentRecord.created,
             user: editedPerformance.currentRecord.user
         });
-        editedPerformance.currentRecord.sourceGateReview = editedGateReview._id;
-        editedPerformance.currentRecord.sourceChangeRequest = null;
-        editedPerformance.currentRecord.completion = performanceReview.newCompletion;
-        editedPerformance.currentRecord.created = Date.now();
-        editedPerformance.currentRecord.user = {_id: req.user._id, displayName: req.user.displayName};
-    });
-    _.each(editedGateReview.performances.completion.actualCompletionReviews, function(performanceReview){
-        var editedPerformance = editedGate.performances.completion.actualCompletions.id(performanceReview.actualCompletion._id);
-        editedPerformance.history.push({
-            sourceGateReview : editedPerformance.currentRecord.sourceGateReview,
-            sourceChangeRequest : editedPerformance.currentRecord.sourceChangeRequest,
-            completion: editedPerformance.currentRecord.completion,
-            created: editedPerformance.currentRecord.created,
-            user: editedPerformance.currentRecord.user
-        });
-        editedPerformance.currentRecord.sourceGateReview = editedGateReview._id;
-        editedPerformance.currentRecord.sourceChangeRequest = null;
+        editedPerformance.currentRecord.sourceGateReview = null;
+        editedPerformance.currentRecord.sourceStatusUpdate = editedStatusUpdate._id;
         editedPerformance.currentRecord.completion = performanceReview.newCompletion;
         editedPerformance.currentRecord.created = Date.now();
         editedPerformance.currentRecord.user = {_id: req.user._id, displayName: req.user.displayName};
@@ -1100,7 +885,7 @@ exports.approveStatusUpdate = function(req, res) {
                 message: errorHandler.getErrorMessage(err)
             });
         } else {
-            res.jsonp(editedGateReview);
+            res.jsonp(editedStatusUpdate);
         }
     });
 };
@@ -1113,20 +898,20 @@ exports.rejectStatusUpdate = function(req, res) {
         return gate._id.equals(req.params.projectGateId);
     });
 
-    var editedGateReview = editedGate.gateReviews.id(req.params.gateReviewId);
+    var editedStatusUpdate = editedGate.projectStatusUpdates.id(req.params.projectStatusUpdateId);
 
-    editedGateReview.approval.history.push({
-        approvalState : editedGateReview.approval.currentRecord.approvalState,
+    editedStatusUpdate.approval.history.push({
+        approvalState : editedStatusUpdate.approval.currentRecord.approvalState,
         user : {
-            _id: editedGateReview.approval.currentRecord.user._id,
-            displayName: editedGateReview.approval.currentRecord.user.displayName
+            _id: editedStatusUpdate.approval.currentRecord.user._id,
+            displayName: editedStatusUpdate.approval.currentRecord.user.displayName
         },
-        created : editedGateReview.approval.currentRecord.created
+        created : editedStatusUpdate.approval.currentRecord.created
     });
 
-    editedGateReview.approval.currentRecord.approvalState = 'rejected';
-    editedGateReview.approval.currentRecord.user = {_id: req.user._id, displayName: req.user.displayName};
-    editedGateReview.approval.currentRecord.created = Date.now();
+    editedStatusUpdate.approval.currentRecord.approvalState = 'rejected';
+    editedStatusUpdate.approval.currentRecord.user = {_id: req.user._id, displayName: req.user.displayName};
+    editedStatusUpdate.approval.currentRecord.created = Date.now();
 
     // No missing fields check
 
@@ -1137,7 +922,7 @@ exports.rejectStatusUpdate = function(req, res) {
                 message: errorHandler.getErrorMessage(err)
             });
         } else {
-            res.jsonp(editedGateReview);
+            res.jsonp(editedStatusUpdate);
         }
     });
 
@@ -1151,20 +936,20 @@ exports.draftStatusUpdate = function(req, res) {
         return gate._id.equals(req.params.projectGateId);
     });
 
-    var editedGateReview = editedGate.gateReviews.id(req.params.gateReviewId);
+    var editedStatusUpdate = editedGate.projectStatusUpdates.id(req.params.projectStatusUpdateId);
 
-    editedGateReview.approval.history.push({
-        approvalState : editedGateReview.approval.currentRecord.approvalState,
+    editedStatusUpdate.approval.history.push({
+        approvalState : editedStatusUpdate.approval.currentRecord.approvalState,
         user : {
-            _id: editedGateReview.approval.currentRecord.user._id,
-            displayName: editedGateReview.approval.currentRecord.user.displayName
+            _id: editedStatusUpdate.approval.currentRecord.user._id,
+            displayName: editedStatusUpdate.approval.currentRecord.user.displayName
         },
-        created : editedGateReview.approval.currentRecord.created
+        created : editedStatusUpdate.approval.currentRecord.created
     });
 
-    editedGateReview.approval.currentRecord.approvalState = 'draft';
-    editedGateReview.approval.currentRecord.user = {_id: req.user._id, displayName: req.user.displayName};
-    editedGateReview.approval.currentRecord.created = Date.now();
+    editedStatusUpdate.approval.currentRecord.approvalState = 'draft';
+    editedStatusUpdate.approval.currentRecord.user = {_id: req.user._id, displayName: req.user.displayName};
+    editedStatusUpdate.approval.currentRecord.created = Date.now();
 
     // No missing fields check
 
@@ -1175,7 +960,7 @@ exports.draftStatusUpdate = function(req, res) {
                 message: errorHandler.getErrorMessage(err)
             });
         } else {
-            res.jsonp(editedGateReview);
+            res.jsonp(editedStatusUpdate);
         }
     });
 

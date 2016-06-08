@@ -57,7 +57,7 @@
                                     <div class="panel panel-default">
                                         <div class="panel-heading">
                                             <h6 class="panel-title text-center">
-                                                Newchange request
+                                                New change request
                                             </h6>
                                         </div>
                                         <div class="panel-body">
@@ -69,7 +69,7 @@
                                                                data-ng-model="selectedGate.name" disabled>
                                                     </div>
                                                     <div class="form-group-sm col-md-4">
-                                                        <label for="">Review date</label>
+                                                        <label for="">Raised on</label>
                                                         <div class="input-group">
                                                             <input type="text" id="" class="form-control" datepicker-popup="dd-MMMM-yyyy" data-ng-model="newDocument.raisedOnDate"
                                                                    is-open="newHeaderDateOpened[selectedGate._id]" >
@@ -79,8 +79,8 @@
                                                         </div>
                                                     </div>
                                                     <div class="form-group-sm col-md-4">
-                                                        <label for="reviewTitleNew">Review title</label>
-                                                        <input id="reviewTitleNew" name="reviewTitleNew" class="form-control" type="text" placeholder="Enter review title"
+                                                        <label for="reviewTitleNew">Title</label>
+                                                        <input id="reviewTitleNew" name="reviewTitleNew" class="form-control" type="text" placeholder="Enter title"
                                                                data-ng-model="newDocument.title" >
                                                     </div>
                                                 </div>
@@ -118,14 +118,14 @@
                                             </div>
                                             <hr style="margin: 10px">
                                             <div class="row" style="min-height: 335px; max-height: 335px; overflow-y: auto">
-                                                <div class="col-md-12" data-ng-show="selectedGate.changeRequests.length === 0">
+                                                <div class="col-md-12" data-ng-show="selectedGate.projectChangeRequests.length === 0">
                                                     <div class="alert alert-warning text-center">
                                                         There are no change requests for this gate
                                                     </div>
                                                 </div>
                                                 <div class="col-md-12">
                                                     <button type="button"
-                                                            data-ng-repeat="changeRequest in selectedGate.changeRequests | orderBy: sortChangeRequests : true"
+                                                            data-ng-repeat="changeRequest in selectedGate.projectChangeRequests | orderBy: sortChangeRequests : true"
                                                             data-ng-click="selectDocument(changeRequest)"
                                                             class="btn btn-sm center-block btn-block" style="overflow: hidden;"
                                                             data-ng-class="{
@@ -144,7 +144,7 @@
                                     </div>
                                 </div>
                                 <div class="col-md-9">
-                                    <div data-ng-hide="selectedDocument || selectedGate.changeRequests.length === 0" class="alert alert-warning text-center">
+                                    <div data-ng-hide="selectedDocument || selectedGate.projectChangeRequests.length === 0" class="alert alert-warning text-center">
                                         Select achange request to see its details
                                     </div>
                                     <div class="panel panel-default" data-ng-show="selectedDocument">
@@ -160,9 +160,6 @@
                                                 </label>
                                                 <label class="btn btn-info btn-xs" data-ng-model="documentDetails" btn-radio="'status'">
                                                     Status
-                                                </label>
-                                                <label class="btn btn-info btn-xs" data-ng-model="documentDetails" btn-radio="'outcomes'">
-                                                    Outcomes
                                                 </label>
                                                 <label class="btn btn-info btn-xs" data-ng-model="documentDetails" btn-radio="'duration'">
                                                     Duration
@@ -198,27 +195,27 @@
                                                             <div class="form-group-sm col-md-4">
                                                                 <label for="">Reason for change</label>
                                                                 <select id="" class="form-control" data-ng-model = "selectedDocument.reason"
-                                                                        ng-options="reason._id as reason.name for reason in logReasons" disabled>
+                                                                        ng-options="reason as reason.name for reason in logReasons track by reason._id" disabled>
                                                                 </select>
                                                             </div>
                                                             <div class="form-group-sm col-md-4">
                                                                 <label for="">Priority</label>
                                                                 <select id="" class="form-control" data-ng-model = "selectedDocument.priority"
-                                                                        ng-options="priority._id as priority.name for priority in logPriorities" disabled>
+                                                                        ng-options="priority as priority.name for priority in logPriorities track by priority._id" disabled>
                                                                 </select>
                                                             </div>
                                                             <div class="form-group-sm col-md-4">
                                                                 <label for="">State</label>
                                                                 <select id="" class="form-control" data-ng-model = "selectedDocument.state"
-                                                                        ng-options="state._id as state.name for state in changeRequestStates" disabled>
+                                                                        ng-options="state as state.name for state in changeRequestStates track by state._id" disabled>
                                                                 </select>
                                                             </div>
                                                         </div>
                                                         <br>
                                                         <div class="row">
                                                             <div class="form-group-sm col-md-12">
-                                                                <label for="">Change comment</label>
-                                                                <textarea id="" class="form-control" placeholder="Enter comment" data-ng-model="selectedDocument.comment" disabled></textarea>
+                                                                <label for="">Description</label>
+                                                                <textarea id="" class="form-control" data-ng-model="selectedDocument.description" disabled></textarea>
                                                             </div>
                                                         </div>
                                                         <hr>
@@ -251,21 +248,21 @@
                                                             <div class="form-group-sm col-md-4">
                                                                 <label for="">Reason for change</label>
                                                                 <select id="" class="form-control" data-ng-model = "selectedDocument.reason"
-                                                                        ng-options="reason._id as reason.name for reason in logReasons" >
+                                                                        ng-options="reason as reason.name for reason in logReasons track by reason._id" >
                                                                     <option value="">--choose reason</option>
                                                                 </select>
                                                             </div>
                                                             <div class="form-group-sm col-md-4">
                                                                 <label for="">Priority</label>
                                                                 <select id="" class="form-control" data-ng-model = "selectedDocument.priority"
-                                                                        ng-options="priority._id as priority.name for priority in logPriorities" >
+                                                                        ng-options="priority as priority.name for priority in logPriorities track by priority._id" >
                                                                     <option value="">--choose priority</option>
                                                                 </select>
                                                             </div>
                                                             <div class="form-group-sm col-md-4">
                                                                 <label for="">State</label>
                                                                 <select id="" class="form-control" data-ng-model = "selectedDocument.state"
-                                                                        ng-options="state._id as state.name for state in changeRequestStates" >
+                                                                        ng-options="state as state.name for state in changeRequestStates track by state._id" >
                                                                     <option value="">--choose state</option>
                                                                 </select>
                                                             </div>
@@ -273,8 +270,8 @@
                                                         <br>
                                                         <div class="row">
                                                             <div class="form-group-sm col-md-12">
-                                                                <label for="">Change comment</label>
-                                                                <textarea id="" class="form-control" placeholder="Enter comment" data-ng-model="selectedDocument.comment"></textarea>
+                                                                <label for="">Description</label>
+                                                                <textarea id="" class="form-control" placeholder="Enter description" data-ng-model="selectedDocument.description"></textarea>
                                                             </div>
                                                         </div>
                                                         <hr>
@@ -314,7 +311,7 @@
                                                             <div class="form-group-sm col-md-5">
                                                                 <label for="">Status</label>
                                                                 <select id="" class="form-control" data-ng-model = "selectedDocument.changeStatus.currentRecord.status"
-                                                                        ng-options="status._id as status.name for status in logStatuses" disabled>
+                                                                        ng-options="status as status.name for status in logStatuses track by status._id" disabled>
                                                                 </select>
                                                             </div>
                                                             <br>
@@ -328,7 +325,7 @@
                                                         <div class="row">
                                                             <div class="form-group-sm col-md-12">
                                                                 <label for="">Status comment</label>
-                                                                <textarea id="" class="form-control" data-ng-model="selectedDocument.changeStatus.currentRecord.statusComment" disabled></textarea>
+                                                                <textarea id="" class="form-control" data-ng-model="selectedDocument.changeStatus.currentRecord.comment" disabled></textarea>
                                                             </div>
                                                         </div>
                                                         <hr>
@@ -346,9 +343,9 @@
                                                                 <label for="">Baseline delivery date</label>
                                                                 <div class="input-group">
                                                                     <input type="text" id="" class="form-control" datepicker-popup="dd-MMMM-yyyy" data-ng-model="selectedDocument.changeStatus.currentRecord.baselineDeliveryDate"
-                                                                           is-open="$parent.baselineDeliveryDateOpened[selectedDocument._id]" >
+                                                                           is-open="$parent.baselineDateOpened[selectedDocument._id]" >
                                                                             <span class="input-group-btn">
-                                                                                <button type="button" class="btn btn-default btn-sm" ng-click="openBaselineDeliveryDate(selectedDocument, $event)"><i class="glyphicon glyphicon-calendar"></i></button>
+                                                                                <button type="button" class="btn btn-default btn-sm" ng-click="openBaselineDate(selectedDocument, $event)"><i class="glyphicon glyphicon-calendar"></i></button>
                                                                             </span>
                                                                 </div>
                                                             </div>
@@ -356,9 +353,9 @@
                                                                 <label for="">Estimate delivery date</label>
                                                                 <div class="input-group">
                                                                     <input type="text" id="" class="form-control" datepicker-popup="dd-MMMM-yyyy" data-ng-model="selectedDocument.changeStatus.currentRecord.estimateDeliveryDate"
-                                                                           is-open="$parent.estimateDeliveryDateOpened[selectedDocument._id]" >
+                                                                           is-open="$parent.estimateDateOpened[selectedDocument._id]" >
                                                                             <span class="input-group-btn">
-                                                                                <button type="button" class="btn btn-default btn-sm" ng-click="openEstimateDeliveryDate(selectedDocument, $event)"><i class="glyphicon glyphicon-calendar"></i></button>
+                                                                                <button type="button" class="btn btn-default btn-sm" ng-click="openEstimateDate(selectedDocument, $event)"><i class="glyphicon glyphicon-calendar"></i></button>
                                                                             </span>
                                                                 </div>
                                                             </div>
@@ -366,9 +363,9 @@
                                                                 <label for="">Actual delivery date</label>
                                                                 <div class="input-group">
                                                                     <input type="text" id="" class="form-control" datepicker-popup="dd-MMMM-yyyy" data-ng-model="selectedDocument.changeStatus.currentRecord.actualDeliveryDate"
-                                                                           is-open="$parent.actualDeliveryDateOpened[selectedDocument._id]" >
+                                                                           is-open="$parent.actualDateOpened[selectedDocument._id]" >
                                                                             <span class="input-group-btn">
-                                                                                <button type="button" class="btn btn-default btn-sm" ng-click="openActualDeliveryDate(selectedDocument, $event)"><i class="glyphicon glyphicon-calendar"></i></button>
+                                                                                <button type="button" class="btn btn-default btn-sm" ng-click="openActualDate(selectedDocument, $event)"><i class="glyphicon glyphicon-calendar"></i></button>
                                                                             </span>
                                                                 </div>
                                                             </div>
@@ -378,7 +375,7 @@
                                                             <div class="form-group-sm col-md-5">
                                                                 <label for="">Status</label>
                                                                 <select id="" class="form-control" data-ng-model = "selectedDocument.changeStatus.currentRecord.status"
-                                                                        data-ng-options="status._id as status.name for status in logStatuses" >
+                                                                        data-ng-options="status as status.name for status in logStatuses track by status._id" >
                                                                     <option value="">--choose status</option>
                                                                 </select>
                                                             </div>
@@ -393,7 +390,7 @@
                                                         <div class="row">
                                                             <div class="form-group-sm col-md-12">
                                                                 <label for="">Status comment</label>
-                                                                <textarea id="" class="form-control" placeholder="Enter status comment" data-ng-model="selectedDocument.changeStatus.currentRecord.statusComment" ></textarea>
+                                                                <textarea id="" class="form-control" placeholder="Enter status comment" data-ng-model="selectedDocument.changeStatus.currentRecord.comment" ></textarea>
                                                             </div>
                                                         </div>
                                                         <hr>

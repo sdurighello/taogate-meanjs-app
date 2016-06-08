@@ -247,7 +247,7 @@ exports.getUserProjectChangeRequests = function(req, res) {
     //         res.jsonp(changeRequests);
     //     }
     // });
-
+    res.jsonp([]);
 
 };
 
@@ -338,7 +338,7 @@ exports.getUserProjectStatusUpdates = function(req, res) {
     //         res.jsonp(statusUpdates);
     //     }
     // });
-
+    res.jsonp([]);
 
 };
 
@@ -349,18 +349,20 @@ exports.getUserGateReviews = function(req, res) {
      * All gate reviews submitted
      */
 
-    var GateReview = mongoose.mtModel(req.user.tenantId + '.' + 'GateReview');
+    // var GateReview = mongoose.mtModel(req.user.tenantId + '.' + 'GateReview');
+    //
+    // GateReview.find({'approval.currentRecord.approvalState': 'submitted'})
+    //     .populate('project', 'identification').exec(function (err, reviews) {
+    //     if (err) {
+    //         return res.status(400).send({
+    //             message: errorHandler.getErrorMessage(err)
+    //         });
+    //     } else {
+    //         res.jsonp(reviews);
+    //     }
+    // });
 
-    GateReview.find({'approval.currentRecord.approvalState': 'submitted'})
-        .populate('project', 'identification').exec(function (err, reviews) {
-        if (err) {
-            return res.status(400).send({
-                message: errorHandler.getErrorMessage(err)
-            });
-        } else {
-            res.jsonp(reviews);
-        }
-    });
+    res.jsonp([]);
 
 };
 
@@ -369,18 +371,18 @@ exports.getUserPortfolioChangeRequests = function(req, res) {
      * All portfolio change requests submitted
      */
 
-    var PortfolioChangeRequest = mongoose.mtModel(req.user.tenantId + '.' + 'PortfolioChangeRequest');
-
-    PortfolioChangeRequest.find({'approval.currentRecord.approvalState': 'submitted'})
-        .populate('portfolio','name').exec(function (err, reviews) {
-        if (err) {
-            return res.status(400).send({
-                message: errorHandler.getErrorMessage(err)
-            });
-        } else {
-            res.jsonp(reviews);
-        }
-    });
-
+    // var PortfolioChangeRequest = mongoose.mtModel(req.user.tenantId + '.' + 'PortfolioChangeRequest');
+    //
+    // PortfolioChangeRequest.find({'approval.currentRecord.approvalState': 'submitted'})
+    //     .populate('portfolio','name').exec(function (err, reviews) {
+    //     if (err) {
+    //         return res.status(400).send({
+    //             message: errorHandler.getErrorMessage(err)
+    //         });
+    //     } else {
+    //         res.jsonp(reviews);
+    //     }
+    // });
+    res.jsonp([]);
 };
 

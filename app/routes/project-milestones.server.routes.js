@@ -14,10 +14,6 @@ module.exports = function(app) {
 		.put(users.requiresLogin, projectMilestones.hasEditAuthorization, projectMilestones.update)
 		.delete(users.requiresLogin, projectMilestones.hasEditAuthorization, projectMilestones.delete);
 
-    // Milestones for a project
-    app.route('/project-milestones-milestonesForProject')
-        .get(users.requiresLogin, projectMilestones.milestonesForProject);
-
 	// Header
 	app.route('/project-milestones/:projectMilestoneId/header')
 		.put(users.requiresLogin, projectMilestones.hasEditAuthorization, projectMilestones.updateHeader);

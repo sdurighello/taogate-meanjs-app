@@ -8,13 +8,13 @@ var mongoose = require('mongoose'),
 require('mongoose-multitenant');
 
 /**
- * Gate status Schema
+ * Gate state Schema
  */
-var GateStatusSchema = new Schema({
+var GateStateSchema = new Schema({
 	name: {
 		type: String,
 		default: '',
-		required: 'Please fill Gate status name',
+		required: 'Please fill Gate state name',
 		trim: true
 	},
     description: {
@@ -32,4 +32,4 @@ var GateStatusSchema = new Schema({
 	}
 });
 
-mongoose.mtModel('GateStatus', GateStatusSchema);
+mongoose.mtModel('GateState', GateStateSchema);

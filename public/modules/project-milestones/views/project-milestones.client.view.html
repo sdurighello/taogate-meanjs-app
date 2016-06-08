@@ -39,14 +39,14 @@
                             <div class="row">
                                 <div class="col-md-12">
                                     <ul class="nav nav-pills nav-wizard">
-                                        <li data-ng-repeat="reviewObjectPill in projectMilestoneList track by $index"
-                                            data-ng-class="{'active' : reviewObject === reviewObjectPill}" style="margin-bottom: 2px">
+                                        <li data-ng-repeat="gate in selectedProject.process.gates track by $index"
+                                            data-ng-class="{'active' : gate === selectedGate}" style="margin-bottom: 2px">
                                             <div class="nav-wedge" data-ng-hide="$index === 0"></div>
-                                            <a class="btn-link" data-ng-click="setReviewObject(reviewObjectPill)"
-                                                    data-ng-disabled="isResolving">
-                                                {{reviewObjectPill.gate.name}}
+                                            <a class="btn-link" data-ng-click="selectGate(gate)"
+                                               data-ng-disabled="isResolving">
+                                                {{gate.name}}
                                             </a>
-                                            <div class="nav-arrow" data-ng-hide="$index === projectMilestoneList.length-1"></div>
+                                            <div class="nav-arrow" data-ng-hide="$index === selectedProject.process.gates.length-1"></div>
                                         </li>
                                     </ul>
                                 </div>
@@ -78,7 +78,7 @@
                                                 </div>
                                                 <hr>
                                                 <div class="form-group-sm pull-right">
-                                                    <button class="btn btn-success btn-xs" data-ng-click="createNewProjectMilestone(selectedProject, reviewObject.gate)"
+                                                    <button class="btn btn-success btn-xs" data-ng-click="createNewProjectMilestone(selectedProject, selectedGate)"
                                                             data-ng-disabled="newProjectMilestoneForm.$invalid || isResolving">
                                                         Save
                                                     </button>
@@ -92,10 +92,10 @@
                                     </div>
                                 </div>
                             </div>
-                            <div data-ng-show="!reviewObject" class="alert alert-warning text-center">
+                            <div data-ng-show="!selectedGate" class="alert alert-warning text-center">
                                 <span>Select a gate to see its milestones</span>
                             </div>
-                            <div class="row" data-ng-show="reviewObject && !showNewProjectMilestoneForm">
+                            <div class="row" data-ng-show="selectedGate && !showNewProjectMilestoneForm">
                                 <div class="col-md-3">
                                     <div class="panel panel-default">
                                         <div class="panel-heading">
@@ -112,14 +112,14 @@
                                             </div>
                                             <hr style="margin: 10px">
                                             <div class="row" style="min-height: 335px; max-height: 335px; overflow-y: auto">
-                                                <div class="col-md-12" data-ng-show="reviewObject.projectMilestones.length === 0">
+                                                <div class="col-md-12" data-ng-show="projectMilestones.length === 0">
                                                     <div class="alert alert-warning text-center">
                                                         There are no milestones for this gate
                                                     </div>
                                                 </div>
                                                 <div class="col-md-12">
                                                     <button type="button"
-                                                            data-ng-repeat="projectMilestone in reviewObject.projectMilestones | orderBy: sortProjectMilestones : false"
+                                                            data-ng-repeat="projectMilestone in projectMilestones | orderBy: sortProjectMilestones : false | filter : {gate : {_id : selectedGate._id}}"
                                                             data-ng-click="selectProjectMilestone(projectMilestone)"
                                                             class="btn btn-sm center-block btn-block" style="overflow: hidden;"
                                                             data-ng-class="{
@@ -141,7 +141,7 @@
                                     </div>
                                 </div>
                                 <div class="col-md-9">
-                                    <div data-ng-hide="selectedProjectMilestone || reviewObject.projectMilestones.length === 0" class="alert alert-warning text-center">
+                                    <div data-ng-hide="selectedProjectMilestone || projectMilestones.length === 0" class="alert alert-warning text-center">
                                         Select a milestone to see its details
                                     </div>
                                     <div class="panel panel-default" data-ng-show="selectedProjectMilestone">
@@ -241,7 +241,7 @@
                                                                     data-ng-disabled="editProjectMilestoneForm.$invalid || isResolving">
                                                                 Save
                                                             </button>
-                                                            <button class="btn btn-danger btn-xs" data-ng-click="deleteProjectMilestone(reviewObject, selectedProjectMilestone)"
+                                                            <button class="btn btn-danger btn-xs" data-ng-click="deleteProjectMilestone(selectedProjectMilestone)"
                                                                     data-ng-disabled="isResolving">
                                                                 Delete milestone
                                                             </button>

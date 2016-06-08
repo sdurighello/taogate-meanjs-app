@@ -83,20 +83,49 @@ var createGatePerformances = function(req, gateArray){
     });
 };
 
-var createBlueprintedProcess = function(req, res, callback){
+var createBlueprintedProcess = function(req, res, assignmentType, callback){
 
     var GateProcessTemplate = mongoose.mtModel(req.user.tenantId + '.' + 'GateProcessTemplate');
-
-    var project = req.project ;
+    var LogStatusArea = mongoose.mtModel(req.user.tenantId + '.' + 'LogStatusArea');
 
     // Catch req errors
     if(!req.body.processId){
         return res.status(400).send({message: 'Process id is required for standard assignment'});
     }
 
+    var getStandardProcess = function(processId){
+        if(assignmentType === 'standard'){
+            return processId;
+        }
+        return null;
+    };
+
+    var getStandardGate = function(gateId){
+        if(assignmentType === 'standard'){
+            return gateId;
+        }
+        return null;
+    };
+
+    var getStandardOutcome = function(outcomeId){
+        if(assignmentType === 'standard'){
+            return outcomeId;
+        }
+        return null;
+    };
+
     async.waterfall([
+        // Get Log Status Areas
+        function(callback){
+            LogStatusArea.find().exec(function(err, areas){
+                if(err){
+                    return callback(err);
+                }
+                callback(null, areas);
+            });
+        },
         // Get process
-        function(callback) {
+        function(areas, callback) {
             GateProcessTemplate.findById(req.body.processId).exec(function(err, process){
                 if(err){
                     return callback(err);
@@ -107,13 +136,17 @@ var createBlueprintedProcess = function(req, res, callback){
                 if(process.approval.currentRecord.approvalState !== 'approved'){
                     return callback({message: 'Only approved processes can be used as a template'});
                 }
-                callback(null, process);
+                callback(null, areas, process);
             });
         },
-        // Create header project's process
-        function(process, callback){
+        function(areas, process, callback){
+
+            var project = req.project ;
+
+            // Create header project's process
+
             project.process = {
-                _id: process._id,
+                standardProcess: getStandardProcess(process._id),
                 assignmentType: req.body.assignmentType,
                 assignmentConfirmed: false,
                 name: process.name,
@@ -128,24 +161,17 @@ var createBlueprintedProcess = function(req, res, callback){
                     history : []
                 }
             };
-            project.save(function(err){
-                if (err) {
-                    return callback(err);
-                }
-                callback(null, process);
-            });
-        },
-        // Create gates, outcomes, (performances created at confirmation)
-        function(process, callback) {
+
+            // Create gates, outcomes, status areas, (performances created at confirmation)
 
             _.each(process.gates, function(gate){
                 var projectGate = project.process.gates.create({
-                    _id: gate._id,
+                    standardGate: getStandardGate(gate._id),
                     name: gate.name,
                     description: gate.description,
                     position: gate.position,
                     outcomes : [],
-                    gateStatus: {
+                    gateState: {
                         currentRecord: {user:{_id:req.user._id, displayName: req.user.displayName}},
                         history:[]
                     },
@@ -186,14 +212,28 @@ var createBlueprintedProcess = function(req, res, callback){
                         completionStatus : {
                             currentRecord: {user:{_id:req.user._id, displayName: req.user.displayName}},
                             history:[]
-                        }
+                        },
+                        projectStatusAreas : []
                     },
-                    gateReviews : []
+                    gateReviews : [],
+                    projectChangeRequests : [],
+                    projectStatusUpdates : []
+                });
+
+                _.each(areas, function(area){
+                    projectGate.deliveryStatus.projectStatusAreas.push({
+                        statusArea:{
+                            _id: area._id,
+                            name: area.name
+                        },
+                        currentRecord: {user:{_id:req.user._id, displayName: req.user.displayName}},
+                        history:[]
+                    });
                 });
 
                 _.each(gate.outcomes, function(outcome){
                     projectGate.outcomes.push({
-                        _id: outcome._id,
+                        standardOutcome: getStandardOutcome(outcome._id),
                         name: outcome.name,
                         description: outcome.description,
                         score: {
@@ -221,15 +261,15 @@ var createBlueprintedProcess = function(req, res, callback){
             // Sort by position
             project.process.gates = _.sortBy(project.process.gates, 'position');
 
-            callback(null);
-        },
-        // Save project object
-        function(callback) {
             project.save(function(err) {
-                callback(err);
+                if(err){
+                    return callback(err);
+                }
+                callback(null, project);
             });
+
         }
-    ], function (err) {
+    ], function (err, project) {
         if (err) {
             callback(err);
         } else {
@@ -241,138 +281,183 @@ var createBlueprintedProcess = function(req, res, callback){
 
 var createBasicProcess = function(req, res, callback){
 
-    var project = req.project;
+    var LogStatusArea = mongoose.mtModel(req.user.tenantId + '.' + 'LogStatusArea');
 
-    // Create process header
-    project.process = {
-        _id: mongoose.Types.ObjectId(),
-        assignmentType: req.body.assignmentType,
-        assignmentConfirmed: false,
-        name: 'Custom process',
-        description: '',
-        gates: [],
-        approval : {
-            currentRecord : {
-                approvalState: 'draft',
-                user:{_id: req.user._id, displayName: req.user.displayName},
-                created: Date.now()
-            },
-            history : []
+    async.waterfall([
+        // Get Log Status Areas
+        function(callback){
+            LogStatusArea.find().exec(function(err, areas){
+                if(err){
+                    return callback(err);
+                }
+                callback(null, areas);
+            });
+        },
+        function(areas, callback) {
+
+            var project = req.project;
+
+            // Create process header
+            project.process = {
+                assignmentType: req.body.assignmentType,
+                assignmentConfirmed: false,
+                name: 'Custom process',
+                description: '',
+                gates: [],
+                approval : {
+                    currentRecord : {
+                        approvalState: 'draft',
+                        user:{_id: req.user._id, displayName: req.user.displayName},
+                        created: Date.now()
+                    },
+                    history : []
+                }
+            };
+
+            // Create new gates and outcomes
+            var startGate = project.process.gates.create({
+                name: 'Start',
+                position:1,
+                outcomes : [],
+                gateState: {
+                    currentRecord: {user:{_id:req.user._id, displayName: req.user.displayName}},
+                    history:[]
+                },
+                budget : {
+                    currentRecord: {user:{_id:req.user._id, displayName: req.user.displayName}},
+                    history:[]
+                },
+                performances: {
+                    duration: {
+                        baselineDurations: [],
+                        estimateDurations: [],
+                        actualDurations: []
+                    },
+                    cost: {
+                        baselineCosts: [],
+                        estimateCosts: [],
+                        actualCosts: []
+                    },
+                    completion: {
+                        baselineCompletions: [],
+                        estimateCompletions: [],
+                        actualCompletions: []
+                    }
+                },
+                deliveryStatus: {
+                    overallStatus : {
+                        currentRecord: { user: req.user._id },
+                        history:[]
+                    },
+                    durationStatus : {
+                        currentRecord: { user: req.user._id },
+                        history:[]
+                    },
+                    costStatus : {
+                        currentRecord: { user: req.user._id },
+                        history:[]
+                    },
+                    completionStatus : {
+                        currentRecord: { user: req.user._id },
+                        history:[]
+                    },
+                    projectStatusAreas : []
+                },
+                gateReviews : [],
+                projectChangeRequests : [],
+                projectStatusUpdates : []
+            });
+            var endGate = project.process.gates.create({
+                _id: mongoose.Types.ObjectId(),
+                name: 'End',
+                position:2,
+                outcomes : [],
+                gateState: {
+                    currentRecord: {user:{_id:req.user._id, displayName: req.user.displayName}},
+                    history:[]
+                },
+                budget : {
+                    currentRecord: {user:{_id:req.user._id, displayName: req.user.displayName}},
+                    history:[]
+                },
+                performances: {
+                    duration: {
+                        baselineDurations: [],
+                        estimateDurations: [],
+                        actualDurations: []
+                    },
+                    cost: {
+                        baselineCosts: [],
+                        estimateCosts: [],
+                        actualCosts: []
+                    },
+                    completion: {
+                        baselineCompletions: [],
+                        estimateCompletions: [],
+                        actualCompletions: []
+                    }
+                },
+                deliveryStatus: {
+                    overallStatus : {
+                        currentRecord: { user: req.user._id },
+                        history:[]
+                    },
+                    durationStatus : {
+                        currentRecord: { user: req.user._id },
+                        history:[]
+                    },
+                    costStatus : {
+                        currentRecord: { user: req.user._id },
+                        history:[]
+                    },
+                    completionStatus : {
+                        currentRecord: { user: req.user._id },
+                        history:[]
+                    },
+                    projectStatusAreas : []
+                },
+                gateReviews : [],
+                projectChangeRequests : [],
+                projectStatusUpdates : []
+            });
+
+            _.each(areas, function(area){
+                startGate.deliveryStatus.projectStatusAreas.push({
+                    statusArea:{
+                        _id: area._id,
+                        name: area.name
+                    },
+                    currentRecord: {user:{_id:req.user._id, displayName: req.user.displayName}},
+                    history:[]
+                });
+                endGate.deliveryStatus.projectStatusAreas.push({
+                    statusArea:{
+                        _id: area._id,
+                        name: area.name
+                    },
+                    currentRecord: {user:{_id:req.user._id, displayName: req.user.displayName}},
+                    history:[]
+                });
+            });
+
+            project.process.startGate = startGate._id;
+            project.process.endGate = endGate._id;
+
+            project.process.gates.push(endGate);
+            project.process.gates.push(startGate);
+
+            // Sort by position
+            project.process.gates = _.sortBy(project.process.gates, 'position');
+
+            project.save(function(err){
+                if (err) {
+                    callback(err);
+                } else {
+                    callback(null, project);
+                }
+            });
         }
-    };
-
-    // Create new gates and outcomes
-    var startGate = project.process.gates.create({
-        _id: mongoose.Types.ObjectId(),
-        name: 'Start',
-        position:1,
-        outcomes : [],
-        performances: {
-            duration: {
-                baselineDurations: [],
-                estimateDurations: [],
-                actualDurations: []
-            },
-            cost: {
-                baselineCosts: [],
-                estimateCosts: [],
-                actualCosts: []
-            },
-            completion: {
-                baselineCompletions: [],
-                estimateCompletions: [],
-                actualCompletions: []
-            }
-        },
-        reviewData: {
-            gateStatusReview: {
-                currentRecord: { currentGate : true, user: req.user._id },
-                history:[]
-            },
-            budget : {
-                currentRecord: { user: req.user._id },
-                history:[]
-            },
-            overallStatus : {
-                currentRecord: { user: req.user._id },
-                history:[]
-            },
-            durationStatus : {
-                currentRecord: { user: req.user._id },
-                history:[]
-            },
-            costStatus : {
-                currentRecord: { user: req.user._id },
-                history:[]
-            },
-            completionStatus : {
-                currentRecord: { user: req.user._id },
-                history:[]
-            }
-        },
-        gateReviews : []
-    });
-    var endGate = project.process.gates.create({
-        _id: mongoose.Types.ObjectId(),
-        name: 'End',
-        position:2,
-        outcomes : [],
-        performances: {
-            duration: {
-                baselineDurations: [],
-                estimateDurations: [],
-                actualDurations: []
-            },
-            cost: {
-                baselineCosts: [],
-                estimateCosts: [],
-                actualCosts: []
-            },
-            completion: {
-                baselineCompletions: [],
-                estimateCompletions: [],
-                actualCompletions: []
-            }
-        },
-        reviewData: {
-            gateStatusReview: {
-                currentRecord: { currentGate : true, user: req.user._id },
-                history:[]
-            },
-            budget : {
-                currentRecord: { user: req.user._id },
-                history:[]
-            },
-            overallStatus : {
-                currentRecord: { user: req.user._id },
-                history:[]
-            },
-            durationStatus : {
-                currentRecord: { user: req.user._id },
-                history:[]
-            },
-            costStatus : {
-                currentRecord: { user: req.user._id },
-                history:[]
-            },
-            completionStatus : {
-                currentRecord: { user: req.user._id },
-                history:[]
-            }
-        },
-        gateReviews : []
-    });
-
-    project.process.startGate = startGate._id;
-    project.process.endGate = endGate._id;
-
-    project.process.gates.push(endGate);
-    project.process.gates.push(startGate);
-
-    // Sort by position
-    project.process.gates = _.sortBy(project.process.gates, 'position');
-
-    project.save(function(err){
+    ], function (err, project) {
         if (err) {
             callback(err);
         } else {
@@ -429,7 +514,7 @@ exports.customAssignment = function(req, res){
     }
 
     if(req.body.processId){
-        createBlueprintedProcess(req, res, function(err, project){
+        createBlueprintedProcess(req, res, 'custom', function(err, project){
             if (err) {
                 console.log(err);
                 return res.status(400).send({
@@ -467,7 +552,7 @@ exports.standardAssignment = function(req, res){
         return res.status(400).send({message: 'Process id is required for standard assignment'});
     }
 
-    createBlueprintedProcess(req, res, function(err, project){
+    createBlueprintedProcess(req, res, 'standard', function(err, project){
         if (err) {
             console.log(err);
             return res.status(400).send({
@@ -487,18 +572,9 @@ exports.removeAssignment = function(req, res){
     // Reset project.process properties + delete old documents
 
     project.process = {
-        _id: mongoose.Types.ObjectId(),
+        standardProcess: null,
         assignmentType: 'unassigned',
-        assignmentConfirmed: false,
-        name: null,
-        description: null,
-
-        startGate: null,
-        endGate: null,
-
-        gates: [],
-        gateReviews : [],
-        approval: null
+        assignmentConfirmed: false
     };
 
     project.save(function(err) {
@@ -539,28 +615,90 @@ exports.updateProcess = function(req, res){
 // Gates
 
 exports.createGate = function(req, res){
-    
-    var project = req.project;
 
-    var endGate = _.find(project.process.gates, function(gate){
-        return gate._id.equals(project.process.endGate);
-    });
+    var LogStatusArea = mongoose.mtModel(req.user.tenantId + '.' + 'LogStatusArea');
 
-    var newGate = project.process.gates.create({
-        _id: mongoose.Types.ObjectId(),
-        name: 'New gate',
-        description: '',
-        position: endGate.position,
-        outcomes : [],
-        gateReviews : []
-    });
+    async.waterfall([
+        // Get Log Status Areas
+        function(callback){
+            LogStatusArea.find().exec(function(err, areas){
+                if(err){
+                    return callback(err);
+                }
+                callback(null, areas);
+            });
+        },
+        function(areas, callback) {
 
-    endGate.position = endGate.position + 1;
-    project.process.gates.push(newGate);
+            var project = req.project;
 
-    project.process.gates = _.sortBy(project.process.gates, 'position');
+            var endGate = _.find(project.process.gates, function(gate){
+                return gate._id.equals(project.process.endGate);
+            });
 
-    project.save(function(err) {
+            var newGate = project.process.gates.create({
+                name: 'New gate',
+                description: '',
+                position: endGate.position,
+                outcomes : [],
+                gateState: {
+                    currentRecord: {user:{_id:req.user._id, displayName: req.user.displayName}},
+                    history:[]
+                },
+                budget : {
+                    currentRecord: {user:{_id:req.user._id, displayName: req.user.displayName}},
+                    history:[]
+                },
+                deliveryStatus: {
+                    overallStatus : {
+                        currentRecord: { user: req.user._id },
+                        history:[]
+                    },
+                    durationStatus : {
+                        currentRecord: { user: req.user._id },
+                        history:[]
+                    },
+                    costStatus : {
+                        currentRecord: { user: req.user._id },
+                        history:[]
+                    },
+                    completionStatus : {
+                        currentRecord: { user: req.user._id },
+                        history:[]
+                    },
+                    projectStatusAreas : []
+                },
+                gateReviews : [],
+                projectChangeRequests : [],
+                projectStatusUpdates : []
+            });
+
+            endGate.position = endGate.position + 1;
+
+            _.each(areas, function(area){
+                newGate.deliveryStatus.projectStatusAreas.push({
+                    statusArea:{
+                        _id: area._id,
+                        name: area.name
+                    },
+                    currentRecord: {user:{_id:req.user._id, displayName: req.user.displayName}},
+                    history:[]
+                });
+            });
+
+            project.process.gates.push(newGate);
+
+            project.process.gates = _.sortBy(project.process.gates, 'position');
+
+            project.save(function(err) {
+                if (err) {
+                    callback(err);
+                } else {
+                    callback(null, project);
+                }
+            });
+        }
+    ], function (err, project) {
         if (err) {
             return res.status(400).send({
                 message: errorHandler.getErrorMessage(err)

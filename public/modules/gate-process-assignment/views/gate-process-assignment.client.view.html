@@ -162,8 +162,8 @@
                                 <span>{{project.process.name}}</span>
                             </td>
                             <td class="text-center">
-                                <span data-ng-show="!project.process.approval.currentRecord.approvalState"> - </span>
-                                <span data-ng-show="project.process.approval.currentRecord.approvalState === 'draft'">Drafted</span>
+                                <span data-ng-show="project.process.assignmentType === 'unassigned'"> - </span>
+                                <span data-ng-show="(project.process.assignmentType !== 'unassigned') && (project.process.approval.currentRecord.approvalState === 'draft')">Drafted</span>
                                 <span data-ng-show="project.process.approval.currentRecord.approvalState === 'submitted'">Submitted</span>
                                 <span data-ng-show="project.process.approval.currentRecord.approvalState === 'approved'">Approved</span>
                                 <span data-ng-show="project.process.approval.currentRecord.approvalState === 'rejected'">Rejected</span>

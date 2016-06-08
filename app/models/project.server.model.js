@@ -96,7 +96,7 @@ var AssignedPeopleProjectGroupSchema = new Schema({
 // ------------------------------------------------ DELIVERY --------------------------------------------------
 
 
-    // --- Approval ---
+    // --- Approval Record ---
 
 var approvalRecord = {
     approvalState: {type: String, enum: ['draft', 'submitted', 'approved','rejected'], default:'draft'},
@@ -107,20 +107,39 @@ var approvalRecord = {
     }
 };
 
-    // --- Status Review ---
+    // --- Status  Record ---
 
-var statusReviewRecord = {
+var changeStatusRecord = {
 
     baselineDeliveryDate : {type: Date, default: null},
     estimateDeliveryDate : {type: Date, default: null},
     actualDeliveryDate : {type: Date, default: null},
 
     completed : {type: Boolean, default: false, required:'Completed flag is required'},
-    status: {type: Schema.Types.ObjectId, default: null, ref: 'LogStatusIndicator', $tenant:true},
+    status: {
+        _id : {type: Schema.Types.ObjectId, ref: 'LogStatusIndicator', default:null, $tenant:true},
+        name : {type: String, default:null},
+        color : {type: String, default: null}
+    },
     comment : {type: String, default:'', trim: true},
 
     created: { type: Date, default: Date.now },
     user: { _id: {type: Schema.ObjectId, ref: 'User'}, displayName:{type:String} }
+};
+
+var onlyStatusRecord = {
+    status: {
+        _id : {type: Schema.Types.ObjectId, ref: 'LogStatusIndicator', default:null, $tenant:true},
+        name : {type: String, default:null},
+        color : {type: String, default: null}
+    },
+    sourceStatusUpdate: {type: Schema.Types.ObjectId, ref: 'Project.process.gates.projectStatusUpdates', default:null, $tenant:true},
+    comment :{type: String, trim:true, default:''},
+    created: {type: Date, default: Date.now},
+    user: {
+        _id: {type: Schema.ObjectId, ref: 'User'},
+        displayName : {type:String}
+    }
 };
 
     // --- Duration ---
@@ -472,7 +491,10 @@ var BaselineCompletionReviewSchema = new Schema({
 
 var outcomeScoreRecord = {
     sourceGateReview: {type: Schema.Types.ObjectId, ref: 'Project.process.gates.gateReviews', default:null, $tenant:true},
-    score: {type: Schema.Types.ObjectId, ref: 'GateOutcomeScore', default:null, $tenant:true},
+    score: {
+        _id: {type: Schema.Types.ObjectId, ref: 'GateOutcomeScore', default:null, $tenant:true},
+        name: {type: String, default: null}
+    },
     comment :{type: String, trim:true, default:''},
     created: {type: Date, default: Date.now},
     user: {
@@ -483,7 +505,11 @@ var outcomeScoreRecord = {
 
 var outcomeStatusRecord = {
     sourceStatusUpdate: {type: Schema.Types.ObjectId, ref: 'Project.process.gates.projectStatusUpdates', default:null, $tenant:true},
-    status: {type: Schema.Types.ObjectId, ref: 'LogStatusIndicator', default:null, $tenant:true},
+    status: {
+        _id : {type: Schema.Types.ObjectId, ref: 'LogStatusIndicator', default:null, $tenant:true},
+        name : {type: String, default:null},
+        color : {type: String, default: null}
+    },
     comment :{type: String, trim:true, default:''},
     created: {type: Date, default: Date.now},
     user: {
@@ -493,7 +519,7 @@ var outcomeStatusRecord = {
 };
 
 var ProjectOutcomeSchema = new Schema({
-    _id: {type: Schema.Types.ObjectId, ref: 'GateProcessTemplate.gates.outcomes', $tenant:true},
+    standardOutcome: {type: Schema.Types.ObjectId, ref: 'GateProcessTemplate.gates.outcomes', default:null, $tenant:true},
     name: { type: String, default: '', required: 'Gate outcome name is required', trim: true },
     description: { type: String, default: '', trim: true },
     score: {
@@ -501,8 +527,8 @@ var ProjectOutcomeSchema = new Schema({
         history:[outcomeScoreRecord]
     },
     status: {
-        currentStatus: outcomeStatusRecord,
-        historyStatus:[outcomeStatusRecord]
+        currentRecord: outcomeStatusRecord,
+        history:[outcomeStatusRecord]
     }
 });
 
@@ -512,12 +538,18 @@ var OutcomeScoreReviewSchema = new Schema({
         name: {type: String},
         score: {
             currentRecord: {
-                score: {type: Schema.Types.ObjectId, ref: 'GateOutcomeScore', default:null, $tenant:true},
+                score: {
+                    _id: {type: Schema.Types.ObjectId, ref: 'GateOutcomeScore', default:null, $tenant:true},
+                    name: {type: String, default: null}
+                },
                 comment :{type: String, trim:true, default:''}
             }
         }
     },
-    newScore : {type: Schema.Types.ObjectId, default: null, ref: 'GateOutcomeScore', $tenant:true},
+    newScore : {
+        _id: {type: Schema.Types.ObjectId, ref: 'GateOutcomeScore', default:null, $tenant:true},
+        name: {type: String, default: null}
+    },
     newComment : {type: String, default: ''}
 });
 
@@ -527,22 +559,36 @@ var OutcomeStatusReviewSchema = new Schema({
         name: {type: String},
         status: {
             currentRecord: {
-                status: {type: Schema.Types.ObjectId, ref: 'LogStatusIndicator', default:null, $tenant:true},
+                status: {
+                    _id : {type: Schema.Types.ObjectId, ref: 'LogStatusIndicator', default:null, $tenant:true},
+                    name : {type: String, default:null},
+                    color : {type: String, default: null}
+                },
                 comment :{type: String, trim:true, default:''}
             }
         }
     },
-    newStatus : {type: Schema.Types.ObjectId, ref: 'LogStatusIndicator', default:null, $tenant:true},
+    newStatus : {
+        _id : {type: Schema.Types.ObjectId, ref: 'LogStatusIndicator', default:null, $tenant:true},
+        name : {type: String, default:null},
+        color : {type: String, default: null}
+    },
     newComment : {type: String, trim:true, default: ''}
 });
 
-    // --- Gate Status ---
+    // --- Gate State ---
 
-var gateStatusRecord = {
+var gateStateRecord = {
     completed: {type: Boolean, default: false},
     currentGate : {type: Boolean, default: false},
-    status : {type: Schema.Types.ObjectId, ref: 'GateStatus', default:null, $tenant:true},
-    overallScore : {type: Schema.Types.ObjectId, ref: 'GateOutcomeScore', default:null, $tenant:true},
+    state: {
+        _id : {type: Schema.Types.ObjectId, ref: 'GateState', default:null, $tenant:true},
+        name : {type: String, default:null}
+    },
+    overallScore: {
+        _id: {type: Schema.Types.ObjectId, ref: 'GateOutcomeScore', default:null, $tenant:true},
+        name: {type: String, default: null}
+    },
     sourceGateReview: {type: Schema.Types.ObjectId, ref: 'Project.process.gates.gateReviews', default:null, $tenant:true},
     created: {type: Date, default: Date.now},
     user: {
@@ -564,60 +610,22 @@ var budgetRecord = {
     }
 };
 
-    // --- Delivery Status ---
-
-var overallStatusRecord = {
-    status: {type: Schema.Types.ObjectId, ref: 'LogStatusIndicator', default:null, $tenant:true},
-    sourceStatusUpdate: {type: Schema.Types.ObjectId, ref: 'Project.process.gates.projectStatusUpdates', default:null, $tenant:true},
-    comment :{type: String, trim:true, default:''},
-    created: {type: Date, default: Date.now},
-    user: {
-        _id: {type: Schema.ObjectId, ref: 'User'},
-        displayName : {type:String}
-    }
-};
-
-var durationStatusRecord = {
-    status: {type: Schema.Types.ObjectId, ref: 'LogStatusIndicator', default:null, $tenant:true},
-    sourceStatusUpdate: {type: Schema.Types.ObjectId, ref: 'Project.process.gates.projectStatusUpdates', default:null, $tenant:true},
-    comment :{type: String, trim:true, default:''},
-    created: {type: Date, default: Date.now},
-    user: {
-        _id: {type: Schema.ObjectId, ref: 'User'},
-        displayName : {type:String}
-    }
-};
-
-var costStatusRecord = {
-    status: {type: Schema.Types.ObjectId, ref: 'LogStatusIndicator', default:null, $tenant:true},
-    sourceStatusUpdate: {type: Schema.Types.ObjectId, ref: 'Project.process.gates.projectStatusUpdates', default:null, $tenant:true},
-    comment :{type: String, trim:true, default:''},
-    created: {type: Date, default: Date.now},
-    user: {
-        _id: {type: Schema.ObjectId, ref: 'User'},
-        displayName : {type:String}
-    }
-};
-
-var completionStatusRecord = {
-    status: {type: Schema.Types.ObjectId, ref: 'LogStatusIndicator', default:null, $tenant:true},
-    sourceStatusUpdate: {type: Schema.Types.ObjectId, ref: 'Project.process.gates.projectStatusUpdates', default:null, $tenant:true},
-    comment :{type: String, trim:true, default:''},
-    created: {type: Date, default: Date.now},
-    user: { _id: {type: Schema.ObjectId, ref: 'User'}, displayName : {type:String} }
-};
 
     // --- Project Area ---
 
 var projectAreaRecord = {
-    status: {type: Schema.Types.ObjectId, ref: 'LogStatusIndicator', default:null, $tenant:true},
+    status: {
+        _id : {type: Schema.Types.ObjectId, ref: 'LogStatusIndicator', default:null, $tenant:true},
+        name : {type: String, default:null},
+        color : {type: String, default: null}
+    },
     sourceStatusUpdate: {type: Schema.Types.ObjectId, ref: 'Project.process.gates.projectStatusUpdates', default:null, $tenant:true},
     comment :{type: String, trim:true, default:''},
     created: {type: Date, default: Date.now},
     user: { _id: {type: Schema.ObjectId, ref: 'User', default:null}, displayName: {type: String} }
 };
 
-var ProjectAreaSchema = new Schema({
+var ProjectStatusAreaSchema = new Schema({
     statusArea:{
         _id: {type: Schema.Types.ObjectId, ref: 'LogStatusArea', $tenant:true},
         name: {type: String}
@@ -626,21 +634,30 @@ var ProjectAreaSchema = new Schema({
     history:[projectAreaRecord]
 });
 
-var ProjectAreaUpdateSchema = new Schema({
-    projectArea : {
-        _id: {type: Schema.Types.ObjectId, ref: 'Project.process.gates.deliveryStatus.projectAreas', $tenant:true},
+var ProjectAreaReviewSchema = new Schema({
+    projectStatusArea : {
+        _id: {type: Schema.Types.ObjectId, ref: 'Project.process.gates.deliveryStatus.projectStatusAreas', $tenant:true},
         statusArea: {
             _id: {type: Schema.Types.ObjectId, ref: 'LogStatusArea', $tenant:true},
             name: {type: String}
         },
         currentRecord: {
-            status: {type: Schema.Types.ObjectId, ref: 'LogStatusIndicator', default:null, $tenant:true},
+            status: {
+                _id : {type: Schema.Types.ObjectId, ref: 'LogStatusIndicator', default:null, $tenant:true},
+                name : {type: String, default:null},
+                color : {type: String, default: null}
+            },
             comment :{type: String, trim:true, default:''}
         }
     },
-    newStatus : {type: Schema.Types.ObjectId, ref: 'LogStatusIndicator', $tenant:true},
+    newStatus: {
+        _id : {type: Schema.Types.ObjectId, ref: 'LogStatusIndicator', default:null, $tenant:true},
+        name : {type: String, default:null},
+        color : {type: String, default: null}
+    },
     newComment : {type: String, trim: true}
 });
+
 
     // --- Gate review ---
 
@@ -655,18 +672,30 @@ var GateReviewSchema = new Schema({
         history : [approvalRecord]
     },
 
-    outcomeReviews : [OutcomeScoreReviewSchema],
+    outcomeScoreReviews : [OutcomeScoreReviewSchema],
 
-    gateStatusReview: {
-        gateStatus :{
+    gateStateReview: {
+        gateState :{
             currentRecord:{
                 completed: {type: Boolean, default: false},
-                status : {type: Schema.Types.ObjectId, ref: 'GateStatus', default:null, $tenant:true},
-                overallScore : {type: Schema.Types.ObjectId, ref: 'GateOutcomeScore', default:null, $tenant:true}
+                state: {
+                    _id : {type: Schema.Types.ObjectId, ref: 'GateState', default:null, $tenant:true},
+                    name : {type: String, default:null}
+                },
+                overallScore: {
+                    _id: {type: Schema.Types.ObjectId, ref: 'GateOutcomeScore', default:null, $tenant:true},
+                    name: {type: String, default: null}
+                }
             }
         },
-        newStatus : {type: Schema.Types.ObjectId, ref: 'GateStatus', default: null, $tenant:true},
-        newOverallScore : {type: Schema.Types.ObjectId, default: null, ref: 'GateOutcomeScore', $tenant:true},
+        newState: {
+            _id : {type: Schema.Types.ObjectId, ref: 'GateState', default:null, $tenant:true},
+            name : {type: String, default:null}
+        },
+        newOverallScore: {
+            _id: {type: Schema.Types.ObjectId, ref: 'GateOutcomeScore', default:null, $tenant:true},
+            name: {type: String, default: null}
+        },
         newCompleted : {type: Boolean, default: false}
     },
 
@@ -693,7 +722,7 @@ var GateReviewSchema = new Schema({
             actualCompletionReviews: [ActualCompletionReviewSchema]
         }
     },
-
+    
     created: { type: Date, default: Date.now },
     user: { type: Schema.ObjectId, ref: 'User' }
 });
@@ -706,13 +735,22 @@ var ProjectChangeRequestSchema = new Schema({
     title : {type: String, default:'', required:'Title required'},
     description : {type: String, default:''},
 
-    reason : {type: Schema.Types.ObjectId, default: null, ref: 'LogReason', $tenant:true},
-    state : {type: Schema.Types.ObjectId, default: null, ref: 'ChangeRequestState', $tenant:true},
-    priority : {type: Schema.Types.ObjectId, default: null, ref: 'LogPriority', $tenant:true},
+    reason: {
+        _id : {type: Schema.Types.ObjectId, ref: 'LogReason', default:null, $tenant:true},
+        name : {type: String, default:null}
+    },
+    state: {
+        _id : {type: Schema.Types.ObjectId, ref: 'ChangeRequestState', default:null, $tenant:true},
+        name : {type: String, default:null}
+    },
+    priority: {
+        _id : {type: Schema.Types.ObjectId, ref: 'LogPriority', default:null, $tenant:true},
+        name : {type: String, default:null}
+    },
 
     changeStatus : {
-        currentRecord : statusReviewRecord,
-        history : [statusReviewRecord]
+        currentRecord : changeStatusRecord,
+        history : [changeStatusRecord]
     },
 
     approval : {
@@ -763,36 +801,69 @@ var ProjectStatusUpdateSchema = new Schema({
     deliveryStatus: {
         overallStatusReview : {
             currentRecord: {
-                status: {type: Schema.Types.ObjectId, ref: 'LogStatusIndicator', default:null, $tenant:true},
+                status: {
+                    _id : {type: Schema.Types.ObjectId, ref: 'LogStatusIndicator', default:null, $tenant:true},
+                    name : {type: String, default:null},
+                    color : {type: String, default: null}
+                },
                 comment :{type: String, trim:true, default:''}
             },
-            newStatus: {type: Schema.Types.ObjectId, ref: 'LogStatusIndicator', default:null, $tenant:true},
+            newStatus: {
+                _id : {type: Schema.Types.ObjectId, ref: 'LogStatusIndicator', default:null, $tenant:true},
+                name : {type: String, default:null},
+                color : {type: String, default: null}
+            },
             newComment :{type: String, trim:true, default:''}
         },
         durationStatusReview : {
             currentRecord: {
-                status: {type: Schema.Types.ObjectId, ref: 'LogStatusIndicator', default:null, $tenant:true},
+                status: {
+                    _id : {type: Schema.Types.ObjectId, ref: 'LogStatusIndicator', default:null, $tenant:true},
+                    name : {type: String, default:null},
+                    color : {type: String, default: null}
+                },
                 comment :{type: String, trim:true, default:''}
             },
-            newStatus: {type: Schema.Types.ObjectId, ref: 'LogStatusIndicator', default:null, $tenant:true},
+            newStatus: {
+                _id : {type: Schema.Types.ObjectId, ref: 'LogStatusIndicator', default:null, $tenant:true},
+                name : {type: String, default:null},
+                color : {type: String, default: null}
+            },
             newComment :{type: String, trim:true, default:''}
         },
         costStatusReview : {
             currentRecord: {
-                status: {type: Schema.Types.ObjectId, ref: 'LogStatusIndicator', default:null, $tenant:true},
+                status: {
+                    _id : {type: Schema.Types.ObjectId, ref: 'LogStatusIndicator', default:null, $tenant:true},
+                    name : {type: String, default:null},
+                    color : {type: String, default: null}
+                },
                 comment :{type: String, trim:true, default:''}
             },
-            newStatus: {type: Schema.Types.ObjectId, ref: 'LogStatusIndicator', default:null, $tenant:true},
+            newStatus: {
+                _id : {type: Schema.Types.ObjectId, ref: 'LogStatusIndicator', default:null, $tenant:true},
+                name : {type: String, default:null},
+                color : {type: String, default: null}
+            },
             newComment :{type: String, trim:true, default:''}
         },
         completionStatusReview : {
             currentRecord: {
-                status: {type: Schema.Types.ObjectId, ref: 'LogStatusIndicator', default:null, $tenant:true},
+                status: {
+                    _id : {type: Schema.Types.ObjectId, ref: 'LogStatusIndicator', default:null, $tenant:true},
+                    name : {type: String, default:null},
+                    color : {type: String, default: null}
+                },
                 comment :{type: String, trim:true, default:''}
             },
-            newStatus: {type: Schema.Types.ObjectId, ref: 'LogStatusIndicator', default:null, $tenant:true},
+            newStatus: {
+                _id : {type: Schema.Types.ObjectId, ref: 'LogStatusIndicator', default:null, $tenant:true},
+                name : {type: String, default:null},
+                color : {type: String, default: null}
+            },
             newComment :{type: String, trim:true, default:''}
-        }
+        },
+        projectStatusAreaReviews : [ProjectAreaReviewSchema]
     },
 
     performances: {
@@ -807,23 +878,22 @@ var ProjectStatusUpdateSchema = new Schema({
         }
     },
 
-    statusAreaUpdates : [ProjectAreaUpdateSchema],
-
     created: { type: Date, default: Date.now },
     user: { type: Schema.ObjectId, ref: 'User' }
 });
 
+
 /* GATE */
 
 var ProjectGateSchema = new Schema({
-    _id: {type: Schema.ObjectId, ref: 'GateProcessTemplate.gates', $tenant:true},
+    standardGate: {type: Schema.ObjectId, ref: 'GateProcessTemplate.gates', default:null, $tenant:true},
     name: { type: String, default: '', required: 'Please fill Gate name', trim: true },
     description: { type: String, default: '', trim: true },
     position:{ type: Number, required: 'Position for gate is required', min:1},
     outcomes : [ProjectOutcomeSchema],
-    gateStatus: {
-        currentRecord: gateStatusRecord,
-        history:[gateStatusRecord]
+    gateState: {
+        currentRecord: gateStateRecord,
+        history:[gateStateRecord]
     },
     budget : {
         currentRecord: budgetRecord,
@@ -848,27 +918,28 @@ var ProjectGateSchema = new Schema({
     },
     deliveryStatus: {
         overallStatus : {
-            currentRecord: overallStatusRecord,
-            history:[overallStatusRecord]
+            currentRecord: onlyStatusRecord,
+            history:[onlyStatusRecord]
         },
         durationStatus : {
-            currentRecord: durationStatusRecord,
-            history:[durationStatusRecord]
+            currentRecord: onlyStatusRecord,
+            history:[onlyStatusRecord]
         },
         costStatus : {
-            currentRecord: costStatusRecord,
-            history:[costStatusRecord]
+            currentRecord: onlyStatusRecord,
+            history:[onlyStatusRecord]
         },
         completionStatus : {
-            currentRecord: completionStatusRecord,
-            history:[completionStatusRecord]
+            currentRecord: onlyStatusRecord,
+            history:[onlyStatusRecord]
         },
-        projectAreas : [ProjectAreaSchema]
+        projectStatusAreas : [ProjectStatusAreaSchema]
     },
     gateReviews : [GateReviewSchema],
     projectChangeRequests : [ProjectChangeRequestSchema],
     projectStatusUpdates : [ProjectStatusUpdateSchema]
 });
+
 
 // ------------------------------------------------ BIG FAT SCHEMA --------------------------------------------------
 
@@ -931,12 +1002,12 @@ var ProjectSchema = new Schema({
     // ----------------- DELIVERY ---------------------
 
     process: {
-        
-        _id: {type: Schema.ObjectId, ref: 'GateProcessTemplate', $tenant:true},
-        
+
+        standardProcess: {type: Schema.ObjectId, ref: 'GateProcessTemplate', default:null, $tenant:true},
+
         assignmentType: {type: String, enum: ['custom', 'standard', 'unassigned'], default:'unassigned'},
         assignmentConfirmed: {type: Boolean, default: false},
-        
+
         name: { type: String, default: '', trim: true },
         description: { type: String, default: '', trim: true },
 

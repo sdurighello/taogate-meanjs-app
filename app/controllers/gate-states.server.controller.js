@@ -9,99 +9,99 @@ var mongoose = require('mongoose'),
 	_ = require('lodash');
 
 /**
- * Create a Gate status
+ * Create a Gate state
  */
 exports.create = function(req, res) {
-	var GateStatus = mongoose.mtModel(req.user.tenantId + '.' + 'GateStatus');
-	var gateStatus = new GateStatus(req.body);
-	gateStatus.user = req.user;
+	var GateState = mongoose.mtModel(req.user.tenantId + '.' + 'GateState');
+	var gateState = new GateState(req.body);
+	gateState.user = req.user;
 
-	gateStatus.save(function(err) {
+	gateState.save(function(err) {
 		if (err) {
 			return res.status(400).send({
 				message: errorHandler.getErrorMessage(err)
 			});
 		} else {
-			res.jsonp(gateStatus);
+			res.jsonp(gateState);
 		}
 	});
 };
 
 /**
- * Show the current Gate status
+ * Show the current Gate State
  */
 exports.read = function(req, res) {
-	res.jsonp(req.gateStatus);
+	res.jsonp(req.gateState);
 };
 
 /**
- * Update a Gate status
+ * Update a Gate State
  */
 exports.update = function(req, res) {
-	var gateStatus = req.gateStatus ;
-	gateStatus.user = req.user;
-    gateStatus.created = Date.now();
-	gateStatus = _.extend(gateStatus , req.body);
+	var gateState = req.gateState ;
+	gateState.user = req.user;
+    gateState.created = Date.now();
+	gateState = _.extend(gateState , req.body);
 
-	gateStatus.save(function(err) {
+	gateState.save(function(err) {
 		if (err) {
 			return res.status(400).send({
 				message: errorHandler.getErrorMessage(err)
 			});
 		} else {
-			res.jsonp(gateStatus);
+			res.jsonp(gateState);
 		}
 	});
 };
 
 /**
- * Delete an Gate status
+ * Delete an Gate State
  */
 exports.delete = function(req, res) {
-	var gateStatus = req.gateStatus ;
+	var gateState = req.gateState ;
 
-	gateStatus.remove(function(err) {
+	gateState.remove(function(err) {
 		if (err) {
 			return res.status(400).send({
 				message: errorHandler.getErrorMessage(err)
 			});
 		} else {
-			res.jsonp(gateStatus);
+			res.jsonp(gateState);
 		}
 	});
 };
 
 /**
- * List of Gate statuses
+ * List of Gate States
  */
 exports.list = function(req, res) {
-	var GateStatus = mongoose.mtModel(req.user.tenantId + '.' + 'GateStatus');
-	GateStatus.find().populate('user', 'displayName').exec(function(err, gateStatuses) {
+	var GateState = mongoose.mtModel(req.user.tenantId + '.' + 'GateState');
+	GateState.find().populate('user', 'displayName').exec(function(err, gateStates) {
 		if (err) {
 			return res.status(400).send({
 				message: errorHandler.getErrorMessage(err)
 			});
 		} else {
-			res.jsonp(gateStatuses);
+			res.jsonp(gateStates);
 		}
 	});
 };
 
 /**
- * Gate status middleware
+ * Gate State middleware
  */
-exports.gateStatusByID = function(req, res, next, id) {
-	var GateStatus = mongoose.mtModel(req.user.tenantId + '.' + 'GateStatus');
-	GateStatus.findById(id).populate('user', 'displayName').exec(function(err, gateStatus) {
+exports.gateStateByID = function(req, res, next, id) {
+	var GateState = mongoose.mtModel(req.user.tenantId + '.' + 'GateState');
+	GateState.findById(id).populate('user', 'displayName').exec(function(err, gateState) {
 		if (err) return next(err);
-		if (! gateStatus) return next(new Error('Failed to load Gate status ' + id));
-		req.gateStatus = gateStatus ;
+		if (! gateState) return next(new Error('Failed to load Gate State ' + id));
+		req.gateState = gateState ;
 		next();
 	});
 };
 
 /**
- * Gate status authorization middleware
+ * Gate State authorization middleware
  */
 exports.hasAuthorization = function(req, res, next) {
     // User role check

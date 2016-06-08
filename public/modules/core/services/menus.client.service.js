@@ -416,7 +416,7 @@ angular.module('core').service('Menus', [
         this.addSubMenuItem('topbar', 'delivery', 'Status', 'menuTitle','menuTitle',false,
             ['superAdmin','admin','pmo','projectManager','portfolioManager','executive'],15);
                 // Project status
-        this.addSubMenuItem('topbar', 'delivery', 'Project status update', 'project-status-management','project-status-management',false,
+        this.addSubMenuItem('topbar', 'delivery', 'Project status update', 'project-status-updates','project-status-updates',false,
             ['superAdmin','admin','pmo','projectManager','portfolioManager','executive'],16);
                 // Portfolio status summary
         this.addSubMenuItem('topbar', 'delivery', 'Portfolio status summary', 'portfolio-status-summary','portfolio-status-summary',false,

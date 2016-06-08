@@ -59,13 +59,6 @@
                                                                 </span>
                                                         </div>
                                                     </div>
-                                                    <div class="form-group-sm col-md-3">
-                                                        <label for="issueGateNew">Gate</label>
-                                                        <select id="issueGateNew" class="form-control" data-ng-model = "newProjectIssue.gate"
-                                                                ng-options="gate as gate.name for gate in selectedProject.process.gates | orderBy: 'position'" required>
-                                                            <option value="">--choose gate</option>
-                                                        </select>
-                                                    </div>
                                                     <div class="form-group-sm col-md-6">
                                                         <label for="issueTitleNew">Title</label>
                                                         <input id="issueTitleNew" class="form-control" type="text" placeholder="Enter issue title"
@@ -74,11 +67,11 @@
                                                 </div>
                                                 <hr>
                                                 <div class="form-group-sm pull-right">
-                                                    <button class="btn btn-success btn-xs" data-ng-click="createNewProjectIssue(user, selectedProject); showNewProjectIssueForm = false;"
+                                                    <button class="btn btn-success btn-xs" data-ng-click="createNewProjectIssue(user, selectedProject)"
                                                             data-ng-disabled="newProjectIssueForm.$invalid && isResolving">
                                                         Save
                                                     </button>
-                                                    <button class="btn btn-info btn-xs" data-ng-click="cancelNewProjectIssue(); showNewProjectIssueForm = false;"
+                                                    <button class="btn btn-info btn-xs" data-ng-click="cancelNewProjectIssue()"
                                                             data-ng-disabled="isResolving">
                                                         Cancel
                                                     </button>
@@ -116,8 +109,6 @@
 
                                                                 <span data-ng-show="projectIssueFilter.title"><b>Title: </b><i>"{{projectIssueFilter.title}}" | </i></span>
 
-                                                                <span data-ng-show="projectIssueFilter.gate"><b>Gate: </b><i>"{{projectIssueFilter.gate.name}}" | </i></span>
-
                                                                 <span data-ng-show="projectIssueFilter.priority"><b>Priority: </b><i>"{{projectIssueFilter.priority.name}}" | </i></span>
 
                                                                 <span data-ng-show="projectIssueFilter.state"><b>State: </b><i>"{{projectIssueFilter.state.name}}" | </i></span>
@@ -144,12 +135,6 @@
                                                                     </div>
                                                                     <div class="col-md-4 form-group-sm">
                                                                         <input class="form-control" type="text" placeholder="filter by title" data-ng-model="projectIssueFilter.title">
-                                                                    </div>
-                                                                    <div class="col-md-3 form-group-sm">
-                                                                        <select class="form-control" data-ng-model = "projectIssueFilter.gate"
-                                                                                data-ng-options="gate as gate.name for gate in selectedProject.process.gates | orderBy: 'position'">
-                                                                            <option value="">--filter by gate</option>
-                                                                        </select>
                                                                     </div>
                                                                     <div class="col-md-3 form-group-sm">
                                                                         <select class="form-control" data-ng-model = "projectIssueFilter.priority"
@@ -193,7 +178,6 @@
                                                 <tr>
                                                     <th>#</th>
                                                     <th>Title</th>
-                                                    <th>Gate</th>
                                                     <th>Priority</th>
                                                     <th>State</th>
                                                     <th>Status</th>
@@ -206,7 +190,6 @@
                                                         {{projectIssue.idNumber}}
                                                     </td>
                                                     <td>{{projectIssue.title}}</td>
-                                                    <td>{{projectIssue.gate.name}}</td>
                                                     <td>
                                                         <span data-ng-show="projectIssue.priority">{{projectIssue.priority.name}}</span>
                                                         <span data-ng-show="!projectIssue.priority">No priority</span>

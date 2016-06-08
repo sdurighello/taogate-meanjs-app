@@ -2,9 +2,9 @@
 
 angular.module('project-milestones').controller('ProjectMilestoneController', ['$rootScope', '$scope','$stateParams', '$location',
 	'Authentication', 'Projects', 'Portfolios','$q', '_',
-	'GateProcesses', 'ProjectMilestones', 'ProjectMilestoneTypes', 'MilestoneStates', 'LogStatusIndicators',
+	'GateProcessTemplates', 'ProjectMilestones', 'ProjectMilestoneTypes', 'MilestoneStates', 'LogStatusIndicators',
 	function($rootScope, $scope, $stateParams, $location, Authentication, Projects, Portfolios, $q, _,
-			 GateProcesses, ProjectMilestones, ProjectMilestoneTypes, MilestoneStates, LogStatusIndicators) {
+			 GateProcessTemplates, ProjectMilestones, ProjectMilestoneTypes, MilestoneStates, LogStatusIndicators) {
 
 		$rootScope.staticMenu = false;
 
@@ -18,8 +18,8 @@ angular.module('project-milestones').controller('ProjectMilestoneController', ['
 
 			$scope.user = Authentication.user;
 
-			Projects.query({'selection.active': true, 'selection.selectedForDelivery': true}, function(projects){
-				$scope.projects = _.filter(projects, function(project){return project.process !== null;});
+			Projects.query({'selection.active': true, 'selection.selectedForDelivery': true}, function(res){
+				$scope.projects = res;
 			}, function(err){
 				$scope.initErrors.push(err.data.message);
 			});
@@ -30,7 +30,7 @@ angular.module('project-milestones').controller('ProjectMilestoneController', ['
 				$scope.initErrors.push(err.data.message);
 			});
 
-			GateProcesses.query(function(gateProcesses){
+			GateProcessTemplates.query(function(gateProcesses){
 				$scope.gateProcesses = gateProcesses;
 			}, function(err){
 				$scope.initErrors.push(err.data.message);
@@ -122,29 +122,26 @@ angular.module('project-milestones').controller('ProjectMilestoneController', ['
 
 
 
-		// ------------- SELECT VIEW PROJECT ------------
+		// ------------- SELECT PROJECT ------------
 
-		var originalProjectMilestone = {};
 
 		$scope.selectProject = function(project) {
-			$scope.selectedProject = null;
-			$scope.projectMilestoneList = null;
-            $scope.reviewObject = null;
+
+			$scope.projectMilestones = null;
+            $scope.selectedGate = null;
+            $scope.selectedProjectMilestone = null;
 
             $scope.cancelNewProjectMilestone();
-
-			$scope.selectedProjectMilestone = null;
-			originalProjectMilestone = {};
-
+            
 			$scope.selectedProject = project;
 
             $scope.error = null;
             $scope.isResolving = true;
-			ProjectMilestones.getMilestonesForProject({
+			ProjectMilestones.query({
 				project: project._id
 			}, function (res) {
                 $scope.isResolving = false;
-                $scope.projectMilestoneList = res;
+                $scope.projectMilestones = res;
 			}, function (err) {
                 $scope.isResolving = false;
 				$scope.error = err.data.message;
@@ -152,33 +149,24 @@ angular.module('project-milestones').controller('ProjectMilestoneController', ['
 
 		};
 
-		$scope.cancelViewProject = function(){
-			$scope.error = null;
-			$scope.selectedProject = null;
-			$scope.projectMilestoneList = null;
-
-		};
-
-
         // -------------- SELECT GATE ---------------------
 
-        $scope.setReviewObject = function(reviewObj){
+        $scope.selectGate = function(gate){
             $scope.error = null;
             $scope.selectedProjectMilestone = null;
-            $scope.reviewObject = reviewObj;
-
             $scope.cancelNewProjectMilestone();
+            $scope.selectedGate = gate;
         };
 
 
-		// ------------- NEW PROJECT CHANGE REQUEST ------------
+		// ------------- NEW MILESTONE ------------
 
 		$scope.newProjectMilestone = {};
 
 		$scope.createNewProjectMilestone = function(project, gate){
 			var newProjectMilestone = new ProjectMilestones({
 				project: project._id,
-				gate : gate._id,
+				gate : {_id: gate._id, name: gate.name, standardGate: gate.standardGate},
 				type : $scope.newProjectMilestone.type,
 				name : $scope.newProjectMilestone.name
 			});
@@ -189,7 +177,7 @@ angular.module('project-milestones').controller('ProjectMilestoneController', ['
 				// Clear new form
 				$scope.newProjectMilestone = {};
 				// Refresh the list of gate reviews
-				_.find($scope.projectMilestoneList, _.matchesProperty('gate._id', gate._id)).projectMilestones.push(res);
+				$scope.projectMilestones.push(res);
 				// Select in view mode the new review
 				$scope.selectProjectMilestone(res);
 				// Close new review form
@@ -207,63 +195,39 @@ angular.module('project-milestones').controller('ProjectMilestoneController', ['
 		};
 
 
-		// ------------- SELECT GATE REVIEW ------------
+		// ------------- SELECT MILESTONE ------------
 
-		var projectMilestoneFromList = {};
-		// Required to update the list when milestones details
-		// in the details pane that are also reported in the list of gate reviews
 
 		$scope.selectProjectMilestone = function(projectMilestone){
-			projectMilestoneFromList[projectMilestone._id] = projectMilestone;
-
-            $scope.error = null;
-            $scope.isResolving = true;
-			ProjectMilestones.get({
-				projectMilestoneId:projectMilestone._id
-			}, function(res){
-                $scope.isResolving = false;
-				$scope.selectedProjectMilestone = res;
-				originalProjectMilestone[projectMilestone._id] = _.cloneDeep(res);
-				//$scope.selectProjectMilestoneForm('view');
-			},function(errorResponse){
-                $scope.isResolving = false;
-				$scope.error = errorResponse.data.message;
-				$scope.selectedProjectMilestone = null;
-				originalProjectMilestone = {};
-			});
+            $scope.selectedProjectMilestone = projectMilestone;
 		};
 
 
 
 		// -------------------------------------------------------- HEADER -------------------------------------------------
 
+        var originalProjectMilestoneHeader = {};
 
 		$scope.editHeader = function(projectMilestone){
+            originalProjectMilestoneHeader[projectMilestone._id] = {
+                name : projectMilestone.name,
+                description : projectMilestone.description,
+                state : projectMilestone.state,
+                type : projectMilestone.type
+            };
 			$scope.selectHeaderForm('edit', projectMilestone);
 		};
 
 		$scope.saveEditHeader = function(projectMilestone){
-			// Clean-up deepPopulate
-			var copyProjectMilestone = _.cloneDeep(projectMilestone);
-			copyProjectMilestone.project = _.get(copyProjectMilestone.project, '_id');
-			copyProjectMilestone.gate = _.get(copyProjectMilestone.gate, '_id');
-			// Update server header
+
             $scope.error = null;
             $scope.isResolving = true;
 			ProjectMilestones.updateHeader(
 				{
-					projectMilestoneId : copyProjectMilestone._id
-				}, copyProjectMilestone,
+					projectMilestoneId : projectMilestone._id
+				}, projectMilestone,
 				function(res){
                     $scope.isResolving = false;
-					// Update details pane view with new saved details
-					originalProjectMilestone[projectMilestone._id].name = projectMilestone.name;
-					originalProjectMilestone[projectMilestone._id].description = projectMilestone.description;
-					originalProjectMilestone[projectMilestone._id].state = projectMilestone.state;
-					originalProjectMilestone[projectMilestone._id].type = projectMilestone.type;
-					// Update list of reviews with new date / name
-					projectMilestoneFromList[projectMilestone._id].name = projectMilestone.name;
-					// Close edit header form and back to view
 					$scope.selectHeaderForm('view', projectMilestone);
 				},
 				function(err){
@@ -275,24 +239,23 @@ angular.module('project-milestones').controller('ProjectMilestoneController', ['
 
 		$scope.cancelEditHeader = function(projectMilestone){
             $scope.error = null;
-			projectMilestone.name = originalProjectMilestone[projectMilestone._id].name;
-			projectMilestone.description = originalProjectMilestone[projectMilestone._id].description;
-			projectMilestone.state = originalProjectMilestone[projectMilestone._id].state;
-			projectMilestone.type = originalProjectMilestone[projectMilestone._id].type;
+			projectMilestone.name = originalProjectMilestoneHeader[projectMilestone._id].name;
+			projectMilestone.description = originalProjectMilestoneHeader[projectMilestone._id].description;
+			projectMilestone.state = originalProjectMilestoneHeader[projectMilestone._id].state;
+			projectMilestone.type = originalProjectMilestoneHeader[projectMilestone._id].type;
 			$scope.selectHeaderForm('view', projectMilestone);
 		};
 
 
-		$scope.deleteProjectMilestone = function(reviewObject, projectMilestone){
+		$scope.deleteProjectMilestone = function(projectMilestone){
             $scope.error = null;
             $scope.isResolving = true;
 			ProjectMilestones.remove({projectMilestoneId: projectMilestone._id}, projectMilestone,
                 function(res){
                 $scope.isResolving = false;
-				reviewObject.projectMilestones = _.without(reviewObject.projectMilestones, _.find(reviewObject.projectMilestones, _.matchesProperty('_id',projectMilestone._id)));
+				$scope.projectMilestones = _.without($scope.projectMilestones, projectMilestone);
 				$scope.cancelNewProjectMilestone();
 				$scope.selectedProjectMilestone = null;
-				originalProjectMilestone = {};
 			}, function(err){
                 $scope.isResolving = false;
 				$scope.error = err.data.message;
@@ -323,31 +286,27 @@ angular.module('project-milestones').controller('ProjectMilestoneController', ['
 			$scope.actualDeliveryDateOpened[projectMilestone._id] = true;
 		};
 
+        var originalProjectMilestoneStatus = {};
+
 		$scope.editStatus = function(projectMilestone){
+            originalProjectMilestoneStatus = {
+                baselineDeliveryDate : projectMilestone.statusReview.currentRecord.baselineDeliveryDate,
+                estimateDeliveryDate : projectMilestone.statusReview.currentRecord.estimateDeliveryDate,
+                actualDeliveryDate : projectMilestone.statusReview.currentRecord.actualDeliveryDate,
+                status : projectMilestone.statusReview.currentRecord.status,
+                completed : projectMilestone.statusReview.currentRecord.completed,
+                statusComment : projectMilestone.statusReview.currentRecord.statusComment
+            };
 			$scope.selectStatusForm('edit', projectMilestone);
 		};
 
 		$scope.saveEditStatus = function(projectMilestone){
-			// Clean-up deepPopulate
-			var copyProjectMilestone = _.cloneDeep(projectMilestone);
-			copyProjectMilestone.project = _.get(copyProjectMilestone.project, '_id');
-			copyProjectMilestone.gate = _.get(copyProjectMilestone.gate, '_id');
-			// Update server header
             $scope.error = null;
             $scope.isResolving = true;
-			ProjectMilestones.updateStatus( { projectMilestoneId : copyProjectMilestone._id }, copyProjectMilestone,
+			ProjectMilestones.updateStatus( { projectMilestoneId : projectMilestone._id }, projectMilestone,
 				function(res){
                     $scope.isResolving = false;
-					// Update the "estimate delivery date" and the "final" in the gate from the list
-					projectMilestoneFromList[projectMilestone._id].statusReview.currentRecord.completed = projectMilestone.statusReview.currentRecord.completed;
-                    projectMilestoneFromList[projectMilestone._id].statusReview.currentRecord.estimateDeliveryDate = projectMilestone.statusReview.currentRecord.estimateDeliveryDate;
-                    // Change the selected CR
-					originalProjectMilestone[projectMilestone._id].statusReview.currentRecord.baselineDeliveryDate = projectMilestone.statusReview.currentRecord.baselineDeliveryDate;
-					originalProjectMilestone[projectMilestone._id].statusReview.currentRecord.estimateDeliveryDate = projectMilestone.statusReview.currentRecord.estimateDeliveryDate;
-					originalProjectMilestone[projectMilestone._id].statusReview.currentRecord.actualDeliveryDate = projectMilestone.statusReview.currentRecord.actualDeliveryDate;
-					originalProjectMilestone[projectMilestone._id].statusReview.currentRecord.status = projectMilestone.statusReview.currentRecord.status;
-					originalProjectMilestone[projectMilestone._id].statusReview.currentRecord.completed = projectMilestone.statusReview.currentRecord.completed;
-					originalProjectMilestone[projectMilestone._id].statusReview.currentRecord.statusComment = projectMilestone.statusReview.currentRecord.statusComment;
+                    projectMilestone.statusReview = res.statusReview;
 					$scope.selectStatusForm('view', projectMilestone);
 				},
 				function(err){
@@ -359,12 +318,12 @@ angular.module('project-milestones').controller('ProjectMilestoneController', ['
 
 		$scope.cancelEditStatus = function(projectMilestone){
             $scope.error = null;
-			projectMilestone.statusReview.currentRecord.baselineDeliveryDate = originalProjectMilestone[projectMilestone._id].statusReview.currentRecord.baselineDeliveryDate;
-			projectMilestone.statusReview.currentRecord.estimateDeliveryDate = originalProjectMilestone[projectMilestone._id].statusReview.currentRecord.estimateDeliveryDate;
-			projectMilestone.statusReview.currentRecord.actualDeliveryDate = originalProjectMilestone[projectMilestone._id].statusReview.currentRecord.actualDeliveryDate;
-			projectMilestone.statusReview.currentRecord.status = originalProjectMilestone[projectMilestone._id].statusReview.currentRecord.status;
-			projectMilestone.statusReview.currentRecord.completed = originalProjectMilestone[projectMilestone._id].statusReview.currentRecord.completed;
-			projectMilestone.statusReview.currentRecord.statusComment = originalProjectMilestone[projectMilestone._id].statusReview.currentRecord.statusComment;
+			projectMilestone.statusReview.currentRecord.baselineDeliveryDate = originalProjectMilestoneStatus[projectMilestone._id].baselineDeliveryDate;
+			projectMilestone.statusReview.currentRecord.estimateDeliveryDate = originalProjectMilestoneStatus[projectMilestone._id].estimateDeliveryDate;
+			projectMilestone.statusReview.currentRecord.actualDeliveryDate = originalProjectMilestoneStatus[projectMilestone._id].actualDeliveryDate;
+			projectMilestone.statusReview.currentRecord.status = originalProjectMilestoneStatus[projectMilestone._id].status;
+			projectMilestone.statusReview.currentRecord.completed = originalProjectMilestoneStatus[projectMilestone._id].completed;
+			projectMilestone.statusReview.currentRecord.statusComment = originalProjectMilestoneStatus[projectMilestone._id].statusComment;
 			$scope.selectStatusForm('view', projectMilestone);
 		};
 

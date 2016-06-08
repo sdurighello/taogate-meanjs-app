@@ -1,11 +1,11 @@
 'use strict';
 
 angular.module('portfolio-milestones').controller('PortfolioMilestonesController', ['$rootScope', '$scope', '$stateParams', '$location', '$q', '_', 'Authentication',
-	'Portfolios', 'Projects', 'ProjectMilestones', 'PortfolioMilestones', 'GateProcesses',
+	'Portfolios', 'Projects', 'PortfolioMilestones', 'GateProcessTemplates',
 	'MilestoneStates', 'PortfolioMilestoneTypes', 'ProjectMilestoneTypes', 'LogStatusIndicators',
 	'$modal', '$log',
 	function($rootScope, $scope, $stateParams, $location, $q, _, Authentication,
-			 Portfolios, Projects, ProjectMilestones, PortfolioMilestones, GateProcesses,
+			 Portfolios, Projects, PortfolioMilestones, GateProcessTemplates,
              MilestoneStates, PortfolioMilestoneTypes, ProjectMilestoneTypes, LogStatusIndicators, $modal, $log) {
 
 		$rootScope.staticMenu = false;
@@ -29,7 +29,7 @@ angular.module('portfolio-milestones').controller('PortfolioMilestonesController
 				vm.initErrors.push(err.data.message);
 			});
 
-			GateProcesses.query(function(gateProcesses){
+			GateProcessTemplates.query(function(gateProcesses){
 				vm.gateProcesses = gateProcesses;
 			}, function(err){
 				vm.initErrors.push(err.data.message);
@@ -405,7 +405,7 @@ angular.module('portfolio-milestones').controller('PortfolioMilestonesController
 
 
 		// Used only to show the details of the milestone (adding/removing all done on main ctrl/view)
-		var modalProjectMilestone = function (size, milestone, milestoneStates, portfolioMilestoneTypes, projectMilestoneTypes, logStatuses) {
+		var modalProjectMilestone = function (size, milestone, milestoneStates, portfolioMilestoneTypes, projectMilestoneTypes, logStatuses, availableProjects) {
 
 			var modalInstance = $modal.open({
 				templateUrl: 'modules/portfolio-milestones/views/associated-project-milestone.client.view.html',
@@ -416,6 +416,7 @@ angular.module('portfolio-milestones').controller('PortfolioMilestonesController
                     $scope.portfolioMilestoneTypes = portfolioMilestoneTypes;
                     $scope.projectMilestoneTypes = projectMilestoneTypes;
                     $scope.logStatuses = logStatuses;
+                    $scope.availableProjects = availableProjects;
 
 					$scope.projectMilestoneDetails = 'header';
 
@@ -425,13 +426,9 @@ angular.module('portfolio-milestones').controller('PortfolioMilestonesController
 				},
 				size: size,
 				resolve: {
-					milestone: function (ProjectMilestones) {
-						return ProjectMilestones.get(
-							{ projectMilestoneId:milestone._id },
-							function(res){ return res; },
-							function(err){ return err; }
-						);
-					},
+					milestone: function () {
+                        return milestone;
+                    },
                     milestoneStates: function () {
                         return milestoneStates;
                     },
@@ -443,6 +440,9 @@ angular.module('portfolio-milestones').controller('PortfolioMilestonesController
                     },
                     logStatuses: function () {
                         return logStatuses;
+                    },
+                    availableProjects: function () {
+                        return availableProjects;
                     }
 				},
 				backdrop: 'static',
@@ -451,7 +451,7 @@ angular.module('portfolio-milestones').controller('PortfolioMilestonesController
 		};
 
 		vm.viewProjectMilestone = function(milestone){
-			modalProjectMilestone('lg', milestone, vm.milestoneStates, vm.portfolioMilestoneTypes, vm.projectMilestoneTypes, vm.logStatuses);
+			modalProjectMilestone('lg', milestone, vm.milestoneStates, vm.portfolioMilestoneTypes, vm.projectMilestoneTypes, vm.logStatuses, vm.availableProjects);
 		};
 
 		vm.addProjectMilestone = function(portfolioMilestone, projectMilestone){

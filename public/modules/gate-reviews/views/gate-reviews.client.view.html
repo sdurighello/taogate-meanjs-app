@@ -18,10 +18,10 @@
         <strong data-ng-bind="error"></strong>
     </div>
     <div class="row">
-        <div class="col-md-3">
+        <div class="col-md-3" style="padding-right: 5px">
             <project-list projects="projects" select-project="selectProject" portfolios="portfolios" gate-processes="gateProcesses" is-resolving="isResolving"></project-list>
         </div>
-        <div class="col-md-9">
+        <div class="col-md-9" style="padding-left: 5px">
             <div class="row">
                 <div class="col-md-12">
                     <div data-ng-hide="selectedProject || projects.length === 0" class="alert alert-warning text-center">
@@ -102,7 +102,7 @@
                                 <span>Select a gate to see its gate reviews</span>
                             </div>
                             <div class="row" data-ng-show="selectedGate && !showNewDocumentForm">
-                                <div class="col-md-3">
+                                <div class="col-md-3" style="padding-right: 5px; padding-left: 10px;">
                                     <div class="panel panel-default">
                                         <div class="panel-heading">
                                             <h6 class="panel-title text-center">Gate reviews</h6>
@@ -143,7 +143,7 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div class="col-md-9">
+                                <div class="col-md-9" style="padding-right: 10px; padding-left: 5px;">
                                     <div data-ng-hide="selectedDocument || selectedGate.gateReviews.length === 0" class="alert alert-warning text-center">
                                         Select a gate review to see its details
                                     </div>
@@ -158,8 +158,8 @@
                                                 <label class="btn btn-info btn-xs" data-ng-model="documentDetails" btn-radio="'header'">
                                                     Header
                                                 </label>
-                                                <label class="btn btn-info btn-xs" data-ng-model="documentDetails" btn-radio="'status'">
-                                                    Status
+                                                <label class="btn btn-info btn-xs" data-ng-model="documentDetails" btn-radio="'state'">
+                                                    State & Score
                                                 </label>
                                                 <label class="btn btn-info btn-xs" data-ng-model="documentDetails" btn-radio="'outcomes'">
                                                     Outcomes
@@ -247,7 +247,7 @@
                                                     </form>
                                                 </div>
                                             </div>
-                                            <div data-ng-show="documentDetails === 'status'">
+                                            <div data-ng-show="documentDetails === 'state'">
                                                 <div class="row">
                                                     <div class="col-md-6">
                                                         <div class="panel panel-default panel-body">
@@ -259,8 +259,8 @@
                                                             <br>
                                                             <div class="row">
                                                                 <div class="form-group-sm col-md-12">
-                                                                    <select id="currentScore" class="form-control" data-ng-model = "selectedDocument.gateStatusReview.gateStatus.currentRecord.overallScore"
-                                                                            ng-options="score._id as score.name for score in outcomeScores" disabled>
+                                                                    <select id="currentScore" class="form-control" data-ng-model = "selectedDocument.gateStateReview.gateState.currentRecord.overallScore"
+                                                                            ng-options="score as score.name for score in outcomeScores track by score._id" disabled>
                                                                         <option value="">No overall score yet</option>
                                                                     </select>
                                                                 </div>
@@ -268,9 +268,9 @@
                                                             <br>
                                                             <div class="row">
                                                                 <div class="form-group-sm col-md-12">
-                                                                    <select id="currentStatus" class="form-control" data-ng-model = "selectedDocument.gateStatusReview.gateStatus.currentRecord.status"
-                                                                            ng-options="gateStatus._id as gateStatus.name for gateStatus in gateStatuses" disabled>
-                                                                        <option value="">No gate status yet</option>
+                                                                    <select id="currentState" class="form-control" data-ng-model = "selectedDocument.gateStateReview.gateState.currentRecord.state"
+                                                                            ng-options="gateState as gateState.name for gateState in gateStates track by gateState._id" disabled>
+                                                                        <option value="">No gate state yet</option>
                                                                     </select>
                                                                 </div>
                                                             </div>
@@ -279,12 +279,12 @@
                                                                 <div class="form-group-sm col-md-12">
                                                                     <label for="prjCrEditCompleted">Gate completed</label>
                                                                     <input id="prjCrEditCompleted" class="" type="checkbox"
-                                                                           data-ng-model="selectedDocument.gateStatusReview.gateStatus.currentRecord.completed" disabled>
+                                                                           data-ng-model="selectedDocument.gateStateReview.gateState.currentRecord.completed" disabled>
                                                                 </div>
                                                             </div>
                                                         </div>
                                                     </div>
-                                                    <div class="col-md-6" data-ng-switch="switchStatusForm[selectedDocument._id]">
+                                                    <div class="col-md-6" data-ng-switch="switchStateForm[selectedDocument._id]">
                                                         <div class="panel panel-default panel-body" data-ng-switch-default="view">
                                                             <div class="row">
                                                                 <div class="col-md-3 text-center">
@@ -292,7 +292,7 @@
                                                                 </div>
                                                                 <div class="col-md-9">
                                                                     <div class="pull-right" data-ng-show="userHasAuthorization('edit', user, selectedProject) && (selectedDocument.approval.currentRecord.approvalState === 'draft')">
-                                                                        <button class="btn btn-success btn-xs" data-ng-click="editStatus(selectedDocument)">
+                                                                        <button class="btn btn-success btn-xs" data-ng-click="editState(selectedDocument)">
                                                                             Edit
                                                                         </button>
                                                                     </div>
@@ -301,8 +301,8 @@
                                                             <br>
                                                             <div class="row">
                                                                 <div class="form-group-sm col-md-12">
-                                                                    <select id="newScore" class="form-control" data-ng-model = "selectedDocument.gateStatusReview.newOverallScore"
-                                                                            ng-options="score._id as score.name for score in outcomeScores" disabled>
+                                                                    <select id="newScore" class="form-control" data-ng-model = "selectedDocument.gateStateReview.newOverallScore"
+                                                                            ng-options="score as score.name for score in outcomeScores track by score._id" disabled>
                                                                         <option value="">No overall score yet</option>
                                                                     </select>
                                                                 </div>
@@ -310,9 +310,9 @@
                                                             <br>
                                                             <div class="row">
                                                                 <div class="form-group-sm col-md-12">
-                                                                    <select id="newStatus" class="form-control" data-ng-model = "selectedDocument.gateStatusReview.newStatus"
-                                                                            ng-options="gateStatus._id as gateStatus.name for gateStatus in gateStatuses" disabled>
-                                                                        <option value="">No gate status yet</option>
+                                                                    <select id="newState" class="form-control" data-ng-model = "selectedDocument.gateStateReview.newState"
+                                                                            ng-options="gateState as gateState.name for gateState in gateStates track by gateState._id" disabled>
+                                                                        <option value="">No gate state yet</option>
                                                                     </select>
                                                                 </div>
                                                             </div>
@@ -321,7 +321,7 @@
                                                                 <div class="form-group-sm col-md-12">
                                                                     <label for="prjCrEditCompleted">Gate completed</label>
                                                                     <input id="prjCrEditCompleted" class="" type="checkbox"
-                                                                           data-ng-model="selectedDocument.gateStatusReview.newCompleted" disabled>
+                                                                           data-ng-model="selectedDocument.gateStateReview.newCompleted" disabled>
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -332,11 +332,11 @@
                                                                 </div>
                                                                 <div class="col-md-9">
                                                                     <div class="pull-right">
-                                                                        <button class="btn btn-success btn-xs" data-ng-click="saveEditStatus(selectedProject, selectedGate, selectedDocument)"
+                                                                        <button class="btn btn-success btn-xs" data-ng-click="saveEditState(selectedProject, selectedGate, selectedDocument)"
                                                                                 data-ng-disabled="isResolving">
                                                                             Save
                                                                         </button>
-                                                                        <button class="btn btn-info btn-xs" data-ng-click="cancelEditStatus(selectedDocument)"
+                                                                        <button class="btn btn-info btn-xs" data-ng-click="cancelEditState(selectedDocument)"
                                                                                 data-ng-disabled="isResolving">
                                                                             Cancel
                                                                         </button>
@@ -346,8 +346,8 @@
                                                             <br>
                                                             <div class="row">
                                                                 <div class="form-group-sm col-md-12">
-                                                                    <select id="newScore" class="form-control" data-ng-model = "selectedDocument.gateStatusReview.newOverallScore"
-                                                                            ng-options="score._id as score.name for score in outcomeScores">
+                                                                    <select id="newScore" class="form-control" data-ng-model = "selectedDocument.gateStateReview.newOverallScore"
+                                                                            ng-options="score as score.name for score in outcomeScores track by score._id">
                                                                         <option value="">--choose overall score</option>
                                                                     </select>
                                                                 </div>
@@ -355,9 +355,9 @@
                                                             <br>
                                                             <div class="row">
                                                                 <div class="form-group-sm col-md-12">
-                                                                    <select id="newStatus" class="form-control" data-ng-model = "selectedDocument.gateStatusReview.newStatus"
-                                                                            ng-options="gateStatus._id as gateStatus.name for gateStatus in gateStatuses">
-                                                                        <option value="">--choose gate status</option>
+                                                                    <select id="newState" class="form-control" data-ng-model = "selectedDocument.gateStateReview.newState"
+                                                                            ng-options="gateState as gateState.name for gateState in gateStates track by gateState._id">
+                                                                        <option value="">--choose gate state</option>
                                                                     </select>
                                                                 </div>
                                                             </div>
@@ -366,7 +366,7 @@
                                                                 <div class="form-group-sm col-md-12">
                                                                     <label for="prjCrEditCompleted">Gate completed</label>
                                                                     <input id="prjCrEditCompleted" class="" type="checkbox"
-                                                                           data-ng-model="selectedDocument.gateStatusReview.newCompleted" >
+                                                                           data-ng-model="selectedDocument.gateStateReview.newCompleted" >
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -374,7 +374,7 @@
                                                 </div>
                                             </div>
                                             <div data-ng-show="documentDetails === 'outcomes'">
-                                                <div class="panel panel-default" data-ng-repeat="outcomeReview in selectedDocument.outcomeReviews track by $index">
+                                                <div class="panel panel-default" data-ng-repeat="outcomeReview in selectedDocument.outcomeScoreReviews track by $index">
                                                     <div class="panel-heading text-center">
                                                         <b data-ng-bind="outcomeReview.outcome.name"></b>
                                                     </div>
@@ -391,7 +391,7 @@
                                                                     <div class="row">
                                                                         <div class="form-group-sm col-md-12">
                                                                             <select id="" class="form-control" data-ng-model = "outcomeReview.outcome.score.currentRecord.score"
-                                                                                    ng-options="score._id as score.name for score in outcomeScores" disabled>
+                                                                                    ng-options="score as score.name for score in outcomeScores track by score._id" disabled>
                                                                                 <option value="">No score yet</option>
                                                                             </select>
                                                                         </div>
@@ -422,7 +422,7 @@
                                                                     <div class="row">
                                                                         <div class="form-group-sm col-md-12">
                                                                             <select id="" class="form-control" data-ng-model = "outcomeReview.newScore"
-                                                                                    ng-options="score._id as score.name for score in outcomeScores" disabled>
+                                                                                    ng-options="score as score.name for score in outcomeScores track by score._id" disabled>
                                                                                 <option value="">No score yet</option>
                                                                             </select>
                                                                         </div>
@@ -457,7 +457,7 @@
                                                                     <div class="row">
                                                                         <div class="form-group-sm col-md-12">
                                                                             <select id="" class="form-control" data-ng-model = "outcomeReview.newScore"
-                                                                                    ng-options="score._id as score.name for score in outcomeScores" >
+                                                                                    ng-options="score as score.name for score in outcomeScores track by score._id" >
                                                                                 <option value="">--choose score</option>
                                                                             </select>
                                                                         </div>

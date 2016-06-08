@@ -16,7 +16,7 @@ require('mongoose-multitenant');
  * Portfolio change request Schema
  */
 
-var fundingRequestSchema = new Schema({
+var FundingRequestSchema = new Schema({
         title : {type: String, default:'', trim: true, required:'Request title required'},
         description : {type: String, default:'', trim: true},
         funds : {type: Number, default: 0, required:'Request funds required'},
@@ -28,6 +28,41 @@ var approvalRecord = {
     created: { type: Date, default: Date.now },
     user: { type: Schema.ObjectId, ref: 'User' }
 };
+
+var AssociatedProjectChangeRequestSchema = new Schema({
+    _id : {type: Schema.Types.ObjectId, ref: 'Project.process.gates.projectChangeRequests', $tenant:true},
+    project: {
+        _id: {type: Schema.Types.ObjectId, ref: 'Project', $tenant:true},
+        name: {type: String}
+    },
+    gate : {
+        _id: {type: Schema.Types.ObjectId, ref: 'Project.process.gates', $tenant:true},
+        name: {type: String}
+    },
+    raisedOnDate : {type: Date},
+    title : {type: String},
+    description : {type: String},
+
+    reason : {type: Schema.Types.ObjectId, ref: 'LogReason', $tenant:true},
+    state : {type: Schema.Types.ObjectId, ref: 'ChangeRequestState', $tenant:true},
+    priority : {type: Schema.Types.ObjectId, ref: 'LogPriority', $tenant:true},
+
+    changeStatus : {
+        currentRecord : {
+            status: {type: Schema.Types.ObjectId, ref: 'LogStatusIndicator', $tenant:true}
+        }
+    },
+
+    approval : {
+        currentRecord : {
+            approvalState: {type: String, enum: ['draft', 'submitted', 'approved','rejected']}
+        }
+    },
+
+    budgetReview : {
+        budgetChange : {type: Number}
+    }
+});
 
 var PortfolioChangeRequestSchema = new Schema({
 
@@ -46,26 +81,43 @@ var PortfolioChangeRequestSchema = new Schema({
         history : [approvalRecord]
     },
 
-    // associatedProjectChangeRequests : [{type: Schema.Types.ObjectId, ref: 'ProjectChangeRequest', $tenant:true}],
+    associatedProjectChangeRequests : [AssociatedProjectChangeRequestSchema],
 
-    fundingRequests : [fundingRequestSchema],
+    fundingRequests : [FundingRequestSchema],
+    
+    totalFunding: {
+        totalFundingRequests : {type: Number},
+        totalFundingProjectChangeRequests : {type: Number},
+        totalFundingPortfolioChangeRequest : {type: Number}
+    },
 
     created: { type: Date, default: Date.now },
     user: { type: Schema.ObjectId, ref: 'User' }
 
-}, {
-    toObject: {
-        virtuals: true
-    },
-    toJSON: {
-        virtuals: true
-    }
 });
 
-PortfolioChangeRequestSchema.virtual('totalFundingRequests').get(function(){
-    return _.reduce(this.fundingRequests, function(sum, request){
-        return sum + request.funds;
-    },0);
+PortfolioChangeRequestSchema.pre('save', function (next) {
+    var totalFundingRequests = 0;
+    var totalFundingProjectChangeRequests = 0;
+    var totalFundingPortfolioChangeRequest;
+    
+    _.each(this.associatedProjectChangeRequests, function(cr){
+        totalFundingProjectChangeRequests = totalFundingProjectChangeRequests + cr.budgetReview.budgetChange;
+    });
+
+    _.each(this.fundingRequests, function(fr){
+        totalFundingRequests = totalFundingRequests + fr.funds;
+    });
+
+    totalFundingPortfolioChangeRequest = totalFundingRequests + totalFundingProjectChangeRequests;
+    
+    this.totalFunding = {
+        totalFundingRequests : totalFundingRequests,
+        totalFundingProjectChangeRequests : totalFundingProjectChangeRequests,
+        totalFundingPortfolioChangeRequest : totalFundingPortfolioChangeRequest
+    };
+    
+    next();
 });
 
 PortfolioChangeRequestSchema.plugin(deepPopulate);

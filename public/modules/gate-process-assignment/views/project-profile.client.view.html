@@ -370,13 +370,13 @@
                 </div>
                 <br>
                 <div class="row">
-                    <div class="col-md-6" data-ng-show="vm.userHasAuthorization('edit', user, selectedProject) && vm.isProcessEditable(selectedProject) && (selectedProject.process.approval.currentRecord.approvalState === 'draft') ">
+                    <div class="col-md-6" data-ng-show="vm.userHasAuthorization('edit', user, selectedProject) && vm.isProcessApprovable(selectedProject) && (selectedProject.process.approval.currentRecord.approvalState === 'draft') ">
                         <button class="form-control btn btn-success" data-ng-click="submitProcess(selectedProject)"
                                 data-ng-disabled="isResolving">
                             Submit process
                         </button>
                     </div>
-                    <div data-ng-show="vm.userHasAuthorization('edit', user, selectedProject) && vm.isProcessEditable(selectedProject) && selectedProject.process.approval.currentRecord.approvalState === 'submitted'">
+                    <div data-ng-show="vm.userHasAuthorization('edit', user, selectedProject) && vm.isProcessApprovable(selectedProject) && selectedProject.process.approval.currentRecord.approvalState === 'submitted'">
                         <div class="col-md-6">
                             <button class="form-control btn btn-success" data-ng-click="approveProcess(selectedProject)"
                                     data-ng-disabled="isResolving">

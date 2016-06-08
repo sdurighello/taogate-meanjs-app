@@ -128,16 +128,16 @@ module.exports = function(app) {
     app.route('/projects/:projectId/project-gates/:projectGateId/gate-reviews/:gateReviewId/header')
         .put(users.requiresLogin, projects.hasEditAuthorization, projects.isGateReviewEditable, projects.updateGateReviewHeader);
 
-    app.route('/projects/:projectId/project-gates/:projectGateId/gate-reviews/:gateReviewId/status')
-        .put(users.requiresLogin, projects.hasEditAuthorization, projects.isGateReviewEditable,  projects.updateGateStatusReview);
+    app.route('/projects/:projectId/project-gates/:projectGateId/gate-reviews/:gateReviewId/state')
+        .put(users.requiresLogin, projects.hasEditAuthorization, projects.isGateReviewEditable,  projects.updateGateStateReview);
 
     app.route('/projects/:projectId/project-gates/:projectGateId/gate-reviews/:gateReviewId/budget')
         .put(users.requiresLogin, projects.hasEditAuthorization, projects.isGateReviewEditable, projects.updateGateBudgetReview);
 
     // Gate Reviews Outcomes
 
-    app.route('/projects/:projectId/project-gates/:projectGateId/gate-reviews/:gateReviewId/outcome-reviews/:outcomeReviewId')
-        .put(users.requiresLogin, projects.hasEditAuthorization, projects.isGateReviewEditable, projects.updateOutcomeReview);
+    app.route('/projects/:projectId/project-gates/:projectGateId/gate-reviews/:gateReviewId/outcome-score-reviews/:outcomeScoreReviewId')
+        .put(users.requiresLogin, projects.hasEditAuthorization, projects.isGateReviewEditable, projects.updateOutcomeScoreReview);
 
     // Gate Reviews Baseline
 
@@ -286,8 +286,8 @@ module.exports = function(app) {
 
     // Status Updates - Outcomes
 
-    app.route('/projects/:projectId/project-gates/:projectGateId/project-status-updates/:projectStatusUpdateId/outcome-reviews/:outcomeReviewId')
-        .put(users.requiresLogin, projects.hasEditAuthorization, projects.isStatusUpdateEditable, projects.updateOutcomeReviewForSU);
+    app.route('/projects/:projectId/project-gates/:projectGateId/project-status-updates/:projectStatusUpdateId/outcome-status-reviews/:outcomeStatusReviewId')
+        .put(users.requiresLogin, projects.hasEditAuthorization, projects.isStatusUpdateEditable, projects.updateOutcomeStatusReview);
 
     // Status Updates - Estimate
 

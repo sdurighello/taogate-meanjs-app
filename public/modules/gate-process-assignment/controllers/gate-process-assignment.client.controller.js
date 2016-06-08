@@ -87,6 +87,12 @@ angular.module('gate-process-assignment').controller('GateProcessAssignmentContr
             }
         };
 
+        vm.isProcessApprovable = function(project){
+            if(project){
+                return project.process.assignmentConfirmed === false;
+            }
+        };
+
 
         // ----------- FILTERS ------------
 

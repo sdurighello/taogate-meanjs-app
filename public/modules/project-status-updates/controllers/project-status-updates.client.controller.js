@@ -120,10 +120,10 @@ angular.module('project-status-updates').controller('ProjectStatusUpdatesControl
         
         // Status Areas
 
-        $scope.switchAreaStatusForm = {};
-        $scope.selectAreaStatusForm = function(string, statusAreaReview){
-            if(string === 'view'){ $scope.switchAreaStatusForm[statusAreaReview._id] = 'view';}
-            if(string === 'edit'){$scope.switchAreaStatusForm[statusAreaReview._id] = 'edit';}
+        $scope.switchStatusAreaForm = {};
+        $scope.selectStatusAreaForm = function(string, statusAreaReview){
+            if(string === 'view'){ $scope.switchStatusAreaForm[statusAreaReview._id] = 'view';}
+            if(string === 'edit'){$scope.switchStatusAreaForm[statusAreaReview._id] = 'edit';}
         };
         
         // Outcome
@@ -336,7 +336,7 @@ angular.module('project-status-updates').controller('ProjectStatusUpdatesControl
         var originalOverallStatus = {};
 
         $scope.editOverallStatus = function(statusUpdate){
-            originalOverallStatus = {
+            originalOverallStatus[statusUpdate._id] = {
                 newStatus: statusUpdate.deliveryStatus.overallStatusReview.newStatus,
                 newComment : statusUpdate.deliveryStatus.overallStatusReview.newComment
             };
@@ -376,7 +376,7 @@ angular.module('project-status-updates').controller('ProjectStatusUpdatesControl
         var originalDurationStatus = {};
 
         $scope.editDurationStatus = function(statusUpdate){
-            originalDurationStatus = {
+            originalDurationStatus[statusUpdate._id] = {
                 newStatus: statusUpdate.deliveryStatus.durationStatusReview.newStatus,
                 newComment : statusUpdate.deliveryStatus.durationStatusReview.newComment
             };
@@ -416,7 +416,7 @@ angular.module('project-status-updates').controller('ProjectStatusUpdatesControl
         var originalCostStatus = {};
 
         $scope.editCostStatus = function(statusUpdate){
-            originalCostStatus = {
+            originalCostStatus[statusUpdate._id] = {
                 newStatus: statusUpdate.deliveryStatus.costStatusReview.newStatus,
                 newComment : statusUpdate.deliveryStatus.costStatusReview.newComment
             };
@@ -456,7 +456,7 @@ angular.module('project-status-updates').controller('ProjectStatusUpdatesControl
         var originalCompletionStatus = {};
 
         $scope.editCompletionStatus = function(statusUpdate){
-            originalCompletionStatus = {
+            originalCompletionStatus[statusUpdate._id] = {
                 newStatus: statusUpdate.deliveryStatus.completionStatusReview.newStatus,
                 newComment : statusUpdate.deliveryStatus.completionStatusReview.newComment
             };
@@ -490,10 +490,8 @@ angular.module('project-status-updates').controller('ProjectStatusUpdatesControl
             statusUpdate.deliveryStatus.completionStatusReview.newComment = originalCompletionStatus[statusUpdate._id].newComment;
             $scope.selectCompletionStatusForm('view', statusUpdate);
         };
-
-
-
-        // -------------------------------------------------------- STATUS AREAS -------------------------------------------------
+        
+        // Project status area reviews
 
         var originalStatusAreaReview = {};
 
@@ -543,12 +541,12 @@ angular.module('project-status-updates').controller('ProjectStatusUpdatesControl
         $scope.saveEditOutcomeReview = function(project, gate, statusUpdate, outcomeReview){
             $scope.error = null;
             $scope.isResolving = true;
-            Projects.updateOutcomeReviewForCR(
+            Projects.updateOutcomeStatusReview(
                 {
                     projectId: project._id,
                     projectGateId: gate._id,
                     projectStatusUpdateId: statusUpdate._id,
-                    outcomeReviewId : outcomeReview._id
+                    outcomeStatusReviewId : outcomeReview._id
                 }, outcomeReview,
                 function(res){
                     $scope.isResolving = false;
@@ -595,7 +593,7 @@ angular.module('project-status-updates').controller('ProjectStatusUpdatesControl
                 {
                     projectId: project._id,
                     projectGateId: gate._id,
-                    statusUpdateId: statusUpdate._id,
+                    projectStatusUpdateId: statusUpdate._id,
                     estimateDurationReviewId : estimateDurationReview._id
                 }, estimateDurationReview,
                 function(res){
@@ -632,7 +630,7 @@ angular.module('project-status-updates').controller('ProjectStatusUpdatesControl
                 {
                     projectId: project._id,
                     projectGateId: gate._id,
-                    statusUpdateId: statusUpdate._id,
+                    projectStatusUpdateId: statusUpdate._id,
                     estimateCostReviewId : estimateCostReview._id
                 }, estimateCostReview,
                 function(res){
@@ -670,7 +668,7 @@ angular.module('project-status-updates').controller('ProjectStatusUpdatesControl
                 {
                     projectId: project._id,
                     projectGateId: gate._id,
-                    statusUpdateId: statusUpdate._id,
+                    projectStatusUpdateId: statusUpdate._id,
                     estimateCompletionReviewId : estimateCompletionReview._id
                 }, estimateCompletionReview,
                 function(res){
