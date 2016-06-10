@@ -152,6 +152,13 @@
 															<label for="description" class="control-label">Description</label>
 															<textarea id="description" disabled class="form-control" data-ng-model="area.description"></textarea>
 														</div>
+                                                        <div class="form-group">
+                                                            <label>Applicable to</label>
+                                                            <select title="applicableTo" disabled class="form-control" data-ng-model = "area.applicableTo"
+                                                                    data-ng-options="item.text as item.name for item in applicableToList">
+                                                                <option value="">--choose applicability</option>
+                                                            </select>
+                                                        </div>
 														<button type="button" class="btn btn-success pull-right" data-ng-show="userHasAuthorization"
 																data-ng-click="selectStatusArea(area)">
 															Edit
@@ -183,6 +190,13 @@
 																	  data-ng-model="area.description" placeholder="Description">
                                                             </textarea>
 														</div>
+                                                        <div class="form-group">
+                                                            <label>Applicable to</label>
+                                                            <select title="applicableTo" class="form-control" data-ng-model = "area.applicableTo"
+                                                                    data-ng-options="item.text as item.name for item in applicableToList">
+                                                                <option value="">--choose applicability</option>
+                                                            </select>
+                                                        </div>
 														<div class="pull-right">
 															<input type="submit" value="Save" class="btn btn-success" data-ng-disabled="editAreaForm.$invalid">
 															<a class="btn btn-danger" data-ng-click="removeStatusArea(area)" data-ng-show="userHasAuthorization">

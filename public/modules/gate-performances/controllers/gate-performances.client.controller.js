@@ -2,8 +2,8 @@
 
 // Definition dashboards controller
 angular.module('gate-performances').controller('GatePerformancesController', ['$rootScope', '$scope', '$stateParams', '$location', 'Authentication',
-	'GatePerformances','Projects','Portfolios', 'GateProcesses', '_','$q',
-	function($rootScope, $scope, $stateParams, $location, Authentication, GatePerformances, Projects, Portfolios, GateProcesses, _, $q) {
+	'GatePerformances','Projects','Portfolios', 'GateProcessTemplates', '_','$q',
+	function($rootScope, $scope, $stateParams, $location, Authentication, GatePerformances, Projects, Portfolios, GateProcessTemplates, _, $q) {
 
         $rootScope.staticMenu = false;
 
@@ -31,7 +31,7 @@ angular.module('gate-performances').controller('GatePerformancesController', ['$
                 $scope.initError.push(err.data.message);
             });
 
-            GateProcesses.query(function(gateProcesses){
+            GateProcessTemplates.query(function(gateProcesses){
                 $scope.gateProcesses = gateProcesses;
             }, function(err){
                 $scope.initError.push(err.data.message);

@@ -1,8 +1,8 @@
 'use strict';
 
 angular.module('gate-performances').controller('GatePerformancesPortfolioController', ['$scope', '$stateParams', '$location', 'Authentication',
-    'GatePerformances','Projects','Portfolios', 'GateProcesses', '_','$q','$modal',
-    function($scope, $stateParams, $location, Authentication, GatePerformances, Projects, Portfolios, GateProcesses, _, $q, $modal) {
+    'GatePerformances','Projects','Portfolios', 'GateProcessTemplates', '_','$q','$modal',
+    function($scope, $stateParams, $location, Authentication, GatePerformances, Projects, Portfolios, GateProcessTemplates, _, $q, $modal) {
 
         var vm = this;
 
@@ -27,7 +27,7 @@ angular.module('gate-performances').controller('GatePerformancesPortfolioControl
                 vm.initError.push(err.data.message);
             });
 
-            GateProcesses.query(function(gateProcesses){
+            GateProcessTemplates.query(function(gateProcesses){
                 vm.gateProcesses = gateProcesses;
             }, function(err){
                 vm.initError.push(err.data.message);

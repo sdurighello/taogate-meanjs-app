@@ -45,54 +45,6 @@ exports.createStatusUpdate = function(req, res){
                 },
                 newComment : editedGate.deliveryStatus.overallStatus.currentRecord.comment
             },
-            durationStatusReview : {
-                currentRecord: {
-                    status: {
-                        _id : editedGate.deliveryStatus.durationStatus.currentRecord.status._id,
-                        name : editedGate.deliveryStatus.durationStatus.currentRecord.status.name,
-                        color : editedGate.deliveryStatus.durationStatus.currentRecord.status.color
-                    },
-                    comment : editedGate.deliveryStatus.durationStatus.currentRecord.comment
-                },
-                newStatus: {
-                    _id : editedGate.deliveryStatus.durationStatus.currentRecord.status._id,
-                    name : editedGate.deliveryStatus.durationStatus.currentRecord.status.name,
-                    color : editedGate.deliveryStatus.durationStatus.currentRecord.status.color
-                },
-                newComment : editedGate.deliveryStatus.durationStatus.currentRecord.comment
-            },
-            costStatusReview : {
-                currentRecord: {
-                    status: {
-                        _id : editedGate.deliveryStatus.costStatus.currentRecord.status._id,
-                        name : editedGate.deliveryStatus.costStatus.currentRecord.status.name,
-                        color : editedGate.deliveryStatus.costStatus.currentRecord.status.color
-                    },
-                    comment : editedGate.deliveryStatus.costStatus.currentRecord.comment
-                },
-                newStatus: {
-                    _id : editedGate.deliveryStatus.costStatus.currentRecord.status._id,
-                    name : editedGate.deliveryStatus.costStatus.currentRecord.status.name,
-                    color : editedGate.deliveryStatus.costStatus.currentRecord.status.color
-                },
-                newComment : editedGate.deliveryStatus.costStatus.currentRecord.comment
-            },
-            completionStatusReview : {
-                currentRecord: {
-                    status: {
-                        _id : editedGate.deliveryStatus.completionStatus.currentRecord.status._id,
-                        name : editedGate.deliveryStatus.completionStatus.currentRecord.status.name,
-                        color : editedGate.deliveryStatus.completionStatus.currentRecord.status.color
-                    },
-                    comment : editedGate.deliveryStatus.completionStatus.currentRecord.comment
-                },
-                newStatus: {
-                    _id : editedGate.deliveryStatus.completionStatus.currentRecord.status._id,
-                    name : editedGate.deliveryStatus.completionStatus.currentRecord.status.name,
-                    color : editedGate.deliveryStatus.completionStatus.currentRecord.status.color
-                },
-                newComment : editedGate.deliveryStatus.completionStatus.currentRecord.comment
-            },
             projectStatusAreaReviews : []
         },
         performances: {
@@ -303,90 +255,6 @@ exports.updateOverallDeliveryStatus = function(req, res){
 
     editedStatusUpdate.deliveryStatus.overallStatusReview.newStatus = req.body.deliveryStatus.overallStatusReview.newStatus;
     editedStatusUpdate.deliveryStatus.overallStatusReview.newComment = req.body.deliveryStatus.overallStatusReview.newComment;
-
-    project.save(function(err){
-        if (err) {
-            return res.status(400).send({
-                message: errorHandler.getErrorMessage(err)
-            });
-        } else {
-            res.jsonp(editedStatusUpdate);
-        }
-    });
-
-};
-
-exports.updateDurationDeliveryStatus = function(req, res){
-
-    var project = req.project ;
-
-    var editedGate = _.find(project.process.gates, function(gate){
-        return gate._id.equals(req.params.projectGateId);
-    });
-
-    var editedStatusUpdate = editedGate.projectStatusUpdates.id(req.params.projectStatusUpdateId);
-
-    editedStatusUpdate.user = req.user;
-    editedStatusUpdate.created = Date.now();
-
-    editedStatusUpdate.deliveryStatus.durationStatusReview.newStatus = req.body.deliveryStatus.durationStatusReview.newStatus;
-    editedStatusUpdate.deliveryStatus.durationStatusReview.newComment = req.body.deliveryStatus.durationStatusReview.newComment;
-
-    project.save(function(err){
-        if (err) {
-            return res.status(400).send({
-                message: errorHandler.getErrorMessage(err)
-            });
-        } else {
-            res.jsonp(editedStatusUpdate);
-        }
-    });
-
-};
-
-exports.updateCostDeliveryStatus = function(req, res){
-
-    var project = req.project ;
-
-    var editedGate = _.find(project.process.gates, function(gate){
-        return gate._id.equals(req.params.projectGateId);
-    });
-
-    var editedStatusUpdate = editedGate.projectStatusUpdates.id(req.params.projectStatusUpdateId);
-
-    editedStatusUpdate.user = req.user;
-    editedStatusUpdate.created = Date.now();
-
-    editedStatusUpdate.deliveryStatus.costStatusReview.newStatus = req.body.deliveryStatus.costStatusReview.newStatus;
-    editedStatusUpdate.deliveryStatus.costStatusReview.newComment = req.body.deliveryStatus.costStatusReview.newComment;
-
-    project.save(function(err){
-        if (err) {
-            return res.status(400).send({
-                message: errorHandler.getErrorMessage(err)
-            });
-        } else {
-            res.jsonp(editedStatusUpdate);
-        }
-    });
-
-};
-
-exports.updateCompletionDeliveryStatus = function(req, res){
-
-    var project = req.project ;
-
-    var editedGate = _.find(project.process.gates, function(gate){
-        return gate._id.equals(req.params.projectGateId);
-    });
-
-    var editedStatusUpdate = editedGate.projectStatusUpdates.id(req.params.projectStatusUpdateId);
-
-    editedStatusUpdate.user = req.user;
-    editedStatusUpdate.created = Date.now();
-
-    editedStatusUpdate.deliveryStatus.completionStatusReview.newStatus = req.body.deliveryStatus.completionStatusReview.newStatus;
-    editedStatusUpdate.deliveryStatus.completionStatusReview.newComment = req.body.deliveryStatus.completionStatusReview.newComment;
 
     project.save(function(err){
         if (err) {
@@ -805,52 +673,6 @@ exports.approveStatusUpdate = function(req, res) {
     editedGate.deliveryStatus.overallStatus.currentRecord.created = Date.now();
     editedGate.deliveryStatus.overallStatus.currentRecord.user = {_id: req.user._id, displayName: req.user.displayName};
 
-    // Apply changes to DELIVERY STATUS - Duration
-
-    editedGate.deliveryStatus.durationStatus.history.push({
-        sourceStatusUpdate : editedGate.deliveryStatus.durationStatus.currentRecord.sourceStatusUpdate,
-        status: editedGate.deliveryStatus.durationStatus.currentRecord.status,
-        comment: editedGate.deliveryStatus.durationStatus.currentRecord.comment,
-        created: editedGate.deliveryStatus.durationStatus.currentRecord.created,
-        user: editedGate.deliveryStatus.durationStatus.currentRecord.user
-    });
-    editedGate.deliveryStatus.durationStatus.currentRecord.sourceStatusUpdate = editedStatusUpdate._id;
-    editedGate.deliveryStatus.durationStatus.currentRecord.status = editedStatusUpdate.deliveryStatus.durationStatusReview.newStatus;
-    editedGate.deliveryStatus.durationStatus.currentRecord.comment = editedStatusUpdate.deliveryStatus.durationStatusReview.newComment;
-    editedGate.deliveryStatus.durationStatus.currentRecord.created = Date.now();
-    editedGate.deliveryStatus.durationStatus.currentRecord.user = {_id: req.user._id, displayName: req.user.displayName};
-
-    // Apply changes to DELIVERY STATUS - Cost
-
-    editedGate.deliveryStatus.costStatus.history.push({
-        sourceStatusUpdate : editedGate.deliveryStatus.costStatus.currentRecord.sourceStatusUpdate,
-        status: editedGate.deliveryStatus.costStatus.currentRecord.status,
-        comment: editedGate.deliveryStatus.costStatus.currentRecord.comment,
-        created: editedGate.deliveryStatus.costStatus.currentRecord.created,
-        user: editedGate.deliveryStatus.costStatus.currentRecord.user
-    });
-    editedGate.deliveryStatus.costStatus.currentRecord.sourceStatusUpdate = editedStatusUpdate._id;
-    editedGate.deliveryStatus.costStatus.currentRecord.status = editedStatusUpdate.deliveryStatus.costStatusReview.newStatus;
-    editedGate.deliveryStatus.costStatus.currentRecord.comment = editedStatusUpdate.deliveryStatus.costStatusReview.newComment;
-    editedGate.deliveryStatus.costStatus.currentRecord.created = Date.now();
-    editedGate.deliveryStatus.costStatus.currentRecord.user = {_id: req.user._id, displayName: req.user.displayName};
-
-    // Apply changes to DELIVERY STATUS - Completion
-
-    editedGate.deliveryStatus.completionStatus.history.push({
-        sourceStatusUpdate : editedGate.deliveryStatus.completionStatus.currentRecord.sourceStatusUpdate,
-        status: editedGate.deliveryStatus.completionStatus.currentRecord.status,
-        comment: editedGate.deliveryStatus.completionStatus.currentRecord.comment,
-        created: editedGate.deliveryStatus.completionStatus.currentRecord.created,
-        user: editedGate.deliveryStatus.completionStatus.currentRecord.user
-    });
-    editedGate.deliveryStatus.completionStatus.currentRecord.sourceStatusUpdate = editedStatusUpdate._id;
-    editedGate.deliveryStatus.completionStatus.currentRecord.status = editedStatusUpdate.deliveryStatus.completionStatusReview.newStatus;
-    editedGate.deliveryStatus.completionStatus.currentRecord.comment = editedStatusUpdate.deliveryStatus.completionStatusReview.newComment;
-    editedGate.deliveryStatus.completionStatus.currentRecord.created = Date.now();
-    editedGate.deliveryStatus.completionStatus.currentRecord.user = {_id: req.user._id, displayName: req.user.displayName};
-
-
     // Apply changes to DELIVERY STATUS - Status Areas
 
     _.each(editedStatusUpdate.deliveryStatus.projectStatusAreaReviews, function(statusAreaReview){
@@ -868,7 +690,6 @@ exports.approveStatusUpdate = function(req, res) {
         editedProjectStatusArea.currentRecord.created = Date.now();
         editedProjectStatusArea.currentRecord.user = {_id: req.user._id, displayName: req.user.displayName};
     });
-
 
     // Apply changes to DURATION
 

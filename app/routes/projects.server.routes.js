@@ -269,15 +269,6 @@ module.exports = function(app) {
     app.route('/projects/:projectId/project-gates/:projectGateId/project-status-updates/:projectStatusUpdateId/overallDeliveryStatus')
         .put(users.requiresLogin, projects.hasEditAuthorization, projects.isStatusUpdateEditable, projects.updateOverallDeliveryStatus);
 
-    app.route('/projects/:projectId/project-gates/:projectGateId/project-status-updates/:projectStatusUpdateId/durationDeliveryStatus')
-        .put(users.requiresLogin, projects.hasEditAuthorization, projects.isStatusUpdateEditable, projects.updateDurationDeliveryStatus);
-
-    app.route('/projects/:projectId/project-gates/:projectGateId/project-status-updates/:projectStatusUpdateId/costDeliveryStatus')
-        .put(users.requiresLogin, projects.hasEditAuthorization, projects.isStatusUpdateEditable, projects.updateCostDeliveryStatus);
-
-    app.route('/projects/:projectId/project-gates/:projectGateId/project-status-updates/:projectStatusUpdateId/completionDeliveryStatus')
-        .put(users.requiresLogin, projects.hasEditAuthorization, projects.isStatusUpdateEditable, projects.updateCompletionDeliveryStatus);
-
     // Status Updates - Log Status Areas
 
     app.route('/projects/:projectId/project-gates/:projectGateId/project-status-updates/:projectStatusUpdateId/status-area-reviews/:statusAreaReviewId')

@@ -1,8 +1,8 @@
 'use strict';
 
 angular.module('roadmaps').controller('RoadmapsController', ['$rootScope', '$scope', '$stateParams', '$location', 'Authentication',
-    'Projects','Portfolios', 'GateProcesses','Roadmaps', '_','$q','$modal',
-    function($rootScope, $scope, $stateParams, $location, Authentication, Projects, Portfolios, GateProcesses, Roadmaps, _, $q, $modal) {
+    'Projects','Portfolios', 'GateProcessTemplates','Roadmaps', '_','$q','$modal',
+    function($rootScope, $scope, $stateParams, $location, Authentication, Projects, Portfolios, GateProcessTemplates, Roadmaps, _, $q, $modal) {
 
         $rootScope.staticMenu = false;
 
@@ -33,7 +33,7 @@ angular.module('roadmaps').controller('RoadmapsController', ['$rootScope', '$sco
                 vm.initError.push(err.data.message);
             });
 
-            GateProcesses.query(function(gateProcesses){
+            GateProcessTemplates.query(function(gateProcesses){
                 vm.gateProcesses = gateProcesses;
             }, function(err){
                 vm.initError.push(err.data.message);

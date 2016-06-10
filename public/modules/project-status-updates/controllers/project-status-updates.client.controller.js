@@ -1,61 +1,63 @@
 'use strict';
 
 angular.module('project-status-updates').controller('ProjectStatusUpdatesController', ['$rootScope', '$scope','$stateParams', '$location',
-	'Authentication', 'Projects', 'Portfolios','$q', '_',
+	'Authentication', 'Projects', 'Portfolios','$q', '_', '$modal',
 	'GateProcessTemplates', 'LogStatusIndicators',
-	function($rootScope, $scope, $stateParams, $location, Authentication, Projects, Portfolios, $q, _,
+	function($rootScope, $scope, $stateParams, $location, Authentication, Projects, Portfolios, $q, _, $modal,
 			 GateProcessTemplates, LogStatusIndicators) {
 
 		$rootScope.staticMenu = false;
+        
+        var vm = this;
 
 		// ------------- INIT -------------
 
-		$scope.isResolving = false;
+		vm.isResolving = false;
 
-		$scope.initError = [];
+		vm.initError = [];
 
-		$scope.init = function(){
+		vm.init = function(){
 
-            $scope.user = Authentication.user;
+            vm.user = Authentication.user;
 
 			Projects.query({'selection.active': true, 'selection.selectedForDelivery': true, 'process.assignmentConfirmed': true}, function(projects){
-                $scope.projects = _.filter(projects, function(project){return project.process.assignmentType !== 'unassigned';});
+                vm.projects = _.filter(projects, function(project){return project.process.assignmentType !== 'unassigned';});
                 // Form myTao
                 if($stateParams.projectId){
-                    var foundProject = _.find($scope.projects, _.matchesProperty('_id', $stateParams.projectId));
+                    var foundProject = _.find(vm.projects, _.matchesProperty('_id', $stateParams.projectId));
                     if(foundProject){
-                        $scope.selectProject(foundProject);
+                        vm.selectProject(foundProject);
                     } else {
-                        $scope.error = 'Cannot find project ' + $stateParams.projectId;
+                        vm.error = 'Cannot find project ' + $stateParams.projectId;
                     }
                 }
 			}, function(err){
-				$scope.initError.push(err.data.message);
+				vm.initError.push(err.data.message);
 			});
 
 			Portfolios.query(function(portfolios){
-				$scope.portfolios = portfolios;
+				vm.portfolios = portfolios;
 			}, function(err){
-				$scope.initError.push(err.data.message);
+				vm.initError.push(err.data.message);
 			});
 
 			GateProcessTemplates.query(function(gateProcesses){
-				$scope.gateProcesses = gateProcesses;
+				vm.gateProcesses = gateProcesses;
 			}, function(err){
-				$scope.initError.push(err.data.message);
+				vm.initError.push(err.data.message);
 			});
 
 			LogStatusIndicators.query(function(logStatusIndicators){
-				$scope.logStatusIndicators = logStatusIndicators;
+				vm.logStatusIndicators = logStatusIndicators;
 			}, function(err){
-				$scope.initError.push(err.data.message);
+				vm.initError.push(err.data.message);
 			});
 
 		};
 
         // -------------- AUTHORIZATION FOR BUTTONS -----------------
 
-        $scope.userHasAuthorization = function(action, user, project){
+        vm.userHasAuthorization = function(action, user, project){
             var userIsSuperhero, userIsProjectManager, userIsPortfolioManager;
             if((action === 'edit') && user && project){
                 userIsSuperhero = !!_.some(user.roles, function(role){
@@ -86,87 +88,69 @@ angular.module('project-status-updates').controller('ProjectStatusUpdatesControl
 
         // Header
         
-        $scope.switchHeaderForm = {};
-        $scope.selectHeaderForm = function(string, document){
-            if(string === 'view'){ $scope.switchHeaderForm[document._id] = 'view';}
-            if(string === 'edit'){$scope.switchHeaderForm[document._id] = 'edit';}
+        vm.switchHeaderForm = {};
+        vm.selectHeaderForm = function(string, document){
+            if(string === 'view'){ vm.switchHeaderForm[document._id] = 'view';}
+            if(string === 'edit'){vm.switchHeaderForm[document._id] = 'edit';}
         };
         
         // Delivery Status
 
-        $scope.switchOverallStatusForm = {};
-        $scope.selectOverallStatusForm = function(string, document){
-            if(string === 'view'){ $scope.switchOverallStatusForm[document._id] = 'view';}
-            if(string === 'edit'){$scope.switchOverallStatusForm[document._id] = 'edit';}
-        };
-
-        $scope.switchDurationStatusForm = {};
-        $scope.selectDurationStatusForm = function(string, document){
-            if(string === 'view'){ $scope.switchDurationStatusForm[document._id] = 'view';}
-            if(string === 'edit'){$scope.switchDurationStatusForm[document._id] = 'edit';}
-        };
-
-        $scope.switchCostStatusForm = {};
-        $scope.selectCostStatusForm = function(string, document){
-            if(string === 'view'){ $scope.switchCostStatusForm[document._id] = 'view';}
-            if(string === 'edit'){$scope.switchCostStatusForm[document._id] = 'edit';}
-        };
-
-        $scope.switchCompletionStatusForm = {};
-        $scope.selectCompletionStatusForm = function(string, document){
-            if(string === 'view'){ $scope.switchCompletionStatusForm[document._id] = 'view';}
-            if(string === 'edit'){$scope.switchCompletionStatusForm[document._id] = 'edit';}
+        vm.switchOverallStatusForm = {};
+        vm.selectOverallStatusForm = function(string, document){
+            if(string === 'view'){ vm.switchOverallStatusForm[document._id] = 'view';}
+            if(string === 'edit'){vm.switchOverallStatusForm[document._id] = 'edit';}
         };
         
         // Status Areas
 
-        $scope.switchStatusAreaForm = {};
-        $scope.selectStatusAreaForm = function(string, statusAreaReview){
-            if(string === 'view'){ $scope.switchStatusAreaForm[statusAreaReview._id] = 'view';}
-            if(string === 'edit'){$scope.switchStatusAreaForm[statusAreaReview._id] = 'edit';}
+        vm.switchStatusAreaForm = {};
+        vm.selectStatusAreaForm = function(string, statusAreaReview){
+            if(string === 'view'){ vm.switchStatusAreaForm[statusAreaReview._id] = 'view';}
+            if(string === 'edit'){vm.switchStatusAreaForm[statusAreaReview._id] = 'edit';}
         };
         
         // Outcome
 
-        $scope.switchOutcomeReviewForm = {};
-        $scope.selectOutcomeReviewForm = function(string, outcomeReview){
-            if(string === 'view'){ $scope.switchOutcomeReviewForm[outcomeReview._id] = 'view';}
-            if(string === 'edit'){$scope.switchOutcomeReviewForm[outcomeReview._id] = 'edit';}
+        vm.switchOutcomeReviewForm = {};
+        vm.selectOutcomeReviewForm = function(string, outcomeReview){
+            if(string === 'view'){ vm.switchOutcomeReviewForm[outcomeReview._id] = 'view';}
+            if(string === 'edit'){vm.switchOutcomeReviewForm[outcomeReview._id] = 'edit';}
         };
         
         
         // Estimate
 
-        $scope.switchEstimateDurationForm = {};
-        $scope.selectEstimateDurationForm = function(string, estimateDuration){
-            if(string === 'view'){ $scope.switchEstimateDurationForm[estimateDuration._id] = 'view';}
-            if(string === 'edit'){$scope.switchEstimateDurationForm[estimateDuration._id] = 'edit';}
+        vm.switchEstimateDurationForm = {};
+        vm.selectEstimateDurationForm = function(string, estimateDuration){
+            if(string === 'view'){ vm.switchEstimateDurationForm[estimateDuration._id] = 'view';}
+            if(string === 'edit'){vm.switchEstimateDurationForm[estimateDuration._id] = 'edit';}
         };
 
-        $scope.switchEstimateCostForm = {};
-        $scope.selectEstimateCostForm = function(string, estimateCost){
-            if(string === 'view'){ $scope.switchEstimateCostForm[estimateCost._id] = 'view';}
-            if(string === 'edit'){$scope.switchEstimateCostForm[estimateCost._id] = 'edit';}
+        vm.switchEstimateCostForm = {};
+        vm.selectEstimateCostForm = function(string, estimateCost){
+            if(string === 'view'){ vm.switchEstimateCostForm[estimateCost._id] = 'view';}
+            if(string === 'edit'){vm.switchEstimateCostForm[estimateCost._id] = 'edit';}
         };
 
-        $scope.switchEstimateCompletionForm = {};
-        $scope.selectEstimateCompletionForm = function(string, estimateCompletion){
-            if(string === 'view'){ $scope.switchEstimateCompletionForm[estimateCompletion._id] = 'view';}
-            if(string === 'edit'){$scope.switchEstimateCompletionForm[estimateCompletion._id] = 'edit';}
+        vm.switchEstimateCompletionForm = {};
+        vm.selectEstimateCompletionForm = function(string, estimateCompletion){
+            if(string === 'view'){ vm.switchEstimateCompletionForm[estimateCompletion._id] = 'view';}
+            if(string === 'edit'){vm.switchEstimateCompletionForm[estimateCompletion._id] = 'edit';}
         };
 
 
         // ------------------- UTILITIES ---------------------
 
-        $scope.sortChangeRequests = function(doc) {
+        vm.sortChangeRequests = function(doc) {
             return new Date(doc.updateDate);
         };
 
-        $scope.sortAppliedChanges = function(record) {
+        vm.sortAppliedChanges = function(record) {
             return new Date(record.created);
         };
 
-        $scope.getDaysChange = function(stringDate1, stringDate2){
+        vm.getDaysChange = function(stringDate1, stringDate2){
             var millisecondsPerDay = 1000 * 60 * 60 * 24;
             return - (new Date(stringDate1) - new Date(stringDate2)) / millisecondsPerDay;
         };
@@ -174,56 +158,56 @@ angular.module('project-status-updates').controller('ProjectStatusUpdatesControl
 
         // -------------- OTHER VARIABLES -----------------
 
-        $scope.showNewDocumentForm = false;
+        vm.showNewDocumentForm = false;
 
-        $scope.documentDetails = 'header';
+        vm.documentDetails = 'header';
 
-        $scope.activeTab = {};
+        vm.activeTab = {};
 
 
         // ------------- SELECT PROJECT ------------
 
 
-        $scope.selectProject = function(project) {
-            $scope.error = null;
-            $scope.cancelNewDocument();
-            $scope.selectedGate = null;
-            $scope.selectedDocument = null;
-            $scope.selectedProject = project;
+        vm.selectProject = function(project) {
+            vm.error = null;
+            vm.cancelNewDocument();
+            vm.selectedGate = null;
+            vm.selectedDocument = null;
+            vm.selectedProject = project;
         };
 
 
         // ------------ SELECT GATE ----------------
 
 
-        $scope.selectGate = function(gate){
+        vm.selectGate = function(gate){
             // Delete previous selections
-            $scope.error = null;
-            $scope.cancelNewDocument();
-            $scope.selectedDocument = null;
+            vm.error = null;
+            vm.cancelNewDocument();
+            vm.selectedDocument = null;
             // Set new selected gate
-            $scope.selectedGate = gate;
+            vm.selectedGate = gate;
         };
 
         // ----------- NEW STATUS UPDATE ------------
 
 
-        $scope.newHeaderDateOpened = {};
+        vm.newHeaderDateOpened = {};
 
-        $scope.openNewHeaderDate = function(gate, $event){
+        vm.openNewHeaderDate = function(gate, $event){
             $event.preventDefault();
             $event.stopPropagation();
-            $scope.newHeaderDateOpened[gate._id] = true;
+            vm.newHeaderDateOpened[gate._id] = true;
         };
 
-        $scope.newDocument = {};
+        vm.newDocument = {};
 
-        $scope.createNewDocument = function(project, gate){
-            $scope.error = null;
+        vm.createNewDocument = function(project, gate){
+            vm.error = null;
 
             var newDocument = {
-                updateDate : $scope.newDocument.updateDate,
-                title : $scope.newDocument.title
+                updateDate : vm.newDocument.updateDate,
+                title : vm.newDocument.title
             };
 
             Projects.createStatusUpdate(
@@ -232,57 +216,57 @@ angular.module('project-status-updates').controller('ProjectStatusUpdatesControl
                     projectGateId : gate._id
                 }, newDocument,
                 function(res){
-                    $scope.isResolving = false;
+                    vm.isResolving = false;
                     gate.projectStatusUpdates.push(res);
-                    $scope.newDocument = {};
-                    $scope.showNewDocumentForm = false;
-                    $scope.selectDocument(res);
+                    vm.newDocument = {};
+                    vm.showNewDocumentForm = false;
+                    vm.selectDocument(res);
                 },
                 function(err){
-                    $scope.isResolving = false;
-                    $scope.error = err.data.message;
+                    vm.isResolving = false;
+                    vm.error = err.data.message;
                 }
             );
         };
 
-        $scope.cancelNewDocument = function(){
-            $scope.error = null;
-            $scope.showNewDocumentForm = false;
-            $scope.newDocument = {};
+        vm.cancelNewDocument = function(){
+            vm.error = null;
+            vm.showNewDocumentForm = false;
+            vm.newDocument = {};
         };
 
 
         // ------------- SELECT STATUS UPDATE ------------
 
 
-        $scope.selectDocument = function(doc){
-            $scope.selectedDocument = doc;
+        vm.selectDocument = function(doc){
+            vm.selectedDocument = doc;
         };
 
 
         // -------------------------------------------------------- HEADER -------------------------------------------------
 
-        $scope.headerDateOpened = {};
-        $scope.openHeaderDate = function(document, $event){
+        vm.headerDateOpened = {};
+        vm.openHeaderDate = function(document, $event){
             $event.preventDefault();
             $event.stopPropagation();
-            $scope.headerDateOpened[document._id] = true;
+            vm.headerDateOpened[document._id] = true;
         };
 
         var originalHeader = {};
 
-        $scope.editHeader = function(statusUpdate){
+        vm.editHeader = function(statusUpdate){
             originalHeader[statusUpdate._id] = {
                 updateDate: statusUpdate.updateDate,
                 title : statusUpdate.title,
                 description : statusUpdate.description
             };
-            $scope.selectHeaderForm('edit', statusUpdate);
+            vm.selectHeaderForm('edit', statusUpdate);
         };
 
-        $scope.saveEditHeader = function(project, gate, statusUpdate){
-            $scope.error = null;
-            $scope.isResolving = true;
+        vm.saveEditHeader = function(project, gate, statusUpdate){
+            vm.error = null;
+            vm.isResolving = true;
             Projects.updateStatusUpdateHeader(
                 {
                     projectId : project._id,
@@ -290,42 +274,42 @@ angular.module('project-status-updates').controller('ProjectStatusUpdatesControl
                     projectStatusUpdateId : statusUpdate._id
                 }, statusUpdate,
                 function(res){
-                    $scope.isResolving = false;
+                    vm.isResolving = false;
                     // Close edit header form and back to view
-                    $scope.selectHeaderForm('view', statusUpdate);
+                    vm.selectHeaderForm('view', statusUpdate);
                 },
                 function(err){
-                    $scope.isResolving = false;
-                    $scope.error = err.data.message;
+                    vm.isResolving = false;
+                    vm.error = err.data.message;
                 }
             );
         };
 
-        $scope.cancelEditHeader = function(statusUpdate){
-            $scope.error = null;
+        vm.cancelEditHeader = function(statusUpdate){
+            vm.error = null;
             statusUpdate.updateDate = originalHeader[statusUpdate._id].updateDate;
             statusUpdate.title = originalHeader[statusUpdate._id].title;
             statusUpdate.description = originalHeader[statusUpdate._id].description;
-            $scope.selectHeaderForm('view', statusUpdate);
+            vm.selectHeaderForm('view', statusUpdate);
         };
 
 
-        $scope.deleteDocument = function(project, gate, statusUpdate){
-            $scope.error = null;
-            $scope.isResolving = true;
+        vm.deleteDocument = function(project, gate, statusUpdate){
+            vm.error = null;
+            vm.isResolving = true;
             Projects.deleteStatusUpdate(
                 {
                     projectId : project._id,
                     projectGateId: gate._id,
                     projectStatusUpdateId: statusUpdate._id
                 }, statusUpdate, function(res){
-                    $scope.isResolving = false;
+                    vm.isResolving = false;
                     gate.projectStatusUpdates = _.without(gate.projectStatusUpdates, statusUpdate);
-                    $scope.cancelNewDocument();
-                    $scope.selectedDocument = null;
+                    vm.cancelNewDocument();
+                    vm.selectedDocument = null;
                 }, function(err){
-                    $scope.isResolving = false;
-                    $scope.error = err.data.message;
+                    vm.isResolving = false;
+                    vm.error = err.data.message;
                 });
         };
 
@@ -335,18 +319,18 @@ angular.module('project-status-updates').controller('ProjectStatusUpdatesControl
         
         var originalOverallStatus = {};
 
-        $scope.editOverallStatus = function(statusUpdate){
+        vm.editOverallStatus = function(statusUpdate){
             originalOverallStatus[statusUpdate._id] = {
                 newStatus: statusUpdate.deliveryStatus.overallStatusReview.newStatus,
                 newComment : statusUpdate.deliveryStatus.overallStatusReview.newComment
             };
-            $scope.selectOverallStatusForm('edit', statusUpdate);
+            vm.selectOverallStatusForm('edit', statusUpdate);
         };
 
-        $scope.saveEditOverallStatus = function(project, gate, statusUpdate){
+        vm.saveEditOverallStatus = function(project, gate, statusUpdate){
             
-            $scope.error = null;
-            $scope.isResolving = true;
+            vm.error = null;
+            vm.isResolving = true;
             Projects.updateOverallDeliveryStatus(
                 {
                     projectId : project._id,
@@ -354,155 +338,35 @@ angular.module('project-status-updates').controller('ProjectStatusUpdatesControl
                     projectStatusUpdateId : statusUpdate._id
                 }, statusUpdate,
                 function(res){
-                    $scope.isResolving = false;
-                    $scope.selectOverallStatusForm('view', statusUpdate);
+                    vm.isResolving = false;
+                    vm.selectOverallStatusForm('view', statusUpdate);
                 },
                 function(err){
-                    $scope.isResolving = false;
-                    $scope.error = err.data.message;
+                    vm.isResolving = false;
+                    vm.error = err.data.message;
                 }
             );
         };
 
-        $scope.cancelEditOverallStatus = function(statusUpdate){
-            $scope.error = null;
+        vm.cancelEditOverallStatus = function(statusUpdate){
+            vm.error = null;
             statusUpdate.deliveryStatus.overallStatusReview.newStatus = originalOverallStatus[statusUpdate._id].newStatus;
             statusUpdate.deliveryStatus.overallStatusReview.newComment = originalOverallStatus[statusUpdate._id].newComment;
-            $scope.selectOverallStatusForm('view', statusUpdate);
-        };
-
-        // Duration Status
-
-        var originalDurationStatus = {};
-
-        $scope.editDurationStatus = function(statusUpdate){
-            originalDurationStatus[statusUpdate._id] = {
-                newStatus: statusUpdate.deliveryStatus.durationStatusReview.newStatus,
-                newComment : statusUpdate.deliveryStatus.durationStatusReview.newComment
-            };
-            $scope.selectDurationStatusForm('edit', statusUpdate);
-        };
-
-        $scope.saveEditDurationStatus = function(project, gate, statusUpdate){
-
-            $scope.error = null;
-            $scope.isResolving = true;
-            Projects.updateDurationDeliveryStatus(
-                {
-                    projectId : project._id,
-                    projectGateId: gate._id,
-                    projectStatusUpdateId : statusUpdate._id
-                }, statusUpdate,
-                function(res){
-                    $scope.isResolving = false;
-                    $scope.selectDurationStatusForm('view', statusUpdate);
-                },
-                function(err){
-                    $scope.isResolving = false;
-                    $scope.error = err.data.message;
-                }
-            );
-        };
-
-        $scope.cancelEditDurationStatus = function(statusUpdate){
-            $scope.error = null;
-            statusUpdate.deliveryStatus.durationStatusReview.newStatus = originalDurationStatus[statusUpdate._id].newStatus;
-            statusUpdate.deliveryStatus.durationStatusReview.newComment = originalDurationStatus[statusUpdate._id].newComment;
-            $scope.selectDurationStatusForm('view', statusUpdate);
-        };
-
-        // Cost Status
-
-        var originalCostStatus = {};
-
-        $scope.editCostStatus = function(statusUpdate){
-            originalCostStatus[statusUpdate._id] = {
-                newStatus: statusUpdate.deliveryStatus.costStatusReview.newStatus,
-                newComment : statusUpdate.deliveryStatus.costStatusReview.newComment
-            };
-            $scope.selectCostStatusForm('edit', statusUpdate);
-        };
-
-        $scope.saveEditCostStatus = function(project, gate, statusUpdate){
-
-            $scope.error = null;
-            $scope.isResolving = true;
-            Projects.updateCostDeliveryStatus(
-                {
-                    projectId : project._id,
-                    projectGateId: gate._id,
-                    projectStatusUpdateId : statusUpdate._id
-                }, statusUpdate,
-                function(res){
-                    $scope.isResolving = false;
-                    $scope.selectCostStatusForm('view', statusUpdate);
-                },
-                function(err){
-                    $scope.isResolving = false;
-                    $scope.error = err.data.message;
-                }
-            );
-        };
-
-        $scope.cancelEditCostStatus = function(statusUpdate){
-            $scope.error = null;
-            statusUpdate.deliveryStatus.costStatusReview.newStatus = originalCostStatus[statusUpdate._id].newStatus;
-            statusUpdate.deliveryStatus.costStatusReview.newComment = originalCostStatus[statusUpdate._id].newComment;
-            $scope.selectCostStatusForm('view', statusUpdate);
-        };
-
-        // Completion Status
-
-        var originalCompletionStatus = {};
-
-        $scope.editCompletionStatus = function(statusUpdate){
-            originalCompletionStatus[statusUpdate._id] = {
-                newStatus: statusUpdate.deliveryStatus.completionStatusReview.newStatus,
-                newComment : statusUpdate.deliveryStatus.completionStatusReview.newComment
-            };
-            $scope.selectCompletionStatusForm('edit', statusUpdate);
-        };
-
-        $scope.saveEditCompletionStatus = function(project, gate, statusUpdate){
-
-            $scope.error = null;
-            $scope.isResolving = true;
-            Projects.updateCompletionDeliveryStatus(
-                {
-                    projectId : project._id,
-                    projectGateId: gate._id,
-                    projectStatusUpdateId : statusUpdate._id
-                }, statusUpdate,
-                function(res){
-                    $scope.isResolving = false;
-                    $scope.selectCompletionStatusForm('view', statusUpdate);
-                },
-                function(err){
-                    $scope.isResolving = false;
-                    $scope.error = err.data.message;
-                }
-            );
-        };
-
-        $scope.cancelEditCompletionStatus = function(statusUpdate){
-            $scope.error = null;
-            statusUpdate.deliveryStatus.completionStatusReview.newStatus = originalCompletionStatus[statusUpdate._id].newStatus;
-            statusUpdate.deliveryStatus.completionStatusReview.newComment = originalCompletionStatus[statusUpdate._id].newComment;
-            $scope.selectCompletionStatusForm('view', statusUpdate);
+            vm.selectOverallStatusForm('view', statusUpdate);
         };
         
         // Project status area reviews
 
         var originalStatusAreaReview = {};
 
-        $scope.editStatusArea = function(statusAreaReview){
+        vm.editStatusArea = function(statusAreaReview){
             originalStatusAreaReview[statusAreaReview._id] = _.cloneDeep(statusAreaReview);
-            $scope.selectStatusAreaForm('edit', statusAreaReview);
+            vm.selectStatusAreaForm('edit', statusAreaReview);
         };
 
-        $scope.saveEditStatusArea = function(project, gate, statusUpdate, statusAreaReview){
-            $scope.error = null;
-            $scope.isResolving = true;
+        vm.saveEditStatusArea = function(project, gate, statusUpdate, statusAreaReview){
+            vm.error = null;
+            vm.isResolving = true;
             Projects.updateStatusAreaReview(
                 {
                     projectId : project._id,
@@ -511,21 +375,21 @@ angular.module('project-status-updates').controller('ProjectStatusUpdatesControl
                     statusAreaReviewId : statusAreaReview._id
                 }, statusAreaReview,
                 function(res){
-                    $scope.isResolving = false;
-                    $scope.selectStatusAreaForm('view', statusAreaReview);
+                    vm.isResolving = false;
+                    vm.selectStatusAreaForm('view', statusAreaReview);
                 },
                 function(err){
-                    $scope.isResolving = false;
-                    $scope.error = err.data.message;
+                    vm.isResolving = false;
+                    vm.error = err.data.message;
                 }
             );
         };
 
-        $scope.cancelEditStatusArea = function(statusAreaReview){
-            $scope.error = null;
+        vm.cancelEditStatusArea = function(statusAreaReview){
+            vm.error = null;
             statusAreaReview.newStatus = originalStatusAreaReview[statusAreaReview._id].newStatus;
             statusAreaReview.newComment = originalStatusAreaReview[statusAreaReview._id].newComment;
-            $scope.selectStatusAreaForm('view', statusAreaReview);
+            vm.selectStatusAreaForm('view', statusAreaReview);
         };
         
 
@@ -533,14 +397,14 @@ angular.module('project-status-updates').controller('ProjectStatusUpdatesControl
 
         var originalOutcomeReview = {};
 
-        $scope.editOutcomeReview = function(outcomeReview){
+        vm.editOutcomeReview = function(outcomeReview){
             originalOutcomeReview[outcomeReview._id] = _.cloneDeep(outcomeReview);
-            $scope.selectOutcomeReviewForm('edit', outcomeReview);
+            vm.selectOutcomeReviewForm('edit', outcomeReview);
         };
 
-        $scope.saveEditOutcomeReview = function(project, gate, statusUpdate, outcomeReview){
-            $scope.error = null;
-            $scope.isResolving = true;
+        vm.saveEditOutcomeReview = function(project, gate, statusUpdate, outcomeReview){
+            vm.error = null;
+            vm.isResolving = true;
             Projects.updateOutcomeStatusReview(
                 {
                     projectId: project._id,
@@ -549,46 +413,46 @@ angular.module('project-status-updates').controller('ProjectStatusUpdatesControl
                     outcomeStatusReviewId : outcomeReview._id
                 }, outcomeReview,
                 function(res){
-                    $scope.isResolving = false;
-                    $scope.error = null;
+                    vm.isResolving = false;
+                    vm.error = null;
                     originalOutcomeReview[outcomeReview._id].newStatus = outcomeReview.newStatus;
                     originalOutcomeReview[outcomeReview._id].newComment = outcomeReview.newComment;
-                    $scope.selectOutcomeReviewForm('view', outcomeReview);
+                    vm.selectOutcomeReviewForm('view', outcomeReview);
                 },
                 function(err){
-                    $scope.isResolving = false;
-                    $scope.error = err.data.message;
+                    vm.isResolving = false;
+                    vm.error = err.data.message;
                 }
             );
         };
 
-        $scope.cancelEditOutcomeReview = function(outcomeReview){
-            $scope.error = null;
+        vm.cancelEditOutcomeReview = function(outcomeReview){
+            vm.error = null;
             outcomeReview.newStatus = originalOutcomeReview[outcomeReview._id].newStatus;
             outcomeReview.newComment = originalOutcomeReview[outcomeReview._id].newComment;
-            $scope.selectOutcomeReviewForm('view', outcomeReview);
+            vm.selectOutcomeReviewForm('view', outcomeReview);
         };
 
         // -------------------------------------------------------- ESTIMATE DURATION -------------------------------------------------
 
-        $scope.estimateDurationDateOpened = {};
-        $scope.openEstimateDurationDate = function(estimateDurationReview, $event){
+        vm.estimateDurationDateOpened = {};
+        vm.openEstimateDurationDate = function(estimateDurationReview, $event){
             $event.preventDefault();
             $event.stopPropagation();
-            $scope.estimateDurationDateOpened[estimateDurationReview._id] = true;
+            vm.estimateDurationDateOpened[estimateDurationReview._id] = true;
         };
 
         var originalEstimateDurationReview = {};
 
-        $scope.editEstimateDuration = function(estimateDurationReview){
-            $scope.error = null;
+        vm.editEstimateDuration = function(estimateDurationReview){
+            vm.error = null;
             originalEstimateDurationReview[estimateDurationReview._id] = _.cloneDeep(estimateDurationReview);
-            $scope.selectEstimateDurationForm('edit', estimateDurationReview);
+            vm.selectEstimateDurationForm('edit', estimateDurationReview);
         };
 
-        $scope.saveEditEstimateDuration = function(project, gate, statusUpdate, estimateDurationReview){
-            $scope.isResolving = true;
-            $scope.error = null;
+        vm.saveEditEstimateDuration = function(project, gate, statusUpdate, estimateDurationReview){
+            vm.isResolving = true;
+            vm.error = null;
             Projects.updateEstimateDurationReviewForSU(
                 {
                     projectId: project._id,
@@ -597,35 +461,35 @@ angular.module('project-status-updates').controller('ProjectStatusUpdatesControl
                     estimateDurationReviewId : estimateDurationReview._id
                 }, estimateDurationReview,
                 function(res){
-                    $scope.isResolving = false;
+                    vm.isResolving = false;
                     originalEstimateDurationReview[estimateDurationReview._id].newDate = estimateDurationReview.newDate;
-                    $scope.selectEstimateDurationForm('view', estimateDurationReview);
+                    vm.selectEstimateDurationForm('view', estimateDurationReview);
                 },
                 function(err){
-                    $scope.isResolving = false;
-                    $scope.error = err.data.message;
+                    vm.isResolving = false;
+                    vm.error = err.data.message;
                 }
             );
         };
 
-        $scope.cancelEditEstimateDuration = function(estimateDurationReview){
-            $scope.error = null;
+        vm.cancelEditEstimateDuration = function(estimateDurationReview){
+            vm.error = null;
             estimateDurationReview.newDate = originalEstimateDurationReview[estimateDurationReview._id].newDate;
-            $scope.selectEstimateDurationForm('view', estimateDurationReview);
+            vm.selectEstimateDurationForm('view', estimateDurationReview);
         };
 
         // -------------------------------------------------------- ESTIMATE COST -------------------------------------------------
 
         var originalEstimateCostReview = {};
 
-        $scope.editEstimateCost = function(estimateCostReview){
+        vm.editEstimateCost = function(estimateCostReview){
             originalEstimateCostReview[estimateCostReview._id] = _.cloneDeep(estimateCostReview);
-            $scope.selectEstimateCostForm('edit', estimateCostReview);
+            vm.selectEstimateCostForm('edit', estimateCostReview);
         };
 
-        $scope.saveEditEstimateCost = function(project, gate, statusUpdate, estimateCostReview){
-            $scope.error = null;
-            $scope.isResolving = true;
+        vm.saveEditEstimateCost = function(project, gate, statusUpdate, estimateCostReview){
+            vm.error = null;
+            vm.isResolving = true;
             Projects.updateEstimateCostReviewForSU(
                 {
                     projectId: project._id,
@@ -634,36 +498,36 @@ angular.module('project-status-updates').controller('ProjectStatusUpdatesControl
                     estimateCostReviewId : estimateCostReview._id
                 }, estimateCostReview,
                 function(res){
-                    $scope.isResolving = false;
+                    vm.isResolving = false;
                     originalEstimateCostReview[estimateCostReview._id].newCost = estimateCostReview.newCost;
-                    $scope.selectEstimateCostForm('view', estimateCostReview);
+                    vm.selectEstimateCostForm('view', estimateCostReview);
                 },
                 function(err){
-                    $scope.isResolving = false;
-                    $scope.error = err.data.message;
+                    vm.isResolving = false;
+                    vm.error = err.data.message;
                 }
             );
 
         };
 
-        $scope.cancelEditEstimateCost = function(estimateCostReview){
-            $scope.error = null;
+        vm.cancelEditEstimateCost = function(estimateCostReview){
+            vm.error = null;
             estimateCostReview.newCost = originalEstimateCostReview[estimateCostReview._id].newCost;
-            $scope.selectEstimateCostForm('view', estimateCostReview);
+            vm.selectEstimateCostForm('view', estimateCostReview);
         };
 
         // -------------------------------------------------------- ESTIMATE COMPLETION -------------------------------------------------
 
         var originalEstimateCompletionReview = {};
 
-        $scope.editEstimateCompletion = function(estimateCompletionReview){
+        vm.editEstimateCompletion = function(estimateCompletionReview){
             originalEstimateCompletionReview[estimateCompletionReview._id] = _.cloneDeep(estimateCompletionReview);
-            $scope.selectEstimateCompletionForm('edit', estimateCompletionReview);
+            vm.selectEstimateCompletionForm('edit', estimateCompletionReview);
         };
 
-        $scope.saveEditEstimateCompletion = function(project, gate, statusUpdate, estimateCompletionReview){
-            $scope.error = null;
-            $scope.isResolving = true;
+        vm.saveEditEstimateCompletion = function(project, gate, statusUpdate, estimateCompletionReview){
+            vm.error = null;
+            vm.isResolving = true;
             Projects.updateEstimateCompletionReviewForSU(
                 {
                     projectId: project._id,
@@ -672,29 +536,29 @@ angular.module('project-status-updates').controller('ProjectStatusUpdatesControl
                     estimateCompletionReviewId : estimateCompletionReview._id
                 }, estimateCompletionReview,
                 function(res){
-                    $scope.isResolving = false;
+                    vm.isResolving = false;
                     originalEstimateCompletionReview[estimateCompletionReview._id].newCompletion = estimateCompletionReview.newCompletion;
-                    $scope.selectEstimateCompletionForm('view', estimateCompletionReview);
+                    vm.selectEstimateCompletionForm('view', estimateCompletionReview);
                 },
                 function(err){
-                    $scope.isResolving = false;
-                    $scope.error = err.data.message;
+                    vm.isResolving = false;
+                    vm.error = err.data.message;
                 }
             );
 
         };
 
-        $scope.cancelEditEstimateCompletion = function(estimateCompletionReview){
-            $scope.error = null;
+        vm.cancelEditEstimateCompletion = function(estimateCompletionReview){
+            vm.error = null;
             estimateCompletionReview.newCompletion = originalEstimateCompletionReview[estimateCompletionReview._id].newCompletion;
-            $scope.selectEstimateCompletionForm('view', estimateCompletionReview);
+            vm.selectEstimateCompletionForm('view', estimateCompletionReview);
         };
 
 
         // -------------------------------------------------------- APPROVAL -------------------------------------------------
 
         // Check that all fields are filled in before proceeding, if not, return (except for Reject and Draft)
-        $scope.submitMissingFields = {};
+        vm.submitMissingFields = {};
         var setSubmitMissingFields = function(statusUpdate){
 
             var missingFields = [];
@@ -721,7 +585,7 @@ angular.module('project-status-updates').controller('ProjectStatusUpdatesControl
         };
 
         // Check that date are consistent with current dates of previous and next gates
-        $scope.dateConsistencyErrors = {};
+        vm.dateConsistencyErrors = {};
         var checkDateConsistency = function(editedStatusUpdate, editedGate, project){
             // Check that this gate baseline/actual are not earlier than previous gate or later than next gate
 
@@ -769,17 +633,17 @@ angular.module('project-status-updates').controller('ProjectStatusUpdatesControl
             return dateConsistencyErrors;
         };
 
-        $scope.submit = function(project, gate, statusUpdate){
+        vm.submit = function(project, gate, statusUpdate){
 
-            $scope.submitMissingFields[statusUpdate._id] = setSubmitMissingFields(statusUpdate);
-            $scope.dateConsistencyErrors[statusUpdate._id] = checkDateConsistency(statusUpdate, gate, project);
+            vm.submitMissingFields[statusUpdate._id] = setSubmitMissingFields(statusUpdate);
+            vm.dateConsistencyErrors[statusUpdate._id] = checkDateConsistency(statusUpdate, gate, project);
 
-            if(($scope.submitMissingFields[statusUpdate._id].length > 0) || ($scope.dateConsistencyErrors[statusUpdate._id].length > 0)){
+            if((vm.submitMissingFields[statusUpdate._id].length > 0) || (vm.dateConsistencyErrors[statusUpdate._id].length > 0)){
                 return; // Must exit
             }
 
-            $scope.error = null;
-            $scope.isResolving = true;
+            vm.error = null;
+            vm.isResolving = true;
             Projects.submitStatusUpdate(
                 {
                     projectId: project._id,
@@ -787,27 +651,27 @@ angular.module('project-status-updates').controller('ProjectStatusUpdatesControl
                     projectStatusUpdateId : statusUpdate._id
                 }, statusUpdate,
                 function(res){
-                    $scope.isResolving = false;
+                    vm.isResolving = false;
                     statusUpdate.approval = res.approval;
                 },
                 function(err){
-                    $scope.isResolving = false;
-                    $scope.error = err.data.message;
+                    vm.isResolving = false;
+                    vm.error = err.data.message;
                 }
             );
         };
 
-        $scope.approve = function(project, gate, statusUpdate){
+        vm.approve = function(project, gate, statusUpdate){
 
-            $scope.submitMissingFields[statusUpdate._id] = setSubmitMissingFields(statusUpdate);
-            $scope.dateConsistencyErrors[statusUpdate._id] = checkDateConsistency(statusUpdate, gate, project);
+            vm.submitMissingFields[statusUpdate._id] = setSubmitMissingFields(statusUpdate);
+            vm.dateConsistencyErrors[statusUpdate._id] = checkDateConsistency(statusUpdate, gate, project);
 
-            if(($scope.submitMissingFields[statusUpdate._id].length > 0) || ($scope.dateConsistencyErrors[statusUpdate._id].length > 0)){
+            if((vm.submitMissingFields[statusUpdate._id].length > 0) || (vm.dateConsistencyErrors[statusUpdate._id].length > 0)){
                 return; // Must exit
             }
 
-            $scope.error = null;
-            $scope.isResolving = true;
+            vm.error = null;
+            vm.isResolving = true;
             Projects.approveStatusUpdate(
                 {
                     projectId: project._id,
@@ -815,20 +679,20 @@ angular.module('project-status-updates').controller('ProjectStatusUpdatesControl
                     projectStatusUpdateId : statusUpdate._id
                 }, statusUpdate,
                 function(res){
-                    $scope.isResolving = false;
+                    vm.isResolving = false;
                     statusUpdate.approval = res.approval;
                 },
                 function(err){
-                    $scope.isResolving = false;
-                    $scope.error = err.data.message;
+                    vm.isResolving = false;
+                    vm.error = err.data.message;
                 }
             );
         };
 
-        $scope.reject = function(project, gate, statusUpdate){
+        vm.reject = function(project, gate, statusUpdate){
 
-            $scope.error = null;
-            $scope.isResolving = true;
+            vm.error = null;
+            vm.isResolving = true;
             Projects.rejectStatusUpdate(
                 {
                     projectId: project._id,
@@ -836,20 +700,20 @@ angular.module('project-status-updates').controller('ProjectStatusUpdatesControl
                     projectStatusUpdateId : statusUpdate._id
                 }, statusUpdate,
                 function(res){
-                    $scope.isResolving = false;
+                    vm.isResolving = false;
                     statusUpdate.approval = res.approval;
                 },
                 function(err){
-                    $scope.isResolving = false;
-                    $scope.error = err.data.message;
+                    vm.isResolving = false;
+                    vm.error = err.data.message;
                 }
             );
         };
 
-        $scope.draft = function(project, gate, statusUpdate){
+        vm.draft = function(project, gate, statusUpdate){
 
-            $scope.error = null;
-            $scope.isResolving = true;
+            vm.error = null;
+            vm.isResolving = true;
             Projects.draftStatusUpdate(
                 {
                     projectId: project._id,
@@ -857,14 +721,47 @@ angular.module('project-status-updates').controller('ProjectStatusUpdatesControl
                     projectStatusUpdateId : statusUpdate._id
                 }, statusUpdate,
                 function(res){
-                    $scope.isResolving = false;
+                    vm.isResolving = false;
                     statusUpdate.approval = res.approval;
                 },
                 function(err){
-                    $scope.isResolving = false;
-                    $scope.error = err.data.message;
+                    vm.isResolving = false;
+                    vm.error = err.data.message;
                 }
             );
+        };
+
+
+        // ------ PROJECT SELECTION -----------
+
+        vm.projectReportDetails = 'financial';
+
+        var modalProjectReport = function (size, project) {
+
+            var modalInstance = $modal.open({
+                templateUrl: 'modules/project-status-updates/views/project-status-report.client.view.html',
+                controller: function ($scope, $modalInstance, project) {
+
+                    $scope.project = project;
+
+                    $scope.cancelModal = function () {
+                        $modalInstance.dismiss();
+                    };
+                },
+                size: size,
+                resolve: {
+                    project: function () {
+                        return project;
+                    }
+                },
+                backdrop: 'static',
+                keyboard: false
+            });
+
+        };
+
+        vm.selectProjectReport = function(project){
+            modalProjectReport('lg', project);
         };
 
 

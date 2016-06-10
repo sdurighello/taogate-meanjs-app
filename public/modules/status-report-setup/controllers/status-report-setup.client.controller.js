@@ -135,7 +135,11 @@ angular.module('status-report-setup').controller('StatusReportSetupController', 
 
 // ----------------------------------------------- STATUS-AREAS ---------------------------------------
 
-
+        $scope.applicableToList = [
+            {name: 'Project', text: 'project'},
+            {name: 'Portfolio', text: 'portfolio'},
+            {name: 'Project + Portfolio', text: 'both'}
+        ];
 
         // ------------------- NG-SWITCH ---------------------
 
@@ -180,6 +184,7 @@ angular.module('status-report-setup').controller('StatusReportSetupController', 
         $scope.cancelEditStatusArea = function(statusArea){
             statusArea.name = originalStatusArea[statusArea._id].name;
             statusArea.description = originalStatusArea[statusArea._id].description;
+            statusArea.applicableTo = originalStatusArea[statusArea._id].applicableTo;
             $scope.selectStatusAreaForm(statusArea, 'view');
         };
 
@@ -199,7 +204,8 @@ angular.module('status-report-setup').controller('StatusReportSetupController', 
         $scope.createStatusArea = function() {
             $scope.error = null;
             var statusArea = new LogStatusAreas ({
-                name: 'New status area'
+                name: 'New status area',
+                applicableTo : 'both'
             });
             statusArea.$save(function(res) {
                 $scope.findStatusAreas();

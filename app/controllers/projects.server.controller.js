@@ -219,12 +219,6 @@ exports.updateStatusUpdateHeader = require('./projects/projects.statusUpdates.se
 
 exports.updateOverallDeliveryStatus = require('./projects/projects.statusUpdates.server.controller').updateOverallDeliveryStatus;
 
-exports.updateDurationDeliveryStatus = require('./projects/projects.statusUpdates.server.controller').updateDurationDeliveryStatus;
-
-exports.updateCostDeliveryStatus = require('./projects/projects.statusUpdates.server.controller').updateCostDeliveryStatus;
-
-exports.updateCompletionDeliveryStatus = require('./projects/projects.statusUpdates.server.controller').updateCompletionDeliveryStatus;
-
 // Status Areas
 
 exports.updateStatusAreaReview = require('./projects/projects.statusUpdates.server.controller').updateStatusAreaReview;

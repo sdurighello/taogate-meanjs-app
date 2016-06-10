@@ -815,54 +815,6 @@ var ProjectStatusUpdateSchema = new Schema({
             },
             newComment :{type: String, trim:true, default:''}
         },
-        durationStatusReview : {
-            currentRecord: {
-                status: {
-                    _id : {type: Schema.Types.ObjectId, ref: 'LogStatusIndicator', default:null, $tenant:true},
-                    name : {type: String, default:null},
-                    color : {type: String, default: null}
-                },
-                comment :{type: String, trim:true, default:''}
-            },
-            newStatus: {
-                _id : {type: Schema.Types.ObjectId, ref: 'LogStatusIndicator', default:null, $tenant:true},
-                name : {type: String, default:null},
-                color : {type: String, default: null}
-            },
-            newComment :{type: String, trim:true, default:''}
-        },
-        costStatusReview : {
-            currentRecord: {
-                status: {
-                    _id : {type: Schema.Types.ObjectId, ref: 'LogStatusIndicator', default:null, $tenant:true},
-                    name : {type: String, default:null},
-                    color : {type: String, default: null}
-                },
-                comment :{type: String, trim:true, default:''}
-            },
-            newStatus: {
-                _id : {type: Schema.Types.ObjectId, ref: 'LogStatusIndicator', default:null, $tenant:true},
-                name : {type: String, default:null},
-                color : {type: String, default: null}
-            },
-            newComment :{type: String, trim:true, default:''}
-        },
-        completionStatusReview : {
-            currentRecord: {
-                status: {
-                    _id : {type: Schema.Types.ObjectId, ref: 'LogStatusIndicator', default:null, $tenant:true},
-                    name : {type: String, default:null},
-                    color : {type: String, default: null}
-                },
-                comment :{type: String, trim:true, default:''}
-            },
-            newStatus: {
-                _id : {type: Schema.Types.ObjectId, ref: 'LogStatusIndicator', default:null, $tenant:true},
-                name : {type: String, default:null},
-                color : {type: String, default: null}
-            },
-            newComment :{type: String, trim:true, default:''}
-        },
         projectStatusAreaReviews : [ProjectAreaReviewSchema]
     },
 
@@ -918,18 +870,6 @@ var ProjectGateSchema = new Schema({
     },
     deliveryStatus: {
         overallStatus : {
-            currentRecord: onlyStatusRecord,
-            history:[onlyStatusRecord]
-        },
-        durationStatus : {
-            currentRecord: onlyStatusRecord,
-            history:[onlyStatusRecord]
-        },
-        costStatus : {
-            currentRecord: onlyStatusRecord,
-            history:[onlyStatusRecord]
-        },
-        completionStatus : {
             currentRecord: onlyStatusRecord,
             history:[onlyStatusRecord]
         },

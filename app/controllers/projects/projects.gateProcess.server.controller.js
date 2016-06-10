@@ -117,7 +117,7 @@ var createBlueprintedProcess = function(req, res, assignmentType, callback){
     async.waterfall([
         // Get Log Status Areas
         function(callback){
-            LogStatusArea.find().exec(function(err, areas){
+            LogStatusArea.find({ applicableTo: {$in: ['project', 'both']} }).exec(function(err, areas){
                 if(err){
                     return callback(err);
                 }
@@ -286,7 +286,7 @@ var createBasicProcess = function(req, res, callback){
     async.waterfall([
         // Get Log Status Areas
         function(callback){
-            LogStatusArea.find().exec(function(err, areas){
+            LogStatusArea.find({ applicableTo: {$in: ['project', 'both']} }).exec(function(err, areas){
                 if(err){
                     return callback(err);
                 }
@@ -349,18 +349,6 @@ var createBasicProcess = function(req, res, callback){
                         currentRecord: { user: req.user._id },
                         history:[]
                     },
-                    durationStatus : {
-                        currentRecord: { user: req.user._id },
-                        history:[]
-                    },
-                    costStatus : {
-                        currentRecord: { user: req.user._id },
-                        history:[]
-                    },
-                    completionStatus : {
-                        currentRecord: { user: req.user._id },
-                        history:[]
-                    },
                     projectStatusAreas : []
                 },
                 gateReviews : [],
@@ -399,18 +387,6 @@ var createBasicProcess = function(req, res, callback){
                 },
                 deliveryStatus: {
                     overallStatus : {
-                        currentRecord: { user: req.user._id },
-                        history:[]
-                    },
-                    durationStatus : {
-                        currentRecord: { user: req.user._id },
-                        history:[]
-                    },
-                    costStatus : {
-                        currentRecord: { user: req.user._id },
-                        history:[]
-                    },
-                    completionStatus : {
                         currentRecord: { user: req.user._id },
                         history:[]
                     },
@@ -621,7 +597,7 @@ exports.createGate = function(req, res){
     async.waterfall([
         // Get Log Status Areas
         function(callback){
-            LogStatusArea.find().exec(function(err, areas){
+            LogStatusArea.find({ applicableTo: {$in: ['project', 'both']} }).exec(function(err, areas){
                 if(err){
                     return callback(err);
                 }
@@ -651,18 +627,6 @@ exports.createGate = function(req, res){
                 },
                 deliveryStatus: {
                     overallStatus : {
-                        currentRecord: { user: req.user._id },
-                        history:[]
-                    },
-                    durationStatus : {
-                        currentRecord: { user: req.user._id },
-                        history:[]
-                    },
-                    costStatus : {
-                        currentRecord: { user: req.user._id },
-                        history:[]
-                    },
-                    completionStatus : {
                         currentRecord: { user: req.user._id },
                         history:[]
                     },

@@ -1,4 +1,4 @@
-<section data-ng-controller="ProjectStatusUpdatesController"  data-ng-init="init()">
+<section data-ng-controller="ProjectStatusUpdatesController as vm"  data-ng-init="vm.init()">
 	<br>
 	<div class="row">
 		<div class="col-sm-12">
@@ -11,48 +11,55 @@
 			</div>
 		</div>
 	</div>
-    <div data-ng-show="initError" class="text-danger">
-        <strong data-ng-repeat="item in initError" data-ng-bind="item.data.message"></strong>
+    <div data-ng-show="vm.initError" class="text-danger">
+        <strong data-ng-repeat="item in vm.initError" data-ng-bind="item.data.message"></strong>
     </div>
-    <div data-ng-show="error" class="text-danger">
-        <strong data-ng-bind="error"></strong>
+    <div data-ng-show="vm.error" class="text-danger">
+        <strong data-ng-bind="vm.error"></strong>
     </div>
     <div class="row">
         <div class="col-md-3" style="padding-right: 5px">
-            <project-list projects="projects" select-project="selectProject" portfolios="portfolios" gate-processes="gateProcesses" is-resolving="isResolving"></project-list>
+            <project-list projects="vm.projects" select-project="vm.selectProject" portfolios="vm.portfolios" gate-processes="vm.gateProcesses" is-resolving="vm.isResolving"></project-list>
         </div>
         <div class="col-md-9" style="padding-left: 5px">
             <div class="row">
                 <div class="col-md-12">
-                    <div data-ng-hide="selectedProject || projects.length === 0" class="alert alert-warning text-center">
+                    <div data-ng-hide="vm.selectedProject || vm.projects.length === 0" class="alert alert-warning text-center">
                         Select a project to see its details
                     </div>
                 </div>
             </div>
-            <div class="row" data-ng-show="selectedProject">
+            <div class="row" data-ng-show="vm.selectedProject">
                 <div class="col-md-12">
                     <div class="panel panel-default">
-                        <div class="panel-heading text-center" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: normal; width: 100%;">
-                            <h6 class="panel-title">{{selectedProject.identification.name}}</h6>
+                        <div class="panel-heading">
+                            <div class="row">
+                                <div class="col-xs-9 text-center" style="overflow: hidden;">
+                                    <h6 class="panel-title">{{vm.selectedProject.identification.name}}</h6>
+                                </div>
+                                <div class="col-xs-3">
+                                    <button class="btn btn-primary pull-right btn-xs" data-ng-click="vm.selectProjectReport(vm.selectedProject)">Status Report</button>
+                                </div>
+                            </div>
                         </div>
                         <div class="panel-body" style="max-height: 540px; min-height: 540px;">
                             <div class="row">
                                 <div class="col-md-12">
                                     <ul class="nav nav-pills nav-wizard">
-                                        <li data-ng-repeat="gate in selectedProject.process.gates track by $index"
-                                            data-ng-class="{'active' : gate === selectedGate}" style="margin-bottom: 2px">
+                                        <li data-ng-repeat="gate in vm.selectedProject.process.gates track by $index"
+                                            data-ng-class="{'active' : gate === vm.selectedGate}" style="margin-bottom: 2px">
                                             <div class="nav-wedge" data-ng-hide="$index === 0"></div>
-                                            <a class="btn-link" data-ng-click="selectGate(gate)"
-                                               data-ng-disabled="isResolving">
+                                            <a class="btn-link" data-ng-click="vm.selectGate(gate)"
+                                               data-ng-disabled="vm.isResolving">
                                                 {{gate.name}}
                                             </a>
-                                            <div class="nav-arrow" data-ng-hide="$index === selectedProject.process.gates.length-1"></div>
+                                            <div class="nav-arrow" data-ng-hide="$index === vm.selectedProject.process.gates.length-1"></div>
                                         </li>
                                     </ul>
                                 </div>
                             </div>
                             <hr style="margin-top: 8px; margin-bottom: 10px">
-                            <div class="row" data-ng-show="showNewDocumentForm">
+                            <div class="row" data-ng-show="vm.showNewDocumentForm">
                                 <div class="col-md-12">
                                     <div class="panel panel-default">
                                         <div class="panel-heading">
@@ -66,30 +73,30 @@
                                                     <div class="form-group-sm col-md-3">
                                                         <label for="gate">Gate</label>
                                                         <input id="gate" class="form-control" type="text"
-                                                               data-ng-model="selectedGate.name" disabled>
+                                                               data-ng-model="vm.selectedGate.name" disabled>
                                                     </div>
                                                     <div class="form-group-sm col-md-4">
                                                         <label for="">Update date</label>
                                                         <div class="input-group">
-                                                            <input type="text" id="" class="form-control" datepicker-popup="dd-MMMM-yyyy" data-ng-model="newDocument.updateDate"
-                                                                   is-open="newHeaderDateOpened[selectedGate._id]" >
+                                                            <input type="text" id="" class="form-control" datepicker-popup="dd-MMMM-yyyy" data-ng-model="vm.newDocument.updateDate"
+                                                                   is-open="vm.newHeaderDateOpened[vm.selectedGate._id]" >
                                                                 <span class="input-group-btn">
-                                                                    <button type="button" class="btn btn-default btn-sm" ng-click="openNewHeaderDate(selectedGate, $event)"><i class="glyphicon glyphicon-calendar"></i></button>
+                                                                    <button type="button" class="btn btn-default btn-sm" ng-click="vm.openNewHeaderDate(vm.selectedGate, $event)"><i class="glyphicon glyphicon-calendar"></i></button>
                                                                 </span>
                                                         </div>
                                                     </div>
                                                     <div class="form-group-sm col-md-4">
                                                         <label for="reviewTitleNew">Update title</label>
                                                         <input id="reviewTitleNew" name="reviewTitleNew" class="form-control" type="text" placeholder="Enter title"
-                                                               data-ng-model="newDocument.title" >
+                                                               data-ng-model="vm.newDocument.title" >
                                                     </div>
                                                 </div>
                                                 <hr>
                                                 <div class="form-group-sm pull-right">
-                                                    <button class="btn btn-success btn-xs" data-ng-click="createNewDocument(selectedProject, selectedGate)">
+                                                    <button class="btn btn-success btn-xs" data-ng-click="vm.createNewDocument(vm.selectedProject, vm.selectedGate)">
                                                         Save
                                                     </button>
-                                                    <button class="btn btn-info btn-xs" data-ng-click="cancelNewDocument()">
+                                                    <button class="btn btn-info btn-xs" data-ng-click="vm.cancelNewDocument()">
                                                         Cancel
                                                     </button>
                                                 </div>
@@ -98,10 +105,10 @@
                                     </div>
                                 </div>
                             </div>
-                            <div data-ng-show="!selectedGate" class="alert alert-warning text-center">
+                            <div data-ng-show="!vm.selectedGate" class="alert alert-warning text-center">
                                 <span>Select a gate to see its status updates</span>
                             </div>
-                            <div class="row" data-ng-show="selectedGate && !showNewDocumentForm">
+                            <div class="row" data-ng-show="vm.selectedGate && !vm.showNewDocumentForm">
                                 <div class="col-md-3" style="padding-left: 10px; padding-right: 5px;">
                                     <div class="panel panel-default">
                                         <div class="panel-heading">
@@ -110,30 +117,30 @@
                                         <div class="panel-body" style="min-height: 410px;">
                                             <div class="row">
                                                 <div class="col-md-12 text-center">
-                                                    <button class="btn btn-xs btn-success" data-ng-click="showNewDocumentForm = true"
-                                                            data-ng-show="userHasAuthorization('edit', user, selectedProject)">
+                                                    <button class="btn btn-xs btn-success" data-ng-click="vm.showNewDocumentForm = true"
+                                                            data-ng-show="vm.userHasAuthorization('edit', vm.user, vm.selectedProject)">
                                                         New update
                                                     </button>
                                                 </div>
                                             </div>
                                             <hr style="margin: 10px">
                                             <div class="row" style="min-height: 335px; max-height: 335px; overflow-y: auto">
-                                                <div class="col-md-12" data-ng-show="selectedGate.projectStatusUpdates.length === 0">
+                                                <div class="col-md-12" data-ng-show="vm.selectedGate.projectStatusUpdates.length === 0">
                                                     <div class="alert alert-warning text-center">
                                                         There are no status updates for this gate
                                                     </div>
                                                 </div>
                                                 <div class="col-md-12">
                                                     <button type="button"
-                                                            data-ng-repeat="statusUpdate in selectedGate.projectStatusUpdates | orderBy: sortChangeRequests : true"
-                                                            data-ng-click="selectDocument(statusUpdate)"
+                                                            data-ng-repeat="statusUpdate in vm.selectedGate.projectStatusUpdates | orderBy: vm.sortChangeRequests : true"
+                                                            data-ng-click="vm.selectDocument(statusUpdate)"
                                                             class="btn btn-sm center-block btn-block" style="overflow: hidden;"
                                                             data-ng-class="{
                                                             'btn-info' : statusUpdate.approval.currentRecord.approvalState === 'draft',
                                                             'btn-warning' : statusUpdate.approval.currentRecord.approvalState === 'submitted',
                                                             'btn-success' : statusUpdate.approval.currentRecord.approvalState === 'approved',
                                                             'btn-danger' : statusUpdate.approval.currentRecord.approvalState === 'rejected'}"
-                                                            data-ng-disabled="isResolving">
+                                                            data-ng-disabled="vm.isResolving">
                                                         <span class="small">{{statusUpdate.title}}</span>
                                                         <br>
                                                         <span class="small">{{statusUpdate.updateDate | date:'EEE d, MMM yyyy'}}</span>
@@ -144,68 +151,65 @@
                                     </div>
                                 </div>
                                 <div class="col-md-9" style="padding-left: 5px; padding-right: 10px;">
-                                    <div data-ng-hide="selectedDocument || selectedGate.projectStatusUpdates.length === 0" class="alert alert-warning text-center">
+                                    <div data-ng-hide="vm.selectedDocument || vm.selectedGate.projectStatusUpdates.length === 0" class="alert alert-warning text-center">
                                         Select a status update to see its details
                                     </div>
-                                    <div class="panel panel-default" data-ng-show="selectedDocument">
+                                    <div class="panel panel-default" data-ng-show="vm.selectedDocument">
                                         <div class="panel-heading text-center">
                                             <h6 class="panel-title" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: normal; width: 100%;">
-                                                {{selectedDocument.title}}
+                                                {{vm.selectedDocument.title}}
                                             </h6>
                                         </div>
                                         <div class="row">
                                             <div class="col-md-6 btn-group btn-group-xs btn-group-justified">
-                                                <label class="btn btn-info btn-xs" data-ng-model="documentDetails" btn-radio="'header'">
+                                                <label class="btn btn-info btn-xs" data-ng-model="vm.documentDetails" btn-radio="'header'">
                                                     Header
                                                 </label>
-                                                <label class="btn btn-info btn-xs" data-ng-model="documentDetails" btn-radio="'status'">
+                                                <label class="btn btn-info btn-xs" data-ng-model="vm.documentDetails" btn-radio="'status'">
                                                     Status
                                                 </label>
-                                                <label class="btn btn-info btn-xs" data-ng-model="documentDetails" btn-radio="'areas'">
-                                                    Areas
-                                                </label>
-                                                <label class="btn btn-info btn-xs" data-ng-model="documentDetails" btn-radio="'outcomes'">
+                                                <label class="btn btn-info btn-xs" data-ng-model="vm.documentDetails" btn-radio="'outcomes'">
                                                     Outcomes
                                                 </label>
-                                                <label class="btn btn-info btn-xs" data-ng-model="documentDetails" btn-radio="'duration'">
+                                                <label class="btn btn-info btn-xs" data-ng-model="vm.documentDetails" btn-radio="'duration'">
                                                     Duration
                                                 </label>
-                                                <label class="btn btn-info btn-xs" data-ng-model="documentDetails" btn-radio="'cost'">
+                                                <label class="btn btn-info btn-xs" data-ng-model="vm.documentDetails" btn-radio="'cost'">
                                                     Cost
                                                 </label>
-                                                <label class="btn btn-info btn-xs" data-ng-model="documentDetails" btn-radio="'completion'">
+                                                <label class="btn btn-info btn-xs" data-ng-model="vm.documentDetails" btn-radio="'completion'">
                                                     Completion
                                                 </label>
-                                                <label class="btn btn-info btn-xs" data-ng-model="documentDetails" btn-radio="'approval'">
+                                                <label class="btn btn-info btn-xs" data-ng-model="vm.documentDetails" btn-radio="'approval'">
                                                     Approval
                                                 </label>
                                             </div>
                                         </div>
                                         <div class="panel-body" style="min-height: 385px; max-height: 385px; overflow-y: auto">
-                                            <div data-ng-show="documentDetails === 'header'">
-                                                <div data-ng-switch="switchHeaderForm[selectedDocument._id]">
+                                            <div data-ng-show="vm.documentDetails === 'header'">
+                                                <div data-ng-switch="vm.switchHeaderForm[vm.selectedDocument._id]">
                                                     <form data-ng-switch-default="view">
                                                         <div class="row">
                                                             <div class="form-group-sm col-md-6">
                                                                 <label for="">Date</label>
-                                                                <input type="text" id="" class="form-control" datepicker-popup="dd-MMMM-yyyy" data-ng-model="selectedDocument.updateDate" disabled />
+                                                                <input type="text" id="" class="form-control" datepicker-popup="dd-MMMM-yyyy" data-ng-model="vm.selectedDocument.updateDate" disabled />
                                                             </div>
                                                             <div class="form-group-sm col-md-6">
                                                                 <label for="reviewTitleEdit">Title</label>
                                                                 <input id="reviewTitleEdit" name="reviewTitleNew" class="form-control" type="text" placeholder="Enter title"
-                                                                       data-ng-model="selectedDocument.title" disabled>
+                                                                       data-ng-model="vm.selectedDocument.title" disabled>
                                                             </div>
                                                         </div>
                                                         <br>
                                                         <div class="row">
                                                             <div class="form-group-sm col-md-12">
                                                                 <label for="">Description</label>
-                                                                <textarea id="" class="form-control" placeholder="Enter description" data-ng-model="selectedDocument.description" disabled></textarea>
+                                                                <textarea id="" class="form-control" placeholder="Enter description" data-ng-model="vm.selectedDocument.description" disabled></textarea>
                                                             </div>
                                                         </div>
                                                         <hr>
-                                                        <div class="form-group-sm pull-right" data-ng-show="userHasAuthorization('edit', user, selectedProject) && (selectedDocument.approval.currentRecord.approvalState === 'draft')">
-                                                            <button class="btn btn-success btn-xs" data-ng-click="editHeader(selectedDocument)">
+                                                        <div class="form-group-sm pull-right" data-ng-show="vm.userHasAuthorization('edit', vm.user, vm.selectedProject) && (vm.selectedDocument.approval.currentRecord.approvalState === 'draft')">
+                                                            <button class="btn btn-success btn-xs" data-ng-click="vm.editHeader(vm.selectedDocument)">
                                                                 Edit
                                                             </button>
                                                         </div>
@@ -215,42 +219,42 @@
                                                             <div class="form-group-sm col-md-6">
                                                                 <label for="">Date</label>
                                                                 <div class="input-group">
-                                                                    <input type="text" id="" class="form-control" datepicker-popup="dd-MMMM-yyyy" data-ng-model="selectedDocument.updateDate"
-                                                                           is-open="$parent.headerDateOpened[selectedDocument._id]" >
+                                                                    <input type="text" id="" class="form-control" datepicker-popup="dd-MMMM-yyyy" data-ng-model="vm.selectedDocument.updateDate"
+                                                                           is-open="$parent.vm.headerDateOpened[vm.selectedDocument._id]" >
                                                                 <span class="input-group-btn">
-                                                                    <button type="button" class="btn btn-default btn-sm" ng-click="openHeaderDate(selectedDocument, $event)"><i class="glyphicon glyphicon-calendar"></i></button>
+                                                                    <button type="button" class="btn btn-default btn-sm" ng-click="vm.openHeaderDate(vm.selectedDocument, $event)"><i class="glyphicon glyphicon-calendar"></i></button>
                                                                 </span>
                                                                 </div>
                                                             </div>
                                                             <div class="form-group-sm col-md-6">
                                                                 <label for="reviewTitleEdit">Title</label>
                                                                 <input id="reviewTitleEdit" name="reviewTitleNew" class="form-control" type="text" placeholder="Enter title"
-                                                                       data-ng-model="selectedDocument.title" >
+                                                                       data-ng-model="vm.selectedDocument.title" >
                                                             </div>
                                                         </div>
                                                         <br>
                                                         <div class="row">
                                                             <div class="form-group-sm col-md-12">
                                                                 <label for="">Description</label>
-                                                                <textarea id="" class="form-control" placeholder="Enter description" data-ng-model="selectedDocument.description"></textarea>
+                                                                <textarea id="" class="form-control" placeholder="Enter description" data-ng-model="vm.selectedDocument.description"></textarea>
                                                             </div>
                                                         </div>
                                                         <hr>
                                                         <div class="form-group-sm pull-right" >
-                                                            <button class="btn btn-success btn-xs" data-ng-click="saveEditHeader(selectedProject, selectedGate, selectedDocument)" data-ng-disabled="isResolving">
+                                                            <button class="btn btn-success btn-xs" data-ng-click="vm.saveEditHeader(vm.selectedProject, vm.selectedGate, vm.selectedDocument)" data-ng-disabled="vm.isResolving">
                                                                 Save
                                                             </button>
-                                                            <button class="btn btn-danger btn-xs" data-ng-click="deleteDocument(selectedProject, selectedGate, selectedDocument)" data-ng-disabled="isResolving">
+                                                            <button class="btn btn-danger btn-xs" data-ng-click="vm.deleteDocument(vm.selectedProject, vm.selectedGate, vm.selectedDocument)" data-ng-disabled="vm.isResolving">
                                                                 Delete status update
                                                             </button>
-                                                            <button class="btn btn-info btn-xs" data-ng-click="cancelEditHeader(selectedDocument)" data-ng-disabled="isResolving">
+                                                            <button class="btn btn-info btn-xs" data-ng-click="vm.cancelEditHeader(vm.selectedDocument)" data-ng-disabled="vm.isResolving">
                                                                 Cancel
                                                             </button>
                                                         </div>
                                                     </form>
                                                 </div>
                                             </div>
-                                            <div data-ng-show="documentDetails === 'status'">
+                                            <div data-ng-show="vm.documentDetails === 'status'">
                                                 <div class="panel panel-default">
                                                     <div class="panel-heading text-center">
                                                         <b class="">Overall</b>
@@ -267,8 +271,8 @@
                                                                     <br>
                                                                     <div class="row">
                                                                         <div class="form-group-sm col-md-12">
-                                                                            <select id="" class="form-control" data-ng-model = "selectedDocument.deliveryStatus.overallStatusReview.currentRecord.status"
-                                                                                    ng-options="status as status.name for status in logStatusIndicators track by status._id" disabled>
+                                                                            <select id="" class="form-control" data-ng-model = "vm.selectedDocument.deliveryStatus.overallStatusReview.currentRecord.status"
+                                                                                    ng-options="status as status.name for status in vm.logStatusIndicators track by status._id" disabled>
                                                                                 <option value="">no status yet</option>
                                                                             </select>
                                                                         </div>
@@ -276,12 +280,12 @@
                                                                     <br>
                                                                     <div class="row">
                                                                         <div class="form-group-sm col-md-12">
-                                                                            <textarea id="" class="form-control" data-ng-model="selectedDocument.deliveryStatus.overallStatusReview.currentRecord.comment" disabled></textarea>
+                                                                            <textarea id="" class="form-control" data-ng-model="vm.selectedDocument.deliveryStatus.overallStatusReview.currentRecord.comment" disabled></textarea>
                                                                         </div>
                                                                     </div>
                                                                 </div>
                                                             </div>
-                                                            <div class="col-md-6" data-ng-switch="switchOverallStatusForm[selectedDocument._id]">
+                                                            <div class="col-md-6" data-ng-switch="vm.switchOverallStatusForm[vm.selectedDocument._id]">
                                                                 <div class="panel panel-default panel-body" data-ng-switch-default="view">
                                                                     <div class="row">
                                                                         <div class="col-md-6 text-center">
@@ -289,9 +293,9 @@
                                                                         </div>
                                                                         <div class="col-md-6">
                                                                             <div class="pull-right">
-                                                                                <button class="btn btn-success btn-xs" data-ng-click="editOverallStatus(selectedDocument)"
-                                                                                        data-ng-show="userHasAuthorization('edit', user, selectedProject) &&
-                                                                                        (selectedDocument.approval.currentRecord.approvalState === 'draft')">
+                                                                                <button class="btn btn-success btn-xs" data-ng-click="vm.editOverallStatus(vm.selectedDocument)"
+                                                                                        data-ng-show="vm.userHasAuthorization('edit', vm.user, vm.selectedProject) &&
+                                                                                        (vm.selectedDocument.approval.currentRecord.approvalState === 'draft')">
                                                                                     Edit
                                                                                 </button>
                                                                             </div>
@@ -300,8 +304,8 @@
                                                                     <br>
                                                                     <div class="row">
                                                                         <div class="form-group-sm col-md-12">
-                                                                            <select id="" class="form-control" data-ng-model = "selectedDocument.deliveryStatus.overallStatusReview.newStatus"
-                                                                                    ng-options="status as status.name for status in logStatusIndicators track by status._id" disabled>
+                                                                            <select id="" class="form-control" data-ng-model = "vm.selectedDocument.deliveryStatus.overallStatusReview.newStatus"
+                                                                                    ng-options="status as status.name for status in vm.logStatusIndicators track by status._id" disabled>
                                                                                 <option value="">no status yet</option>
                                                                             </select>
                                                                         </div>
@@ -309,7 +313,7 @@
                                                                     <br>
                                                                     <div class="row">
                                                                         <div class="form-group-sm col-md-12">
-                                                                            <textarea id="" class="form-control" placeholder="No comment yet" data-ng-model="selectedDocument.deliveryStatus.overallStatusReview.newComment" disabled></textarea>
+                                                                            <textarea id="" class="form-control" placeholder="No comment yet" data-ng-model="vm.selectedDocument.deliveryStatus.overallStatusReview.newComment" disabled></textarea>
                                                                         </div>
                                                                     </div>
                                                                 </div>
@@ -320,12 +324,12 @@
                                                                         </div>
                                                                         <div class="col-md-6">
                                                                             <div class="pull-right">
-                                                                                <button class="btn btn-success btn-xs" data-ng-click="saveEditOverallStatus(selectedProject, selectedGate, selectedDocument)"
-                                                                                        data-ng-disabled="isResolving">
+                                                                                <button class="btn btn-success btn-xs" data-ng-click="vm.saveEditOverallStatus(vm.selectedProject, vm.selectedGate, vm.selectedDocument)"
+                                                                                        data-ng-disabled="vm.isResolving">
                                                                                     Save
                                                                                 </button>
-                                                                                <button class="btn btn-info btn-xs" data-ng-click="cancelEditOverallStatus(selectedDocument)"
-                                                                                        data-ng-disabled="isResolving">
+                                                                                <button class="btn btn-info btn-xs" data-ng-click="vm.cancelEditOverallStatus(vm.selectedDocument)"
+                                                                                        data-ng-disabled="vm.isResolving">
                                                                                     Cancel
                                                                                 </button>
                                                                             </div>
@@ -334,8 +338,8 @@
                                                                     <br>
                                                                     <div class="row">
                                                                         <div class="form-group-sm col-md-12">
-                                                                            <select id="" class="form-control" data-ng-model = "selectedDocument.deliveryStatus.overallStatusReview.newStatus"
-                                                                                    ng-options="status as status.name for status in logStatusIndicators track by status._id">
+                                                                            <select id="" class="form-control" data-ng-model = "vm.selectedDocument.deliveryStatus.overallStatusReview.newStatus"
+                                                                                    ng-options="status as status.name for status in vm.logStatusIndicators track by status._id">
                                                                                 <option value="">--choose status</option>
                                                                             </select>
                                                                         </div>
@@ -343,7 +347,7 @@
                                                                     <br>
                                                                     <div class="row">
                                                                         <div class="form-group-sm col-md-12">
-                                                                            <textarea id="" class="form-control" placeholder="Enter comment" data-ng-model="selectedDocument.deliveryStatus.overallStatusReview.newComment"></textarea>
+                                                                            <textarea id="" class="form-control" placeholder="Enter comment" data-ng-model="vm.selectedDocument.deliveryStatus.overallStatusReview.newComment"></textarea>
                                                                         </div>
                                                                     </div>
                                                                 </div>
@@ -351,309 +355,7 @@
                                                         </div>
                                                     </div>
                                                 </div>
-                                                <div class="panel panel-default">
-                                                    <div class="panel-heading text-center">
-                                                        <b class="">Duration</b>
-                                                    </div>
-                                                    <div class="panel-body">
-                                                        <div class="row">
-                                                            <div class="col-md-6">
-                                                                <div class="panel panel-default panel-body">
-                                                                    <div class="row">
-                                                                        <div class="col-md-6 text-center">
-                                                                            Current
-                                                                        </div>
-                                                                    </div>
-                                                                    <br>
-                                                                    <div class="row">
-                                                                        <div class="form-group-sm col-md-12">
-                                                                            <select id="" class="form-control" data-ng-model = "selectedDocument.deliveryStatus.durationStatusReview.currentRecord.status"
-                                                                                    ng-options="status as status.name for status in logStatusIndicators track by status._id" disabled>
-                                                                                <option value="">no status yet</option>
-                                                                            </select>
-                                                                        </div>
-                                                                    </div>
-                                                                    <br>
-                                                                    <div class="row">
-                                                                        <div class="form-group-sm col-md-12">
-                                                                            <textarea id="" class="form-control" placeholder="No comment yet" data-ng-model="selectedDocument.deliveryStatus.durationStatusReview.currentRecord.comment" disabled></textarea>
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                            <div class="col-md-6" data-ng-switch="switchDurationStatusForm[selectedDocument._id]">
-                                                                <div class="panel panel-default panel-body" data-ng-switch-default="view">
-                                                                    <div class="row">
-                                                                        <div class="col-md-6 text-center">
-                                                                            New
-                                                                        </div>
-                                                                        <div class="col-md-6">
-                                                                            <div class="pull-right">
-                                                                                <button class="btn btn-success btn-xs" data-ng-click="editDurationStatus(selectedDocument)"
-                                                                                        data-ng-show="userHasAuthorization('edit', user, selectedProject) &&
-                                                                                        (selectedDocument.approval.currentRecord.approvalState === 'draft')">
-                                                                                    Edit
-                                                                                </button>
-                                                                            </div>
-                                                                        </div>
-                                                                    </div>
-                                                                    <br>
-                                                                    <div class="row">
-                                                                        <div class="form-group-sm col-md-12">
-                                                                            <select id="" class="form-control" data-ng-model = "selectedDocument.deliveryStatus.durationStatusReview.newStatus"
-                                                                                    ng-options="status as status.name for status in logStatusIndicators track by status._id" disabled>
-                                                                                <option value="">no status yet</option>
-                                                                            </select>
-                                                                        </div>
-                                                                    </div>
-                                                                    <br>
-                                                                    <div class="row">
-                                                                        <div class="form-group-sm col-md-12">
-                                                                            <textarea id="" class="form-control" placeholder="No comment yet" data-ng-model="selectedDocument.deliveryStatus.durationStatusReview.newComment" disabled></textarea>
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-                                                                <div class="panel panel-default panel-body" data-ng-switch-when="edit">
-                                                                    <div class="row">
-                                                                        <div class="col-md-6 text-center">
-                                                                            New
-                                                                        </div>
-                                                                        <div class="col-md-6">
-                                                                            <div class="pull-right">
-                                                                                <button class="btn btn-success btn-xs" data-ng-click="saveEditDurationStatus(selectedProject, selectedGate, selectedDocument)"
-                                                                                        data-ng-disabled="isResolving">
-                                                                                    Save
-                                                                                </button>
-                                                                                <button class="btn btn-info btn-xs" data-ng-click="cancelEditDurationStatus(selectedDocument)"
-                                                                                        data-ng-disabled="isResolving">
-                                                                                    Cancel
-                                                                                </button>
-                                                                            </div>
-                                                                        </div>
-                                                                    </div>
-                                                                    <br>
-                                                                    <div class="row">
-                                                                        <div class="form-group-sm col-md-12">
-                                                                            <select id="" class="form-control" data-ng-model = "selectedDocument.deliveryStatus.durationStatusReview.newStatus"
-                                                                                    ng-options="status as status.name for status in logStatusIndicators track by status._id">
-                                                                                <option value="">--choose status</option>
-                                                                            </select>
-                                                                        </div>
-                                                                    </div>
-                                                                    <br>
-                                                                    <div class="row">
-                                                                        <div class="form-group-sm col-md-12">
-                                                                            <textarea id="" class="form-control" placeholder="Enter comment" data-ng-model="selectedDocument.deliveryStatus.durationStatusReview.newComment"></textarea>
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div class="panel panel-default">
-                                                    <div class="panel-heading text-center">
-                                                        <b class="">Cost</b>
-                                                    </div>
-                                                    <div class="panel-body">
-                                                        <div class="row">
-                                                            <div class="col-md-6">
-                                                                <div class="panel panel-default panel-body">
-                                                                    <div class="row">
-                                                                        <div class="col-md-6 text-center">
-                                                                            Current
-                                                                        </div>
-                                                                    </div>
-                                                                    <br>
-                                                                    <div class="row">
-                                                                        <div class="form-group-sm col-md-12">
-                                                                            <select id="" class="form-control" data-ng-model = "selectedDocument.deliveryStatus.costStatusReview.currentRecord.status"
-                                                                                    ng-options="status as status.name for status in logStatusIndicators track by status._id" disabled>
-                                                                                <option value="">no status yet</option>
-                                                                            </select>
-                                                                        </div>
-                                                                    </div>
-                                                                    <br>
-                                                                    <div class="row">
-                                                                        <div class="form-group-sm col-md-12">
-                                                                            <textarea id="" class="form-control" placeholder="No comment yet" data-ng-model="selectedDocument.deliveryStatus.costStatusReview.currentRecord.comment" disabled></textarea>
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                            <div class="col-md-6" data-ng-switch="switchCostStatusForm[selectedDocument._id]">
-                                                                <div class="panel panel-default panel-body" data-ng-switch-default="view">
-                                                                    <div class="row">
-                                                                        <div class="col-md-6 text-center">
-                                                                            New
-                                                                        </div>
-                                                                        <div class="col-md-6">
-                                                                            <div class="pull-right">
-                                                                                <button class="btn btn-success btn-xs" data-ng-click="editCostStatus(selectedDocument)"
-                                                                                        data-ng-show="userHasAuthorization('edit', user, selectedProject) &&
-                                                                                        (selectedDocument.approval.currentRecord.approvalState === 'draft')">
-                                                                                    Edit
-                                                                                </button>
-                                                                            </div>
-                                                                        </div>
-                                                                    </div>
-                                                                    <br>
-                                                                    <div class="row">
-                                                                        <div class="form-group-sm col-md-12">
-                                                                            <select id="" class="form-control" data-ng-model = "selectedDocument.deliveryStatus.costStatusReview.newStatus"
-                                                                                    ng-options="status as status.name for status in logStatusIndicators track by status._id" disabled>
-                                                                                <option value="">no status yet</option>
-                                                                            </select>
-                                                                        </div>
-                                                                    </div>
-                                                                    <br>
-                                                                    <div class="row">
-                                                                        <div class="form-group-sm col-md-12">
-                                                                            <textarea id="" class="form-control" placeholder="No comment yet" data-ng-model="selectedDocument.deliveryStatus.costStatusReview.newComment" disabled></textarea>
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-                                                                <div class="panel panel-default panel-body" data-ng-switch-when="edit">
-                                                                    <div class="row">
-                                                                        <div class="col-md-6 text-center">
-                                                                            New
-                                                                        </div>
-                                                                        <div class="col-md-6">
-                                                                            <div class="pull-right">
-                                                                                <button class="btn btn-success btn-xs" data-ng-click="saveEditCostStatus(selectedProject, selectedGate, selectedDocument)"
-                                                                                        data-ng-disabled="isResolving">
-                                                                                    Save
-                                                                                </button>
-                                                                                <button class="btn btn-info btn-xs" data-ng-click="cancelEditCostStatus(selectedDocument)"
-                                                                                        data-ng-disabled="isResolving">
-                                                                                    Cancel
-                                                                                </button>
-                                                                            </div>
-                                                                        </div>
-                                                                    </div>
-                                                                    <br>
-                                                                    <div class="row">
-                                                                        <div class="form-group-sm col-md-12">
-                                                                            <select id="" class="form-control" data-ng-model = "selectedDocument.deliveryStatus.costStatusReview.newStatus"
-                                                                                    ng-options="status as status.name for status in logStatusIndicators track by status._id">
-                                                                                <option value="">--choose status</option>
-                                                                            </select>
-                                                                        </div>
-                                                                    </div>
-                                                                    <br>
-                                                                    <div class="row">
-                                                                        <div class="form-group-sm col-md-12">
-                                                                            <textarea id="" class="form-control" placeholder="Enter comment" data-ng-model="selectedDocument.deliveryStatus.costStatusReview.newComment"></textarea>
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div class="panel panel-default">
-                                                    <div class="panel-heading text-center">
-                                                        <b class="">Completion</b>
-                                                    </div>
-                                                    <div class="panel-body">
-                                                        <div class="row">
-                                                            <div class="col-md-6">
-                                                                <div class="panel panel-default panel-body">
-                                                                    <div class="row">
-                                                                        <div class="col-md-6 text-center">
-                                                                            Current
-                                                                        </div>
-                                                                    </div>
-                                                                    <br>
-                                                                    <div class="row">
-                                                                        <div class="form-group-sm col-md-12">
-                                                                            <select id="" class="form-control" data-ng-model = "selectedDocument.deliveryStatus.completionStatusReview.currentRecord.status"
-                                                                                    ng-options="status as status.name for status in logStatusIndicators track by status._id" disabled>
-                                                                                <option value="">no status yet</option>
-                                                                            </select>
-                                                                        </div>
-                                                                    </div>
-                                                                    <br>
-                                                                    <div class="row">
-                                                                        <div class="form-group-sm col-md-12">
-                                                                            <textarea id="" class="form-control" placeholder="No comment yet" data-ng-model="selectedDocument.deliveryStatus.completionStatusReview.currentRecord.comment" disabled></textarea>
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                            <div class="col-md-6" data-ng-switch="switchCompletionStatusForm[selectedDocument._id]">
-                                                                <div class="panel panel-default panel-body" data-ng-switch-default="view">
-                                                                    <div class="row">
-                                                                        <div class="col-md-6 text-center">
-                                                                            New
-                                                                        </div>
-                                                                        <div class="col-md-6">
-                                                                            <div class="pull-right">
-                                                                                <button class="btn btn-success btn-xs" data-ng-click="editCompletionStatus(selectedDocument)"
-                                                                                        data-ng-show="userHasAuthorization('edit', user, selectedProject) &&
-                                                                                        (selectedDocument.approval.currentRecord.approvalState === 'draft')">
-                                                                                    Edit
-                                                                                </button>
-                                                                            </div>
-                                                                        </div>
-                                                                    </div>
-                                                                    <br>
-                                                                    <div class="row">
-                                                                        <div class="form-group-sm col-md-12">
-                                                                            <select id="" class="form-control" data-ng-model = "selectedDocument.deliveryStatus.completionStatusReview.newStatus"
-                                                                                    ng-options="status as status.name for status in logStatusIndicators track by status._id" disabled>
-                                                                                <option value="">no status yet</option>
-                                                                            </select>
-                                                                        </div>
-                                                                    </div>
-                                                                    <br>
-                                                                    <div class="row">
-                                                                        <div class="form-group-sm col-md-12">
-                                                                            <textarea id="" class="form-control" placeholder="No comment yet" data-ng-model="selectedDocument.deliveryStatus.completionStatusReview.newComment" disabled></textarea>
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-                                                                <div class="panel panel-default panel-body" data-ng-switch-when="edit">
-                                                                    <div class="row">
-                                                                        <div class="col-md-6 text-center">
-                                                                            New
-                                                                        </div>
-                                                                        <div class="col-md-6">
-                                                                            <div class="pull-right">
-                                                                                <button class="btn btn-success btn-xs" data-ng-click="saveEditCompletionStatus(selectedProject, selectedGate, selectedDocument)"
-                                                                                        data-ng-disabled="isResolving">
-                                                                                    Save
-                                                                                </button>
-                                                                                <button class="btn btn-info btn-xs" data-ng-click="cancelEditCompletionStatus(selectedDocument)"
-                                                                                        data-ng-disabled="isResolving">
-                                                                                    Cancel
-                                                                                </button>
-                                                                            </div>
-                                                                        </div>
-                                                                    </div>
-                                                                    <br>
-                                                                    <div class="row">
-                                                                        <div class="form-group-sm col-md-12">
-                                                                            <select id="" class="form-control" data-ng-model = "selectedDocument.deliveryStatus.completionStatusReview.newStatus"
-                                                                                    ng-options="status as status.name for status in logStatusIndicators track by status._id">
-                                                                                <option value="">--choose status</option>
-                                                                            </select>
-                                                                        </div>
-                                                                    </div>
-                                                                    <br>
-                                                                    <div class="row">
-                                                                        <div class="form-group-sm col-md-12">
-                                                                            <textarea id="" class="form-control" placeholder="Enter comment" data-ng-model="selectedDocument.deliveryStatus.completionStatusReview.newComment"></textarea>
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div data-ng-show="documentDetails === 'areas'">
-                                                <div class="panel panel-default" data-ng-repeat="statusAreaReview in selectedDocument.deliveryStatus.projectStatusAreaReviews track by $index">
+                                                <div class="panel panel-default" data-ng-repeat="statusAreaReview in vm.selectedDocument.deliveryStatus.projectStatusAreaReviews track by $index">
                                                     <div class="panel-heading text-center">
                                                         <b data-ng-bind="statusAreaReview.projectStatusArea.statusArea.name"></b>
                                                     </div>
@@ -670,7 +372,7 @@
                                                                     <div class="row">
                                                                         <div class="form-group-sm col-md-12">
                                                                             <select id="" class="form-control" data-ng-model = "statusAreaReview.projectStatusArea.currentRecord.status"
-                                                                                    ng-options="status as status.name for status in logStatusIndicators track by status._id" disabled>
+                                                                                    ng-options="status as status.name for status in vm.logStatusIndicators track by status._id" disabled>
                                                                                 <option value="">no status yet</option>
                                                                             </select>
                                                                         </div>
@@ -683,7 +385,7 @@
                                                                     </div>
                                                                 </div>
                                                             </div>
-                                                            <div class="col-md-6" data-ng-switch="switchStatusAreaForm[statusAreaReview._id]">
+                                                            <div class="col-md-6" data-ng-switch="vm.switchStatusAreaForm[statusAreaReview._id]">
                                                                 <div class="panel panel-default panel-body" data-ng-switch-default="view">
                                                                     <div class="row">
                                                                         <div class="col-md-6 text-center">
@@ -691,9 +393,9 @@
                                                                         </div>
                                                                         <div class="col-md-6">
                                                                             <div class="pull-right">
-                                                                                <button class="btn btn-success btn-xs" data-ng-click="editStatusArea(statusAreaReview)"
-                                                                                        data-ng-show="userHasAuthorization('edit', user, selectedProject) &&
-                                                                                        (selectedDocument.approval.currentRecord.approvalState === 'draft')">
+                                                                                <button class="btn btn-success btn-xs" data-ng-click="vm.editStatusArea(statusAreaReview)"
+                                                                                        data-ng-show="vm.userHasAuthorization('edit', vm.user, vm.selectedProject) &&
+                                                                                        (vm.selectedDocument.approval.currentRecord.approvalState === 'draft')">
                                                                                     Edit
                                                                                 </button>
                                                                             </div>
@@ -703,7 +405,7 @@
                                                                     <div class="row">
                                                                         <div class="form-group-sm col-md-12">
                                                                             <select id="" class="form-control" data-ng-model = "statusAreaReview.newStatus"
-                                                                                    ng-options="status as status.name for status in logStatusIndicators track by status._id" disabled>
+                                                                                    ng-options="status as status.name for status in vm.logStatusIndicators track by status._id" disabled>
                                                                                 <option value="">no status yet</option>
                                                                             </select>
                                                                         </div>
@@ -723,12 +425,12 @@
                                                                         <div class="col-md-6">
                                                                             <div class="pull-right">
                                                                                 <button class="btn btn-success btn-xs"
-                                                                                        data-ng-click="saveEditStatusArea(selectedProject, selectedGate, selectedDocument, statusAreaReview)"
-                                                                                        data-ng-disabled="isResolving">
+                                                                                        data-ng-click="vm.saveEditStatusArea(vm.selectedProject, vm.selectedGate, vm.selectedDocument, statusAreaReview)"
+                                                                                        data-ng-disabled="vm.isResolving">
                                                                                     Save
                                                                                 </button>
-                                                                                <button class="btn btn-info btn-xs" data-ng-click="cancelEditStatusArea(statusAreaReview)"
-                                                                                        data-ng-disabled="isResolving">
+                                                                                <button class="btn btn-info btn-xs" data-ng-click="vm.cancelEditStatusArea(statusAreaReview)"
+                                                                                        data-ng-disabled="vm.isResolving">
                                                                                     Cancel
                                                                                 </button>
                                                                             </div>
@@ -738,7 +440,7 @@
                                                                     <div class="row">
                                                                         <div class="form-group-sm col-md-12">
                                                                             <select id="" class="form-control" data-ng-model = "statusAreaReview.newStatus"
-                                                                                    ng-options="status as status.name for status in logStatusIndicators track by status._id">
+                                                                                    ng-options="status as status.name for status in vm.logStatusIndicators track by status._id">
                                                                                 <option value="">--choose status</option>
                                                                             </select>
                                                                         </div>
@@ -755,8 +457,8 @@
                                                     </div>
                                                 </div>
                                             </div>
-                                            <div data-ng-show="documentDetails === 'outcomes'">
-                                                <div class="panel panel-default" data-ng-repeat="outcomeReview in selectedDocument.outcomeStatusReviews track by $index">
+                                            <div data-ng-show="vm.documentDetails === 'outcomes'">
+                                                <div class="panel panel-default" data-ng-repeat="outcomeReview in vm.selectedDocument.outcomeStatusReviews track by $index">
                                                     <div class="panel-heading text-center">
                                                         <b data-ng-bind="outcomeReview.outcome.name"></b>
                                                     </div>
@@ -773,7 +475,7 @@
                                                                     <div class="row">
                                                                         <div class="form-group-sm col-md-12">
                                                                             <select id="" class="form-control" data-ng-model = "outcomeReview.outcome.status.currentRecord.status"
-                                                                                    ng-options="status as status.name for status in logStatusIndicators track by status._id" disabled>
+                                                                                    ng-options="status as status.name for status in vm.logStatusIndicators track by status._id" disabled>
                                                                                 <option value="">No status yet</option>
                                                                             </select>
                                                                         </div>
@@ -786,15 +488,15 @@
                                                                     </div>
                                                                 </div>
                                                             </div>
-                                                            <div class="col-md-6" data-ng-switch="switchOutcomeReviewForm[outcomeReview._id]">
+                                                            <div class="col-md-6" data-ng-switch="vm.switchOutcomeReviewForm[outcomeReview._id]">
                                                                 <div class="panel panel-default panel-body" data-ng-switch-default="view">
                                                                     <div class="row">
                                                                         <div class="col-md-3 text-center">
                                                                             New
                                                                         </div>
                                                                         <div class="col-md-9">
-                                                                            <div class="pull-right" data-ng-show="userHasAuthorization('edit', user, selectedProject) && (selectedDocument.approval.currentRecord.approvalState === 'draft')">
-                                                                                <button class="btn btn-success btn-xs" data-ng-click="editOutcomeReview(outcomeReview)">
+                                                                            <div class="pull-right" data-ng-show="vm.userHasAuthorization('edit', vm.user, vm.selectedProject) && (vm.selectedDocument.approval.currentRecord.approvalState === 'draft')">
+                                                                                <button class="btn btn-success btn-xs" data-ng-click="vm.editOutcomeReview(outcomeReview)">
                                                                                     Edit
                                                                                 </button>
                                                                             </div>
@@ -804,7 +506,7 @@
                                                                     <div class="row">
                                                                         <div class="form-group-sm col-md-12">
                                                                             <select id="" class="form-control" data-ng-model = "outcomeReview.newStatus"
-                                                                                    ng-options="status as status.name for status in logStatusIndicators track by status._id" disabled>
+                                                                                    ng-options="status as status.name for status in vm.logStatusIndicators track by status._id" disabled>
                                                                                 <option value="">No status yet</option>
                                                                             </select>
                                                                         </div>
@@ -824,12 +526,12 @@
                                                                         <div class="col-md-9">
                                                                             <div class="pull-right">
                                                                                 <button class="btn btn-success btn-xs"
-                                                                                        data-ng-click="saveEditOutcomeReview(selectedProject, selectedGate, selectedDocument, outcomeReview)"
-                                                                                        data-ng-disabled="isResolving">
+                                                                                        data-ng-click="vm.saveEditOutcomeReview(vm.selectedProject, vm.selectedGate, vm.selectedDocument, outcomeReview)"
+                                                                                        data-ng-disabled="vm.isResolving">
                                                                                     Save
                                                                                 </button>
-                                                                                <button class="btn btn-info btn-xs" data-ng-click="cancelEditOutcomeReview(outcomeReview)"
-                                                                                        data-ng-disabled="isResolving">
+                                                                                <button class="btn btn-info btn-xs" data-ng-click="vm.cancelEditOutcomeReview(outcomeReview)"
+                                                                                        data-ng-disabled="vm.isResolving">
                                                                                     Cancel
                                                                                 </button>
                                                                             </div>
@@ -839,7 +541,7 @@
                                                                     <div class="row">
                                                                         <div class="form-group-sm col-md-12">
                                                                             <select id="" class="form-control" data-ng-model = "outcomeReview.newStatus"
-                                                                                    ng-options="status as status.name for status in logStatusIndicators track by status._id" >
+                                                                                    ng-options="status as status.name for status in vm.logStatusIndicators track by status._id" >
                                                                                 <option value="">--choose status</option>
                                                                             </select>
                                                                         </div>
@@ -856,7 +558,7 @@
                                                     </div>
                                                 </div>
                                             </div>
-                                            <div data-ng-show="documentDetails === 'duration'">
+                                            <div data-ng-show="vm.documentDetails === 'duration'">
                                                 <table class="table small">
                                                     <caption>
                                                         Estimate duration
@@ -867,7 +569,7 @@
                                                         <th colspan="2">New date</th>
                                                         <th>Change</th>
                                                     </tr>
-                                                    <tr data-ng-repeat="estimateDurationReview in selectedDocument.performances.duration.estimateDurationReviews | orderBy: 'estimateDuration.targetGate.position'">
+                                                    <tr data-ng-repeat="estimateDurationReview in vm.selectedDocument.performances.duration.estimateDurationReviews | orderBy: 'estimateDuration.targetGate.position'">
                                                         <td>
                                                             <span data-ng-bind="estimateDurationReview.estimateDuration.targetGate.name"></span>
                                                         </td>
@@ -876,32 +578,32 @@
                                                             <span data-ng-bind="estimateDurationReview.estimateDuration.currentRecord.gateDate | date:'EEE d, MMM yyyy'"></span>
                                                         </td>
                                                         <td colspan="2">
-                                                            <div data-ng-switch="switchEstimateDurationForm[estimateDurationReview._id]">
+                                                            <div data-ng-switch="vm.switchEstimateDurationForm[estimateDurationReview._id]">
                                                                 <div data-ng-switch-default="view">
                                                                     <span data-ng-show="!estimateDurationReview.newDate">No new estimate yet</span>
                                                                     <span data-ng-bind="estimateDurationReview.newDate | date:'EEE d, MMM yyyy'"></span>
                                                                     <button class="btn btn-success btn-xs"
-                                                                            data-ng-show="userHasAuthorization('edit', user, selectedProject) &&
-                                                                            (selectedDocument.approval.currentRecord.approvalState === 'draft')"
-                                                                            data-ng-click="editEstimateDuration(estimateDurationReview)">
+                                                                            data-ng-show="vm.userHasAuthorization('edit', vm.user, vm.selectedProject) &&
+                                                                            (vm.selectedDocument.approval.currentRecord.approvalState === 'draft')"
+                                                                            data-ng-click="vm.editEstimateDuration(estimateDurationReview)">
                                                                         <span class="glyphicon glyphicon-pencil"></span>
                                                                     </button>
                                                                 </div>
                                                                 <div data-ng-switch-when="edit">
                                                                     <div class="input-group input-group-sm">
                                                                         <input type="text" id="" class="form-control" datepicker-popup="dd-MMMM-yyyy" data-ng-model="estimateDurationReview.newDate"
-                                                                               is-open="$parent.estimateDurationDateOpened[estimateDurationReview._id]"/>
+                                                                               is-open="$parent.vm.estimateDurationDateOpened[estimateDurationReview._id]"/>
                                                                     <span class="input-group-btn">
-                                                                        <button type="button" class="btn btn-default" data-ng-click="openEstimateDurationDate(estimateDurationReview, $event)"><i class="glyphicon glyphicon-calendar"></i></button>
+                                                                        <button type="button" class="btn btn-default" data-ng-click="vm.openEstimateDurationDate(estimateDurationReview, $event)"><i class="glyphicon glyphicon-calendar"></i></button>
                                                                     </span>
                                                                     </div>
                                                                     <br>
-                                                                    <button class="btn btn-success btn-xs" data-ng-click="saveEditEstimateDuration(selectedProject, selectedGate, selectedDocument, estimateDurationReview)"
-                                                                            data-ng-disabled="isResolving">
+                                                                    <button class="btn btn-success btn-xs" data-ng-click="vm.saveEditEstimateDuration(vm.selectedProject, vm.selectedGate, vm.selectedDocument, estimateDurationReview)"
+                                                                            data-ng-disabled="vm.isResolving">
                                                                         <span class="glyphicon glyphicon-ok"></span>
                                                                     </button>
-                                                                    <button class="btn btn-info btn-xs" data-ng-click="cancelEditEstimateDuration(estimateDurationReview)"
-                                                                            data-ng-disabled="isResolving">
+                                                                    <button class="btn btn-info btn-xs" data-ng-click="vm.cancelEditEstimateDuration(estimateDurationReview)"
+                                                                            data-ng-disabled="vm.isResolving">
                                                                         <span class="glyphicon glyphicon-remove"></span>
                                                                     </button>
                                                                 </div>
@@ -909,7 +611,7 @@
                                                         </td>
                                                         <td>
                                                             <span data-ng-show="estimateDurationReview.estimateDuration.currentRecord.gateDate && estimateDurationReview.newDate">
-                                                                {{getDaysChange(estimateDurationReview.estimateDuration.currentRecord.gateDate, estimateDurationReview.newDate) | number:0}} d
+                                                                {{vm.getDaysChange(estimateDurationReview.estimateDuration.currentRecord.gateDate, estimateDurationReview.newDate) | number:0}} d
                                                             </span>
                                                             <span data-ng-show="!estimateDurationReview.estimateDuration.currentRecord.gateDate && estimateDurationReview.newDate" class="text-center">
                                                                 -
@@ -918,7 +620,7 @@
                                                     </tr>
                                                 </table>
                                             </div>
-                                            <div data-ng-show="documentDetails === 'cost'">
+                                            <div data-ng-show="vm.documentDetails === 'cost'">
                                                 <table class="table small">
                                                     <caption>
                                                         Estimate cost
@@ -929,7 +631,7 @@
                                                         <th colspan="2">New cost</th>
                                                         <th>Change</th>
                                                     </tr>
-                                                    <tr data-ng-repeat="estimateCostReview in selectedDocument.performances.cost.estimateCostReviews | orderBy: 'estimateCost.targetGate.position'">
+                                                    <tr data-ng-repeat="estimateCostReview in vm.selectedDocument.performances.cost.estimateCostReviews | orderBy: 'estimateCost.targetGate.position'">
                                                         <td>
                                                             <span data-ng-bind="estimateCostReview.estimateCost.targetGate.name"></span>
                                                         </td>
@@ -938,14 +640,14 @@
                                                             <span data-ng-bind="estimateCostReview.estimateCost.currentRecord.cost"></span>
                                                         </td>
                                                         <td colspan="2">
-                                                            <div data-ng-switch="switchEstimateCostForm[estimateCostReview._id]">
+                                                            <div data-ng-switch="vm.switchEstimateCostForm[estimateCostReview._id]">
                                                                 <div data-ng-switch-default="view">
                                                                     <span data-ng-show="!estimateCostReview.newCost">No new estimate yet</span>
                                                                     <span data-ng-bind="estimateCostReview.newCost"></span>
                                                                     <button class="btn btn-success btn-xs"
-                                                                            data-ng-show="userHasAuthorization('edit', user, selectedProject) &&
-                                                                            (selectedDocument.approval.currentRecord.approvalState === 'draft')"
-                                                                            data-ng-click="editEstimateCost(estimateCostReview)">
+                                                                            data-ng-show="vm.userHasAuthorization('edit', vm.user, vm.selectedProject) &&
+                                                                            (vm.selectedDocument.approval.currentRecord.approvalState === 'draft')"
+                                                                            data-ng-click="vm.editEstimateCost(estimateCostReview)">
                                                                         <span class="glyphicon glyphicon-pencil"></span>
                                                                     </button>
                                                                 </div>
@@ -954,12 +656,12 @@
                                                                         <input type="number" min="0" id="" class="form-control" data-ng-model="estimateCostReview.newCost">
                                                                     </div>
                                                                     <br>
-                                                                    <button class="btn btn-success btn-xs" data-ng-click="saveEditEstimateCost(selectedProject, selectedGate, selectedDocument, estimateCostReview)"
-                                                                            data-ng-disabled="isResolving">
+                                                                    <button class="btn btn-success btn-xs" data-ng-click="vm.saveEditEstimateCost(vm.selectedProject, vm.selectedGate, vm.selectedDocument, estimateCostReview)"
+                                                                            data-ng-disabled="vm.isResolving">
                                                                         <span class="glyphicon glyphicon-ok"></span>
                                                                     </button>
-                                                                    <button class="btn btn-info btn-xs" data-ng-click="cancelEditEstimateCost(estimateCostReview)"
-                                                                            data-ng-disabled="isResolving">
+                                                                    <button class="btn btn-info btn-xs" data-ng-click="vm.cancelEditEstimateCost(estimateCostReview)"
+                                                                            data-ng-disabled="vm.isResolving">
                                                                         <span class="glyphicon glyphicon-remove"></span>
                                                                     </button>
                                                                 </div>
@@ -976,7 +678,7 @@
                                                     </tr>
                                                 </table>
                                             </div>
-                                            <div data-ng-show="documentDetails === 'completion'">
+                                            <div data-ng-show="vm.documentDetails === 'completion'">
                                                 <table class="table small">
                                                     <caption>
                                                         Estimate completion
@@ -987,7 +689,7 @@
                                                         <th colspan="2">New completion</th>
                                                         <th>Change</th>
                                                     </tr>
-                                                    <tr data-ng-repeat="estimateCompletionReview in selectedDocument.performances.completion.estimateCompletionReviews | orderBy: 'estimateCompletion.targetGate.position'">
+                                                    <tr data-ng-repeat="estimateCompletionReview in vm.selectedDocument.performances.completion.estimateCompletionReviews | orderBy: 'estimateCompletion.targetGate.position'">
                                                         <td>
                                                             <span data-ng-bind="estimateCompletionReview.estimateCompletion.targetGate.name"></span>
                                                         </td>
@@ -996,14 +698,14 @@
                                                             <span data-ng-bind="estimateCompletionReview.estimateCompletion.currentRecord.completion"></span>
                                                         </td>
                                                         <td colspan="2">
-                                                            <div data-ng-switch="switchEstimateCompletionForm[estimateCompletionReview._id]">
+                                                            <div data-ng-switch="vm.switchEstimateCompletionForm[estimateCompletionReview._id]">
                                                                 <div data-ng-switch-default="view">
                                                                     <span data-ng-show="!estimateCompletionReview.newCompletion">No new estimate yet</span>
                                                                     <span data-ng-bind="estimateCompletionReview.newCompletion"></span>
                                                                     <button class="btn btn-success btn-xs"
-                                                                            data-ng-show="userHasAuthorization('edit', user, selectedProject) &&
-                                                                            (selectedDocument.approval.currentRecord.approvalState === 'draft')"
-                                                                            data-ng-click="editEstimateCompletion(estimateCompletionReview)">
+                                                                            data-ng-show="vm.userHasAuthorization('edit', vm.user, vm.selectedProject) &&
+                                                                            (vm.selectedDocument.approval.currentRecord.approvalState === 'draft')"
+                                                                            data-ng-click="vm.editEstimateCompletion(estimateCompletionReview)">
                                                                         <span class="glyphicon glyphicon-pencil"></span>
                                                                     </button>
                                                                 </div>
@@ -1012,12 +714,12 @@
                                                                         <input type="number" min="0" id="" class="form-control" data-ng-model="estimateCompletionReview.newCompletion">
                                                                     </div>
                                                                     <br>
-                                                                    <button class="btn btn-success btn-xs" data-ng-click="saveEditEstimateCompletion(selectedProject, selectedGate, selectedDocument, estimateCompletionReview)"
-                                                                            data-ng-disabled="isResolving">
+                                                                    <button class="btn btn-success btn-xs" data-ng-click="vm.saveEditEstimateCompletion(vm.selectedProject, vm.selectedGate, vm.selectedDocument, estimateCompletionReview)"
+                                                                            data-ng-disabled="vm.isResolving">
                                                                         <span class="glyphicon glyphicon-ok"></span>
                                                                     </button>
-                                                                    <button class="btn btn-info btn-xs" data-ng-click="cancelEditEstimateCompletion(estimateCompletionReview)"
-                                                                            data-ng-disabled="isResolving">
+                                                                    <button class="btn btn-info btn-xs" data-ng-click="vm.cancelEditEstimateCompletion(estimateCompletionReview)"
+                                                                            data-ng-disabled="vm.isResolving">
                                                                         <span class="glyphicon glyphicon-remove"></span>
                                                                     </button>
                                                                 </div>
@@ -1034,86 +736,86 @@
                                                     </tr>
                                                 </table>
                                             </div>
-                                            <div data-ng-show="documentDetails === 'approval'">
+                                            <div data-ng-show="vm.documentDetails === 'approval'">
                                                 <div class="row">
                                                     <div class="col-md-12">
                                                         <label>Current state</label>
                                                         <br>
                                                         <div class="form-control">
-                                                            <span data-ng-show="selectedDocument.approval.currentRecord.approvalState === 'draft'"><b>Drafted</b> on </span>
-                                                            <span data-ng-show="selectedDocument.approval.currentRecord.approvalState === 'submitted'"><b>Submitted</b> on </span>
-                                                            <span data-ng-show="selectedDocument.approval.currentRecord.approvalState === 'approved'"><b>Approved</b> on </span>
-                                                            <span data-ng-show="selectedDocument.approval.currentRecord.approvalState === 'rejected'"><b>Rejected</b> on </span>
-                                                            <span><em data-ng-bind="selectedDocument.approval.currentRecord.created | date:'EEE d, MMM yyyy'"></em></span>
+                                                            <span data-ng-show="vm.selectedDocument.approval.currentRecord.approvalState === 'draft'"><b>Drafted</b> on </span>
+                                                            <span data-ng-show="vm.selectedDocument.approval.currentRecord.approvalState === 'submitted'"><b>Submitted</b> on </span>
+                                                            <span data-ng-show="vm.selectedDocument.approval.currentRecord.approvalState === 'approved'"><b>Approved</b> on </span>
+                                                            <span data-ng-show="vm.selectedDocument.approval.currentRecord.approvalState === 'rejected'"><b>Rejected</b> on </span>
+                                                            <span><em data-ng-bind="vm.selectedDocument.approval.currentRecord.created | date:'EEE d, MMM yyyy'"></em></span>
                                                             <span> by </span>
-                                                            <span><em data-ng-bind="selectedDocument.approval.currentRecord.user.displayName"></em></span>
-                                                            <a class="btn-link pull-right" data-ng-click="showHistory = !showHistory"
-                                                               data-ng-show="selectedDocument.approval.history.length !== 0">
+                                                            <span><em data-ng-bind="vm.selectedDocument.approval.currentRecord.vm.user.displayName"></em></span>
+                                                            <a class="btn-link pull-right" data-ng-click="vm.showHistory = !vm.showHistory"
+                                                               data-ng-show="vm.selectedDocument.approval.history.length !== 0">
                                                                 History
                                                             </a>
                                                         </div>
-                                                        <div data-ng-show="showHistory">
+                                                        <div data-ng-show="vm.showHistory">
                                                             <label>History</label>
                                                             <br>
-                                                            <div data-ng-repeat="historyRecord in selectedDocument.approval.history | orderBy: sortAppliedChanges : true">
+                                                            <div data-ng-repeat="historyRecord in vm.selectedDocument.approval.history | orderBy: sortAppliedChanges : true">
                                                                 <span data-ng-show="historyRecord.approvalState === 'draft'">Drafted on </span>
                                                                 <span data-ng-show="historyRecord.approvalState === 'submitted'">Submitted on </span>
                                                                 <span data-ng-show="historyRecord.approvalState === 'approved'">Approved on </span>
                                                                 <span data-ng-show="historyRecord.approvalState === 'rejected'">Rejected on </span>
                                                                 <span><em data-ng-bind="historyRecord.created | date:'EEE d, MMM yyyy'"></em></span>
                                                                 <span> by </span>
-                                                                <span><em data-ng-bind="historyRecord.user.displayName"></em></span>
+                                                                <span><em data-ng-bind="historyRecord.vm.user.displayName"></em></span>
                                                             </div>
                                                         </div>
                                                     </div>
                                                 </div>
                                                 <br>
                                                 <div class="row">
-                                                    <div class="col-md-6" data-ng-show="userHasAuthorization('edit', user, selectedProject) && (selectedDocument.approval.currentRecord.approvalState === 'draft') ">
-                                                        <button class="form-control btn btn-success" data-ng-click="submit(selectedProject, selectedGate, selectedDocument)"
-                                                                data-ng-disabled="isResolving">
+                                                    <div class="col-md-6" data-ng-show="vm.userHasAuthorization('edit', vm.user, vm.selectedProject) && (vm.selectedDocument.approval.currentRecord.approvalState === 'draft') ">
+                                                        <button class="form-control btn btn-success" data-ng-click="vm.submit(vm.selectedProject, vm.selectedGate, vm.selectedDocument)"
+                                                                data-ng-disabled="vm.isResolving">
                                                             Submit status update
                                                         </button>
                                                     </div>
-                                                    <div data-ng-show="userHasAuthorization('approve', user, selectedProject) && selectedDocument.approval.currentRecord.approvalState === 'submitted'">
+                                                    <div data-ng-show="vm.userHasAuthorization('approve', vm.user, vm.selectedProject) && vm.selectedDocument.approval.currentRecord.approvalState === 'submitted'">
                                                         <div class="col-md-6">
-                                                            <button class="form-control btn btn-success" data-ng-click="approve(selectedProject, selectedGate, selectedDocument)"
-                                                                    data-ng-disabled="isResolving">
+                                                            <button class="form-control btn btn-success" data-ng-click="vm.approve(vm.selectedProject, vm.selectedGate, vm.selectedDocument)"
+                                                                    data-ng-disabled="vm.isResolving">
                                                                 Approve status update
                                                             </button>
                                                         </div>
                                                         <div class="col-md-6">
-                                                            <button class="form-control btn btn-danger" data-ng-click="reject(selectedProject, selectedGate, selectedDocument)"
-                                                                    data-ng-disabled="isResolving">
+                                                            <button class="form-control btn btn-danger" data-ng-click="vm.reject(vm.selectedProject, vm.selectedGate, vm.selectedDocument)"
+                                                                    data-ng-disabled="vm.isResolving">
                                                                 Reject status update
                                                             </button>
                                                         </div>
                                                     </div>
-                                                    <div class="col-md-6" data-ng-show="userHasAuthorization('edit', user, selectedProject) && selectedDocument.approval.currentRecord.approvalState === 'rejected'">
-                                                        <button class="form-control btn btn-success" data-ng-click="draft(selectedProject, selectedGate, selectedDocument)"
-                                                                data-ng-disabled="isResolving">
+                                                    <div class="col-md-6" data-ng-show="vm.userHasAuthorization('edit', vm.user, vm.selectedProject) && vm.selectedDocument.approval.currentRecord.approvalState === 'rejected'">
+                                                        <button class="form-control btn btn-success" data-ng-click="vm.draft(vm.selectedProject, vm.selectedGate, vm.selectedDocument)"
+                                                                data-ng-disabled="vm.isResolving">
                                                             Draft status update
                                                         </button>
                                                     </div>
                                                 </div>
                                                 <hr>
                                                 <div class="row">
-                                                    <div class="col-md-12" data-ng-show="submitMissingFields[selectedDocument._id].length > 0">
+                                                    <div class="col-md-12" data-ng-show="vm.submitMissingFields[vm.selectedDocument._id].length > 0">
                                                         <div class="alert alert-warning">
                                                             <label>Missing fields required to submit status update</label>
                                                             <br>
-                                                            <ul data-ng-repeat="msg in submitMissingFields[selectedDocument._id]">
+                                                            <ul data-ng-repeat="msg in vm.submitMissingFields[vm.selectedDocument._id]">
                                                                 <li>{{msg}}</li>
                                                             </ul>
                                                         </div>
                                                     </div>
                                                 </div>
                                                 <div class="row">
-                                                    <div class="col-md-12" data-ng-show="dateConsistencyErrors[selectedDocument._id].length > 0">
+                                                    <div class="col-md-12" data-ng-show="vm.dateConsistencyErrors[vm.selectedDocument._id].length > 0">
                                                         <div class="alert alert-warning">
                                                             <label>Following dates are not consistent with previous or next gates</label>
                                                             <br>
-                                                            <ul data-ng-repeat="error in dateConsistencyErrors[selectedDocument._id]">
+                                                            <ul data-ng-repeat="error in vm.dateConsistencyErrors[vm.selectedDocument._id]">
                                                                 <li>{{error}}</li>
                                                             </ul>
                                                         </div>

@@ -364,21 +364,6 @@ angular.module('project-identification').factory('Projects', ['$resource',
                 method: 'PUT',
                 url: 'projects/:projectId/project-gates/:projectGateId/project-status-updates/:projectStatusUpdateId/overallDeliveryStatus'
             },
-
-            updateDurationDeliveryStatus: {
-                method: 'PUT',
-                url: 'projects/:projectId/project-gates/:projectGateId/project-status-updates/:projectStatusUpdateId/durationDeliveryStatus'
-            },
-
-            updateCostDeliveryStatus: {
-                method: 'PUT',
-                url: 'projects/:projectId/project-gates/:projectGateId/project-status-updates/:projectStatusUpdateId/costDeliveryStatus'
-            },
-
-            updateCompletionDeliveryStatus: {
-                method: 'PUT',
-                url: 'projects/:projectId/project-gates/:projectGateId/project-status-updates/:projectStatusUpdateId/completionDeliveryStatus'
-            },
             
             // --- Log status area
 

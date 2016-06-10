@@ -8,11 +8,75 @@ angular.module('portfolio-setup').factory('Portfolios', ['$resource',
 			update: {
 				method: 'PUT'
 			},
+            
 			updatePeopleAssignment: {
 				method: 'PUT',
 				url: 'portfolios/:portfolioId/stakeholders/:assignedGroupId/:assignedRoleId'
 				// req.body: {the whole "assignedRole" object}
-			}
+			},
+
+            // ----------------- PORTFOLIO STATUS UPDATES ---------------------
+
+            createStatusUpdate: {
+                method: 'PUT',
+                url: 'portfolios/:portfolioId/createStatusUpdate'
+            },
+
+            deleteStatusUpdate: {
+                method: 'PUT',
+                url: 'portfolios/:portfolioId/portfolio-status-updates/:portfolioStatusUpdateId/delete'
+            },
+
+            // --- Header ---
+
+            updateStatusUpdateHeader: {
+                method: 'PUT',
+                url: 'portfolios/:portfolioId/portfolio-status-updates/:portfolioStatusUpdateId/header'
+            },
+
+            // --- Budget ---
+
+            updateStatusUpdateBudget: {
+                method: 'PUT',
+                url: 'portfolios/:portfolioId/portfolio-status-updates/:portfolioStatusUpdateId/budget'
+            },
+
+            // --- Overall Delivery Status ---
+
+            updateOverallDeliveryStatus: {
+                method: 'PUT',
+                url: 'portfolios/:portfolioId/portfolio-status-updates/:portfolioStatusUpdateId/overallDeliveryStatus'
+            },
+
+            // --- Log status area
+
+            updateStatusAreaReview: {
+                method: 'PUT',
+                url: 'portfolios/:portfolioId/portfolio-status-updates/:portfolioStatusUpdateId/status-area-reviews/:statusAreaReviewId'
+            },
+            
+            // --- Approval --
+
+            submitStatusUpdate: {
+                method: 'PUT',
+                url: 'portfolios/:portfolioId/portfolio-status-updates/:portfolioStatusUpdateId/submit'
+            },
+
+            approveStatusUpdate: {
+                method: 'PUT',
+                url: 'portfolios/:portfolioId/portfolio-status-updates/:portfolioStatusUpdateId/approve'
+            },
+
+            rejectStatusUpdate: {
+                method: 'PUT',
+                url: 'portfolios/:portfolioId/portfolio-status-updates/:portfolioStatusUpdateId/reject'
+            },
+
+            draftStatusUpdate: {
+                method: 'PUT',
+                url: 'portfolios/:portfolioId/portfolio-status-updates/:portfolioStatusUpdateId/draft'
+            }
+            
 		});
 	}
 ]);
