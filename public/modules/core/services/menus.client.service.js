@@ -421,8 +421,8 @@ angular.module('core').service('Menus', [
                 // Portfolio status
         this.addSubMenuItem('topbar', 'delivery', 'Portfolio status update', 'portfolio-status-updates','portfolio-status-updates',false,
             ['superAdmin','admin','pmo','projectManager','portfolioManager','executive'],17);
-                // Portfolio status summary
-        this.addSubMenuItem('topbar', 'delivery', 'Portfolio status summary', 'portfolio-status-summary','portfolio-status-summary',false,
+                // Portfolio status reports
+        this.addSubMenuItem('topbar', 'delivery', 'Portfolio status reports', 'portfolio-status-reports','portfolio-status-reports',false,
            ['superAdmin','admin','pmo','projectManager','portfolioManager','executive'],18);
 
 

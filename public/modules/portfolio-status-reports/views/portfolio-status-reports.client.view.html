@@ -1,0 +1,145 @@
+<section data-ng-controller="PortfolioStatusReportsController as vm"  data-ng-init="vm.init()">
+    <br>
+    <div class="row">
+        <div class="col-xs-12">
+            <div class="panel-heading" style="padding: 0">
+                <ol class="breadcrumb">
+                    <li>Portfolio delivery</li>
+                    <li>Status</li>
+                    <li class="active">Portfolio status reports</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+    <div data-ng-show="vm.initError" class="text-danger">
+        <strong data-ng-repeat="item in vm.initError" data-ng-bind="item.data.message"></strong>
+    </div>
+    <div data-ng-show="vm.error" class="text-danger">
+        <strong data-ng-bind="vm.error"></strong>
+    </div>
+    <div class="row">
+        <div class="col-sm-3"><!-- PORTFOLIO LIST -->
+            <portfolio-tree portfolios="vm.portfolios" portfolio-trees="vm.portfolioTrees" select-portfolio="vm.selectPortfolio"></portfolio-tree>
+        </div>
+        <div class="col-xs-9" style="padding-left: 5px">
+            <div class="row">
+                <div class="col-xs-12">
+                    <div data-ng-hide="vm.selectedPortfolio || vm.portfolios.length === 0" class="alert alert-warning text-center">
+                        Select a portfolio to see its details
+                    </div>
+                </div>
+            </div>
+            <div class="row" data-ng-show="vm.selectedPortfolio">
+                <div class="col-xs-12">
+                    <div class="panel panel-default">
+                        <div class="panel-heading text-center" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: normal; width: 100%;">
+                            <h6 class="panel-title">{{vm.selectedPortfolio.name}}</h6>
+                        </div>
+                        <div class="panel-body" style="max-height: 530px; min-height: 530px;">
+                            <div class="row" data-ng-show="vm.showNewDocumentForm">
+                                <div class="col-xs-12">
+                                    <div class="panel panel-default">
+                                        <div class="panel-heading">
+                                            <h6 class="panel-title text-center">
+                                                New status update
+                                            </h6>
+                                        </div>
+                                        <div class="panel-body">
+                                            <form class="form" name="newDocumentForm">
+                                                <div class="row">
+                                                    <div class="form-group-sm col-xs-4">
+                                                        <label>Portfolio</label>
+                                                        <input title="portfolio" class="form-control" type="text"
+                                                               data-ng-model="vm.selectedPortfolio.name" disabled required>
+                                                    </div>
+                                                    <div class="form-group-sm col-xs-4">
+                                                        <label>Date</label>
+                                                        <div class="input-group">
+                                                            <input type="text" title="date" class="form-control" datepicker-popup="dd-MMMM-yyyy" data-ng-model="vm.newDocument.updateDate"
+                                                                   is-open="vm.newHeaderDateOpened[vm.selectedPortfolio._id]" required>
+                                                                <span class="input-group-btn">
+                                                                    <button type="button" class="btn btn-default btn-sm" ng-click="vm.openNewHeaderDate(vm.selectedPortfolio, $event)"><i class="glyphicon glyphicon-calendar"></i></button>
+                                                                </span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="form-group-sm col-xs-4">
+                                                        <label>Title</label>
+                                                        <input title="title" class="form-control" type="text" placeholder="Enter title"
+                                                               data-ng-model="vm.newDocument.title" required>
+                                                    </div>
+                                                </div>
+                                                <br>
+                                                <div class="row">
+                                                    <div class="form-group-sm col-xs-8">
+                                                        <label>Previous report</label>
+                                                        <select title="previous report" class="form-control" data-ng-model = "vm.newDocument.previousReport"
+                                                                data-ng-options="report as report.date | date:'EEE d, MMM yyyy' +' - '+ report.title for report in vm.portfolioStatusReports">
+                                                            <option value="">--select previous report</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                                <hr>
+                                                <div class="form-group-sm pull-right">
+                                                    <button class="btn btn-success btn-xs" data-ng-click="vm.createNewDocument(vm.selectedPortfolio)" data-ng-disabled="vm.isResolving || newDocumentForm.$invalid">
+                                                        Save
+                                                    </button>
+                                                    <button class="btn btn-info btn-xs" data-ng-click="vm.cancelNewDocument()">
+                                                        Cancel
+                                                    </button>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div data-ng-show="vm.selectedPortfolio && !vm.showNewDocumentForm">
+                                <div class="row">
+                                    <div class="col-xs-4">
+                                        <button class="btn btn-success btn-sm" data-ng-click="vm.showNewDocumentForm = true"
+                                                data-ng-show="vm.userHasAuthorization('edit', vm.user, vm.selectedPortfolio)">
+                                            New status report
+                                        </button>
+                                    </div>
+                                </div>
+                                <hr style="margin: 10px">
+                                <div class="row" style="min-height: 390px; max-height: 390px; overflow-y: auto">
+                                    <div class="col-xs-12" data-ng-show="vm.portfolioStatusReports.length <= 0">
+                                        <div class="alert alert-warning text-center">
+                                            There are no status reports for this portfolio
+                                        </div>
+                                    </div>
+                                    <div class="col-xs-12" data-ng-show="vm.portfolioStatusReports.length > 0">
+                                        <table class="table">
+                                            <thead>
+                                            <tr>
+                                                <th class="col-xs-3">From</th>
+                                                <th class="col-xs-3">To</th>
+                                                <th class="col-xs-4">Title</th>
+                                                <th class="col-xs-2"> </th>
+                                            </tr>
+                                            </thead>
+                                            <tbody>
+                                            <tr data-ng-repeat="statusReport in vm.portfolioStatusReports">
+                                                <td>{{statusReport.previousReport.date | date:'EEE d, MMM yyyy'}}</td>
+                                                <td>{{statusReport.date | date:'EEE d, MMM yyyy'}}</td>
+                                                <td>{{statusReport.title}}</td>
+                                                <td>
+                                                    <button class="btn btn-success btn-sm pull-right"
+                                                            data-ng-show="vm.userHasAuthorization('edit', vm.user, vm.selectedPortfolio)"
+                                                            data-ng-click="vm.selectDocument(statusReport)">
+                                                        <span class="glyphicon glyphicon-pencil"></span>
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
