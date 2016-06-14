@@ -124,10 +124,9 @@
                                                 <td>{{statusReport.date | date:'EEE d, MMM yyyy'}}</td>
                                                 <td>{{statusReport.title}}</td>
                                                 <td>
-                                                    <button class="btn btn-success btn-sm pull-right"
-                                                            data-ng-show="vm.userHasAuthorization('edit', vm.user, vm.selectedPortfolio)"
-                                                            data-ng-click="vm.selectDocument(statusReport)">
-                                                        <span class="glyphicon glyphicon-pencil"></span>
+                                                    <button class="btn btn-info btn-sm pull-right"
+                                                            data-ng-click="vm.goToDocument(statusReport)">
+                                                        <span class="glyphicon glyphicon-eye-open"></span>
                                                     </button>
                                                 </td>
                                             </tr>

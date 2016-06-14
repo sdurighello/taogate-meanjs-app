@@ -218,35 +218,23 @@ angular.module('portfolio-status-reports').controller('PortfolioStatusReportsCon
         };
 
 
-        // ------------- SELECT STATUS UPDATE ------------
+        // ------------- VIEW STATUS REPORT ------------
+        
+        
+        vm.goToDocument = function(document){
+            $location.path('portfolio-status-reports/' + document._id);
+        };
 
-        var getModal = function (size, doc) {
-
-            var modalInstance = $modal.open({
-                templateUrl: 'modules/portfolio-status-reports/views/portfolio-status-report.client.view.html',
-                controller: function ($scope, $modalInstance, doc) {
-
-                    $scope.statusReport = doc;
-
-                    $scope.cancelModal = function () {
-                        $modalInstance.dismiss();
-                    };
-                },
-                size: size,
-                resolve: {
-                    doc: function () {
-                        return doc;
-                    }
-                },
-                backdrop: 'static',
-                keyboard: false
+        vm.initDocumentDetails = function(){
+            vm.selectedDocument = PortfolioStatusReports.get({
+                portfolioStatusReportId: $stateParams.portfolioStatusReportId
             });
 
+            vm.selectedDocumentExample = _.chunk([
+                {name: 'ciao'}, {name: 'ciao'}, {name: 'ciao'}
+            ], 2);
         };
-        
-        vm.selectDocument = function(doc){
-            getModal('lg', doc);
-        };
+
 
 
         // -------------------------------------------------------- HEADER -------------------------------------------------

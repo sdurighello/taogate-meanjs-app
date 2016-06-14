@@ -23,9 +23,10 @@ var numberStatisticsRecord = {
 // Project Delivery Status stats
 
 var ProjectDeliveryStatusSchema = new Schema({
-    statusArea:{
-        _id: {type: Schema.Types.ObjectId, ref: 'LogStatusArea', $tenant:true},
-        name: {type: String}
+    status: {
+        _id : {type: Schema.Types.ObjectId, ref: 'LogStatusIndicator', default:null, $tenant:true},
+        name : {type: String, default:null},
+        color : {type: String, default: null}
     },
     numberOfProjects : numberStatisticsRecord,
     ratioOfProjects : numberStatisticsRecord,
@@ -35,9 +36,10 @@ var ProjectDeliveryStatusSchema = new Schema({
 // Portfolio Status Areas stats
 
 var PortfolioStatusAreaSchema = new Schema({
-    statusArea:{
-        _id: {type: Schema.Types.ObjectId, ref: 'LogStatusArea', $tenant:true},
-        name: {type: String}
+    status: {
+        _id : {type: Schema.Types.ObjectId, ref: 'LogStatusIndicator', default:null, $tenant:true},
+        name : {type: String, default:null},
+        color : {type: String, default: null}
     },
     comment :{type: String, trim:true, default: null},
     projectDeliveryStatuses : [ProjectDeliveryStatusSchema]
@@ -115,13 +117,15 @@ var PortfolioStatusReportSchema = new Schema({
     budgetStatistics : {
         earmarkedFunds : {
             portfolioFunds : numberStatisticsRecord,
-            projectsFunds : numberStatisticsRecord
+            projectsFunds : numberStatisticsRecord,
+            earmarkedFundsDifference : numberStatisticsRecord, // portfolioBudget - projectsBudget
+            earmarkedFundsDifferenceRatio : numberStatisticsRecord // portfolioBudgetShortfall / projectsBudget
         },
         budget : {
             portfolioBudget : numberStatisticsRecord,
             projectsBudget : numberStatisticsRecord,
-            portfolioBudgetShortfall : numberStatisticsRecord, // portfolioBudget - projectsBudget
-            portfolioBudgetShortfallRatio : numberStatisticsRecord, // portfolioBudgetShortfall / projectsBudget
+            portfolioBudgetDifference : numberStatisticsRecord, // portfolioBudget - projectsBudget
+            portfolioBudgetDifferenceRatio : numberStatisticsRecord, // portfolioBudgetShortfall / projectsBudget
             AvgProjectsBudget : numberStatisticsRecord,
             maxProjectsBudget : numberStatisticsRecord,
             minProjectsBudget : numberStatisticsRecord

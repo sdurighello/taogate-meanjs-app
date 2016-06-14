@@ -8,17 +8,11 @@ angular.module('gate-performances').controller('GatePerformancesPortfolioControl
 
         // ----------- INIT ---------------
 
+        vm.isResolving = false;
+        
         vm.initError = [];
 
-        var projectProfiles = [];
-
         vm.init = function(){
-
-            Projects.query({'selection.selectedForEvaluation': true}, function(projects){
-                vm.projects = projects;
-            }, function(err){
-                vm.initError.push(err.data.message);
-            });
 
             Portfolios.query(function(portfolios){
                 vm.portfolios = portfolios;
@@ -26,20 +20,7 @@ angular.module('gate-performances').controller('GatePerformancesPortfolioControl
             }, function(err){
                 vm.initError.push(err.data.message);
             });
-
-            GateProcessTemplates.query(function(gateProcesses){
-                vm.gateProcesses = gateProcesses;
-            }, function(err){
-                vm.initError.push(err.data.message);
-            });
-
-            GatePerformances.portfolioPerformances(function(res){
-                projectProfiles = res;
-            }, function(err){
-                vm.initError.push(err.data.message);
-            });
-
-
+            
         };
 
 
@@ -88,55 +69,30 @@ angular.module('gate-performances').controller('GatePerformancesPortfolioControl
         // ------ PORTFOLIO SELECTION -----------
 
         vm.selectPortfolio = function(portfolio){
-            if(portfolio === 'all'){
-                vm.treeSelectionFlag = 'all';
-                vm.selectedProjectProfile = null;
-                vm.selectedPortfolio = {name : 'All'};
-                vm.projectProfilesView = projectProfiles;
-                createPortfolioSummary(vm.projectProfilesView);
-                return;
-            }
-            if(portfolio === 'unassigned'){
-                vm.treeSelectionFlag = 'unassigned';
-                vm.selectedProjectProfile = null;
-                vm.selectedPortfolio = {name : 'Unassigned'};
-                vm.projectProfilesView = _.filter(projectProfiles, function(profile){
-                    return _.isNull(profile.project.portfolio);
-                });
-                createPortfolioSummary(vm.projectProfilesView);
-                return;
-            }
+            
             vm.selectedProjectProfile = null;
             vm.treeSelectionFlag = 'portfolio';
-            vm.selectedPortfolio = portfolio;
-            vm.projectProfilesView = _.filter(projectProfiles, function(profile){
-                return (profile.project.portfolio) && (profile.project.portfolio._id === portfolio._id);
-            });
-            createPortfolioSummary(vm.projectProfilesView);
+            vm.selectedPortfolio = portfolio || {name: 'Unassigned'};
 
+            vm.error = null;
+            vm.isResolving = true;
+            GatePerformances.portfolioPerformances(
+                {
+                    _id: (portfolio && portfolio._id) || null,
+                    name : vm.selectedPortfolio.name,
+                    budget : vm.selectedPortfolio.budget || null
+                },
+                function(res){
+                    vm.isResolving = false;
+                    vm.portfolioPerformances = res;
+                    console.log(res);
+                },
+                function(err){
+                    vm.error = err;
+                    vm.isResolving = false;
+                }
+            );
         };
-
-        var createPortfolioSummary = function(profiles){
-            vm.numberOfProjects = profiles.length;
-            vm.totalBudget = _.reduce(profiles, function(sum, profile){
-                return sum + profile.cumulativeData.budget.amount;
-            }, 0);
-            vm.totalEarmarkedFunds = _.reduce(profiles, function(sum, profile){
-                return sum + profile.project.identification.earmarkedFunds;
-            }, 0);
-        };
-
-        // ------ FILTER RANKING -----------
-
-
-        vm.orderByRanking = function(property, direction, displayName){
-            vm.orderByProperty = property;
-            vm.orderByDirection = direction;
-            vm.orderByDisplayName = displayName;
-        };
-
-        vm.orderByRanking('cumulativeData.budget.amount', true, 'Budget');
-
 
         // ------ PROJECT SELECTION -----------
 
