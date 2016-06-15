@@ -71,7 +71,6 @@ angular.module('gate-performances').controller('GatePerformancesPortfolioControl
         vm.selectPortfolio = function(portfolio){
             
             vm.selectedProjectProfile = null;
-            vm.treeSelectionFlag = 'portfolio';
             vm.selectedPortfolio = portfolio || {name: 'Unassigned'};
 
             vm.error = null;
