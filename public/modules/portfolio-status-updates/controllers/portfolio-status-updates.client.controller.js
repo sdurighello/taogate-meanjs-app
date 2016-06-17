@@ -2,9 +2,9 @@
 
 angular.module('portfolio-status-updates').controller('PortfolioStatusUpdatesController', ['$rootScope', '$scope','$stateParams', '$location',
     'Authentication', 'Projects', 'Portfolios','$q', '_',
-    'GateProcessTemplates', 'LogStatusIndicators',
+    'GateProcessTemplates', 'LogStatusIndicators','PortfolioStatusUpdates',
     function($rootScope, $scope, $stateParams, $location, Authentication, Projects, Portfolios, $q, _,
-             GateProcessTemplates, LogStatusIndicators) {
+             GateProcessTemplates, LogStatusIndicators, PortfolioStatusUpdates) {
 
         $rootScope.staticMenu = false;
 
@@ -142,14 +142,26 @@ angular.module('portfolio-status-updates').controller('PortfolioStatusUpdatesCon
         $scope.activeTab = {};
 
 
-        // ------------- SELECT PROJECT ------------
+        // ------------- SELECT PORTFOLIO ------------
 
 
         $scope.selectPortfolio = function(portfolio) {
-            $scope.error = null;
             $scope.cancelNewDocument();
             $scope.selectedDocument = null;
             $scope.selectedPortfolio = portfolio;
+
+            $scope.error = null;
+            $scope.isResolving = true;
+            PortfolioStatusUpdates.query({portfolio: portfolio._id},
+                function(res){
+                    $scope.isResolving = false;
+                    $scope.portfolioStatusUpdates = res;
+                },
+                function(err){
+                    $scope.isResolving = false;
+                    $scope.error = err;
+                }
+            );
         };
         
 
@@ -168,20 +180,17 @@ angular.module('portfolio-status-updates').controller('PortfolioStatusUpdatesCon
 
         $scope.createNewDocument = function(portfolio){
 
-            var newDocument = {
+            var newDocument = new PortfolioStatusUpdates({
+                portfolio : portfolio._id,
                 updateDate : $scope.newDocument.updateDate,
                 title : $scope.newDocument.title
-            };
+            });
 
             $scope.error = null;
             $scope.isResolving = true;
-            Portfolios.createStatusUpdate(
-                {
-                    portfolioId : portfolio._id
-                }, newDocument,
-                function(res){
+            newDocument.$save(function(res){
                     $scope.isResolving = false;
-                    portfolio.portfolioStatusUpdates.push(res);
+                    $scope.portfolioStatusUpdates.push(res);
                     $scope.newDocument = {};
                     $scope.showNewDocumentForm = false;
                     $scope.selectDocument(res);
@@ -231,9 +240,8 @@ angular.module('portfolio-status-updates').controller('PortfolioStatusUpdatesCon
         $scope.saveEditHeader = function(portfolio, statusUpdate){
             $scope.error = null;
             $scope.isResolving = true;
-            Portfolios.updateStatusUpdateHeader(
+            PortfolioStatusUpdates.updateHeader(
                 {
-                    portfolioId : portfolio._id,
                     portfolioStatusUpdateId : statusUpdate._id
                 }, statusUpdate,
                 function(res){
@@ -257,59 +265,21 @@ angular.module('portfolio-status-updates').controller('PortfolioStatusUpdatesCon
         };
 
 
-        $scope.deleteDocument = function(portfolio, statusUpdate){
+        $scope.deleteDocument = function(statusUpdate){
             $scope.error = null;
             $scope.isResolving = true;
-            Portfolios.deleteStatusUpdate(
+            PortfolioStatusUpdates.delete(
                 {
-                    portfolioId : portfolio._id,
                     portfolioStatusUpdateId: statusUpdate._id
                 }, statusUpdate, function(res){
                     $scope.isResolving = false;
-                    portfolio.portfolioStatusUpdates = _.without(portfolio.portfolioStatusUpdates, statusUpdate);
+                    $scope.portfolioStatusUpdates = _.without($scope.portfolioStatusUpdates, statusUpdate);
                     $scope.cancelNewDocument();
                     $scope.selectedDocument = null;
                 }, function(err){
                     $scope.isResolving = false;
                     $scope.error = err.data.message;
                 });
-        };
-
-        // -------------------------------------------------------- BUDGET -------------------------------------------------
-
-        var originalBudget = {};
-
-        $scope.editBudget = function(statusUpdate){
-            originalBudget[statusUpdate._id] = {
-                newAmount : statusUpdate.budgetReview.newAmount
-            };
-            $scope.selectBudgetForm('edit', statusUpdate);
-        };
-
-        $scope.saveEditBudget = function(portfolio, statusUpdate){
-            $scope.error = null;
-            $scope.isResolving = true;
-            Portfolios.updateStatusUpdateBudget(
-                {
-                    portfolioId : portfolio._id,
-                    portfolioStatusUpdateId: statusUpdate._id
-                }, statusUpdate,
-                function(res){
-                    $scope.isResolving = false;
-                    originalBudget[statusUpdate._id].newAmount = statusUpdate.budgetReview.newAmount;
-                    $scope.selectBudgetForm('view', statusUpdate);
-                },
-                function(err){
-                    $scope.isResolving = false;
-                    $scope.error = err.data.message;
-                }
-            );
-        };
-
-        $scope.cancelEditBudget = function(statusUpdate){
-            $scope.error = null;
-            statusUpdate.budgetReview.newAmount = originalBudget[statusUpdate._id].newAmount;
-            $scope.selectBudgetForm('view', statusUpdate);
         };
 
 
@@ -327,13 +297,12 @@ angular.module('portfolio-status-updates').controller('PortfolioStatusUpdatesCon
             $scope.selectOverallStatusForm('edit', statusUpdate);
         };
 
-        $scope.saveEditOverallStatus = function(portfolio, statusUpdate){
+        $scope.saveEditOverallStatus = function(statusUpdate){
 
             $scope.error = null;
             $scope.isResolving = true;
-            Portfolios.updateOverallDeliveryStatus(
+            PortfolioStatusUpdates.updateOverallDeliveryStatus(
                 {
-                    portfolioId : portfolio._id,
                     portfolioStatusUpdateId : statusUpdate._id
                 }, statusUpdate,
                 function(res){
@@ -363,12 +332,11 @@ angular.module('portfolio-status-updates').controller('PortfolioStatusUpdatesCon
             $scope.selectStatusAreaForm('edit', statusAreaReview);
         };
 
-        $scope.saveEditStatusArea = function(portfolio, statusUpdate, statusAreaReview){
+        $scope.saveEditStatusArea = function(statusUpdate, statusAreaReview){
             $scope.error = null;
             $scope.isResolving = true;
-            Portfolios.updateStatusAreaReview(
+            PortfolioStatusUpdates.updateStatusAreaReview(
                 {
-                    portfolioId : portfolio._id,
                     portfolioStatusUpdateId : statusUpdate._id,
                     statusAreaReviewId : statusAreaReview._id
                 }, statusAreaReview,
@@ -395,13 +363,12 @@ angular.module('portfolio-status-updates').controller('PortfolioStatusUpdatesCon
         // -------------------------------------------------------- APPROVAL -------------------------------------------------
 
 
-        $scope.submit = function(portfolio, statusUpdate){
+        $scope.submit = function(statusUpdate){
 
             $scope.error = null;
             $scope.isResolving = true;
-            Portfolios.submitStatusUpdate(
+            PortfolioStatusUpdates.submit(
                 {
-                    portfolioId: portfolio._id,
                     portfolioStatusUpdateId : statusUpdate._id
                 }, statusUpdate,
                 function(res){
@@ -415,13 +382,12 @@ angular.module('portfolio-status-updates').controller('PortfolioStatusUpdatesCon
             );
         };
 
-        $scope.approve = function(portfolio, statusUpdate){
+        $scope.approve = function(statusUpdate){
 
             $scope.error = null;
             $scope.isResolving = true;
-            Portfolios.approveStatusUpdate(
+            PortfolioStatusUpdates.approve(
                 {
-                    portfolioId: portfolio._id,
                     portfolioStatusUpdateId : statusUpdate._id
                 }, statusUpdate,
                 function(res){
@@ -435,13 +401,12 @@ angular.module('portfolio-status-updates').controller('PortfolioStatusUpdatesCon
             );
         };
 
-        $scope.reject = function(portfolio, statusUpdate){
+        $scope.reject = function(statusUpdate){
 
             $scope.error = null;
             $scope.isResolving = true;
-            Portfolios.rejectStatusUpdate(
+            PortfolioStatusUpdates.reject(
                 {
-                    portfolioId: portfolio._id,
                     portfolioStatusUpdateId : statusUpdate._id
                 }, statusUpdate,
                 function(res){
@@ -455,13 +420,12 @@ angular.module('portfolio-status-updates').controller('PortfolioStatusUpdatesCon
             );
         };
 
-        $scope.draft = function(portfolio, statusUpdate){
+        $scope.draft = function(statusUpdate){
 
             $scope.error = null;
             $scope.isResolving = true;
-            Portfolios.draftStatusUpdate(
+            PortfolioStatusUpdates.draft(
                 {
-                    portfolioId: portfolio._id,
                     portfolioStatusUpdateId : statusUpdate._id
                 }, statusUpdate,
                 function(res){

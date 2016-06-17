@@ -219,7 +219,7 @@ angular.module('portfolio-setup').controller('PortfolioSetupController', ['$root
 			$scope.selectPortfolioForm('view');
 			Portfolios.get({
 				portfolioId:portfolioId,
-				retPropertiesString : 'user created name parent ancestors type portfolioManager backupPortfolioManager earmarkedFunds',
+				retPropertiesString : 'user created name parent ancestors type portfolioManager backupPortfolioManager earmarkedFunds budget',
 				deepPopulateArray : ['parent','type','portfolioManager','backupPortfolioManager']
 			}, function(portfolio){
 				masterPortfolio = portfolio;

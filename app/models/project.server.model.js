@@ -730,6 +730,8 @@ var GateReviewSchema = new Schema({
     // --- Project Change Request ---
 
 var ProjectChangeRequestSchema = new Schema({
+    
+    associatedPortfolioChangeRequest : {type: Schema.Types.ObjectId, ref: 'PortfolioChangeRequest', default:null, $tenant:true},
 
     raisedOnDate : {type: Date, default: Date.now, required:'Date required'},
     title : {type: String, default:'', required:'Title required'},

@@ -187,6 +187,8 @@ angular.module('portfolio-change-requests').controller('PortfolioChangeRequestsC
 		// ------------------- OTHER VARIABLES ---------------------
 
 		vm.portfolioChangeRequestDetails = 'header';
+        
+        vm.associatedChangeRequestDetails = 'associated';
 
 		// ------------- SELECT VIEW PORTFOLIO ------------
 

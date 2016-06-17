@@ -43,13 +43,32 @@ var AssociatedProjectChangeRequestSchema = new Schema({
     title : {type: String},
     description : {type: String},
 
-    reason : {type: Schema.Types.ObjectId, ref: 'LogReason', $tenant:true},
-    state : {type: Schema.Types.ObjectId, ref: 'ChangeRequestState', $tenant:true},
-    priority : {type: Schema.Types.ObjectId, ref: 'LogPriority', $tenant:true},
+    reason: {
+        _id : {type: Schema.Types.ObjectId, ref: 'LogReason', default:null, $tenant:true},
+        name : {type: String, default:null}
+    },
+    state: {
+        _id : {type: Schema.Types.ObjectId, ref: 'ChangeRequestState', default:null, $tenant:true},
+        name : {type: String, default:null}
+    },
+    priority: {
+        _id : {type: Schema.Types.ObjectId, ref: 'LogPriority', default:null, $tenant:true},
+        name : {type: String, default:null}
+    },
 
     changeStatus : {
         currentRecord : {
-            status: {type: Schema.Types.ObjectId, ref: 'LogStatusIndicator', $tenant:true}
+            baselineDeliveryDate : {type: Date, default: null},
+            estimateDeliveryDate : {type: Date, default: null},
+            actualDeliveryDate : {type: Date, default: null},
+
+            completed : {type: Boolean, default: false, required:'Completed flag is required'},
+            status: {
+                _id : {type: Schema.Types.ObjectId, ref: 'LogStatusIndicator', default:null, $tenant:true},
+                name : {type: String, default:null},
+                color : {type: String, default: null}
+            },
+            comment : {type: String, default:'', trim: true}
         }
     },
 
@@ -60,7 +79,9 @@ var AssociatedProjectChangeRequestSchema = new Schema({
     },
 
     budgetReview : {
-        budgetChange : {type: Number}
+        currentAmount: {type: Number, default: null},
+        newAmount: {type: Number, default: null},
+        budgetChange : {type: Number, default: null}
     }
 });
 
@@ -95,6 +116,8 @@ var PortfolioChangeRequestSchema = new Schema({
     user: { type: Schema.ObjectId, ref: 'User' }
 
 });
+
+// PRE-SAVE
 
 PortfolioChangeRequestSchema.pre('save', function (next) {
     var totalFundingRequests = 0;

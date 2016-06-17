@@ -101,6 +101,11 @@ angular.module('portfolio-assignment').controller('PortfolioAssignmentController
 			$scope.selectedNode = node;
 		};
 
+        $scope.getTotalEarmarkedFunds = function(projects){
+            return _.reduce(projects, function(sum, project){
+                return sum + project.identification.earmarkedFunds;
+            },0);
+        };
 
 		// ------------------- DRAG AND DROP LISTENERS -------
 

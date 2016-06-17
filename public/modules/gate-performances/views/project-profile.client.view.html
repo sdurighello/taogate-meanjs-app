@@ -50,21 +50,24 @@
                                     <tr>
                                         <th>State</th>
                                         <td data-ng-repeat="gate in profile.process.gates" data-ng-class="{success : gate.gateState.currentRecord.currentGate}">
-                                            <span data-ng-show="gate.gateState.currentRecord.state">{{gate.gateState.currentRecord.state.name}}</span>
-                                            <span data-ng-show="!gate.gateState.currentRecord.state">No state</span>
+                                            <span data-ng-show="gate.gateState.currentRecord.state.name">{{gate.gateState.currentRecord.state.name}}</span>
+                                            <span data-ng-show="!gate.gateState.currentRecord.state.name">No state</span>
                                         </td>
                                     </tr>
                                     <tr>
                                         <th>Overall score</th>
                                         <td data-ng-repeat="gate in profile.process.gates" data-ng-class="{success : gate.gateState.currentRecord.currentGate}">
-                                            <span data-ng-show="gate.overallScore">{{gate.overallScore.name}}</span>
-                                            <span data-ng-show="!gate.overallScore">No score</span>
+                                            <span data-ng-show="gate.gateState.currentRecord.overallScore.name">{{gate.gateState.currentRecord.overallScore.name}}</span>
+                                            <span data-ng-show="!gate.gateState.currentRecord.overallScore.name">No score</span>
                                         </td>
                                     </tr>
                                     <tr>
                                         <th>Delivery status</th>
                                         <td data-ng-repeat="gate in profile.process.gates" data-ng-class="{success : gate.gateState.currentRecord.currentGate}">
-                                            <span data-ng-show="gate.deliveryStatus.overallStatus.currentRecord.status.name" style="background-color: {{gate.deliveryStatus.overallStatus.currentRecord.status.color}}">{{gate.deliveryStatus.overallStatus.currentRecord.status.name}}</span>
+                                            <div class="panel panel-heading text-center" data-ng-show="gate.deliveryStatus.overallStatus.currentRecord.status.name"
+                                                  ng-style="{'background-color': gate.deliveryStatus.overallStatus.currentRecord.status.color, 'padding': '5px', 'margin': '0px'}">
+                                                {{gate.deliveryStatus.overallStatus.currentRecord.status.name}}
+                                            </div>
                                             <span data-ng-show="!gate.deliveryStatus.overallStatus.currentRecord.status.name">No status</span>
                                         </td>
                                     </tr>
@@ -81,19 +84,19 @@
                                     <tr >
                                         <th>Budget amount</th>
                                         <td data-ng-repeat="gate in profile.process.gates" data-ng-class="{success : gate.gateState.currentRecord.currentGate}">
-                                            {{gate.oneStage.budget.amount | number : 0}}
+                                            {{gate.oneGate.budget.amount | number : 0}}
                                         </td>
                                     </tr>
                                     <tr >
                                         <th>Variance on baseline</th>
                                         <td data-ng-repeat="gate in profile.process.gates" data-ng-class="{success : gate.gateState.currentRecord.currentGate}">
-                                            {{gate.oneStage.budget.varianceBaseline | number : 0}} ({{100 * gate.oneStage.budget.varianceBaselinePercent | number : 1}}%)
+                                            {{gate.oneGate.budget.varianceBaseline | number : 0}} ({{100 * gate.oneGate.budget.varianceBaselinePercent | number : 1}}%)
                                         </td>
                                     </tr>
                                     <tr >
                                         <th>Variance at completion</th>
                                         <td data-ng-repeat="gate in profile.process.gates" data-ng-class="{success : gate.gateState.currentRecord.currentGate}">
-                                            {{gate.oneStage.budget.varianceAtCompletion | number : 0}} ({{100 * gate.oneStage.budget.varianceAtCompletionPercent | number : 1}}%)
+                                            {{gate.oneGate.budget.varianceAtCompletion | number : 0}} ({{100 * gate.oneGate.budget.varianceAtCompletionPercent | number : 1}}%)
                                         </td>
                                     </tr>
                                     <tr>
@@ -104,43 +107,43 @@
                                     <tr >
                                         <th>Baseline date</th>
                                         <td data-ng-repeat="gate in profile.process.gates" data-ng-class="{success : gate.gateState.currentRecord.currentGate}">
-                                            {{gate.oneStage.duration.baselineDate | date : format : 'MMM d yyyy'}}
+                                            {{gate.oneGate.duration.baselineDate | date : format : 'MMM d yyyy'}}
                                         </td>
                                     </tr>
                                     <tr >
                                         <th>Baseline days</th>
                                         <td data-ng-repeat="gate in profile.process.gates" data-ng-class="{success : gate.gateState.currentRecord.currentGate}">
-                                            {{gate.oneStage.duration.baselineDays | number : 0}}
+                                            {{gate.oneGate.duration.baselineDays | number : 0}}
                                         </td>
                                     </tr>
                                     <tr >
                                         <th>Estimate date</th>
                                         <td data-ng-repeat="gate in profile.process.gates" data-ng-class="{success : gate.gateState.currentRecord.currentGate}">
-                                            {{gate.oneStage.duration.estimateDate | date : format : 'MMM d yyyy'}}
+                                            {{gate.oneGate.duration.estimateDate | date : format : 'MMM d yyyy'}}
                                         </td>
                                     </tr>
                                     <tr >
                                         <th>Estimate days</th>
                                         <td data-ng-repeat="gate in profile.process.gates" data-ng-class="{success : gate.gateState.currentRecord.currentGate}">
-                                            {{gate.oneStage.duration.estimateDays | number : 0}}
+                                            {{gate.oneGate.duration.estimateDays | number : 0}}
                                         </td>
                                     </tr>
                                     <tr >
                                         <th>Actual date</th>
                                         <td data-ng-repeat="gate in profile.process.gates" data-ng-class="{success : gate.gateState.currentRecord.currentGate}">
-                                            {{gate.oneStage.duration.actualDate | date : format : 'MMM d yyyy'}}
+                                            {{gate.oneGate.duration.actualDate | date : format : 'MMM d yyyy'}}
                                         </td>
                                     </tr>
                                     <tr >
                                         <th>Actual days</th>
                                         <td data-ng-repeat="gate in profile.process.gates" data-ng-class="{success : gate.gateState.currentRecord.currentGate}">
-                                            {{gate.oneStage.duration.actualDays | number : 0}}
+                                            {{gate.oneGate.duration.actualDays | number : 0}}
                                         </td>
                                     </tr>
                                     <tr >
                                         <th>Variance</th>
                                         <td data-ng-repeat="gate in profile.process.gates" data-ng-class="{success : gate.gateState.currentRecord.currentGate}">
-                                            {{gate.oneStage.duration.variance | number : 0}} ({{100 * gate.oneStage.duration.variancePercent | number : 1}}%)
+                                            {{gate.oneGate.duration.variance | number : 0}} ({{100 * gate.oneGate.duration.variancePercent | number : 1}}%)
                                         </td>
                                     </tr>
                                     <tr>
@@ -151,25 +154,25 @@
                                     <tr >
                                         <th>Baseline</th>
                                         <td data-ng-repeat="gate in profile.process.gates" data-ng-class="{success : gate.gateState.currentRecord.currentGate}">
-                                            {{gate.oneStage.cost.baseline | number : 0}}
+                                            {{gate.oneGate.cost.baseline | number : 0}}
                                         </td>
                                     </tr>
                                     <tr >
                                         <th>Estimate</th>
                                         <td data-ng-repeat="gate in profile.process.gates" data-ng-class="{success : gate.gateState.currentRecord.currentGate}">
-                                            {{gate.oneStage.cost.estimate | number : 0}}
+                                            {{gate.oneGate.cost.estimate | number : 0}}
                                         </td>
                                     </tr>
                                     <tr >
                                         <th>Actual</th>
                                         <td data-ng-repeat="gate in profile.process.gates" data-ng-class="{success : gate.gateState.currentRecord.currentGate}">
-                                            {{gate.oneStage.cost.actual | number : 0}}
+                                            {{gate.oneGate.cost.actual | number : 0}}
                                         </td>
                                     </tr>
                                     <tr >
                                         <th>Variance</th>
                                         <td data-ng-repeat="gate in profile.process.gates" data-ng-class="{success : gate.gateState.currentRecord.currentGate}">
-                                            {{gate.oneStage.cost.variance | number : 0}} ({{100 * gate.oneStage.cost.variancePercent | number : 1}}%)
+                                            {{gate.oneGate.cost.variance | number : 0}} ({{100 * gate.oneGate.cost.variancePercent | number : 1}}%)
                                         </td>
                                     </tr>
                                     <tr>
@@ -180,25 +183,25 @@
                                     <tr >
                                         <th>Baseline</th>
                                         <td data-ng-repeat="gate in profile.process.gates" data-ng-class="{success : gate.gateState.currentRecord.currentGate}">
-                                            {{gate.oneStage.completion.baseline | number : 0}}
+                                            {{gate.oneGate.completion.baseline | number : 0}}
                                         </td>
                                     </tr>
                                     <tr >
                                         <th>Estimate</th>
                                         <td data-ng-repeat="gate in profile.process.gates" data-ng-class="{success : gate.gateState.currentRecord.currentGate}">
-                                            {{gate.oneStage.completion.estimate | number : 0}}
+                                            {{gate.oneGate.completion.estimate | number : 0}}
                                         </td>
                                     </tr>
                                     <tr >
                                         <th>Actual</th>
                                         <td data-ng-repeat="gate in profile.process.gates" data-ng-class="{success : gate.gateState.currentRecord.currentGate}">
-                                            {{gate.oneStage.completion.actual | number : 0}}
+                                            {{gate.oneGate.completion.actual | number : 0}}
                                         </td>
                                     </tr>
                                     <tr >
                                         <th>Variance</th>
                                         <td data-ng-repeat="gate in profile.process.gates" data-ng-class="{success : gate.gateState.currentRecord.currentGate}">
-                                            {{gate.oneStage.completion.variance | number : 0}} ({{100 * gate.oneStage.completion.variancePercent | number : 1}}%)
+                                            {{gate.oneGate.completion.variance | number : 0}} ({{100 * gate.oneGate.completion.variancePercent | number : 1}}%)
                                         </td>
                                     </tr>
                                     <tr>
@@ -209,49 +212,49 @@
                                     <tr >
                                         <th>Earned value ratio</th>
                                         <td data-ng-repeat="gate in profile.process.gates" data-ng-class="{success : gate.gateState.currentRecord.currentGate}">
-                                            {{gate.oneStage.earnedValueAnalysis.earnedValueRatio | number : 1}}
+                                            {{gate.oneGate.earnedValueAnalysis.earnedValueRatio | number : 1}}
                                         </td>
                                     </tr>
                                     <tr >
                                         <th>Earned value</th>
                                         <td data-ng-repeat="gate in profile.process.gates" data-ng-class="{success : gate.gateState.currentRecord.currentGate}">
-                                            {{gate.oneStage.earnedValueAnalysis.earnedValue | number : 0}}
+                                            {{gate.oneGate.earnedValueAnalysis.earnedValue | number : 0}}
                                         </td>
                                     </tr>
                                     <tr >
                                         <th>Cost variance</th>
                                         <td data-ng-repeat="gate in profile.process.gates" data-ng-class="{success : gate.gateState.currentRecord.currentGate}">
-                                            {{gate.oneStage.earnedValueAnalysis.costVariance | number : 0}} ({{100 * gate.oneStage.earnedValueAnalysis.percentCostVariance | number : 1}}%)
+                                            {{gate.oneGate.earnedValueAnalysis.costVariance | number : 0}} ({{100 * gate.oneGate.earnedValueAnalysis.percentCostVariance | number : 1}}%)
                                         </td>
                                     </tr>
                                     <tr >
                                         <th>Schedule variance</th>
                                         <td data-ng-repeat="gate in profile.process.gates" data-ng-class="{success : gate.gateState.currentRecord.currentGate}">
-                                            {{gate.oneStage.earnedValueAnalysis.scheduleVariance | number : 0}} ({{100 * gate.oneStage.earnedValueAnalysis.percentScheduleVariance | number : 1}}%)
+                                            {{gate.oneGate.earnedValueAnalysis.scheduleVariance | number : 0}} ({{100 * gate.oneGate.earnedValueAnalysis.percentScheduleVariance | number : 1}}%)
                                         </td>
                                     </tr>
                                     <tr >
                                         <th>Cost Performance Index</th>
                                         <td data-ng-repeat="gate in profile.process.gates" data-ng-class="{success : gate.gateState.currentRecord.currentGate}">
-                                            {{gate.oneStage.earnedValueAnalysis.costPerformanceIndex | number : 1}}
+                                            {{gate.oneGate.earnedValueAnalysis.costPerformanceIndex | number : 1}}
                                         </td>
                                     </tr>
                                     <tr >
                                         <th>Schedule Performance Index</th>
                                         <td data-ng-repeat="gate in profile.process.gates" data-ng-class="{success : gate.gateState.currentRecord.currentGate}">
-                                            {{gate.oneStage.earnedValueAnalysis.schedulePerformanceIndex | number : 1}}
+                                            {{gate.oneGate.earnedValueAnalysis.schedulePerformanceIndex | number : 1}}
                                         </td>
                                     </tr>
                                     <tr >
                                         <th>Percent spent</th>
                                         <td data-ng-repeat="gate in profile.process.gates" data-ng-class="{success : gate.gateState.currentRecord.currentGate}">
-                                            {{100 * gate.oneStage.earnedValueAnalysis.percentSpent | number : 1}}%
+                                            {{100 * gate.oneGate.earnedValueAnalysis.percentSpent | number : 1}}%
                                         </td>
                                     </tr>
                                     <tr >
                                         <th>Percent complete</th>
                                         <td data-ng-repeat="gate in profile.process.gates" data-ng-class="{success : gate.gateState.currentRecord.currentGate}">
-                                            {{100 * gate.oneStage.earnedValueAnalysis.percentComplete | number : 1}}%
+                                            {{100 * gate.oneGate.earnedValueAnalysis.percentComplete | number : 1}}%
                                         </td>
                                     </tr>
                                     </tbody>

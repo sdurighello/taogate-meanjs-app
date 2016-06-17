@@ -677,18 +677,20 @@ exports.approveStatusUpdate = function(req, res) {
 
     _.each(editedStatusUpdate.deliveryStatus.projectStatusAreaReviews, function(statusAreaReview){
         var editedProjectStatusArea = editedGate.deliveryStatus.projectStatusAreas.id(statusAreaReview.projectStatusArea._id);
-        editedProjectStatusArea.history.push({
-            sourceStatusUpdate : editedProjectStatusArea.currentRecord.sourceStatusUpdate,
-            status: editedProjectStatusArea.currentRecord.status,
-            comment: editedProjectStatusArea.currentRecord.comment,
-            created: editedProjectStatusArea.currentRecord.created,
-            user: editedProjectStatusArea.currentRecord.user
-        });
-        editedProjectStatusArea.currentRecord.sourceStatusUpdate = editedStatusUpdate._id;
-        editedProjectStatusArea.currentRecord.status = statusAreaReview.newStatus;
-        editedProjectStatusArea.currentRecord.comment = statusAreaReview.newComment;
-        editedProjectStatusArea.currentRecord.created = Date.now();
-        editedProjectStatusArea.currentRecord.user = {_id: req.user._id, displayName: req.user.displayName};
+        if(editedProjectStatusArea){ // So if add/delete new areas to project, it doesn't crash
+            editedProjectStatusArea.history.push({
+                sourceStatusUpdate : editedProjectStatusArea.currentRecord.sourceStatusUpdate,
+                status: editedProjectStatusArea.currentRecord.status,
+                comment: editedProjectStatusArea.currentRecord.comment,
+                created: editedProjectStatusArea.currentRecord.created,
+                user: editedProjectStatusArea.currentRecord.user
+            });
+            editedProjectStatusArea.currentRecord.sourceStatusUpdate = editedStatusUpdate._id;
+            editedProjectStatusArea.currentRecord.status = statusAreaReview.newStatus;
+            editedProjectStatusArea.currentRecord.comment = statusAreaReview.newComment;
+            editedProjectStatusArea.currentRecord.created = Date.now();
+            editedProjectStatusArea.currentRecord.user = {_id: req.user._id, displayName: req.user.displayName};
+        }
     });
 
     // Apply changes to DURATION

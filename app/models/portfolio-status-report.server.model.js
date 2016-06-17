@@ -69,21 +69,6 @@ var LogPriorityStatisticsSchema = new Schema({
 
 });
 
-// Appendix
-
-var PortfolioMilestoneSchema = new Schema({
-
-});
-
-var PortfolioIssueSchema = new Schema({
-
-});
-
-var PortfolioChangeRequestSchema = new Schema({
-
-});
-
-
 /* ---- MAIN SCHEMA ---- */
 
 var PortfolioStatusReportSchema = new Schema({
@@ -112,23 +97,67 @@ var PortfolioStatusReportSchema = new Schema({
         displayName : {type: String, default: null}
     },
 
-    totalNumberOfProjects : numberStatisticsRecord,
+    earmarkedFunds : {
+        portfolioAmount : numberStatisticsRecord,
+        projectsAmount : numberStatisticsRecord,
+        variance : numberStatisticsRecord,
+        variancePercent : numberStatisticsRecord
+    },
 
-    budgetStatistics : {
-        earmarkedFunds : {
-            portfolioFunds : numberStatisticsRecord,
-            projectsFunds : numberStatisticsRecord,
-            earmarkedFundsDifference : numberStatisticsRecord, // portfolioBudget - projectsBudget
-            earmarkedFundsDifferenceRatio : numberStatisticsRecord // portfolioBudgetShortfall / projectsBudget
+    performances : {
+        numberOfProjects : numberStatisticsRecord,
+        duration : {
+            baselineDays : numberStatisticsRecord,
+            estimateDays : numberStatisticsRecord,
+            actualDays : numberStatisticsRecord,
+            earnedActual : numberStatisticsRecord,
+            variance : numberStatisticsRecord, // baselineDays - estimateDays (actual if completed)
+            variancePercent : numberStatisticsRecord // variance / baselineDays
+        },
+        cost : {
+            baseline : numberStatisticsRecord,
+            estimate : numberStatisticsRecord,
+            actual : numberStatisticsRecord,
+            earnedActual : numberStatisticsRecord,
+            variance : numberStatisticsRecord, // baseline - estimate (actual if completed)
+            variancePercent : numberStatisticsRecord // variance / baseline
+        },
+        completion : {
+            baseline : numberStatisticsRecord,
+            estimate : numberStatisticsRecord,
+            actual : numberStatisticsRecord,
+            earnedActual : numberStatisticsRecord,
+            variance : numberStatisticsRecord, // baseline - estimate (actual if completed)
+            variancePercent : numberStatisticsRecord // variance / baseline
         },
         budget : {
-            portfolioBudget : numberStatisticsRecord,
-            projectsBudget : numberStatisticsRecord,
-            portfolioBudgetDifference : numberStatisticsRecord, // portfolioBudget - projectsBudget
-            portfolioBudgetDifferenceRatio : numberStatisticsRecord, // portfolioBudgetShortfall / projectsBudget
-            AvgProjectsBudget : numberStatisticsRecord,
-            maxProjectsBudget : numberStatisticsRecord,
-            minProjectsBudget : numberStatisticsRecord
+            amount : numberStatisticsRecord, // sum of project budgets
+            averageAmount: numberStatisticsRecord,
+            minAmount : numberStatisticsRecord,
+            maxAmount : numberStatisticsRecord,
+            varianceBaseline : numberStatisticsRecord, // sum of projects' varianceBaselines
+            varianceBaselinePercent : numberStatisticsRecord, // varianceBaseline above / sum of project budgets
+            varianceAtCompletion : numberStatisticsRecord, // sum of project earnedActual - sum project budgets
+            varianceAtCompletionPercent : numberStatisticsRecord // varianceAtCompletion / sum project budgets
+        },
+        portfolioBudget : {
+            amount : numberStatisticsRecord,
+            variance : numberStatisticsRecord, // sum project budgets / portfolio budget
+            variancePercent : numberStatisticsRecord, // projectsBudgetVariance / portfolio budget
+            varianceBaseline : numberStatisticsRecord, // sum of projects' cost baseline - portfolio budget
+            varianceBaselinePercent : numberStatisticsRecord, // varianceBaseline above / portfolio budget
+            varianceAtCompletion : numberStatisticsRecord, // sum of project earnedActual - portfolio budget
+            varianceAtCompletionPercent : numberStatisticsRecord // varianceAtCompletion / portfolio budget
+        },
+        earnedValueAnalysis : {
+            earnedValueRatio: numberStatisticsRecord,
+            earnedValue: numberStatisticsRecord,
+            costVariance: numberStatisticsRecord,
+            scheduleVariance: numberStatisticsRecord,
+            percentScheduleVariance: numberStatisticsRecord,
+            percentCostVariance: numberStatisticsRecord,
+            costPerformanceIndex: numberStatisticsRecord,
+            schedulePerformanceIndex: numberStatisticsRecord
         }
     },
 
@@ -153,16 +182,8 @@ var PortfolioStatusReportSchema = new Schema({
     portfolioLogsStatistics : {
         milestones : [LogPriorityStatisticsSchema],
         issues : [LogPriorityStatisticsSchema]
-    },
-
-    appendix : { // Tick box to choose which logs to bring in at "create report". Once click "save", server copies the data here and you can "edit" by removing/overwriting
-        portfolioMilestones : [PortfolioMilestoneSchema],
-        portfolioIssues : [PortfolioIssueSchema],
-        portfolioChangeRequests : [PortfolioChangeRequestSchema]
-        // roadmap chart
-        // dependencies force graph
     }
-
+    
 });
 
 mongoose.mtModel('PortfolioStatusReport', PortfolioStatusReportSchema);

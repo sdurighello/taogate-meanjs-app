@@ -99,14 +99,14 @@
                                             </div>
                                             <hr style="margin: 10px">
                                             <div class="row" style="min-height: 390px; max-height: 390px; overflow-y: auto">
-                                                <div class="col-md-12" data-ng-show="selectedPortfolio.portfolioStatusUpdates.length === 0">
+                                                <div class="col-md-12" data-ng-show="portfolioStatusUpdates.length === 0">
                                                     <div class="alert alert-warning text-center">
                                                         There are no status updates for this portfolio
                                                     </div>
                                                 </div>
                                                 <div class="col-md-12">
                                                     <button type="button"
-                                                            data-ng-repeat="statusUpdate in selectedPortfolio.portfolioStatusUpdates | orderBy: sortChangeRequests : true"
+                                                            data-ng-repeat="statusUpdate in portfolioStatusUpdates | orderBy: sortChangeRequests : true"
                                                             data-ng-click="selectDocument(statusUpdate)"
                                                             class="btn btn-sm center-block btn-block" style="overflow: hidden;"
                                                             data-ng-class="{
@@ -125,7 +125,7 @@
                                     </div>
                                 </div>
                                 <div class="col-md-9" style="padding-left: 5px; padding-right: 10px;">
-                                    <div data-ng-hide="selectedDocument || selectedPortfolio.portfolioStatusUpdates.length === 0" class="alert alert-warning text-center">
+                                    <div data-ng-hide="selectedDocument || portfolioStatusUpdates.length === 0" class="alert alert-warning text-center">
                                         Select a status update to see its details
                                     </div>
                                     <div class="panel panel-default" data-ng-show="selectedDocument">
@@ -138,9 +138,6 @@
                                             <div class="col-md-6 btn-group btn-group-xs btn-group-justified">
                                                 <label class="btn btn-info btn-xs" data-ng-model="documentDetails" btn-radio="'header'">
                                                     Header
-                                                </label>
-                                                <label class="btn btn-info btn-xs" data-ng-model="documentDetails" btn-radio="'budget'">
-                                                    Budget
                                                 </label>
                                                 <label class="btn btn-info btn-xs" data-ng-model="documentDetails" btn-radio="'status'">
                                                     Status
@@ -206,10 +203,10 @@
                                                         </div>
                                                         <hr>
                                                         <div class="form-group-sm pull-right" >
-                                                            <button class="btn btn-success btn-xs" data-ng-click="saveEditHeader(selectedPortfolio, selectedDocument)" data-ng-disabled="isResolving">
+                                                            <button class="btn btn-success btn-xs" data-ng-click="saveEditHeader(selectedDocument)" data-ng-disabled="isResolving">
                                                                 Save
                                                             </button>
-                                                            <button class="btn btn-danger btn-xs" data-ng-click="deleteDocument(selectedPortfolio, selectedDocument)" data-ng-disabled="isResolving">
+                                                            <button class="btn btn-danger btn-xs" data-ng-click="deleteDocument(selectedDocument)" data-ng-disabled="isResolving">
                                                                 Delete status update
                                                             </button>
                                                             <button class="btn btn-info btn-xs" data-ng-click="cancelEditHeader(selectedDocument)" data-ng-disabled="isResolving">
@@ -218,60 +215,6 @@
                                                         </div>
                                                     </form>
                                                 </div>
-                                            </div>
-                                            <div data-ng-show="documentDetails === 'budget'">
-                                                <table class="table small">
-                                                    <caption>
-                                                        Portfolio budget
-                                                    </caption>
-                                                    <tr>
-                                                        <th>Current budget</th>
-                                                        <th colspan="2">New budget</th>
-                                                        <th>Change</th>
-                                                    </tr>
-                                                    <tr>
-                                                        <td>
-                                                            <span data-ng-hide="selectedDocument.budgetReview.currentAmount">No amount</span>
-                                                            <span data-ng-bind="selectedDocument.budgetReview.currentAmount"></span>
-                                                        </td>
-                                                        <td colspan="2">
-                                                            <div data-ng-switch="switchBudgetForm[selectedDocument._id]">
-                                                                <div data-ng-switch-default="view">
-                                                                    <span data-ng-hide="selectedDocument.budgetReview.newAmount">No amount</span>
-                                                                    <span data-ng-bind="selectedDocument.budgetReview.newAmount"></span>
-                                                                    <button class="btn btn-success btn-xs"
-                                                                            data-ng-show="userHasAuthorization('edit', user, selectedProject) &&
-                                                                            (selectedDocument.approval.currentRecord.approvalState === 'draft')"
-                                                                            data-ng-click="editBudget(selectedDocument)">
-                                                                        <span class="glyphicon glyphicon-pencil"></span>
-                                                                    </button>
-                                                                </div>
-                                                                <div data-ng-switch-when="edit">
-                                                                    <div class="input-group input-group-sm">
-                                                                        <input type="number" min="0" id="" class="form-control" data-ng-model="selectedDocument.budgetReview.newAmount">
-                                                                    </div>
-                                                                    <br>
-                                                                    <button class="btn btn-success btn-xs" data-ng-click="saveEditBudget(selectedPortfolio, selectedDocument)"
-                                                                            data-ng-disabled="isResolving">
-                                                                        <span class="glyphicon glyphicon-ok"></span>
-                                                                    </button>
-                                                                    <button class="btn btn-info btn-xs" data-ng-click="cancelEditBudget(selectedDocument)"
-                                                                            data-ng-disabled="isResolving">
-                                                                        <span class="glyphicon glyphicon-remove"></span>
-                                                                    </button>
-                                                                </div>
-                                                            </div>
-                                                        </td>
-                                                        <td>
-                                                            <span data-ng-show="selectedDocument.budgetReview.currentAmount && selectedDocument.budgetReview.newAmount">
-                                                                {{(selectedDocument.budgetReview.newAmount - selectedDocument.budgetReview.currentAmount) | number:0}}
-                                                            </span>
-                                                            <span data-ng-show="!selectedDocument.budgetReview.currentAmount && selectedDocument.budgetReview.newAmount" class="text-center">
-                                                                -
-                                                            </span>
-                                                        </td>
-                                                    </tr>
-                                                </table>
                                             </div>
                                             <div data-ng-show="documentDetails === 'status'">
                                                 <div class="panel panel-default">
@@ -343,7 +286,7 @@
                                                                         </div>
                                                                         <div class="col-md-6">
                                                                             <div class="pull-right">
-                                                                                <button class="btn btn-success btn-xs" data-ng-click="saveEditOverallStatus(selectedPortfolio, selectedDocument)"
+                                                                                <button class="btn btn-success btn-xs" data-ng-click="saveEditOverallStatus(selectedDocument)"
                                                                                         data-ng-disabled="isResolving">
                                                                                     Save
                                                                                 </button>
@@ -444,7 +387,7 @@
                                                                         <div class="col-md-6">
                                                                             <div class="pull-right">
                                                                                 <button class="btn btn-success btn-xs"
-                                                                                        data-ng-click="saveEditStatusArea(selectedPortfolio, selectedDocument, statusAreaReview)"
+                                                                                        data-ng-click="saveEditStatusArea(selectedDocument, statusAreaReview)"
                                                                                         data-ng-disabled="isResolving">
                                                                                     Save
                                                                                 </button>
@@ -512,27 +455,27 @@
                                                 <br>
                                                 <div class="row">
                                                     <div class="col-md-6" data-ng-show="userHasAuthorization('edit', user, selectedPortfolio) && (selectedDocument.approval.currentRecord.approvalState === 'draft') ">
-                                                        <button class="form-control btn btn-success" data-ng-click="submit(selectedPortfolio, selectedDocument)"
+                                                        <button class="form-control btn btn-success" data-ng-click="submit(selectedDocument)"
                                                                 data-ng-disabled="isResolving">
                                                             Submit status update
                                                         </button>
                                                     </div>
                                                     <div data-ng-show="userHasAuthorization('approve', user, selectedPortfolio) && selectedDocument.approval.currentRecord.approvalState === 'submitted'">
                                                         <div class="col-md-6">
-                                                            <button class="form-control btn btn-success" data-ng-click="approve(selectedPortfolio, selectedDocument)"
+                                                            <button class="form-control btn btn-success" data-ng-click="approve(selectedDocument)"
                                                                     data-ng-disabled="isResolving">
                                                                 Approve status update
                                                             </button>
                                                         </div>
                                                         <div class="col-md-6">
-                                                            <button class="form-control btn btn-danger" data-ng-click="reject(selectedPortfolio, selectedDocument)"
+                                                            <button class="form-control btn btn-danger" data-ng-click="reject(selectedDocument)"
                                                                     data-ng-disabled="isResolving">
                                                                 Reject status update
                                                             </button>
                                                         </div>
                                                     </div>
                                                     <div class="col-md-6" data-ng-show="userHasAuthorization('edit', user, selectedPortfolio) && selectedDocument.approval.currentRecord.approvalState === 'rejected'">
-                                                        <button class="form-control btn btn-success" data-ng-click="draft(selectedPortfolio, selectedDocument)"
+                                                        <button class="form-control btn btn-success" data-ng-click="draft(selectedDocument)"
                                                                 data-ng-disabled="isResolving">
                                                             Draft status update
                                                         </button>

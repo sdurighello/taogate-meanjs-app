@@ -18,12 +18,12 @@
         <strong data-ng-bind="error"></strong>
     </div>
 	<div class="row">
-		<div class="col-md-4">
+		<div class="col-md-4" style="padding: 5px;">
 			<div class="panel panel-default">
 				<div class="panel-heading">
 					<h6 class="panel-title text-center">Portfolio tree</h6>
 				</div>
-				<div class="panel-body" style="min-height: 500px;  max-height: 500px; overflow-y: auto;">
+				<div class="panel-body" style="min-height: 550px;  max-height: 550px; overflow-y: auto;">
 					<div class="alert alert-warning text-center" data-ng-hide="!portfolios.$resolved || portfolios.length">
 						No portfolios yet
 					</div>
@@ -53,41 +53,59 @@
                 Select a node to see its details
             </div>
         </div>
-        <div class="col-md-8" data-ng-show="selectedNode">
+        <div class="col-md-8" data-ng-show="selectedNode" style="padding: 5px;">
             <div class="panel panel-default">
                 <div class="panel-heading">
                     <h6 class="panel-title text-center" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: normal; width: 100%;">
-                        {{selectedNode.name}}
+                        {{selectedNode.name}}&nbsp;
+                        <a href="" tooltip="Drag and Drop between the assigned and unassigned columns"
+                           tooltip-trigger="focus"
+                           data-ng-show="userHasAuthorization">
+                            <span class="glyphicon glyphicon-info-sign"></span>
+                        </a>
                     </h6>
                 </div>
-                <div class="panel-body" style="max-height: 500px; min-height: 500px;">
+                <div class="panel-body" style="max-height: 550px; min-height: 550px; padding-top: 1px">
                     <div class="row">
-                        <div class="col-md-6">
-                            <div class="panel panel-success">
+                        <div class="col-xs-12" style="padding: 5px;">
+                            <table class="table table-condensed small text-center">
+                                <thead>
+                                <tr>
+                                    <th class="text-center" colspan="4"><em>Earmarked funds</em></th>
+                                </tr>
+                                <tr>
+                                    <th class="text-center">Portfolio</th>
+                                    <th class="text-center">Assigned projects
+                                    <th class="text-center">Variance</th>
+                                    <th class="text-center">Unassigned projects</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr>
+                                    <td>{{selectedNode.earmarkedFunds | number : 0}}</td>
+                                    <td>{{getTotalEarmarkedFunds(selectedAssignments.assignedProjects[selectedNode._id]) | number : 0}}</td>
+                                    <td>{{selectedNode.earmarkedFunds - getTotalEarmarkedFunds(selectedAssignments.assignedProjects[selectedNode._id]) | number : 0}}</td>
+                                    <td>{{getTotalEarmarkedFunds(selectedAssignments.unassignedProjects) | number : 0}}</td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6" style="padding-right: 5px; padding-left: 10px;">
+                            <div class="panel panel-success" >
                                 <div class="panel-heading">
-                                    <h6 class="panel-title text-center">
-                                        Assigned projects&nbsp;
-                                        <a href="" tooltip="Drag and Drop between the assigned and unassigned columns"
-                                           tooltip-trigger="focus"
-                                                data-ng-show="userHasAuthorization">
-                                            <span class="glyphicon glyphicon-info-sign"></span>
-                                        </a>
-                                    </h6>
+                                    <h6 class="panel-title text-center" style="overflow: hidden">Assigned projects</h6>
                                 </div>
-                                <div class="panel-body">
+                                <div class="panel-body" style="margin: 0; padding-top: 5px; padding-bottom: 5px">
                                     <div data-ng-hide="selectedNode" class="alert alert-warning text-center">
                                         Select a portfolio to see its details
                                     </div>
                                     <div data-ng-show="selectedNode">
+                                        <input type="text" class="form-control input-sm" placeholder="Type to filter projects" data-ng-model="filterAssignedProject">
                                         <div class="row">
-                                            <div class="col-md-12 form-group-sm">
-                                                <input type="text" class="form-control" placeholder="Type to filter projects" data-ng-model="filterAssignedProject">
-                                            </div>
-                                        </div>
-                                        <br>
-                                        <div class="row" style="max-height: 350px; min-height: 350px;">
-                                            <div class="col-md-12">
-                                                <div class="panel panel-default">
+                                            <div class="col-md-12" style="padding: 5px;">
+                                                <div class="panel panel-default" style="padding: 0; margin: 0">
                                                     <div class="panel-body" data-as-sortable="dragControlListenersAssigned" data-ng-model="selectedAssignments.assignedProjects[selectedNode._id]"
                                                          is-disabled="isResolving || !userHasAuthorization"
                                                          style="overflow-y: auto; max-height: 330px; min-height: 330px;">
@@ -97,7 +115,9 @@
                                                         <button data-ng-repeat="project in selectedAssignments.assignedProjects[selectedNode._id] | filter:filterAssignedProject" as-sortable-item
                                                                 class="btn btn-default btn-sm btn-block center-block" style="overflow: hidden;">
                                                             <div as-sortable-item-handle class="text-center">
-                                                                <span data-ng-show="project.identification.idReference">{{project.identification.idReference}} - </span><span>{{project.identification.name}}</span>
+                                                                <span data-ng-show="project.identification.idReference">{{project.identification.idReference}} - </span>
+                                                                <span>{{project.identification.name}} </span><br>
+                                                                <span class="badge">{{project.identification.earmarkedFunds | number:0}}</span>
                                                             </div>
                                                         </button>
                                                     </div>
@@ -108,22 +128,17 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="col-md-6">
+                        <div class="col-md-6" style="padding-left: 5px; padding-right: 10px">
                             <div class="panel panel-danger">
                                 <div class="panel-heading">
-                                    <h6 class="panel-title text-center">Unassigned projects</h6>
+                                    <h6 class="panel-title text-center" style="overflow: hidden">Unassigned projects</h6>
                                 </div>
-                                <div class="panel-body">
+                                <div class="panel-body" style="margin: 0; padding-top: 5px; padding-bottom: 5px">
                                     <div>
+                                        <input type="text" class="form-control input-sm" placeholder="Type to filter projects" data-ng-model="filterUnassignedProject">
                                         <div class="row">
-                                            <div class="col-md-12 form-group-sm">
-                                                <input type="text" class="form-control" placeholder="Type to filter projects" data-ng-model="filterUnassignedProject">
-                                            </div>
-                                        </div>
-                                        <br>
-                                        <div class="row" style="max-height: 350px; min-height: 350px;">
-                                            <div class="col-md-12">
-                                                <div class="panel panel-default">
+                                            <div class="col-md-12" style="padding: 5px">
+                                                <div class="panel panel-default" style="padding: 0; margin: 0">
                                                     <div class="panel-body" data-as-sortable="dragControlListenersUnassigned" data-ng-model="selectedAssignments.unassignedProjects"
                                                          is-disabled="isResolving || !userHasAuthorization"
                                                          style="overflow-y: auto; max-height: 330px; min-height: 330px;">
@@ -133,7 +148,9 @@
                                                         <button data-ng-repeat="project in selectedAssignments.unassignedProjects | filter:filterUnassignedProject" as-sortable-item
                                                                 class="btn btn-default btn-sm btn-block center-block" style="overflow: hidden;">
                                                             <div as-sortable-item-handle class="text-center">
-                                                                <span data-ng-show="project.identification.idReference">{{project.identification.idReference}} - </span><span>{{project.identification.name}}</span>
+                                                                <span data-ng-show="project.identification.idReference">{{project.identification.idReference}} - </span>
+                                                                <span>{{project.identification.name}} </span><br>
+                                                                <span class="badge">{{project.identification.earmarkedFunds | number:0}}</span>
                                                             </div>
                                                         </button>
                                                     </div>
