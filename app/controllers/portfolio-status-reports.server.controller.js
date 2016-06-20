@@ -482,15 +482,19 @@ exports.create = function(req, res) {
 
             // Delivery Status - Overall status (must allow for new ones not existing in previous, and previous ones not existing in current)
 
-            portfolioStatusReport.deliveryStatus.overallStatus.previousStatus = inputObj.previousReport.deliveryStatus.overallStatus.currentStatus;
+            portfolioStatusReport.deliveryStatus.overallStatus.previousStatus = (!_.isEmpty(inputObj.previousReport) && inputObj.previousReport.deliveryStatus.overallStatus.currentStatus) || {_id: null, name: null, color: null};
             portfolioStatusReport.deliveryStatus.overallStatus.currentStatus = inputObj.portfolio.portfolioStatus.overallStatus.currentRecord.status;
             portfolioStatusReport.deliveryStatus.overallStatus.comment = inputObj.portfolio.portfolioStatus.overallStatus.currentRecord.status;
 
             _.each(inputObj.performances.portfolio.status.overallStatus.projectStatuses, function(projectStatus){
 
-                var previousProjectStatus = _.find(inputObj.previousReport.deliveryStatus.overallStatus.projectStatuses, function(ps){
-                    return ps.status._id.equals(projectStatus.status._id);
-                });
+                var previousProjectStatus = null;
+                if(!_.isEmpty(inputObj.previousReport)){
+                    previousProjectStatus = _.find(inputObj.previousReport.deliveryStatus.overallStatus.projectStatuses, function(ps){
+                        console.log(ps.status);
+                        return ps.status._id.equals(projectStatus.status._id);
+                    });
+                }
 
                 var newProjectStatus = {
                     status: projectStatus.status,
@@ -523,10 +527,13 @@ exports.create = function(req, res) {
                 portfolioStatusReport.deliveryStatus.overallStatus.projectStatuses.push(newProjectStatus);
 
             });
-            
-            var previousStatusesNotInCurrent = _.filter(inputObj.previousReport.deliveryStatus.overallStatus.projectStatuses, function(ps){
-                return !_.some(inputObj.performances.portfolio.status.overallStatus.projectStatuses, function(ps2){ return ps2.status._id.equals(ps.status._id); });
-            });
+
+            var previousStatusesNotInCurrent = null;
+            if(!_.isEmpty(inputObj.previousReport)){
+                previousStatusesNotInCurrent = _.filter(inputObj.previousReport.deliveryStatus.overallStatus.projectStatuses, function(ps){
+                    return !_.some(inputObj.performances.portfolio.status.overallStatus.projectStatuses, function(ps2){ return ps2.status._id.equals(ps.status._id); });
+                });
+            }
 
             _.each(previousStatusesNotInCurrent, function(lonelyProjectStatus){
 
@@ -566,9 +573,12 @@ exports.create = function(req, res) {
 
             _.each(inputObj.performances.portfolio.status.portfolioStatusAreas, function(portfolioStatusArea){
 
-                var previousPortfolioStatusArea = _.find(inputObj.previousReport.deliveryStatus.portfolioStatusAreas, function(ps){
-                    return ps.statusArea._id.equals(portfolioStatusArea.statusArea._id);
-                });
+                var previousPortfolioStatusArea = null;
+                if(!_.isEmpty(inputObj.previousReport)){
+                    previousPortfolioStatusArea = _.find(inputObj.previousReport.deliveryStatus.portfolioStatusAreas, function(ps){
+                        return ps.statusArea._id.equals(portfolioStatusArea.statusArea._id);
+                    });
+                }
 
                 var newPortfolioStatusArea = {
                     statusArea : portfolioStatusArea.statusArea,
