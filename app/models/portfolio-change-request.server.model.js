@@ -30,7 +30,7 @@ var approvalRecord = {
 };
 
 var AssociatedProjectChangeRequestSchema = new Schema({
-    _id : {type: Schema.Types.ObjectId, ref: 'Project.process.gates.projectChangeRequests', $tenant:true},
+    _id : {type: Schema.Types.ObjectId},
     project: {
         _id: {type: Schema.Types.ObjectId, ref: 'Project', $tenant:true},
         name: {type: String}

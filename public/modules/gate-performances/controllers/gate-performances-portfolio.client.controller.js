@@ -77,9 +77,7 @@ angular.module('gate-performances').controller('GatePerformancesPortfolioControl
             vm.isResolving = true;
             GatePerformances.portfolioPerformances(
                 {
-                    _id: (portfolio && portfolio._id) || null,
-                    name : vm.selectedPortfolio.name,
-                    budget : vm.selectedPortfolio.budget || null
+                    _id: (portfolio && portfolio._id) || null
                 },
                 function(res){
                     vm.isResolving = false;
@@ -107,6 +105,12 @@ angular.module('gate-performances').controller('GatePerformancesPortfolioControl
 
                     $scope.cancelModal = function () {
                         $modalInstance.dismiss();
+                    };
+                    
+                    $scope.getProjectStatusAreaData = function(projectStatusArea, gate){
+                        return _.find(gate.deliveryStatus.projectStatusAreas, function(gatePSA){
+                            return gatePSA._id === projectStatusArea._id;
+                        });
                     };
                 },
                 size: size,

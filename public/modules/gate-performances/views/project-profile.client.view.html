@@ -32,9 +32,9 @@
                                     <thead>
                                     <tr>
                                         <th> </th>
-                                        <th data-ng-repeat="gate in profile.process.gates" data-ng-class="{success : gate.gateState.currentRecord.currentGate}">
+                                        <th data-ng-repeat="gate in profile.process.gates">
                                             <div class="panel text-center" style="background-color: lightblue; margin: 0; padding: 5px;">
-                                                <span>{{gate.name}}</span>
+                                                <span>{{gate.name}}</span> <span class="glyphicon glyphicon-fire pull-right" data-ng-show="gate.gateState.currentRecord.currentGate"></span>
                                             </div>
                                         </th>
                                     </tr>
@@ -62,13 +62,23 @@
                                         </td>
                                     </tr>
                                     <tr>
-                                        <th>Delivery status</th>
+                                        <th>Overall status</th>
                                         <td data-ng-repeat="gate in profile.process.gates" data-ng-class="{success : gate.gateState.currentRecord.currentGate}">
                                             <div class="panel panel-heading text-center" data-ng-show="gate.deliveryStatus.overallStatus.currentRecord.status.name"
-                                                  ng-style="{'background-color': gate.deliveryStatus.overallStatus.currentRecord.status.color, 'padding': '5px', 'margin': '0px'}">
-                                                {{gate.deliveryStatus.overallStatus.currentRecord.status.name}}
+                                                  ng-style="{'background-color': gate.deliveryStatus.overallStatus.currentRecord.status.color, 'padding': '3px', 'margin': '0px'}">
+                                                <span>{{gate.deliveryStatus.overallStatus.currentRecord.status.name}}</span>
                                             </div>
                                             <span data-ng-show="!gate.deliveryStatus.overallStatus.currentRecord.status.name">No status</span>
+                                        </td>
+                                    </tr>
+                                    <tr data-ng-repeat="projectStatusArea in profile.process.currentGate.deliveryStatus.projectStatusAreas">
+                                        <th>{{projectStatusArea.statusArea.name}}</th>
+                                        <td data-ng-repeat="gate in profile.process.gates" data-ng-class="{success : gate.gateState.currentRecord.currentGate}">
+                                            <div class="panel panel-heading text-center" data-ng-show="getProjectStatusAreaData(projectStatusArea, gate).currentRecord.status.name"
+                                                 ng-style="{'background-color': getProjectStatusAreaData(projectStatusArea, gate).currentRecord.status.color, 'padding': '3px', 'margin': '0px'}">
+                                                <span>{{getProjectStatusAreaData(projectStatusArea, gate).currentRecord.status.name}}</span>
+                                            </div>
+                                            <span data-ng-show="!getProjectStatusAreaData(projectStatusArea, gate).currentRecord.status.name">No status</span>
                                         </td>
                                     </tr>
                                     <tr class="info">

@@ -20,9 +20,9 @@ var numberStatisticsRecord = {
     changeOnPrevious : {type: Number, default: null}
 };
 
-// Project Delivery Status stats
+// Project Status schema (used directly in "overall status")
 
-var ProjectDeliveryStatusSchema = new Schema({
+var ProjectStatusSchema = new Schema({
     status: {
         _id : {type: Schema.Types.ObjectId, ref: 'LogStatusIndicator', default:null, $tenant:true},
         name : {type: String, default:null},
@@ -30,19 +30,29 @@ var ProjectDeliveryStatusSchema = new Schema({
     },
     numberOfProjects : numberStatisticsRecord,
     ratioOfProjects : numberStatisticsRecord,
-    amountOfBudget : numberStatisticsRecord
+    amountOfBudget : numberStatisticsRecord,
+    ratioOfBudget : numberStatisticsRecord
 });
 
 // Portfolio Status Areas stats
 
 var PortfolioStatusAreaSchema = new Schema({
-    status: {
+    statusArea: {
+        _id: {type: Schema.Types.ObjectId, ref: 'LogStatusArea', $tenant:true},
+        name: {type: String}
+    },
+    currentStatus: {
+        _id : {type: Schema.Types.ObjectId, ref: 'LogStatusIndicator', default:null, $tenant:true},
+        name : {type: String, default:null},
+        color : {type: String, default: null}
+    },
+    previousStatus: {
         _id : {type: Schema.Types.ObjectId, ref: 'LogStatusIndicator', default:null, $tenant:true},
         name : {type: String, default:null},
         color : {type: String, default: null}
     },
     comment :{type: String, trim:true, default: null},
-    projectDeliveryStatuses : [ProjectDeliveryStatusSchema]
+    projectStatuses : [ProjectStatusSchema]
 });
 
 // Logs stats
@@ -79,7 +89,7 @@ var PortfolioStatusReportSchema = new Schema({
     user : {type: Schema.Types.ObjectId, ref: 'User'},
 
     portfolio : {
-        _id: {type: Schema.Types.ObjectId, ref: 'Portfolio', $tenant: true, required: 'Portfolio is required'},
+        _id: {type: Schema.Types.ObjectId, ref: 'Portfolio', $tenant: true, required: 'Portfolio id is required'},
         name : {type: String}
     },
 
@@ -97,8 +107,13 @@ var PortfolioStatusReportSchema = new Schema({
         displayName : {type: String, default: null}
     },
 
+    numberOfActiveProjects : numberStatisticsRecord,
+    
     earmarkedFunds : {
         portfolioAmount : numberStatisticsRecord,
+        averageAmount: numberStatisticsRecord,
+        minAmount : numberStatisticsRecord,
+        maxAmount : numberStatisticsRecord,
         projectsAmount : numberStatisticsRecord,
         variance : numberStatisticsRecord,
         variancePercent : numberStatisticsRecord
@@ -163,13 +178,18 @@ var PortfolioStatusReportSchema = new Schema({
 
     deliveryStatus : {
         overallStatus : {
-            status: {
+            currentStatus:{
+                _id : {type: Schema.Types.ObjectId, ref: 'LogStatusIndicator', default:null, $tenant:true},
+                name : {type: String, default:null},
+                color : {type: String, default: null}
+            },
+            previousStatus: {
                 _id : {type: Schema.Types.ObjectId, ref: 'LogStatusIndicator', default:null, $tenant:true},
                 name : {type: String, default:null},
                 color : {type: String, default: null}
             },
             comment :{type: String, trim:true, default: null},
-            projectDeliveryStatuses : [ProjectDeliveryStatusSchema]
+            projectStatuses : [ProjectStatusSchema]
         },
         portfolioStatusAreas : [PortfolioStatusAreaSchema]
     },
