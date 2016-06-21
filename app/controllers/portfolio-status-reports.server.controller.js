@@ -482,22 +482,33 @@ exports.create = function(req, res) {
 
             // Delivery Status - Overall status (must allow for new ones not existing in previous, and previous ones not existing in current)
 
-            portfolioStatusReport.deliveryStatus.overallStatus.previousStatus = (!_.isEmpty(inputObj.previousReport) && inputObj.previousReport.deliveryStatus.overallStatus.currentStatus) || {_id: null, name: null, color: null};
-            portfolioStatusReport.deliveryStatus.overallStatus.currentStatus = inputObj.portfolio.portfolioStatus.overallStatus.currentRecord.status;
-            portfolioStatusReport.deliveryStatus.overallStatus.comment = inputObj.portfolio.portfolioStatus.overallStatus.currentRecord.status;
+            portfolioStatusReport.deliveryStatus.overallStatus.previousStatus = {
+                _id : !_.isEmpty(inputObj.previousReport) ? inputObj.previousReport.deliveryStatus.overallStatus.currentStatus._id : null,
+                name : !_.isEmpty(inputObj.previousReport) ? inputObj.previousReport.deliveryStatus.overallStatus.currentStatus.name : null,
+                color : !_.isEmpty(inputObj.previousReport) ? inputObj.previousReport.deliveryStatus.overallStatus.currentStatus.color : null
+            };
+            portfolioStatusReport.deliveryStatus.overallStatus.currentStatus = {
+                _id : inputObj.portfolio.portfolioStatus.overallStatus.currentRecord.status._id,
+                name : inputObj.portfolio.portfolioStatus.overallStatus.currentRecord.status.name,
+                color : inputObj.portfolio.portfolioStatus.overallStatus.currentRecord.status.color
+            };
+            portfolioStatusReport.deliveryStatus.overallStatus.comment = inputObj.portfolio.portfolioStatus.overallStatus.currentRecord.comment;
 
             _.each(inputObj.performances.portfolio.status.overallStatus.projectStatuses, function(projectStatus){
 
                 var previousProjectStatus = null;
                 if(!_.isEmpty(inputObj.previousReport)){
                     previousProjectStatus = _.find(inputObj.previousReport.deliveryStatus.overallStatus.projectStatuses, function(ps){
-                        console.log(ps.status);
-                        return ps.status._id.equals(projectStatus.status._id);
+                        return (ps.status._id && projectStatus.status._id && ps.status._id.equals(projectStatus.status._id)) || true;
                     });
                 }
 
                 var newProjectStatus = {
-                    status: projectStatus.status,
+                    status: {
+                        _id: projectStatus.status._id,
+                        name: projectStatus.status.name,
+                        color: projectStatus.status.color
+                    },
                     numberOfProjects : { previous: 0, current: 0, change: 0, changeOnPrevious : 0 },
                     ratioOfProjects : { previous: 0, current: 0, change: 0, changeOnPrevious : 0 },
                     amountOfBudget : { previous: 0, current: 0, change: 0, changeOnPrevious : 0 },
@@ -531,14 +542,20 @@ exports.create = function(req, res) {
             var previousStatusesNotInCurrent = null;
             if(!_.isEmpty(inputObj.previousReport)){
                 previousStatusesNotInCurrent = _.filter(inputObj.previousReport.deliveryStatus.overallStatus.projectStatuses, function(ps){
-                    return !_.some(inputObj.performances.portfolio.status.overallStatus.projectStatuses, function(ps2){ return ps2.status._id.equals(ps.status._id); });
+                    return !_.some(inputObj.performances.portfolio.status.overallStatus.projectStatuses, function(ps2){
+                        return (ps2.status._id && ps.status._id && ps2.status._id.equals(ps.status._id)) || true; // either both with id or both null
+                    });
                 });
             }
 
             _.each(previousStatusesNotInCurrent, function(lonelyProjectStatus){
-
+            
                 var newProjectStatus = {
-                    status: lonelyProjectStatus.status,
+                    status: {
+                        _id : lonelyProjectStatus.status._id,
+                        name: lonelyProjectStatus.status.name,
+                        color : lonelyProjectStatus.status.color
+                    },
                     numberOfProjects : {
                         previous: lonelyProjectStatus.numberOfProjects.current,
                         current: 0,
@@ -581,9 +598,20 @@ exports.create = function(req, res) {
                 }
 
                 var newPortfolioStatusArea = {
-                    statusArea : portfolioStatusArea.statusArea,
-                    currentStatus: portfolioStatusArea.currentRecord.status,
-                    previousStatus: (previousPortfolioStatusArea && previousPortfolioStatusArea.currentStatus) || {_id: null, name: null, color: null},
+                    statusArea : {
+                        _id: portfolioStatusArea.statusArea._id,
+                        name: portfolioStatusArea.statusArea.name
+                    },
+                    currentStatus: {
+                        _id : portfolioStatusArea.currentRecord.status._id,
+                        name: portfolioStatusArea.currentRecord.status.name,
+                        color: portfolioStatusArea.currentRecord.status.color
+                    },
+                    previousStatus: {
+                        _id: previousPortfolioStatusArea && previousPortfolioStatusArea.currentStatus._id,
+                        name : previousPortfolioStatusArea && previousPortfolioStatusArea.currentStatus.name,
+                        color : previousPortfolioStatusArea && previousPortfolioStatusArea.currentStatus.color
+                    },
                     comment : portfolioStatusArea.currentRecord.comment,
                     projectStatuses : []
                 };
@@ -594,12 +622,16 @@ exports.create = function(req, res) {
 
                     if(previousPortfolioStatusArea && previousPortfolioStatusArea._id){
                         previousProjectStatus = _.find(previousPortfolioStatusArea.projectStatuses, function(ps){
-                            return ps.status._id.equals(projectStatus.status._id);
+                            return (ps.status._id && projectStatus.status._id && ps.status._id.equals(projectStatus.status._id)) || true;
                         });
                     }
 
                     var newProjectStatus = {
-                        status: projectStatus.status,
+                        status: {
+                            _id: projectStatus.status._id,
+                            name: projectStatus.status.name,
+                            color : projectStatus.status.color
+                        },
                         numberOfProjects : { previous: 0, current: 0, change: 0, changeOnPrevious : 0 },
                         ratioOfProjects : { previous: 0, current: 0, change: 0, changeOnPrevious : 0 },
                         amountOfBudget : { previous: 0, current: 0, change: 0, changeOnPrevious : 0 },
@@ -634,14 +666,20 @@ exports.create = function(req, res) {
 
                 if(previousPortfolioStatusArea && previousPortfolioStatusArea._id){
                     previousStatusesNotInCurrent = _.filter(previousPortfolioStatusArea.projectStatuses, function(ps){
-                        return !_.some(portfolioStatusArea.projectStatuses, function(ps2){ return ps2.status._id.equals(ps.status._id); });
+                        return !_.some(portfolioStatusArea.projectStatuses, function(ps2){
+                            return (ps2.status && ps.status && ps2.status._id.equals(ps.status._id)) || true;
+                        });
                     });
                 }
 
                 _.each(previousStatusesNotInCurrent, function(lonelyProjectStatus){
 
                     var newProjectStatus = {
-                        status: lonelyProjectStatus.status,
+                        status: {
+                            _id: lonelyProjectStatus.status._id,
+                            name: lonelyProjectStatus.status.name,
+                            color: lonelyProjectStatus.status.color
+                        },
                         numberOfProjects : {
                             previous: lonelyProjectStatus.numberOfProjects.current,
                             current: 0,
@@ -680,7 +718,6 @@ exports.create = function(req, res) {
 
 
             // Project Logs - Issues
-
 
             callback(null);
         },

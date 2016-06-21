@@ -410,20 +410,23 @@ angular.module('core').service('Menus', [
                 // Portfolio milestones
         this.addSubMenuItem('topbar', 'delivery', 'Portfolio milestones', 'portfolio-milestones','portfolio-milestones',false,
             ['superAdmin','admin','pmo','projectManager','portfolioManager','executive'],13);
+                // Logs Summary
+        // this.addSubMenuItem('topbar', 'delivery', 'Logs summary', 'log-summaries/portfolioLogs','log-summaries/portfolioLogs',false,
+        //     ['superAdmin','admin','pmo','projectManager','portfolioManager','executive'],14);
             // Status reports
         this.addSubMenuItem('topbar', 'delivery', '', 'divider','divider',false,
-            ['superAdmin','admin','pmo','projectManager','portfolioManager','executive'],14);
-        this.addSubMenuItem('topbar', 'delivery', 'Status', 'menuTitle','menuTitle',false,
             ['superAdmin','admin','pmo','projectManager','portfolioManager','executive'],15);
+        this.addSubMenuItem('topbar', 'delivery', 'Status', 'menuTitle','menuTitle',false,
+            ['superAdmin','admin','pmo','projectManager','portfolioManager','executive'],16);
                 // Project status
         this.addSubMenuItem('topbar', 'delivery', 'Project status update', 'project-status-updates','project-status-updates',false,
-            ['superAdmin','admin','pmo','projectManager','portfolioManager','executive'],16);
+            ['superAdmin','admin','pmo','projectManager','portfolioManager','executive'],17);
                 // Portfolio status
         this.addSubMenuItem('topbar', 'delivery', 'Portfolio status update', 'portfolio-status-updates','portfolio-status-updates',false,
-            ['superAdmin','admin','pmo','projectManager','portfolioManager','executive'],17);
+            ['superAdmin','admin','pmo','projectManager','portfolioManager','executive'],18);
                 // Portfolio status reports
         this.addSubMenuItem('topbar', 'delivery', 'Portfolio status reports', 'portfolio-status-reports','portfolio-status-reports',false,
-           ['superAdmin','admin','pmo','projectManager','portfolioManager','executive'],18);
+           ['superAdmin','admin','pmo','projectManager','portfolioManager','executive'],19);
 
 
 	}

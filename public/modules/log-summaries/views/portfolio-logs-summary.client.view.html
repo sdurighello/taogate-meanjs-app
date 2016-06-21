@@ -1,0 +1,292 @@
+<section data-ng-controller="LogSummariesController as vm" data-ng-init="vm.init()">
+    <br>
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="panel-heading" style="padding: 0">
+                <ol class="breadcrumb">
+                    <li>Portfolio delivery</li>
+                    <li>Portfolio logs</li>
+                    <li class="active">Portfolio logs summary</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm-3" style="padding-right: 5px"><!-- PORTFOLIO LIST -->
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h6 class="panel-title text-center">Portfolio tree</h6>
+                </div>
+                <div class="panel-body">
+                    <div class="alert alert-warning text-center" data-ng-hide="!vm.portfolios.$resolved || vm.portfolios.length">
+                        No portfolios yet
+                    </div>
+                    <div class="row" data-ng-show="vm.portfolios.$resolved && vm.portfolios.length !== 0">
+                        <div class="col-md-12">
+                            <button class="btn btn-default btn-sm btn-warning" style="min-width:50px; max-width: 150px; overflow:hidden; margin: 2%;"
+                                    data-ng-click="vm.selectPortfolio()">
+                                Unassigned
+                            </button>
+                        </div>
+                    </div>
+                    <hr style="margin: 5px">
+                    <div class="row" style="min-height: 470px;  max-height: 470px; overflow-y: auto;">
+                        <div class="col-md-12">
+                            <script type="text/ng-template" id="portfolioTree">
+                                <button class="btn btn-default btn-sm" data-ng-click="vm.selectPortfolio(tree.node);"
+                                        style="min-width:50px; max-width: 150px; overflow:hidden; margin: 2%;">
+                                    <span data-ng-bind="tree.node.name"></span>
+                                </button>
+                                <ul data-ng-if="tree.nodeTrees" style="list-style: none;">
+                                    <li data-ng-repeat="tree in tree.nodeTrees track by $index " >
+                                        <span data-ng-include="'portfolioTree'" style="display:block; margin-left:-0.5em;"></span>
+                                    </li>
+                                </ul>
+                            </script>
+                            <ul style="margin-left: 2%; padding-left: 2%; list-style: none;">
+                                <li data-ng-repeat="tree in vm.portfolioTrees track by $index" >
+                                    <span data-ng-include="'portfolioTree'" style="display:block; margin-left:-0.5em;"></span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-9" style="padding-left: 5px">
+            <div class="row">
+                <div class="col-md-12">
+                    <div data-ng-hide="vm.selectedPortfolio || vm.portfolios.length === 0" class="alert alert-warning text-center">
+                        Select a portfolio to see its details
+                    </div>
+                </div>
+            </div>
+            <div class="row" data-ng-show="vm.selectedPortfolio">
+                <div class="col-md-12">
+                    <div class="panel panel-default">
+                        <div class="panel-heading text-center" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: normal; width: 100%;">
+                            <h6 class="panel-title">{{vm.selectedPortfolio.name}}</h6>
+                        </div>
+                        <div class="panel-body">
+                            <div class="row" data-ng-show="!vm.portfolioPerformances">
+                                <div class="col-md-12">
+                                    <div class="alert alert-warning text-center">
+                                        No delivery data to show
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row" data-ng-show="vm.portfolioPerformances" style="min-height: 175px">
+                                <div class="col-xs-8">
+                                    <table class="table table-bordered table-condensed">
+                                        <thead>
+                                        <tr>
+                                            <th rowspan="2" class="text-center">N. of projects</th>
+                                            <th colspan="4" class="text-center">Project budgets</th>
+                                        </tr>
+                                        <tr>
+                                            <th class="text-center">Total</th>
+                                            <th class="text-center">Avg</th>
+                                            <th class="text-center">Min</th>
+                                            <th class="text-center">Max</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        <tr>
+                                            <td class="text-center">{{vm.portfolioPerformances.portfolio.numberOfProjects | number : 0}}</td>
+                                            <td class="text-center">{{vm.portfolioPerformances.portfolio.budget.amount | number : 0}}</td>
+                                            <td class="text-center">{{vm.portfolioPerformances.portfolio.budget.averageAmount | number : 0}}</td>
+                                            <td class="text-center">{{vm.portfolioPerformances.portfolio.budget.minAmount | number : 0}}</td>
+                                            <td class="text-center">{{vm.portfolioPerformances.portfolio.budget.maxAmount | number : 0}}</td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <div class="col-xs-4">
+                                    <table class="table table-bordered table-condensed">
+                                        <thead>
+                                        <tr>
+                                            <th colspan="2" class="text-center">Portfolio budget</th>
+                                        </tr>
+                                        <tr>
+                                            <th class="text-center">Amount</th>
+                                            <th class="text-center">Variance</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        <tr>
+                                            <td class="text-center">{{vm.portfolioPerformances.portfolio.portfolioBudget.amount | number : 0}}</td>
+                                            <td class="text-center">
+                                                {{vm.portfolioPerformances.portfolio.portfolioBudget.variance | number : 0}} ({{100 * vm.portfolioPerformances.portfolio.portfolioBudget.variancePercent | number : 1}}%)
+                                            </td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <div class="col-xs-12">
+                                    <table class="table table-bordered table-condensed">
+                                        <thead>
+                                        <tr>
+                                            <th colspan="3" class="text-center">Portfolio status</th>
+                                        </tr>
+                                        <tr>
+                                            <th> </th>
+                                            <th class="text-center">Portfolio</th>
+                                            <th class="text-center">Projects</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        <tr class="text-center">
+                                            <th class="text-center">Overall status</th>
+                                            <td>
+                                                <div class="panel panel-default panel-heading text-center col-xs-12" data-ng-show="vm.portfolioPerformances.portfolio.status.overallStatus.currentRecord.status.name"
+                                                     ng-style="{'background-color':vm.portfolioPerformances.portfolio.status.overallStatus.currentRecord.status.color, 'padding': '3px', 'margin': '0px'}">
+                                                    <span>{{vm.portfolioPerformances.portfolio.status.overallStatus.currentRecord.status.name}}</span>
+                                                </div>
+                                                <span data-ng-show="!vm.portfolioPerformances.portfolio.status.overallStatus.currentRecord.status.name">No status</span>
+                                            </td>
+                                            <td>
+                                                <div class="panel panel-default panel-heading text-center col-xs-12" data-ng-repeat="projectStatus in vm.portfolioPerformances.portfolio.status.overallStatus.projectStatuses"
+                                                     ng-style="{'background-color':projectStatus.status.color, 'padding': '3px', 'margin': '0px'}">
+                                                    <span data-ng-show="projectStatus.status.name">{{projectStatus.status.name}} -> Count: {{projectStatus.numberOfProjects | number: 0}} ({{100 * projectStatus.ratioOfProjects | number: 1}})% Budget: {{projectStatus.amountOfBudget | number: 0}} ({{100 * projectStatus.ratioOfBudget | number: 1}})%</span>
+                                                    <span data-ng-show="!projectStatus.status.name">No status -> Count: {{projectStatus.numberOfProjects | number: 0}} ({{100 * projectStatus.ratioOfProjects | number: 1}})% Budget: {{projectStatus.amountOfBudget | number: 0}} ({{100 * projectStatus.ratioOfBudget | number: 1}})%</span>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <tr class="text-center" data-ng-repeat="portfolioStatusArea in vm.portfolioPerformances.portfolio.status.portfolioStatusAreas">
+                                            <th class="text-center">{{portfolioStatusArea.statusArea.name}}</th>
+                                            <td>
+                                                <div class="panel panel-default panel-heading text-center col-xs-12" data-ng-show="portfolioStatusArea.currentRecord.status.name"
+                                                     ng-style="{'background-color':portfolioStatusArea.currentRecord.status.color, 'padding': '3px', 'margin': '0px'}">
+                                                    <span>{{portfolioStatusArea.currentRecord.status.name}}</span>
+                                                </div>
+                                                <span data-ng-show="!portfolioStatusArea.currentRecord.status.name">No status</span>
+                                            </td>
+                                            <td>
+                                                <div class="panel panel-default panel-heading text-center col-xs-12" data-ng-repeat="projectStatus in portfolioStatusArea.projectStatuses"
+                                                     data-ng-show="portfolioStatusArea.projectStatuses.length > 0"
+                                                     ng-style="{'background-color':projectStatus.status.color, 'padding': '3px', 'margin': '0px'}">
+                                                    <span data-ng-show="projectStatus.status.name">{{projectStatus.status.name}} -> Count: {{projectStatus.numberOfProjects | number: 0}} ({{100 * projectStatus.ratioOfProjects | number: 1}})% Budget: {{projectStatus.amountOfBudget | number: 0}} ({{100 * projectStatus.ratioOfBudget | number: 1}})%</span>
+                                                    <span data-ng-show="!projectStatus.status.name">No Status -> Count: {{projectStatus.numberOfProjects | number: 0}} ({{100 * projectStatus.ratioOfProjects | number: 1}})% Budget: {{projectStatus.amountOfBudget | number: 0}} ({{100 * projectStatus.ratioOfBudget | number: 1}})%</span>
+                                                </div>
+                                                <div data-ng-show="!portfolioStatusArea.projectStatuses.length > 0">Status area not applicable for projects</div>
+                                            </td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <div class="col-xs-12">
+                                    <table class="table table-bordered table-condensed">
+                                        <thead>
+                                        <tr>
+                                            <th colspan="5" class="text-center">Projects aggregated performances</th>
+                                        </tr>
+                                        <tr>
+                                            <th class="text-center"> </th>
+                                            <th class="text-center">Baseline</th>
+                                            <th class="text-center">Estimate</th>
+                                            <th class="text-center">Actual</th>
+                                            <th class="text-center">Variance</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        <tr>
+                                            <th class="text-center">Duration</th>
+                                            <td class="text-center">{{vm.portfolioPerformances.portfolio.duration.baselineDays | number : 0}}d</td>
+                                            <td class="text-center">{{vm.portfolioPerformances.portfolio.duration.estimateDays | number : 0}}d</td>
+                                            <td class="text-center">{{vm.portfolioPerformances.portfolio.duration.actualDays | number : 0}}d</td>
+                                            <td class="text-center">
+                                                {{vm.portfolioPerformances.portfolio.duration.variance | number : 0}} ({{100 * vm.portfolioPerformances.portfolio.duration.variancePercent | number : 1}}%)
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <th class="text-center">Cost</th>
+                                            <td class="text-center">{{vm.portfolioPerformances.portfolio.cost.baseline | number : 0}}</td>
+                                            <td class="text-center">{{vm.portfolioPerformances.portfolio.cost.estimate | number : 0}}</td>
+                                            <td class="text-center">{{vm.portfolioPerformances.portfolio.cost.actual | number : 0}}</td>
+                                            <td class="text-center">
+                                                {{vm.portfolioPerformances.portfolio.cost.variance | number : 0}} ({{100 * vm.portfolioPerformances.portfolio.cost.variancePercent | number : 1}}%)
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <th class="text-center">Completion</th>
+                                            <td class="text-center">{{vm.portfolioPerformances.portfolio.completion.baseline | number : 0}}</td>
+                                            <td class="text-center">{{vm.portfolioPerformances.portfolio.completion.estimate | number : 0}}</td>
+                                            <td class="text-center">{{vm.portfolioPerformances.portfolio.completion.actual | number : 0}}</td>
+                                            <td class="text-center">
+                                                {{vm.portfolioPerformances.portfolio.completion.variance | number : 0}} ({{100 * vm.portfolioPerformances.portfolio.completion.variancePercent | number : 1}}%)
+                                            </td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            <div class="row" data-ng-show="vm.portfolioPerformances.projects.length">
+                                <div class="col-xs-12">
+                                    <div class="table-responsive">
+                                        <table class="table table-bordered table-hover table-condensed">
+                                            <thead>
+                                            <tr>
+                                                <th rowspan="2" colspan="2" class="text-center">
+                                                    <span>Project</span>
+                                                    <input title="filter project name" class="input-sm form-control" placeholder="-- filter by name" data-ng-model="vm.filterProjectName">
+                                                    <input title="filter project name" class="input-sm form-control" placeholder="-- filter by id" data-ng-model="vm.filterProjectIdNumber">
+                                                </th>
+                                                <th rowspan="2" class="text-center">
+                                                    <span>Budget</span>
+                                                    <button class="btn btn-xs" data-ng-click="vm.orderByRanking('cumulativeData.budget.amount', true, 'Budget')">
+                                                        <span class="glyphicon glyphicon-sort-by-attributes-alt"></span>
+                                                    </button>
+                                                </th>
+                                                <th colspan="4" class="text-center">Variances on baseline</th>
+                                            </tr>
+                                            <tr>
+                                                <!-- variances on baseline -->
+                                                <th class="text-center">
+                                                    <span>Budget</span>
+                                                    <button class="btn btn-xs" data-ng-click="vm.orderByRanking('cumulativeData.budget.varianceBaselinePercent', true, 'Budget variance')">
+                                                        <span class="glyphicon glyphicon-sort-by-attributes-alt"></span>
+                                                    </button>
+                                                </th>
+                                                <th class="text-center">
+                                                    <span>Duration</span>
+                                                    <button class="btn btn-xs" data-ng-click="vm.orderByRanking('cumulativeData.duration.varianceBaselinePercent', true, 'Duration variance')">
+                                                        <span class="glyphicon glyphicon-sort-by-attributes-alt"></span>
+                                                    </button>
+                                                </th>
+                                                <th class="text-center">
+                                                    <span>Cost</span>
+                                                    <button class="btn btn-xs" data-ng-click="vm.orderByRanking('cumulativeData.cost.varianceBaselinePercent', true, 'Cost variance')">
+                                                        <span class="glyphicon glyphicon-sort-by-attributes-alt"></span>
+                                                    </button>
+                                                </th>
+                                                <th class="text-center">
+                                                    <span>Completion</span>
+                                                    <button class="btn btn-xs" data-ng-click="vm.orderByRanking('cumulativeData.completion.varianceBaselinePercent', true, 'Completion variance')">
+                                                        <span class="glyphicon glyphicon-sort-by-attributes-alt"></span>
+                                                    </button>
+                                                </th>
+                                            </tr>
+                                            </thead>
+                                            <tbody>
+                                            <tr data-ng-repeat="profile in vm.portfolioPerformances.projects | orderBy : vm.orderByProperty : vm.orderByDirection" data-ng-click="vm.selectProjectProfile(profile)">
+                                                <td class="btn-link">{{profile.idNumber}}</td>
+                                                <td class="btn-link">{{profile.identification.name}}</td>
+                                                <td class="text-center">{{profile.cumulativeData.budget.amount | number : 0}}</td>
+                                                <!-- variance on baseline -->
+                                                <td class="text-center">{{profile.cumulativeData.budget.varianceBaseline | number : 0}} ({{profile.cumulativeData.budget.varianceBaselinePercent * 100 | number : 1}}%)</td>
+                                                <td class="text-center">{{profile.cumulativeData.duration.variance | number : 0}} ({{profile.cumulativeData.duration.variancePercent * 100 | number : 1}}%)</td>
+                                                <td class="text-center">{{profile.cumulativeData.cost.variance | number : 0}} ({{profile.cumulativeData.cost.variancePercent * 100 | number : 1}}%)</td>
+                                                <td class="text-center">{{profile.cumulativeData.completion.variance | number : 0}} ({{profile.cumulativeData.completion.variancePercent * 100 | number : 1}}%)</td>
+                                            </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

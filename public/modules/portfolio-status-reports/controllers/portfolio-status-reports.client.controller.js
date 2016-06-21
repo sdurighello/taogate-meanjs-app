@@ -202,6 +202,9 @@ angular.module('portfolio-status-reports').controller('PortfolioStatusReportsCon
                     vm.portfolioStatusReports.push(res);
                     vm.newDocument = {};
                     vm.showNewDocumentForm = false;
+                    
+                    console.log(res);
+
                 },
                 function(err){
                     vm.isResolving = false;

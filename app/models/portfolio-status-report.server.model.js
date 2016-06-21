@@ -24,9 +24,9 @@ var numberStatisticsRecord = {
 
 var ProjectStatusSchema = new Schema({
     status: {
-        _id : {type: Schema.Types.ObjectId, ref: 'LogStatusIndicator', default:null, $tenant:true},
-        name : {type: String, default:null},
-        color : {type: String, default: null}
+        _id : {type: Schema.Types.ObjectId, ref: 'LogStatusIndicator', $tenant:true},
+        name : {type: String},
+        color : {type: String}
     },
     numberOfProjects : numberStatisticsRecord,
     ratioOfProjects : numberStatisticsRecord,
@@ -38,8 +38,8 @@ var ProjectStatusSchema = new Schema({
 
 var PortfolioStatusAreaSchema = new Schema({
     statusArea: {
-        _id: {type: Schema.Types.ObjectId, ref: 'LogStatusArea', $tenant:true},
-        name: {type: String}
+        _id: {type: Schema.Types.ObjectId, ref: 'LogStatusArea', default:null, $tenant:true},
+        name: {type: String, default:null}
     },
     currentStatus: {
         _id : {type: Schema.Types.ObjectId, ref: 'LogStatusIndicator', default:null, $tenant:true},

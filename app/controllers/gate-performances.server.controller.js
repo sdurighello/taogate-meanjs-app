@@ -610,7 +610,7 @@ var getPortfolioPerformances = function(user, portfolioId, callback){
                 .map(function(v, k){
                     return {
                         status: {
-                            _id : k,
+                            _id : mongoose.Types.ObjectId.isValid(k) ? k : null,
                             name : v[0].process.currentGate.deliveryStatus.overallStatus.currentRecord.status.name,
                             color : v[0].process.currentGate.deliveryStatus.overallStatus.currentRecord.status.color
                         },
@@ -647,7 +647,7 @@ var getPortfolioPerformances = function(user, portfolioId, callback){
                     .map(function(v, k){
                         return {
                             status: {
-                                _id : k,
+                                _id : mongoose.Types.ObjectId.isValid(k) ? k : null,
                                 name : v[0].projectStatusArea.currentRecord.status.name,
                                 color : v[0].projectStatusArea.currentRecord.status.color
                             },
