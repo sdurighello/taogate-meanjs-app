@@ -7,7 +7,23 @@ angular.module('portfolio-status-reports').factory('PortfolioStatusReports', ['$
 		}, {
 			update: {
 				method: 'PUT'
-			}
+			},
+
+            updateHeader: {
+                method: 'PUT',
+                url: 'portfolio-status-reports/:portfolioStatusReportId/header'
+            },
+
+            updateOverallStatus: {
+                method: 'PUT',
+                url: 'portfolio-status-reports/:portfolioStatusReportId/overallStatus'
+            },
+
+            updateStatusArea: {
+                method: 'PUT',
+                url: 'portfolio-status-reports/:portfolioStatusReportId/portfolioStatusAreas/:portfolioStatusAreaId'
+            }
+            
 		});
 	}
 ]);

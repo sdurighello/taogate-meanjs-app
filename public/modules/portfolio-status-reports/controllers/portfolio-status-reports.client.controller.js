@@ -1,9 +1,9 @@
 'use strict';
 
 angular.module('portfolio-status-reports').controller('PortfolioStatusReportsController', ['$rootScope', '$scope','$stateParams', '$location',
-    'Authentication', 'Projects', 'Portfolios','$q', '_', 'GateProcessTemplates', 'LogStatusIndicators', 'PortfolioStatusReports', '$modal',
+    'Authentication', 'Projects', 'Portfolios','$q', '_', 'GateProcessTemplates', 'LogStatusIndicators', 'PortfolioStatusReports', '$modal', 'StatusReportTypes',
     function($rootScope, $scope, $stateParams, $location, Authentication, Projects, Portfolios, $q, _,
-             GateProcessTemplates, LogStatusIndicators, PortfolioStatusReports, $modal) {
+             GateProcessTemplates, LogStatusIndicators, PortfolioStatusReports, $modal, StatusReportTypes) {
 
         $rootScope.staticMenu = false;
 
@@ -40,6 +40,12 @@ angular.module('portfolio-status-reports').controller('PortfolioStatusReportsCon
 
             LogStatusIndicators.query(function(logStatusIndicators){
                 vm.logStatusIndicators = logStatusIndicators;
+            }, function(err){
+                vm.initError.push(err.data.message);
+            });
+
+            StatusReportTypes.query(function(res){
+                vm.statusReportTypes = res;
             }, function(err){
                 vm.initError.push(err.data.message);
             });
@@ -92,15 +98,7 @@ angular.module('portfolio-status-reports').controller('PortfolioStatusReportsCon
             if(string === 'view'){ vm.switchHeaderForm[document._id] = 'view';}
             if(string === 'edit'){vm.switchHeaderForm[document._id] = 'edit';}
         };
-
-        // Budget
-
-        vm.switchBudgetForm = {};
-        vm.selectBudgetForm = function(string, document){
-            if(string === 'view'){ vm.switchBudgetForm[document._id] = 'view';}
-            if(string === 'edit'){vm.switchBudgetForm[document._id] = 'edit';}
-        };
-
+        
         // Delivery Status
 
         vm.switchOverallStatusForm = {};
@@ -108,8 +106,6 @@ angular.module('portfolio-status-reports').controller('PortfolioStatusReportsCon
             if(string === 'view'){ vm.switchOverallStatusForm[document._id] = 'view';}
             if(string === 'edit'){vm.switchOverallStatusForm[document._id] = 'edit';}
         };
-
-        // Status Areas
 
         vm.switchStatusAreaForm = {};
         vm.selectStatusAreaForm = function(string, statusAreaReview){
@@ -170,10 +166,10 @@ angular.module('portfolio-status-reports').controller('PortfolioStatusReportsCon
 
         vm.newHeaderDateOpened = {};
 
-        vm.openNewHeaderDate = function(portfolio, $event){
+        vm.openNewHeaderDate = function(document, $event){
             $event.preventDefault();
             $event.stopPropagation();
-            vm.newHeaderDateOpened[portfolio._id] = true;
+            vm.newHeaderDateOpened[document._id] = true;
         };
 
         vm.newDocument = {};
@@ -184,6 +180,10 @@ angular.module('portfolio-status-reports').controller('PortfolioStatusReportsCon
                 portfolio : {
                     _id : portfolio._id,
                     name : portfolio.name
+                },
+                type : {
+                    _id: vm.newDocument.type._id,
+                    name: vm.newDocument.type.name
                 },
                 date : vm.newDocument.updateDate,
                 title : vm.newDocument.title,
@@ -202,9 +202,6 @@ angular.module('portfolio-status-reports').controller('PortfolioStatusReportsCon
                     vm.portfolioStatusReports.push(res);
                     vm.newDocument = {};
                     vm.showNewDocumentForm = false;
-                    
-                    console.log(res);
-
                 },
                 function(err){
                     vm.isResolving = false;
@@ -228,13 +225,23 @@ angular.module('portfolio-status-reports').controller('PortfolioStatusReportsCon
         };
 
         vm.initDocumentDetails = function(){
-            vm.selectedDocument = PortfolioStatusReports.get({
+
+            PortfolioStatusReports.get({
                 portfolioStatusReportId: $stateParams.portfolioStatusReportId
+            }, function(res){
+                vm.selectedDocument = res;
+                vm.selectedDocumentStatusAreas = _.chunk(res.deliveryStatus.portfolioStatusAreas, 2);
+                console.log(res);
+            }, function(err){
+                vm.error = err.data.message;
             });
 
-            vm.selectedDocumentExample = _.chunk([
-                {name: 'ciao'}, {name: 'ciao'}, {name: 'ciao'}
-            ], 2);
+            StatusReportTypes.query(function(res){
+                vm.statusReportTypes = res;
+            }, function(err){
+                vm.initError.push(err.data.message);
+            });
+
         };
 
 
@@ -250,27 +257,25 @@ angular.module('portfolio-status-reports').controller('PortfolioStatusReportsCon
 
         var originalHeader = {};
 
-        vm.editHeader = function(statusUpdate){
-            originalHeader[statusUpdate._id] = {
-                updateDate: statusUpdate.updateDate,
-                title : statusUpdate.title,
-                description : statusUpdate.description
+        vm.editHeader = function(document){
+            originalHeader[document._id] = {
+                date: document.date,
+                title : document.title
             };
-            vm.selectHeaderForm('edit', statusUpdate);
+            vm.selectHeaderForm('edit', document);
         };
 
-        vm.saveEditHeader = function(portfolio, statusUpdate){
+        vm.saveEditHeader = function(document){
             vm.error = null;
             vm.isResolving = true;
-            Portfolios.updateStatusUpdateHeader(
+            PortfolioStatusReports.updateHeader(
                 {
-                    portfolioId : portfolio._id,
-                    portfolioStatusUpdateId : statusUpdate._id
-                }, statusUpdate,
+                    portfolioStatusReportId : portfolio._id
+                }, document,
                 function(res){
                     vm.isResolving = false;
                     // Close edit header form and back to view
-                    vm.selectHeaderForm('view', statusUpdate);
+                    vm.selectHeaderForm('view', document);
                 },
                 function(err){
                     vm.isResolving = false;
@@ -279,68 +284,29 @@ angular.module('portfolio-status-reports').controller('PortfolioStatusReportsCon
             );
         };
 
-        vm.cancelEditHeader = function(statusUpdate){
+        vm.cancelEditHeader = function(document){
             vm.error = null;
-            statusUpdate.updateDate = originalHeader[statusUpdate._id].updateDate;
-            statusUpdate.title = originalHeader[statusUpdate._id].title;
-            statusUpdate.description = originalHeader[statusUpdate._id].description;
-            vm.selectHeaderForm('view', statusUpdate);
+            document.date = originalHeader[document._id].date;
+            document.title = originalHeader[document._id].title;
+            vm.selectHeaderForm('view', document);
         };
 
 
-        vm.deleteDocument = function(portfolio, statusUpdate){
+        vm.deleteDocument = function(document){
             vm.error = null;
             vm.isResolving = true;
-            Portfolios.deleteStatusUpdate(
+            PortfolioStatusReports.delete(
                 {
-                    portfolioId : portfolio._id,
-                    portfolioStatusUpdateId: statusUpdate._id
-                }, statusUpdate, function(res){
+                    portfolioStatusReportId: document._id
+                }, document, function(res){
                     vm.isResolving = false;
-                    portfolio.portfolioStatusReports = _.without(portfolio.portfolioStatusReports, statusUpdate);
+                    vm.portfolioStatusReports = _.without(vm.portfolioStatusReports, document);
                     vm.cancelNewDocument();
                     vm.selectedDocument = null;
                 }, function(err){
                     vm.isResolving = false;
                     vm.error = err.data.message;
                 });
-        };
-
-        // -------------------------------------------------------- BUDGET -------------------------------------------------
-
-        var originalBudget = {};
-
-        vm.editBudget = function(statusUpdate){
-            originalBudget[statusUpdate._id] = {
-                newAmount : statusUpdate.budgetReview.newAmount
-            };
-            vm.selectBudgetForm('edit', statusUpdate);
-        };
-
-        vm.saveEditBudget = function(portfolio, statusUpdate){
-            vm.error = null;
-            vm.isResolving = true;
-            Portfolios.updateStatusUpdateBudget(
-                {
-                    portfolioId : portfolio._id,
-                    portfolioStatusUpdateId: statusUpdate._id
-                }, statusUpdate,
-                function(res){
-                    vm.isResolving = false;
-                    originalBudget[statusUpdate._id].newAmount = statusUpdate.budgetReview.newAmount;
-                    vm.selectBudgetForm('view', statusUpdate);
-                },
-                function(err){
-                    vm.isResolving = false;
-                    vm.error = err.data.message;
-                }
-            );
-        };
-
-        vm.cancelEditBudget = function(statusUpdate){
-            vm.error = null;
-            statusUpdate.budgetReview.newAmount = originalBudget[statusUpdate._id].newAmount;
-            vm.selectBudgetForm('view', statusUpdate);
         };
 
 
@@ -350,26 +316,24 @@ angular.module('portfolio-status-reports').controller('PortfolioStatusReportsCon
 
         var originalOverallStatus = {};
 
-        vm.editOverallStatus = function(statusUpdate){
-            originalOverallStatus[statusUpdate._id] = {
-                newStatus: statusUpdate.portfolioStatus.overallStatusReview.newStatus,
-                newComment : statusUpdate.portfolioStatus.overallStatusReview.newComment
+        vm.editOverallStatus = function(document){
+            originalOverallStatus[document._id] = {
+                comment : document.deliveryStatus.overallStatus.comment
             };
-            vm.selectOverallStatusForm('edit', statusUpdate);
+            vm.selectOverallStatusForm('edit', document);
         };
 
-        vm.saveEditOverallStatus = function(portfolio, statusUpdate){
+        vm.saveEditOverallStatus = function(document){
 
             vm.error = null;
             vm.isResolving = true;
-            Portfolios.updateOverallDeliveryStatus(
+            PortfolioStatusReports.updateOverallStatus(
                 {
-                    portfolioId : portfolio._id,
-                    portfolioStatusUpdateId : statusUpdate._id
-                }, statusUpdate,
+                    portfolioStatusReportId : document._id
+                }, document,
                 function(res){
                     vm.isResolving = false;
-                    vm.selectOverallStatusForm('view', statusUpdate);
+                    vm.selectOverallStatusForm('view', document);
                 },
                 function(err){
                     vm.isResolving = false;
@@ -378,34 +342,34 @@ angular.module('portfolio-status-reports').controller('PortfolioStatusReportsCon
             );
         };
 
-        vm.cancelEditOverallStatus = function(statusUpdate){
+        vm.cancelEditOverallStatus = function(document){
             vm.error = null;
-            statusUpdate.portfolioStatus.overallStatusReview.newStatus = originalOverallStatus[statusUpdate._id].newStatus;
-            statusUpdate.portfolioStatus.overallStatusReview.newComment = originalOverallStatus[statusUpdate._id].newComment;
-            vm.selectOverallStatusForm('view', statusUpdate);
+            document.deliveryStatus.overallStatus.comment = originalOverallStatus[document._id].comment;
+            vm.selectOverallStatusForm('view', document);
         };
 
-        // Project status area reviews
+        // Status Area
 
-        var originalStatusAreaReview = {};
+        var originalStatusArea = {};
 
-        vm.editStatusArea = function(statusAreaReview){
-            originalStatusAreaReview[statusAreaReview._id] = _.cloneDeep(statusAreaReview);
-            vm.selectStatusAreaForm('edit', statusAreaReview);
+        vm.editStatusArea = function(statusArea){
+            originalStatusArea[statusArea._id] = {
+                comment : statusArea.comment
+            };
+            vm.selectStatusAreaForm('edit', statusArea);
         };
 
-        vm.saveEditStatusArea = function(portfolio, statusUpdate, statusAreaReview){
+        vm.saveEditStatusArea = function(document, statusArea){
             vm.error = null;
             vm.isResolving = true;
-            Portfolios.updateStatusAreaReview(
+            PortfolioStatusReports.updateStatusArea(
                 {
-                    portfolioId : portfolio._id,
-                    portfolioStatusUpdateId : statusUpdate._id,
-                    statusAreaReviewId : statusAreaReview._id
-                }, statusAreaReview,
+                    portfolioStatusReportId : document._id,
+                    portfolioStatusAreaId : statusArea._id
+                }, statusArea,
                 function(res){
                     vm.isResolving = false;
-                    vm.selectStatusAreaForm('view', statusAreaReview);
+                    vm.selectStatusAreaForm('view', statusArea);
                 },
                 function(err){
                     vm.isResolving = false;
@@ -414,11 +378,10 @@ angular.module('portfolio-status-reports').controller('PortfolioStatusReportsCon
             );
         };
 
-        vm.cancelEditStatusArea = function(statusAreaReview){
+        vm.cancelEditStatusArea = function(statusArea){
             vm.error = null;
-            statusAreaReview.newStatus = originalStatusAreaReview[statusAreaReview._id].newStatus;
-            statusAreaReview.newComment = originalStatusAreaReview[statusAreaReview._id].newComment;
-            vm.selectStatusAreaForm('view', statusAreaReview);
+            statusArea.comment = originalStatusArea[statusArea._id].comment;
+            vm.selectStatusAreaForm('view', statusArea);
         };
 
 

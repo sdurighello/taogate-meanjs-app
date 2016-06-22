@@ -63,14 +63,21 @@
                                                         </div>
                                                     </div>
                                                     <div class="form-group-sm col-xs-4">
-                                                        <label>Title</label>
-                                                        <input title="title" class="form-control" type="text" placeholder="Enter title"
-                                                               data-ng-model="vm.newDocument.title" required>
+                                                        <label>Type</label>
+                                                        <select title="type" class="form-control" data-ng-model = "vm.newDocument.type"
+                                                                data-ng-options="type as type.name for type in vm.statusReportTypes">
+                                                            <option value="">--select type</option>
+                                                        </select>
                                                     </div>
                                                 </div>
                                                 <br>
                                                 <div class="row">
-                                                    <div class="form-group-sm col-xs-8">
+                                                    <div class="form-group-sm col-xs-6">
+                                                        <label>Title</label>
+                                                        <input title="title" class="form-control" type="text" placeholder="Enter title"
+                                                               data-ng-model="vm.newDocument.title" required>
+                                                    </div>
+                                                    <div class="form-group-sm col-xs-6">
                                                         <label>Previous report</label>
                                                         <select title="previous report" class="form-control" data-ng-model = "vm.newDocument.previousReport"
                                                                 data-ng-options="report as report.date | date:'EEE d, MMM yyyy' +' - '+ report.title for report in vm.portfolioStatusReports">
@@ -112,15 +119,23 @@
                                         <table class="table">
                                             <thead>
                                             <tr>
-                                                <th class="col-xs-3">From</th>
-                                                <th class="col-xs-3">To</th>
+                                                <th class="col-xs-2">Type</th>
+                                                <th class="col-xs-2">From</th>
+                                                <th class="col-xs-2">To</th>
                                                 <th class="col-xs-4">Title</th>
                                                 <th class="col-xs-2"> </th>
                                             </tr>
                                             </thead>
                                             <tbody>
                                             <tr data-ng-repeat="statusReport in vm.portfolioStatusReports">
-                                                <td>{{statusReport.previousReport.date | date:'EEE d, MMM yyyy'}}</td>
+                                                <td data-ng-show="statusReport.type.name">{{statusReport.type.name}}</td>
+                                                <td data-ng-show="!statusReport.type.name">--</td>
+                                                <td data-ng-show="statusReport.previousReport.date">
+                                                    {{statusReport.previousReport.date | date:'EEE d, MMM yyyy'}}
+                                                </td>
+                                                <td data-ng-show="!statusReport.previousReport.date">
+                                                    --
+                                                </td>
                                                 <td>{{statusReport.date | date:'EEE d, MMM yyyy'}}</td>
                                                 <td>{{statusReport.title}}</td>
                                                 <td>

@@ -14,6 +14,18 @@ module.exports = function(app) {
 		.put(users.requiresLogin, portfolioStatusReports.hasAuthorization, portfolioStatusReports.update)
 		.delete(users.requiresLogin, portfolioStatusReports.hasAuthorization, portfolioStatusReports.delete);
 
+    // Header
+    app.route('/portfolio-status-reports/:portfolioStatusReportId/header')
+        .put(users.requiresLogin, portfolioStatusReports.hasAuthorization, portfolioStatusReports.updateHeader);
+    
+    // Overall status
+    app.route('/portfolio-status-reports/:portfolioStatusReportId/overallStatus')
+        .put(users.requiresLogin, portfolioStatusReports.hasAuthorization, portfolioStatusReports.updateOverallStatus);
+
+    // statusArea
+    app.route('/portfolio-status-reports/:portfolioStatusReportId/portfolioStatusAreas/:portfolioStatusAreaId')
+        .put(users.requiresLogin, portfolioStatusReports.hasAuthorization, portfolioStatusReports.updateStatusArea);
+
 	// Finish by binding the Portfolio status report middleware
 	app.param('portfolioStatusReportId', portfolioStatusReports.portfolioStatusReportByID);
 };

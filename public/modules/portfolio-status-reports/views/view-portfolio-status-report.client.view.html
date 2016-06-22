@@ -21,9 +21,15 @@
                 <div class="panel-body">
                     <!-- TITLE -->
                     <div class="row">
-                        <div class="col-xs-12">
+                        <div class="col-xs-4">
                             <div class="panel panel-default panel-heading text-center">
-                                <h6 class="panel-title" style="overflow: hidden">Portfolio name here</h6>
+                                <span data-ng-show="vm.selectedDocument.type.name">{{vm.selectedDocument.type.name}}</span>
+                                <span data-ng-show="!vm.selectedDocument.type.name">--</span>
+                            </div>
+                        </div>
+                        <div class="col-xs-8">
+                            <div class="panel panel-default panel-heading text-center">
+                                <h6 class="panel-title" style="overflow: hidden">{{vm.selectedDocument.portfolio.name}}</h6>
                             </div>
                         </div>
                     </div>
@@ -34,15 +40,17 @@
                                 <div class="row">
                                     <div class="col-xs-3 ">
                                         <b>From: </b>
-                                        <span>Wed 23 May, 2016</span>
+                                        <span data-ng-show="vm.selectedDocument.previousReport.date">{{vm.selectedDocument.previousReport.date | date:'EEE d, MMM yyyy'}}</span>
+                                        <span data-ng-show="!vm.selectedDocument.previousReport.date"> -- </span>
                                     </div>
                                     <div class="col-xs-3 ">
                                         <b>To: </b>
-                                        <span>Wed 23 Jun, 2016</span>
+                                        <span>{{vm.selectedDocument.date | date:'EEE d, MMM yyyy'}}</span>
                                     </div>
                                     <div class="col-xs-6 ">
                                         <b>Portfolio Manager: </b>
-                                        <span>Tony Stark</span>
+                                        <span data-ng-show="vm.selectedDocument.portfolioManager.name">{{vm.selectedDocument.portfolioManager.name}}</span>
+                                        <span data-ng-show="!vm.selectedDocument.portfolioManager.name"> -- </span>
                                     </div>
                                 </div>
                             </div>
@@ -55,32 +63,30 @@
                                 <div class="row">
                                     <div class="col-xs-5 form-group-sm">
                                         <label>Status previous period</label>
-                                        <div class="panel panel-default panel-heading" style="background-color: red">
-                                            <span>Red</span>
+                                        <div class="panel panel-default panel-heading text-center" style="background-color: {{vm.selectedDocument.deliveryStatus.overallStatus.previousStatus.color}}">
+                                            <span data-ng-show="vm.selectedDocument.deliveryStatus.overallStatus.previousStatus.name">
+                                                {{vm.selectedDocument.deliveryStatus.overallStatus.previousStatus.name}}
+                                            </span>
+                                            <span data-ng-show="!vm.selectedDocument.deliveryStatus.overallStatus.previousStatus.name">
+                                                --
+                                            </span>
                                         </div>
                                     </div>
                                     <div class="col-xs-2 text-center">
                                         <br>
-                                        <span class="glyphicon glyphicon-arrow-right" aria-hidden="true"></span>
+                                        <span class="glyphicon glyphicon-arrow-right"></span>
                                     </div>
                                     <div class="col-xs-5 form-group-sm">
                                         <label>Status this period</label>
-                                        <div class="panel panel-default panel-heading" style="background-color: green">
-                                            <span>Green</span>
+                                        <div class="panel panel-default panel-heading text-center" style="background-color: {{vm.selectedDocument.deliveryStatus.overallStatus.currentStatus.color}}">
+                                            <span>{{vm.selectedDocument.deliveryStatus.overallStatus.currentStatus.name}}</span>
                                         </div>
                                     </div>
                                 </div>
                                 <div class="row">
                                     <div class="col-xs-12">
-                                        <div class="panel panel-default panel-heading" style="height: 10cm">
-                                            The standard Lorem Ipsum passage, used since the 1500s
-
-                                            "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
-
-                                            Section 1.10.32 of "de Finibus Bonorum et Malorum", written by Cicero in 45 BC
-
-                                            "Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt. Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit, sed quia non numquam eius modi tempora incidunt ut labore et dolore magnam aliquam quaerat voluptatem. Ut enim ad minima veniam, quis nostrum exercitationem ullam corporis suscipit laboriosam, nisi ut aliquid ex ea commodi consequatur? Quis autem vel eum iure reprehenderit qui in ea voluptate velit esse quam nihil molestiae consequatur, vel illum qui dolorem eum fugiat quo voluptas nulla pariatur?"
-                                            The standard Lorem Ipsum passage, used since the 1500s
+                                        <div class="panel panel-default panel-heading text-center" style="height: 10cm">
+                                            <span>{{vm.selectedDocument.deliveryStatus.overallStatus.currentStatus.comment}}</span>
                                         </div>
                                     </div>
                                 </div>
@@ -90,52 +96,33 @@
                                             <table class="table table-bordered table-condensed">
                                                 <thead>
                                                 <tr>
-                                                    <th class="col-xs-5">Projects status</th>
-                                                    <th class="col-xs-2 text-center">Previous period</th>
-                                                    <th class="col-xs-2 text-center">This period</th>
+                                                    <td class="col-xs-2" rowspan="2"><i>Projects status</i></td>
+                                                    <th class="col-xs-2 text-center" colspan="3">Number of projects</th>
+                                                    <th class="col-xs-2 text-center" colspan="3">Budget by status</th>
+                                                </tr>
+                                                <tr>
+                                                    <th class="col-xs-2 text-center">Previous</th>
+                                                    <th class="col-xs-2 text-center">Current</th>
+                                                    <th class="col-xs-2 text-center">Change</th>
+                                                    <th class="col-xs-2 text-center">Previous</th>
+                                                    <th class="col-xs-2 text-center">Current</th>
                                                     <th class="col-xs-2 text-center">Change</th>
                                                 </tr>
                                                 </thead>
                                                 <tbody>
-                                                <tr class="text-center">
+                                                <tr class="text-center" data-ng-repeat="projectStatus in vm.selectedDocument.deliveryStatus.overallStatus.projectStatuses">
                                                     <th>
-                                                        <div class="panel panel-default panel-heading" style="background-color: red; margin: 0; padding: 5px;">
-                                                            <span>Red</span>
+                                                        <div class="panel panel-default panel-heading" style="background-color: {{projectStatus.status.color}}; margin: 0; padding: 5px;">
+                                                            <span data-ng-show="projectStatus.status.name">{{projectStatus.status.name}}</span>
+                                                            <span data-ng-show="!projectStatus.status.name">No status</span>
                                                         </div>
                                                     </th>
-                                                    <td>0 (0%)</td>
-                                                    <td>0 (0%)</td>
-                                                    <td>0 (0%)</td>
-                                                </tr>
-                                                <tr class="text-center">
-                                                    <th>
-                                                        <div class="panel panel-default panel-heading" style="background-color: green; margin: 0; padding: 5px;">
-                                                            <span>Red</span>
-                                                        </div>
-                                                    </th>
-                                                    <td>0 (0%)</td>
-                                                    <td>0 (0%)</td>
-                                                    <td>0 (0%)</td>
-                                                </tr>
-                                                <tr class="text-center">
-                                                    <th>
-                                                        <div class="panel panel-default panel-heading" style="background-color: gray; margin: 0; padding: 5px;">
-                                                            <span>Red</span>
-                                                        </div>
-                                                    </th>
-                                                    <td>0 (0%)</td>
-                                                    <td>0 (0%)</td>
-                                                    <td>0 (0%)</td>
-                                                </tr>
-                                                <tr class="text-center">
-                                                    <th>
-                                                        <div class="panel panel-default panel-heading" style="background-color: blue; margin: 0; padding: 5px;">
-                                                            <span>Red</span>
-                                                        </div>
-                                                    </th>
-                                                    <td>0 (0%)</td>
-                                                    <td>0 (0%)</td>
-                                                    <td>0 (0%)</td>
+                                                    <td>{{projectStatus.numberOfProjects.previous | number:0}} ({{ 100 * projectStatus.ratioOfProjects.previous | number:1}}%)</td>
+                                                    <td>{{projectStatus.numberOfProjects.current | number:0}} ({{ 100 * projectStatus.ratioOfProjects.current | number:1}}%)</td>
+                                                    <td>{{projectStatus.numberOfProjects.change | number:0}} ({{ 100 * projectStatus.ratioOfProjects.changeOnPrevious | number:1}}%)</td>
+                                                    <td>{{projectStatus.amountOfBudget.previous | number:0}} ({{ 100 * projectStatus.ratioOfBudget.previous | number:1}}%)</td>
+                                                    <td>{{projectStatus.amountOfBudget.current | number:0}} ({{ 100 * projectStatus.ratioOfBudget.current | number:1}}%)</td>
+                                                    <td>{{projectStatus.amountOfBudget.change | number:0}} ({{ 100 * projectStatus.ratioOfBudget.changeOnPrevious | number:1}}%)</td>
                                                 </tr>
                                                 </tbody>
                                             </table>
@@ -149,100 +136,76 @@
             </div>
         </page>
         <!-- STATUS AREAS -->
-        <page size="A4" data-ng-repeat="subArray in vm.selectedDocumentExample track by $index">
+        <page size="A4" data-ng-repeat="subArray in vm.selectedDocumentStatusAreas track by $index">
             <div class="panel panel-default" style="width: 21cm; height: 29cm; overflow: hidden">
                 <div class="panel-body">
                     <div class="row">
                         <div class="col-xs-12" data-ng-repeat="obj in subArray track by $index">
                             <div class="panel panel-default" style="height: 14cm; overflow: hidden">
                                 <div class="panel-heading">
-                                    <h6 class="panel-title text-center">Status area ABC</h6>
+                                    <h6 class="panel-title text-center">{{obj.statusArea.name}}</h6>
                                 </div>
                                 <div class="panel-body">
                                     <div class="row">
                                         <div class="col-xs-5 form-group-sm">
                                             <label>Previous period</label>
-                                            <div class="panel panel-default panel-heading" style="background-color: red">
-                                                <span>Red</span>
+                                            <div class="panel panel-default panel-heading" style="background-color: {{obj.previousStatus.color}}">
+                                                <span data-ng-show="obj.previousStatus.name">{{obj.previousStatus.name}}</span>
+                                                <span data-ng-show="!obj.previousStatus.name">No status</span>
                                             </div>
                                         </div>
                                         <div class="col-xs-2 text-center">
                                             <br>
-                                            <span class="glyphicon glyphicon-arrow-right" aria-hidden="true"></span>
+                                            <span class="glyphicon glyphicon-arrow-right"></span>
                                         </div>
                                         <div class="col-xs-5 form-group-sm">
                                             <label>This period</label>
-                                            <div class="panel panel-default panel-heading" style="background-color: green">
-                                                <span>Green</span>
+                                            <div class="panel panel-default panel-heading" style="background-color: {{obj.currentStatus.color}}">
+                                                <span data-ng-show="obj.currentStatus.name">{{obj.currentStatus.name}}</span>
+                                                <span data-ng-show="!obj.currentStatus.name">No status</span>
                                             </div>
                                         </div>
                                     </div>
                                     <div class="row">
                                         <div class="col-xs-12">
                                             <div class="panel panel-default panel-heading" style="max-height: 4cm; overflow: hidden">
-                                                The standard Lorem Ipsum passage, used since the 1500s
-
-                                                "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
-
-                                                Section 1.10.32 of "de Finibus Bonorum et Malorum", written by Cicero in 45 BC
-
-                                                "Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt. Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit, sed quia non numquam eius modi tempora incidunt ut labore et dolore magnam aliquam quaerat voluptatem. Ut enim ad minima veniam, quis nostrum exercitationem ullam corporis suscipit laboriosam, nisi ut aliquid ex ea commodi consequatur? Quis autem vel eum iure reprehenderit qui in ea voluptate velit esse quam nihil molestiae consequatur, vel illum qui dolorem eum fugiat quo voluptas nulla pariatur?"
-                                                The standard Lorem Ipsum passage, used since the 1500s
+                                                <span>{{obj.currentStatus.comment}}</span>
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="row">
+                                    <div class="row" data-ng-show="obj.projectStatuses.length > 0">
                                         <div class="col-xs-12">
                                             <div class="panel panel-default panel-heading" style="max-height: 8cm; overflow: hidden">
-                                                <table class="table table-bordered table-condensed small">
+                                                <table class="table table-bordered table-condensed">
                                                     <thead>
                                                     <tr>
-                                                        <th class="col-xs-5">Projects status</th>
-                                                        <th class="col-xs-2 text-center">Previous period</th>
-                                                        <th class="col-xs-2 text-center">This period</th>
+                                                        <th class="col-xs-2" rowspan="2">Projects status</th>
+                                                        <th class="col-xs-2 text-center" colspan="3">Projects</th>
+                                                        <th class="col-xs-2 text-center" colspan="3">Budget</th>
+                                                    </tr>
+                                                    <tr>
+                                                        <th class="col-xs-2 text-center">Previous</th>
+                                                        <th class="col-xs-2 text-center">Current</th>
+                                                        <th class="col-xs-2 text-center">Change</th>
+                                                        <th class="col-xs-2 text-center">Previous</th>
+                                                        <th class="col-xs-2 text-center">Current</th>
                                                         <th class="col-xs-2 text-center">Change</th>
                                                     </tr>
                                                     </thead>
                                                     <tbody>
-                                                    <tr class="text-center">
+                                                    <tr class="text-center" data-ng-repeat="projectStatus in obj.projectStatuses">
                                                         <th>
-                                                            <div class="panel panel-default panel-heading" style="background-color: red; margin: 0; padding: 5px;">
-                                                                <span>Red</span>
+                                                            <div class="panel panel-default panel-heading" style="background-color: {{projectStatus.status.color}}; margin: 0; padding: 5px;">
+                                                                <span data-ng-show="projectStatus.status.name">{{projectStatus.status.name}}</span>
+                                                                <span data-ng-show="!projectStatus.status.name">No status</span>
                                                             </div>
                                                         </th>
-                                                        <td>0 (0%)</td>
-                                                        <td>0 (0%)</td>
-                                                        <td>0 (0%)</td>
-                                                    </tr>
-                                                    <tr class="text-center">
-                                                        <th>
-                                                            <div class="panel panel-default panel-heading" style="background-color: green; margin: 0; padding: 5px;">
-                                                                <span>Red</span>
-                                                            </div>
-                                                        </th>
-                                                        <td>0 (0%)</td>
-                                                        <td>0 (0%)</td>
-                                                        <td>0 (0%)</td>
-                                                    </tr>
-                                                    <tr class="text-center">
-                                                        <th>
-                                                            <div class="panel panel-default panel-heading" style="background-color: gray; margin: 0; padding: 5px;">
-                                                                <span>Red</span>
-                                                            </div>
-                                                        </th>
-                                                        <td>0 (0%)</td>
-                                                        <td>0 (0%)</td>
-                                                        <td>0 (0%)</td>
-                                                    </tr>
-                                                    <tr class="text-center">
-                                                        <th>
-                                                            <div class="panel panel-default panel-heading" style="background-color: blue; margin: 0; padding: 5px;">
-                                                                <span>Red</span>
-                                                            </div>
-                                                        </th>
-                                                        <td>0 (0%)</td>
-                                                        <td>0 (0%)</td>
-                                                        <td>0 (0%)</td>
+                                                        <td>{{projectStatus.numberOfProjects.previous | number:0}} ({{ 100 * projectStatus.ratioOfProjects.previous | number:1}}%)</td>
+                                                        <td>{{projectStatus.numberOfProjects.current | number:0}} ({{ 100 * projectStatus.ratioOfProjects.current | number:1}}%)</td>
+                                                        <td>{{projectStatus.numberOfProjects.change | number:0}} ({{ 100 * projectStatus.ratioOfProjects.changeOnPrevious | number:1}}%)</td>
+                                                        <td>{{projectStatus.amountOfBudget.previous | number:0}} ({{ 100 * projectStatus.ratioOfBudget.previous | number:1}}%)</td>
+                                                        <td>{{projectStatus.amountOfBudget.current | number:0}} ({{ 100 * projectStatus.ratioOfBudget.current | number:1}}%)</td>
+                                                        <td>{{projectStatus.amountOfBudget.change | number:0}} ({{ 100 * projectStatus.ratioOfBudget.changeOnPrevious | number:1}}%)</td>
                                                     </tr>
                                                     </tbody>
                                                 </table>
@@ -264,31 +227,55 @@
                         <table class="table table-bordered table-condensed">
                             <thead>
                             <tr>
-                                <td class="col-xs-5 text-center"><i>Portfolio earmarked funds</i></td>
+                                <td class="col-xs-2 text-center"><i>Earmarked funds</i></td>
                                 <th class="col-xs-2 text-center">Previous period</th>
                                 <th class="col-xs-2 text-center">This period</th>
-                                <th class="col-xs-3 text-center">Change</th>
+                                <th class="col-xs-2 text-center">Change</th>
                             </tr>
                             </thead>
                             <tbody>
                             <!-- Earmarked funds -->
                             <tr class="text-center">
                                 <th>Portfolio earmarked funds</th>
-                                <td>1,000,000</td>
-                                <td>1,000,000</td>
-                                <td>0 (0%)</td>
+                                <td>{{vm.selectedDocument.earmarkedFunds.portfolioAmount.previous | number:0}}</td>
+                                <td>{{vm.selectedDocument.earmarkedFunds.portfolioAmount.current | number:0}}</td>
+                                <td>{{vm.selectedDocument.earmarkedFunds.portfolioAmount.change | number:0}} ({{100 * vm.selectedDocument.earmarkedFunds.portfolioAmount.changeOnPrevious | number:1}}%)</td>
                             </tr>
                             <tr class="text-center">
-                                <th>Project earmarked funds</th>
-                                <td>1,000,000</td>
-                                <td>1,000,000</td>
-                                <td>0 (0%)</td>
+                                <th>Projects earmarked funds</th>
+                                <td>{{vm.selectedDocument.earmarkedFunds.projectsAmount.previous | number:0}}</td>
+                                <td>{{vm.selectedDocument.earmarkedFunds.projectsAmount.current | number:0}}</td>
+                                <td>{{vm.selectedDocument.earmarkedFunds.projectsAmount.change | number:0}} ({{100 * vm.selectedDocument.earmarkedFunds.projectsAmount.changeOnPrevious | number:1}}%)</td>
                             </tr>
                             <tr class="text-center text-muted">
-                                <th>Earmarked funds difference</th>
-                                <td>1,000,000</td>
-                                <td>1,000,000</td>
-                                <td>0 (0%)</td>
+                                <th>Funds difference</th>
+                                <td>{{vm.selectedDocument.earmarkedFunds.variance.previous | number:0}} ({{100 * vm.selectedDocument.earmarkedFunds.variancePercent.previous | number:1}}%)</td>
+                                <td>{{vm.selectedDocument.earmarkedFunds.variance.current | number:0}} ({{100 * vm.selectedDocument.earmarkedFunds.variancePercent.current | number:1}}%)</td>
+                                <td>{{vm.selectedDocument.earmarkedFunds.variance.change | number:0}} ({{100 * vm.selectedDocument.earmarkedFunds.variance.changeOnPrevious | number:1}}%)</td>
+                            </tr>
+                            <tr class="text-center">
+                                <th>Number of active projects</th>
+                                <td>{{vm.selectedDocument.numberOfActiveProjects.previous | number:0}}</td>
+                                <td>{{vm.selectedDocument.numberOfActiveProjects.current | number:0}}</td>
+                                <td>{{vm.selectedDocument.numberOfActiveProjects.change | number:0}} ({{100 * vm.selectedDocument.numberOfActiveProjects.changeOnPrevious | number:1}}%)</td>
+                            </tr>
+                            <tr class="text-center">
+                                <th>Average earmarked funds</th>
+                                <td>{{vm.selectedDocument.earmarkedFunds.averageAmount.previous | number:0}}</td>
+                                <td>{{vm.selectedDocument.earmarkedFunds.averageAmount.current | number:0}}</td>
+                                <td>{{vm.selectedDocument.earmarkedFunds.averageAmount.change | number:0}} ({{100 * vm.selectedDocument.earmarkedFunds.averageAmount.changeOnPrevious | number:1}}%)</td>
+                            </tr>
+                            <tr class="text-center">
+                                <th>Lowest earmarked funds</th>
+                                <td>{{vm.selectedDocument.earmarkedFunds.minAmount.previous | number:0}}</td>
+                                <td>{{vm.selectedDocument.earmarkedFunds.minAmount.current | number:0}}</td>
+                                <td>{{vm.selectedDocument.earmarkedFunds.minAmount.change | number:0}} ({{100 * vm.selectedDocument.earmarkedFunds.minAmount.changeOnPrevious | number:1}}%)</td>
+                            </tr>
+                            <tr class="text-center">
+                                <th>Highest earmarked funds</th>
+                                <td>{{vm.selectedDocument.earmarkedFunds.maxAmount.previous | number:0}}</td>
+                                <td>{{vm.selectedDocument.earmarkedFunds.maxAmount.current | number:0}}</td>
+                                <td>{{vm.selectedDocument.earmarkedFunds.maxAmount.change | number:0}} ({{100 * vm.selectedDocument.earmarkedFunds.maxAmount.changeOnPrevious | number:1}}%)</td>
                             </tr>
                             </tbody>
                         </table>
@@ -299,31 +286,55 @@
                         <table class="table table-bordered table-condensed">
                             <thead>
                             <tr>
-                                <td class="col-xs-5 text-center"><i>Portfolio budget</i></td>
+                                <td class="col-xs-2 text-center"><i>Portfolio budget</i></td>
                                 <th class="col-xs-2 text-center">Previous period</th>
                                 <th class="col-xs-2 text-center">This period</th>
-                                <th class="col-xs-3 text-center">Change</th>
+                                <th class="col-xs-2 text-center">Change</th>
                             </tr>
                             </thead>
                             <tbody>
                             <!-- Budget -->
                             <tr class="text-center">
                                 <th>Portfolio budget</th>
-                                <td>1,000,000</td>
-                                <td>1,000,000</td>
-                                <td>0 (0%)</td>
+                                <td>{{vm.selectedDocument.performances.portfolioBudget.amount.previous | number:0}}</td>
+                                <td>{{vm.selectedDocument.performances.portfolioBudget.amount.current | number:0}}</td>
+                                <td>{{vm.selectedDocument.performances.portfolioBudget.amount.change | number:0}} ({{100 * vm.selectedDocument.performances.portfolioBudget.amount.changeOnPrevious | number:1}}%)</td>
                             </tr>
                             <tr class="text-center">
                                 <th>Projects budget</th>
-                                <td>1,000,000</td>
-                                <td>1,000,000</td>
-                                <td>0 (0%)</td>
+                                <td>{{vm.selectedDocument.performances.budget.amount.previous | number:0}}</td>
+                                <td>{{vm.selectedDocument.performances.budget.amount.current | number:0}}</td>
+                                <td>{{vm.selectedDocument.performances.budget.amount.change | number:0}} ({{100 * vm.selectedDocument.performances.budget.amount.changeOnPrevious | number:1}}%)</td>
                             </tr>
                             <tr class="text-center text-muted">
                                 <th>Budget difference</th>
-                                <td>1,000,000</td>
-                                <td>1,000,000</td>
-                                <td>0 (0%)</td>
+                                <td>{{vm.selectedDocument.performances.portfolioBudget.variance.previous | number:0}} ({{100 * vm.selectedDocument.performances.portfolioBudget.variancePercent.previous | number:1}}%)</td>
+                                <td>{{vm.selectedDocument.performances.portfolioBudget.variance.current | number:0}} ({{100 * vm.selectedDocument.performances.portfolioBudget.variancePercent.current | number:1}}%)</td>
+                                <td>{{vm.selectedDocument.performances.portfolioBudget.variance.change | number:0}} ({{100 * vm.selectedDocument.performances.portfolioBudget.variance.changeOnPrevious | number:1}}%)</td>
+                            </tr>
+                            <tr class="text-center">
+                                <th>Number of projects in delivery</th>
+                                <td>{{vm.selectedDocument.performances.numberOfProjects.previous | number:0}}</td>
+                                <td>{{vm.selectedDocument.performances.numberOfProjects.current | number:0}}</td>
+                                <td>{{vm.selectedDocument.performances.numberOfProjects.change | number:0}} ({{100 * vm.selectedDocument.performances.numberOfProjects.changeOnPrevious | number:1}}%)</td>
+                            </tr>
+                            <tr class="text-center">
+                                <th>Average budget</th>
+                                <td>{{vm.selectedDocument.performances.budget.averageAmount.previous | number:0}}</td>
+                                <td>{{vm.selectedDocument.performances.budget.averageAmount.current | number:0}}</td>
+                                <td>{{vm.selectedDocument.performances.budget.averageAmount.change | number:0}} ({{100 * vm.selectedDocument.performances.budget.averageAmount.changeOnPrevious | number:1}}%)</td>
+                            </tr>
+                            <tr class="text-center">
+                                <th>Lowest budget</th>
+                                <td>{{vm.selectedDocument.performances.budget.minAmount.previous | number:0}}</td>
+                                <td>{{vm.selectedDocument.performances.budget.minAmount.current | number:0}}</td>
+                                <td>{{vm.selectedDocument.performances.budget.minAmount.change | number:0}} ({{100 * vm.selectedDocument.performances.budget.minAmount.changeOnPrevious | number:1}}%)</td>
+                            </tr>
+                            <tr class="text-center">
+                                <th>Highest budget</th>
+                                <td>{{vm.selectedDocument.performances.budget.maxAmount.previous | number:0}}</td>
+                                <td>{{vm.selectedDocument.performances.budget.maxAmount.current | number:0}}</td>
+                                <td>{{vm.selectedDocument.performances.budget.maxAmount.change | number:0}} ({{100 * vm.selectedDocument.performances.budget.maxAmount.changeOnPrevious | number:1}}%)</td>
                             </tr>
                             </tbody>
                         </table>
@@ -334,214 +345,87 @@
                         <table class="table table-bordered table-condensed">
                             <thead>
                             <tr>
-                                <td class="col-xs-5 text-center"><i>Portfolio composition</i></td>
+                                <td class="col-xs-2 text-center"><i>Performances</i></td>
                                 <th class="col-xs-2 text-center">Previous period</th>
                                 <th class="col-xs-2 text-center">This period</th>
-                                <th class="col-xs-3 text-center">Change</th>
+                                <th class="col-xs-2 text-center">Change</th>
                             </tr>
                             </thead>
                             <tbody>
+                            <tr><th colspan="4" class="text-center" style="background-color: lightgray">Duration</th></tr>
                             <tr class="text-center">
-                                <th>Number of projects</th>
-                                <td>1,000,000</td>
-                                <td>1,000,000</td>
-                                <td>0 (0%)</td>
-                            </tr>
-                            <tr class="text-center">
-                                <th>Average project budget</th>
-                                <td>1,000,000</td>
-                                <td>1,000,000</td>
-                                <td>0 (0%)</td>
+                                <th>Baseline</th>
+                                <td>{{vm.selectedDocument.performances.duration.baselineDays.previous | number:0}}</td>
+                                <td>{{vm.selectedDocument.performances.duration.baselineDays.current | number:0}}</td>
+                                <td>{{vm.selectedDocument.performances.duration.baselineDays.change | number:0}} ({{100 * vm.selectedDocument.performances.duration.baselineDays.changeOnPrevious | number:1}}%)</td>
                             </tr>
                             <tr class="text-center">
-                                <th>Highest project budget</th>
-                                <td>1,000,000</td>
-                                <td>1,000,000</td>
-                                <td>0 (0%)</td>
+                                <th>Estimate</th>
+                                <td>{{vm.selectedDocument.performances.duration.estimateDays.previous | number:0}}</td>
+                                <td>{{vm.selectedDocument.performances.duration.estimateDays.current | number:0}}</td>
+                                <td>{{vm.selectedDocument.performances.duration.estimateDays.change | number:0}} ({{100 * vm.selectedDocument.performances.duration.estimateDays.changeOnPrevious | number:1}}%)</td>
                             </tr>
                             <tr class="text-center">
-                                <th>Lowest project budget</th>
-                                <td>1,000,000</td>
-                                <td>1,000,000</td>
-                                <td>0 (0%)</td>
+                                <th>Actual</th>
+                                <td>{{vm.selectedDocument.performances.duration.actualDays.previous | number:0}}</td>
+                                <td>{{vm.selectedDocument.performances.duration.actualDays.current | number:0}}</td>
+                                <td>{{vm.selectedDocument.performances.duration.actualDays.change | number:0}} ({{100 * vm.selectedDocument.performances.duration.actualDays.changeOnPrevious | number:1}}%)</td>
                             </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-        </page>
-        <!-- PORTFOLIO MILESTONES -->
-        <page size="A4">
-            <div class="panel panel-default panel-heading" style="max-width: 21cm; max-height: 29cm; overflow: hidden">
-                <div class="row">
-                    <div class="col-xs-12">
-                        <table class="table table-bordered table-condensed">
-                            <thead>
-                            <tr>
-                                <td class="col-xs-3 text-center" colspan="2"><i>Portfolio milestones status by priority</i></td>
-                                <th class="col-xs-2 text-center">Previous period</th>
-                                <th class="col-xs-2 text-center">This period</th>
-                                <th class="col-xs-3 text-center">Change</th>
+                            <tr class="text-center text-muted">
+                                <th>Variance</th>
+                                <td>{{vm.selectedDocument.performances.duration.variance.previous | number:0}} ({{100 * vm.selectedDocument.performances.duration.variance.previous | number:1}}%)</td>
+                                <td>{{vm.selectedDocument.performances.duration.variance.current | number:0}} ({{100 * vm.selectedDocument.performances.duration.variance.current | number:1}}%)</td>
+                                <td>{{vm.selectedDocument.performances.duration.variance.change | number:0}} ({{100 * vm.selectedDocument.performances.duration.variance.changeOnPrevious | number:1}}%)</td>
                             </tr>
-                            </thead>
-                            <tbody>
+                            <tr><th colspan="4" class="text-center" style="background-color: lightgray">Cost</th></tr>
                             <tr class="text-center">
-                                <th colspan="2">High</th>
-                                <td><b>0 (0%)</b></td>
-                                <td><b>0 (0%)</b></td>
-                                <td><b>0 (0%)</b></td>
+                                <th>Baseline</th>
+                                <td>{{vm.selectedDocument.performances.cost.baseline.previous | number:0}}</td>
+                                <td>{{vm.selectedDocument.performances.cost.baseline.current | number:0}}</td>
+                                <td>{{vm.selectedDocument.performances.cost.baseline.change | number:0}} ({{100 * vm.selectedDocument.performances.cost.baseline.changeOnPrevious | number:1}}%)</td>
                             </tr>
                             <tr class="text-center">
-                                <th> </th>
-                                <th>
-                                    <div class="panel panel-default panel-heading" style="background-color: red; margin: 0; padding: 5px;">
-                                        <span>Red</span>
-                                    </div>
-                                </th>
-                                <td>0 (0%)</td>
-                                <td>0 (0%)</td>
-                                <td>0 (0%)</td>
+                                <th>Estimate</th>
+                                <td>{{vm.selectedDocument.performances.cost.estimate.previous | number:0}}</td>
+                                <td>{{vm.selectedDocument.performances.cost.estimate.current | number:0}}</td>
+                                <td>{{vm.selectedDocument.performances.cost.estimate.change | number:0}} ({{100 * vm.selectedDocument.performances.cost.estimate.changeOnPrevious | number:1}}%)</td>
                             </tr>
                             <tr class="text-center">
-                                <th> </th>
-                                <th>
-                                    <div class="panel panel-default panel-heading" style="background-color: yellow; margin: 0; padding: 5px;">
-                                        <span>Amber</span>
-                                    </div>
-                                </th>
-                                <td>0 (0%)</td>
-                                <td>0 (0%)</td>
-                                <td>0 (0%)</td>
+                                <th>Actual</th>
+                                <td>{{vm.selectedDocument.performances.cost.actual.previous | number:0}}</td>
+                                <td>{{vm.selectedDocument.performances.cost.actual.current | number:0}}</td>
+                                <td>{{vm.selectedDocument.performances.cost.actual.change | number:0}} ({{100 * vm.selectedDocument.performances.cost.actual.changeOnPrevious | number:1}}%)</td>
+                            </tr>
+                            <tr class="text-center text-muted">
+                                <th>Variance</th>
+                                <td>{{vm.selectedDocument.performances.cost.variance.previous | number:0}} ({{100 * vm.selectedDocument.performances.cost.variance.previous | number:1}}%)</td>
+                                <td>{{vm.selectedDocument.performances.cost.variance.current | number:0}} ({{100 * vm.selectedDocument.performances.cost.variance.current | number:1}}%)</td>
+                                <td>{{vm.selectedDocument.performances.cost.variance.change | number:0}} ({{100 * vm.selectedDocument.performances.cost.variance.changeOnPrevious | number:1}}%)</td>
+                            </tr>
+                            <tr><th colspan="4" class="text-center" style="background-color: lightgray">Completion</th></tr>
+                            <tr class="text-center">
+                                <th>Baseline</th>
+                                <td>{{vm.selectedDocument.performances.completion.baseline.previous | number:0}}</td>
+                                <td>{{vm.selectedDocument.performances.completion.baseline.current | number:0}}</td>
+                                <td>{{vm.selectedDocument.performances.completion.baseline.change | number:0}} ({{100 * vm.selectedDocument.performances.completion.baseline.changeOnPrevious | number:1}}%)</td>
                             </tr>
                             <tr class="text-center">
-                                <th> </th>
-                                <th>
-                                    <div class="panel panel-default panel-heading" style="background-color: green; margin: 0; padding: 5px;">
-                                        <span>Green</span>
-                                    </div>
-                                </th>
-                                <td>0 (0%)</td>
-                                <td>0 (0%)</td>
-                                <td>0 (0%)</td>
+                                <th>Estimate</th>
+                                <td>{{vm.selectedDocument.performances.completion.estimate.previous | number:0}}</td>
+                                <td>{{vm.selectedDocument.performances.completion.estimate.current | number:0}}</td>
+                                <td>{{vm.selectedDocument.performances.completion.estimate.change | number:0}} ({{100 * vm.selectedDocument.performances.completion.estimate.changeOnPrevious | number:1}}%)</td>
                             </tr>
                             <tr class="text-center">
-                                <th colspan="2">Medium</th>
-                                <td><b>0 (0%)</b></td>
-                                <td><b>0 (0%)</b></td>
-                                <td><b>0 (0%)</b></td>
+                                <th>Actual</th>
+                                <td>{{vm.selectedDocument.performances.completion.actual.previous | number:0}}</td>
+                                <td>{{vm.selectedDocument.performances.completion.actual.current | number:0}}</td>
+                                <td>{{vm.selectedDocument.performances.completion.actual.change | number:0}} ({{100 * vm.selectedDocument.performances.completion.actual.changeOnPrevious | number:1}}%)</td>
                             </tr>
-                            <tr class="text-center">
-                                <th> </th>
-                                <th>
-                                    <div class="panel panel-default panel-heading" style="background-color: red; margin: 0; padding: 5px;">
-                                        <span>Red</span>
-                                    </div>
-                                </th>
-                                <td>0 (0%)</td>
-                                <td>0 (0%)</td>
-                                <td>0 (0%)</td>
-                            </tr>
-                            <tr class="text-center">
-                                <th> </th>
-                                <th>
-                                    <div class="panel panel-default panel-heading" style="background-color: yellow; margin: 0; padding: 5px;">
-                                        <span>Amber</span>
-                                    </div>
-                                </th>
-                                <td>0 (0%)</td>
-                                <td>0 (0%)</td>
-                                <td>0 (0%)</td>
-                            </tr>
-                            <tr class="text-center">
-                                <th> </th>
-                                <th>
-                                    <div class="panel panel-default panel-heading" style="background-color: green; margin: 0; padding: 5px;">
-                                        <span>Green</span>
-                                    </div>
-                                </th>
-                                <td>0 (0%)</td>
-                                <td>0 (0%)</td>
-                                <td>0 (0%)</td>
-                            </tr>
-                            <tr class="text-center">
-                                <th colspan="2">Low</th>
-                                <td><b>0 (0%)</b></td>
-                                <td><b>0 (0%)</b></td>
-                                <td><b>0 (0%)</b></td>
-                            </tr>
-                            <tr class="text-center">
-                                <th> </th>
-                                <th>
-                                    <div class="panel panel-default panel-heading" style="background-color: red; margin: 0; padding: 5px;">
-                                        <span>Red</span>
-                                    </div>
-                                </th>
-                                <td>0 (0%)</td>
-                                <td>0 (0%)</td>
-                                <td>0 (0%)</td>
-                            </tr>
-                            <tr class="text-center">
-                                <th> </th>
-                                <th>
-                                    <div class="panel panel-default panel-heading" style="background-color: yellow; margin: 0; padding: 5px;">
-                                        <span>Amber</span>
-                                    </div>
-                                </th>
-                                <td>0 (0%)</td>
-                                <td>0 (0%)</td>
-                                <td>0 (0%)</td>
-                            </tr>
-                            <tr class="text-center">
-                                <th> </th>
-                                <th>
-                                    <div class="panel panel-default panel-heading" style="background-color: green; margin: 0; padding: 5px;">
-                                        <span>Green</span>
-                                    </div>
-                                </th>
-                                <td>0 (0%)</td>
-                                <td>0 (0%)</td>
-                                <td>0 (0%)</td>
-                            </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-xs-12">
-                        <table class="table table-bordered table-condensed">
-                            <thead>
-                            <tr>
-                                <td class="col-xs-5 text-center"><i>Portfolio milestones by state</i></td>
-                                <th class="col-xs-2 text-center">Previous period</th>
-                                <th class="col-xs-2 text-center">This period</th>
-                                <th class="col-xs-3 text-center">Change</th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            <tr class="text-center">
-                                <th>Open</th>
-                                <td>0 (0%)</td>
-                                <td>0 (0%)</td>
-                                <td>0 (0%)</td>
-                            </tr>
-                            <tr class="text-center">
-                                <th>Approved</th>
-                                <td>0 (0%)</td>
-                                <td>0 (0%)</td>
-                                <td>0 (0%)</td>
-                            </tr>
-                            <tr class="text-center">
-                                <th>Rejected</th>
-                                <td>0 (0%)</td>
-                                <td>0 (0%)</td>
-                                <td>0 (0%)</td>
-                            </tr>
-                            <tr class="text-center">
-                                <th>Closed</th>
-                                <td>0 (0%)</td>
-                                <td>0 (0%)</td>
-                                <td>0 (0%)</td>
+                            <tr class="text-center text-muted">
+                                <th>Variance</th>
+                                <td>{{vm.selectedDocument.performances.completion.variance.previous | number:0}} ({{100 * vm.selectedDocument.performances.completion.variance.previous | number:1}}%)</td>
+                                <td>{{vm.selectedDocument.performances.completion.variance.current | number:0}} ({{100 * vm.selectedDocument.performances.completion.variance.current | number:1}}%)</td>
+                                <td>{{vm.selectedDocument.performances.completion.variance.change | number:0}} ({{100 * vm.selectedDocument.performances.completion.variance.changeOnPrevious | number:1}}%)</td>
                             </tr>
                             </tbody>
                         </table>

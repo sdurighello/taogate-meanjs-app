@@ -35,6 +35,11 @@ exports.create = function(req, res) {
             name : req.body.portfolio.name
         },
 
+        type: {
+            _id: (req.body.type && req.body.type._id) || null,
+            name: (req.body.type && req.body.type.name) || null
+        },
+
         title : req.body.title,
         date : req.body.date,
 
@@ -763,6 +768,77 @@ exports.update = function(req, res) {
 			res.jsonp(portfolioStatusReport);
 		}
 	});
+};
+
+/**
+ * Update header
+ */
+exports.updateHeader = function(req, res) {
+    var portfolioStatusReport = req.portfolioStatusReport ;
+
+    portfolioStatusReport.title = req.body.title;
+    portfolioStatusReport.date = req.body.date;
+
+    portfolioStatusReport.type._id = (req.body.type && req.body.type._id) || null;
+    portfolioStatusReport.type.name = (req.body.type && req.body.type.name) || null;
+
+    portfolioStatusReport.save(function(err) {
+        if (err) {
+            return res.status(400).send({
+                message: errorHandler.getErrorMessage(err)
+            });
+        } else {
+            res.jsonp(portfolioStatusReport);
+        }
+    });
+};
+
+/**
+ * Update overall status
+ */
+exports.updateOverallStatus = function(req, res) {
+    var portfolioStatusReport = req.portfolioStatusReport ;
+
+    portfolioStatusReport.deliveryStatus.overallStatus.comment = req.body.comment;
+
+    portfolioStatusReport.save(function(err) {
+        if (err) {
+            return res.status(400).send({
+                message: errorHandler.getErrorMessage(err)
+            });
+        } else {
+            res.jsonp(portfolioStatusReport);
+        }
+    });
+};
+
+/**
+ * Update status area
+ */
+exports.updateStatusArea = function(req, res) {
+
+    var portfolioStatusReport = req.portfolioStatusReport ;
+
+    // Check
+    if(!req.params.portfolioStatusAreaId){
+        return res.status(400).send({
+            message: 'Portfolio status area ID is required'
+        });
+    }
+
+    var editedArea = portfolioStatusReport.deliveryStatus.portfolioStatusAreas.id(req.params.portfolioStatusAreaId);
+
+    editedArea.comment = req.body.comment;
+
+    portfolioStatusReport.save(function(err) {
+        if (err) {
+            return res.status(400).send({
+                message: errorHandler.getErrorMessage(err)
+            });
+        } else {
+            res.jsonp(portfolioStatusReport);
+        }
+    });
 };
 
 /**

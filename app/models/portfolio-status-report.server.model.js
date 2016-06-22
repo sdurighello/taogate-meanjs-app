@@ -93,6 +93,11 @@ var PortfolioStatusReportSchema = new Schema({
         name : {type: String}
     },
 
+    type : {
+        _id: {type: Schema.Types.ObjectId, ref: 'StatusReportType', $tenant: true},
+        name : {type: String}
+    },
+
     title : {type: String, trim: true, required: 'Title is required'},
     date : {type: Date, required: 'Date is required'},
 

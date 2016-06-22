@@ -139,7 +139,7 @@
 									<h6 class="panel-title text-center" data-ng-bind="area.name"></h6>
 								</div>
 								<div class="panel-body">
-									<div ng-switch-default="view">
+									<div data-ng-switch-default="view">
 										<form class="form">
 											<fieldset>
 												<div class="row">
@@ -219,7 +219,95 @@
 						</div>
 					</div>
 				</tab>
-			</tabset>
+                <tab heading="Status report types">
+                    <br>
+                    <div class="row" ng-show="userHasAuthorization">
+                        <div class="col-md-3">
+                            <br>
+                            <button class="btn btn-primary"
+                                    ng-click="createStatusType()">
+                                New status report type
+                            </button>
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="row">
+                        <div class="alert alert-warning text-center" data-ng-hide="statusReportTypes.length">
+                            <span>No status report type yet</span>
+                        </div>
+                        <div class="col-md-4" data-ng-repeat="type in statusReportTypes" data-ng-switch="switchStatusTypeForm[type._id]" >
+                            <div class="panel panel-default" title="Last updated on {{type.created | date:'medium'}} by {{type.user.displayName}}">
+                                <div class="panel-heading">
+                                    <h6 class="panel-title text-center" data-ng-bind="type.name"></h6>
+                                </div>
+                                <div class="panel-body">
+                                    <div ng-switch-default="view">
+                                        <form class="form">
+                                            <fieldset>
+                                                <div class="row">
+                                                    <div class="col-md-12">
+                                                        <div class="form-group">
+                                                            <label for="name" class="control-label">Name</label>
+                                                            <input id="name" disabled type="text" class="form-control" data-ng-model="type.name">
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label for="description" class="control-label">Description</label>
+                                                            <textarea id="description" disabled class="form-control" data-ng-model="type.description"></textarea>
+                                                        </div>
+                                                        <button type="button" class="btn btn-success pull-right" data-ng-show="userHasAuthorization"
+                                                                data-ng-click="selectStatusType(type)">
+                                                            Edit
+                                                        </button>
+                                                        <div data-ng-show="error" class="text-danger">
+                                                            <strong data-ng-bind="error"></strong>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </fieldset>
+                                        </form>
+                                    </div>
+                                    <div data-ng-switch-when="edit">
+                                        <form class="form" name="editTypeForm" data-ng-submit="updateStatusType(type)" novalidate>
+                                            <fieldset>
+                                                <div class="row">
+                                                    <div class="col-md-12">
+                                                        <div class="form-group">
+                                                            <label for="typeNameEdit" class="control-label">Name</label>
+                                                            <input type="text" id="typeNameEdit" class="form-control" name="typeNameEdit"
+                                                                   data-ng-model="type.name" placeholder="Name" required>
+                                                            <span data-ng-show="editTypeForm.typeNameEdit.$error.required">
+                                                                <em style="color: red">Name is required</em>
+                                                            </span>
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label for="descriptionEdit" class="control-label">Description</label>
+                                                            <textarea id="descriptionEdit" class="form-control"
+                                                                      data-ng-model="type.description" placeholder="Description">
+                                                            </textarea>
+                                                        </div>
+                                                        <div class="pull-right">
+                                                            <input type="submit" value="Save" class="btn btn-success" data-ng-disabled="editTypeForm.$invalid">
+                                                            <a class="btn btn-danger" data-ng-click="removeStatusType(type)" data-ng-show="userHasAuthorization">
+                                                                <i class="glyphicon glyphicon-trash"></i>
+                                                            </a>
+                                                            <button type="button" class="btn btn-info" data-ng-click="cancelEditStatusType(type)">
+                                                                Cancel
+                                                            </button>
+                                                        </div>
+                                                        <div data-ng-show="error" class="text-danger">
+                                                            <strong data-ng-bind="error"></strong>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </fieldset>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </tab>
+            </tabset>
 		</div>
 	</div>
 </section>
