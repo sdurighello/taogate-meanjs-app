@@ -80,7 +80,13 @@ exports.updateImpactAssignment = require('./projects/projects.qualitativeAnalysi
 
 exports.updateRiskAssignment = require('./projects/projects.riskAnalysis.server.controller').updateRiskAssignment;
 
-exports.updatePeopleAssignment = require('./projects/projects.stakeholderAnalysis.server.controller').updatePeopleAssignment;
+
+exports.createAssignedRole = require('./projects/projects.stakeholderAnalysis.server.controller').createAssignedRole;
+
+exports.updateAssignedRole = require('./projects/projects.stakeholderAnalysis.server.controller').updateAssignedRole;
+
+exports.deleteAssignedRole = require('./projects/projects.stakeholderAnalysis.server.controller').deleteAssignedRole;
+
 
 // ------------------------------ PROCESS ASSIGNMENT ------------------------------
 

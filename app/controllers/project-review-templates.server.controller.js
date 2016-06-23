@@ -136,8 +136,6 @@ exports.updateGroup = function(req, res) {
     group.name = req.body.name;
     group.description = req.body.description;
     group.weight = req.body.weight;
-    group.user = req.user;
-    group.created = Date.now();
 
     template.save(function(err){
         if (err) {
@@ -255,8 +253,6 @@ exports.updateItem = function(req, res) {
     item.name = req.body.name;
     item.description = req.body.description;
     item.weight = req.body.weight;
-    item.user = req.user;
-    item.created = Date.now();
 
     template.save(function(err){
         if (err) {

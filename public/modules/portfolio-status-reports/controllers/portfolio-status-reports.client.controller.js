@@ -270,7 +270,7 @@ angular.module('portfolio-status-reports').controller('PortfolioStatusReportsCon
             vm.isResolving = true;
             PortfolioStatusReports.updateHeader(
                 {
-                    portfolioStatusReportId : portfolio._id
+                    portfolioStatusReportId : document._id
                 }, document,
                 function(res){
                     vm.isResolving = false;

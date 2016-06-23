@@ -82,8 +82,20 @@ var AssignedPeopleCategorySchema = new Schema({
 });
 
 var AssignedPeopleProjectRoleSchema = new Schema({
-    role : {type: Schema.Types.ObjectId, ref: 'PeopleProjectRole', $tenant:true},
-    person: {type: Schema.Types.ObjectId, ref: 'Person', $tenant:true},
+    role : {
+        name: {
+            type: String,
+            default: '',
+            required: 'Please fill role name',
+            trim: true
+        },
+        description: {
+            type: String,
+            default: '',
+            trim: true
+        }
+    },
+    person: {type: Schema.Types.ObjectId, default: null, ref: 'Person', $tenant:true},
     categorization : [AssignedPeopleCategorySchema]
 });
 

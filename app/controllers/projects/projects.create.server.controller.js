@@ -31,7 +31,6 @@ exports.create = function(user, body, callback) {
     var Risk = mongoose.mtModel(user.tenantId + '.' + 'Risk');
     var PeopleCategory = mongoose.mtModel(user.tenantId + '.' + 'PeopleCategory');
     var PeopleProjectGroup = mongoose.mtModel(user.tenantId + '.' + 'PeopleProjectGroup');
-    var PeopleProjectRole = mongoose.mtModel(user.tenantId + '.' + 'PeopleProjectRole');
 
 
     async.series([
@@ -170,58 +169,22 @@ exports.create = function(user, body, callback) {
                 }
             });
         },
-        // PROJECT.STAKEHOLDERS: Add all existing groups/roles + categories/values to new project
+        // PROJECT.STAKEHOLDERS: Add all existing people groups to new project
         function(callback){
-            async.waterfall([
-                // Create the "categorization" array [{category:<objectId>, categoryValue:null}] from all existing people-categories
-                function(callback){
-                    PeopleCategory.find().exec(function(err, categories) {
-                        if (err) {
-                            callback(err);
-                        } else {
-                            var retArray = [];
-                            async.each(categories, function(category, callback){
-                                retArray.push({
-                                    category: category._id,
-                                    categoryValue: null
-                                });
-                                callback();
-                            });
-                            callback(null, retArray);
-                        }
-                    });
-                },
-                // Add to projects all the people-groups/roles with the "categorization" array
-                function(retArray, callback){
-                    PeopleProjectGroup.find().exec(function(err, groups){
-                        if (err) {
-                            callback(err);
-                        } else {
-                            async.each(groups, function(group, callback){
-                                var obj = {group: group._id, roles: []};
-                                async.each(group.roles, function(role, callback){
-                                    obj.roles.push({
-                                        role: role,
-                                        person: null,
-                                        categorization: retArray
-                                    });
-                                    callback();
-                                });
-                                project.stakeholders.push(obj);
-                                project.save(function(err){
-                                    if(err){callback(err);} else {callback();}
-                                });
-                            });
-                            callback(null);
-                        }
-                    });
-                }
-            ],function(err){
+            PeopleProjectGroup.find().exec(function(err, groups){
                 if (err) {
-                    callback(err);
-                } else {
-                    callback(null);
+                    return callback(err);
                 }
+                
+                _.each(groups, function(group){
+                    var newAssignedGroup = project.stakeholders.create({group: group._id, roles: []});
+                    project.stakeholders.push(newAssignedGroup);
+                });
+                
+                project.save(function(err){
+                    callback(err);
+                });
+                
             });
         }
     ],function(err){

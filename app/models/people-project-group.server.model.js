@@ -4,8 +4,7 @@
  * Module dependencies.
  */
 var mongoose = require('mongoose'),
-	Schema = mongoose.Schema,
-	deepPopulate = require('mongoose-deep-populate')(mongoose);
+	Schema = mongoose.Schema;
 require('mongoose-multitenant');
 
 /**
@@ -23,7 +22,6 @@ var PeopleProjectGroupSchema = new Schema({
 		default: '',
 		trim: true
 	},
-	roles : [{type: Schema.Types.ObjectId, ref: 'PeopleProjectRole', $tenant:true}],
 	created: {
 		type: Date,
 		default: Date.now
@@ -34,5 +32,4 @@ var PeopleProjectGroupSchema = new Schema({
 	}
 });
 
-PeopleProjectGroupSchema.plugin(deepPopulate);
 mongoose.mtModel('PeopleProjectGroup', PeopleProjectGroupSchema);

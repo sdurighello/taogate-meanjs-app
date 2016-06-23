@@ -4,10 +4,10 @@
 angular.module('portfolio-reviews').controller('PortfolioReviewsController', ['$rootScope', '$scope','$stateParams', '$location',
 	'Authentication', 'Projects', 'Portfolios','$q', '_',
 	'PortfolioReviewTemplates', 'ProjectReviewScores', 'PortfolioReviewTypes','PortfolioReviews',
-	'PeoplePortfolioGroups', 'PeoplePortfolioRoles',
+	'PeoplePortfolioGroups',
 	function($rootScope, $scope, $stateParams, $location, Authentication, Projects, Portfolios, $q, _,
 			 PortfolioReviewTemplates, ProjectReviewScores, PortfolioReviewTypes, PortfolioReviews,
-			 PeoplePortfolioGroups, PeoplePortfolioRoles) {
+			 PeoplePortfolioGroups) {
 
 
 		$rootScope.staticMenu = false;
@@ -63,12 +63,6 @@ angular.module('portfolio-reviews').controller('PortfolioReviewsController', ['$
 
 			PeoplePortfolioGroups.query(function(res){
 				$scope.peoplePortfolioGroups = res;
-			}, function(err){
-				$scope.initError.push({message: err.data.message});
-			});
-
-			PeoplePortfolioRoles.query(function(res){
-				$scope.peoplePortfolioRoles = res;
 			}, function(err){
 				$scope.initError.push({message: err.data.message});
 			});

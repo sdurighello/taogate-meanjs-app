@@ -38,11 +38,26 @@ angular.module('project-identification').factory('Projects', ['$resource',
 				url: 'projects/:projectId/riskAssignment/:assignedCategoryId/:assignedRiskId'
 				// req.body: {probabilityId: risk probability id, impactId: risk impact id}
 			},
-			updatePeopleAssignment: {
+            
+            // Stakeholders
+
+            createAssignedRole: {
+                method: 'POST',
+                url: 'projects/:projectId/stakeholders/:assignedGroupId/assignedRoles'
+                // req.body: {the whole "assignedRole" object}
+            },
+            
+			updateAssignedRole: {
 				method: 'PUT',
-				url: 'projects/:projectId/stakeholders/:assignedGroupId/:assignedRoleId'
+				url: 'projects/:projectId/stakeholders/:assignedGroupId/assignedRoles/:assignedRoleId'
 				// req.body: {the whole "assignedRole" object}
 			},
+
+            deleteAssignedRole: {
+                method: 'DELETE',
+                url: 'projects/:projectId/stakeholders/:assignedGroupId/assignedRoles/:assignedRoleId'
+                // req.body: {the whole "assignedRole" object}
+            },
 
             // ------- DELIVERY PROCESS -------
 

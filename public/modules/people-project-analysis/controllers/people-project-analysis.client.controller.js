@@ -1,9 +1,9 @@
 'use strict';
 
 angular.module('people-project-analysis').controller('PeopleProjectAnalysisController', ['$rootScope', '$scope', '$stateParams', '$location', 'Authentication',
-	'Projects','PeopleProjectGroups', 'PeopleProjectRoles', 'PeopleCategories','PeopleCategoryValues', 'People', '_','$q',
+	'Projects','PeopleProjectGroups', 'PeopleCategories','PeopleCategoryValues', 'People', '_','$q',
 	function($rootScope, $scope, $stateParams, $location, Authentication, Projects,
-			 PeopleProjectGroups, PeopleProjectRoles, PeopleCategories, PeopleCategoryValues, People, _ , $q) {
+			 PeopleProjectGroups, PeopleCategories, PeopleCategoryValues, People, _ , $q) {
 
 		$rootScope.staticMenu = false;
 
@@ -23,12 +23,6 @@ angular.module('people-project-analysis').controller('PeopleProjectAnalysisContr
 
 			PeopleProjectGroups.query(function(groups){
 				$scope.groups = groups;
-			}, function(err){
-				$scope.initError.push(err.data.message);
-			});
-
-			PeopleProjectRoles.query(function(roles){
-				$scope.roles = roles;
 			}, function(err){
 				$scope.initError.push(err.data.message);
 			});
@@ -114,7 +108,7 @@ angular.module('people-project-analysis').controller('PeopleProjectAnalysisContr
 				retPropertiesString : 'user created selection identification portfolio stakeholders',
 				deepPopulateArray : [
 					'portfolio',
-					'stakeholders.group','stakeholders.roles.role','stakeholders.roles.categorization.category.categoryValues'
+					'stakeholders.group','stakeholders.roles.categorization.category.categoryValues'
 				]
 			}, function(res){
 				$scope.selectedProject = res;
@@ -130,7 +124,22 @@ angular.module('people-project-analysis').controller('PeopleProjectAnalysisContr
 		};
 
 
-		// ------------- SELECT ROLE ASSIGNMENT ---------
+        // ------------- CREATE ROLE ASSIGNMENT ---------
+
+        $scope.createAssignedRole = function(project, assignedGroup){
+
+            Projects.createAssignedRole({
+                projectId: project._id,
+                assignedGroupId: assignedGroup._id
+            },{}, function(res){
+                assignedGroup.roles.push(res);
+            }, function(err){
+                $scope.error = err.data.message;
+            });
+        };
+
+
+        // ------------- SELECT ROLE ASSIGNMENT ---------
 
 		$scope.selectRoleAssignment = function(assignedRole){
 			originalRoleAssignment[assignedRole._id] = _.cloneDeep(assignedRole);
@@ -140,7 +149,7 @@ angular.module('people-project-analysis').controller('PeopleProjectAnalysisContr
 
 		// ------------- EDIT ROLE ASSIGNMENT ---------
 
-		$scope.saveAssignedRole = function(project, assignedGroup, assignedRole){
+		$scope.saveEditAssignedRole = function(project, assignedGroup, assignedRole){
             // Clean deepPopulate
             var copyAssignedRole = _.cloneDeep(assignedRole);
             copyAssignedRole.role = copyAssignedRole.role._id;
@@ -148,8 +157,7 @@ angular.module('people-project-analysis').controller('PeopleProjectAnalysisContr
                 assignedCategory.category = allowNull(assignedCategory.category);
                 return assignedCategory;
             });
-			// url: 'projects/:projectId/stakeholders/:assignedGroupId/:assignedRoleId'
-			Projects.updatePeopleAssignment(
+			Projects.updateAssignedRole(
 				{
 					projectId: project._id,
 					assignedGroupId: assignedGroup._id,
@@ -163,11 +171,27 @@ angular.module('people-project-analysis').controller('PeopleProjectAnalysisContr
 		};
 
 		$scope.cancelEditAssignedRole = function(assignedRole){
+            assignedRole.role = originalRoleAssignment[assignedRole._id].role;
 			assignedRole.person = originalRoleAssignment[assignedRole._id].person;
             assignedRole.categorization = originalRoleAssignment[assignedRole._id].categorization;
 			$scope.selectRoleForm(assignedRole, 'view');
 		};
 
+
+        // ------------- DELETE ROLE ASSIGNMENT ---------
+
+        $scope.deleteAssignedRole = function(project, assignedGroup, assignedRole){
+
+            Projects.deleteAssignedRole({
+                projectId: project._id,
+                assignedGroupId: assignedGroup._id,
+                assignedRoleId: assignedRole._id
+            }, assignedRole, function(res){
+                assignedGroup.roles = _.without(assignedGroup.roles, assignedRole);
+            }, function(err){
+                $scope.error = err.data.message;
+            });
+        };
 
 	}
 ]);

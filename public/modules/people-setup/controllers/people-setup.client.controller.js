@@ -2,9 +2,9 @@
 
 angular.module('people-setup').controller('PeopleSetupController', ['$rootScope', '$scope', '$stateParams', '$location',
 	'Authentication','People', 'PeoplePortfolioGroups', 'PeopleProjectGroups',
-    'PeopleProjectRoles', 'PeoplePortfolioRoles', 'PeopleCategories', 'PeopleCategoryValues', '$q','_',
+    'PeopleCategories', 'PeopleCategoryValues', '$q','_',
 	function($rootScope, $scope, $stateParams, $location, Authentication, People, PeoplePortfolioGroups, PeopleProjectGroups,
-             PeopleProjectRoles, PeoplePortfolioRoles, PeopleCategories, PeopleCategoryValues, $q, _) {
+             PeopleCategories, PeopleCategoryValues, $q, _) {
 
 
         $rootScope.staticMenu = false;
@@ -14,16 +14,7 @@ angular.module('people-setup').controller('PeopleSetupController', ['$rootScope'
         $scope.initError = [];
 
 		$scope.init = function(){
-            PeopleProjectRoles.query(function(roles){
-                $scope.peopleProjectRoles = roles;
-            }, function(err){
-                $scope.initError.push(err.data.message);
-            });
-            PeoplePortfolioRoles.query(function(roles){
-                $scope.peoplePortfolioRoles = roles;
-            }, function(err){
-                $scope.initError.push(err.data.message);
-            });
+
             PeoplePortfolioGroups.query(function(portfolioGroups){
                 $scope.peoplePortfolioGroups = portfolioGroups;
             }, function(err){
@@ -184,8 +175,7 @@ angular.module('people-setup').controller('PeopleSetupController', ['$rootScope'
 
 			var peopleProjectGroup = new PeopleProjectGroups ({
 				name: 'New project stakeholder group',
-				description: '',
-				roles: []
+				description: ''
 			});
 
 			peopleProjectGroup.$save(function(response) {
@@ -271,8 +261,7 @@ angular.module('people-setup').controller('PeopleSetupController', ['$rootScope'
 
             var peoplePortfolioGroup = new PeoplePortfolioGroups ({
                 name: 'New portfolio stakeholder group',
-                description: '',
-                roles: []
+                description: ''
             });
 
             peoplePortfolioGroup.$save(function(response) {
@@ -317,151 +306,6 @@ angular.module('people-setup').controller('PeopleSetupController', ['$rootScope'
                 $scope.error = errorResponse.data.message;
             });
         };
-
-
-
-
-
-
-// ------------------------------------------------------ PROJECT ROLES --------------------------------------
-
-
-
-        $scope.switchProjectRoleForm = {};
-
-        $scope.selectProjectRoleForm = function(role, string){
-            if(string === 'view'){ $scope.switchProjectRoleForm[role._id] = 'view';}
-            if(string === 'edit'){$scope.switchProjectRoleForm[role._id] = 'edit';}
-        };
-
-
-
-        // ------------------ CREATE PROJECT ROLE ----------------
-
-		$scope.createProjectRole = function(group) {
-			$scope.error = null;
-
-			var peopleProjectRole = new PeopleProjectRoles ({
-				name: 'New role',
-				description: 'New role description'
-			});
-
-            peopleProjectRole.$save({groupId: group._id}, function(res) {
-                // Add new priority to the view group
-                group.roles.push(res);
-            }, function(errorResponse) {
-                $scope.error = errorResponse.data.message;
-            });
-		};
-
-		// ------------------- EDIT ROLE -----------------
-
-		var originalEditProjectRole = {};
-
-		$scope.selectEditProjectRole = function(group, role){
-			originalEditProjectRole[role._id] = _.clone(role);
-			$scope.selectProjectRoleForm(role, 'edit');
-		};
-
-		$scope.updateProjectRole = function(group, role) {
-			PeopleProjectRoles.update(role, function(response) {
-				$scope.selectProjectRoleForm(role, 'view');
-			}, function(errorResponse) {
-				$scope.error = errorResponse.data.message;
-			});
-		};
-
-		$scope.cancelEditProjectRole = function(role){
-			$scope.error = null;
-			role.name = originalEditProjectRole[role._id].name;
-			role.description = originalEditProjectRole[role._id].description;
-			$scope.selectProjectRoleForm(role, 'view');
-		};
-
-		// ------------------- REMOVE ROLE -----------------
-
-		$scope.removeProjectRole = function(group, role) {
-			$scope.error = null;
-
-            PeopleProjectRoles.remove({groupId: group._id}, role, function(res){
-                group.roles = _.without(group.roles, role);
-            }, function(err){
-                $scope.error = err.data.message;
-            });
-		};
-
-
-
-// ------------------------------------------------------ PORTFOLIO ROLES --------------------------------------
-
-
-
-        $scope.switchPortfolioRoleForm = {};
-
-        $scope.selectPortfolioRoleForm = function(role, string){
-            if(string === 'view'){ $scope.switchPortfolioRoleForm[role._id] = 'view';}
-            if(string === 'edit'){$scope.switchPortfolioRoleForm[role._id] = 'edit';}
-        };
-
-
-
-        // ------------------ CREATE PORTFOLIO ROLE ----------------
-
-        $scope.createPortfolioRole = function(group) {
-            $scope.error = null;
-
-            var peoplePortfolioRole = new PeoplePortfolioRoles ({
-                name: 'New role',
-                description: 'New role description'
-            });
-
-            peoplePortfolioRole.$save({groupId: group._id}, function(res) {
-                // Add new priority to the view group
-                group.roles.push(res);
-            }, function(errorResponse) {
-                $scope.error = errorResponse.data.message;
-            });
-        };
-
-        // ------------------- EDIT ROLE -----------------
-
-        var originalEditPortfolioRole = {};
-
-        $scope.selectEditPortfolioRole = function(group, role){
-            originalEditPortfolioRole[role._id] = _.clone(role);
-            $scope.selectPortfolioRoleForm(role, 'edit');
-        };
-
-        $scope.updatePortfolioRole = function(group, role) {
-            PeoplePortfolioRoles.update(role, function(response) {
-                $scope.selectPortfolioRoleForm(role, 'view');
-            }, function(errorResponse) {
-                $scope.error = errorResponse.data.message;
-            });
-        };
-
-        $scope.cancelEditPortfolioRole = function(role){
-            $scope.error = null;
-            role.name = originalEditPortfolioRole[role._id].name;
-            role.description = originalEditPortfolioRole[role._id].description;
-            $scope.selectPortfolioRoleForm(role, 'view');
-        };
-
-        // ------------------- REMOVE ROLE -----------------
-
-        $scope.removePortfolioRole = function(group, role) {
-            $scope.error = null;
-
-            PeoplePortfolioRoles.remove({groupId: group._id}, role, function(res){
-                group.roles = _.without(group.roles, role);
-            }, function(err){
-                $scope.error = err.data.message;
-            });
-        };
-
-
-
-
 
 
 

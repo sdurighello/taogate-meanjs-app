@@ -31,7 +31,11 @@ module.exports = function(app) {
     // Priority Assignment
     app.route('/projects/:projectId/priorityAssignment/:assignedGroupId/:assignedPriorityId')
         .put(users.requiresLogin, projects.hasEditAuthorization, projects.updatePriorityAssignment);
+    
 
+    // -------------------------- DEFINITION -----------------------------
+
+    
     // Impact Assignment
     app.route('/projects/:projectId/impactAssignment/:assignedGroupId/:assignedImpactId')
         .put(users.requiresLogin, projects.hasEditAuthorization, projects.updateImpactAssignment);
@@ -41,8 +45,12 @@ module.exports = function(app) {
         .put(users.requiresLogin, projects.hasEditAuthorization, projects.updateRiskAssignment);
 
     // Stakeholders
-    app.route('/projects/:projectId/stakeholders/:assignedGroupId/:assignedRoleId')
-        .put(users.requiresLogin, projects.hasEditAuthorization, projects.updatePeopleAssignment);
+    app.route('/projects/:projectId/stakeholders/:assignedGroupId/assignedRoles')
+        .post(users.requiresLogin, projects.hasEditAuthorization, projects.createAssignedRole);
+
+    app.route('/projects/:projectId/stakeholders/:assignedGroupId/assignedRoles/:assignedRoleId')
+        .put(users.requiresLogin, projects.hasEditAuthorization, projects.updateAssignedRole)
+        .delete(users.requiresLogin, projects.hasEditAuthorization, projects.deleteAssignedRole);
 
 
     // -------------------------- PROCESS -----------------------------

@@ -3,10 +3,10 @@
 angular.module('project-reviews').controller('ProjectReviewsController', ['$rootScope', '$scope','$stateParams', '$location',
 	'Authentication', 'Projects', 'Portfolios','$q', '_',
 	'ProjectReviewTemplates', 'ProjectReviewScores', 'ProjectReviewTypes','ProjectReviews',
-    'PeopleProjectGroups', 'PeopleProjectRoles', 'GateProcessTemplates',
+    'PeopleProjectGroups', 'GateProcessTemplates',
 	function($rootScope, $scope, $stateParams, $location, Authentication, Projects, Portfolios, $q, _,
 			 ProjectReviewTemplates, ProjectReviewScores, ProjectReviewTypes, ProjectReviews,
-             PeopleProjectGroups, PeopleProjectRoles, GateProcessTemplates) {
+             PeopleProjectGroups, GateProcessTemplates) {
 
         $rootScope.staticMenu = false;
 
@@ -68,12 +68,6 @@ angular.module('project-reviews').controller('ProjectReviewsController', ['$root
 
             PeopleProjectGroups.query(function(res){
                 $scope.peopleProjectGroups = res;
-            }, function(err){
-                $scope.initError.push({message: err.data.message});
-            });
-
-            PeopleProjectRoles.query(function(res){
-                $scope.peopleProjectRoles = res;
             }, function(err){
                 $scope.initError.push({message: err.data.message});
             });

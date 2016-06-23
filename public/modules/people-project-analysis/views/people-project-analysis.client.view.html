@@ -52,31 +52,44 @@
 									<div class="col-md-12" data-ng-repeat="assignedGroup in selectedProject.stakeholders | filter : (assignedGroup.group._id = filterStakeholders.group._id) track by assignedGroup._id">
 										<div class="panel panel-default">
 											<div class="panel-heading text-center">
-												<em data-ng-bind="assignedGroup.group.name"></em>
+                                                <div class="row">
+                                                    <div class="col-xs-10" style="overflow: hidden">
+                                                        <em data-ng-bind="assignedGroup.group.name"></em>
+                                                    </div>
+                                                    <div class="col-xs-2">
+                                                        <button class="btn btn-success btn-sm" data-ng-click="createAssignedRole(selectedProject, assignedGroup)">
+                                                            New role
+                                                        </button>
+                                                    </div>
+                                                </div>
 											</div>
 											<div class="panel-body">
 												<div class="row">
 													<div class="col-md-4" data-ng-repeat="assignedRole in assignedGroup.roles track by assignedRole._id" data-ng-switch="switchRoleForm[assignedRole._id]">
 														<div class="panel panel-default" data-ng-switch-default="view">
 															<div class="panel-heading text-center">
-																<b>{{assignedRole.role.name}}</b>
+																<b style="overflow: hidden;">{{assignedRole.role.name}}</b>
 															</div>
 															<div class="panel-body">
-																<div class="row">
-																	<div class="form-group-sm col-md-12">
-																		<label class="small">Person</label>
-																		<select disabled class="form-control input-sm" data-ng-model = "assignedRole.person"
-																				data-ng-options="person._id as person.name for person in people">
-																			<option value="">--choose person</option>
-																		</select>
-																	</div>
-																</div>
+                                                                <div class="row">
+                                                                    <div class="form-group-sm col-md-12">
+                                                                        <label class="small">Description</label>
+                                                                        <textarea title="description" disabled class="form-control input-sm" data-ng-model = "assignedRole.description"></textarea>
+                                                                    </div>
+                                                                    <div class="form-group-sm col-md-12">
+                                                                        <label class="small">Person</label>
+                                                                        <select title="person" disabled class="form-control input-sm" data-ng-model = "assignedRole.person"
+                                                                                data-ng-options="person._id as person.name for person in people">
+                                                                            <option value="">--choose person</option>
+                                                                        </select>
+                                                                    </div>
+                                                                </div>
 																<br>
 																<button class="btn-link" data-ng-click="showPeopleCategories = !showPeopleCategories">Evaluation categories</button>
 																<div class="row" data-ng-repeat="assignedCategory in assignedRole.categorization track by assignedCategory._id" data-ng-show="showPeopleCategories">
 																	<div class="form-group-sm col-md-12">
 																		<label class="small" data-ng-bind="assignedCategory.category.name"></label>
-																		<select disabled class="form-control input-sm" data-ng-model = "assignedCategory.categoryValue"
+																		<select title="category" disabled class="form-control input-sm" data-ng-model = "assignedCategory.categoryValue"
 																				data-ng-options="catValue._id as catValue.name for catValue in assignedCategory.category.categoryValues">
 																			<option value="">--choose value</option>
 																		</select>
@@ -96,24 +109,30 @@
 														</div>
 														<div class="panel panel-default" data-ng-switch-when="edit">
 															<div class="panel-heading text-center">
-																<b>{{assignedRole.role.name}}</b>
+                                                                <b>
+                                                                    <input title="roleName" class="form-group-sm" data-ng-model="assignedRole.role.name">
+                                                                </b>
 															</div>
 															<div class="panel-body">
-																<div class="row">
-																	<div class="form-group-sm col-md-12">
-																		<label class="small">Person</label>
-																		<select class="form-control input-sm" data-ng-model = "assignedRole.person"
-																				data-ng-options="person._id as person.name for person in people">
-																			<option value="">--choose person</option>
-																		</select>
-																	</div>
-																</div>
+                                                                <div class="row">
+                                                                    <div class="form-group-sm col-md-12">
+                                                                        <label class="small">Description</label>
+                                                                        <textarea title="description" class="form-control input-sm" data-ng-model = "assignedRole.description"></textarea>
+                                                                    </div>
+                                                                    <div class="form-group-sm col-md-12">
+                                                                        <label class="small">Person</label>
+                                                                        <select title="person" class="form-control input-sm" data-ng-model = "assignedRole.person"
+                                                                                data-ng-options="person._id as person.name for person in people">
+                                                                            <option value="">--choose person</option>
+                                                                        </select>
+                                                                    </div>
+                                                                </div>
 																<br>
 																<button class="btn-link">Evaluation categories</button>
 																<div class="row" data-ng-repeat="assignedCategory in assignedRole.categorization track by assignedCategory._id">
 																	<div class="form-group-sm col-md-12">
 																		<label class="small" data-ng-bind="assignedCategory.category.name"></label>
-																		<select class="form-control input-sm" data-ng-model = "assignedCategory.categoryValue"
+																		<select title="category" class="form-control input-sm" data-ng-model = "assignedCategory.categoryValue"
 																				data-ng-options="catValue._id as catValue.name for catValue in assignedCategory.category.categoryValues">
 																			<option value="">--choose value</option>
 																		</select>
@@ -123,12 +142,15 @@
 																<div class="row">
 																	<div class="col-md-12">
 																		<div class="btn-group-xs pull-right">
-																			<button type="button" class="btn btn-success btn-sm" ng-click="saveAssignedRole(selectedProject, assignedGroup, assignedRole)">
+																			<button type="button" class="btn btn-success btn-sm" ng-click="saveEditAssignedRole(selectedProject, assignedGroup, assignedRole)">
 																				Save
 																			</button>
-																			<button type="button" class="btn btn-info btn-sm" ng-click="cancelEditAssignedRole(assignedRole)">
-																				Cancel
-																			</button>
+                                                                            <button type="button" class="btn btn-danger btn-sm" ng-click="deleteAssignedRole(selectedProject, assignedGroup, assignedRole)">
+                                                                                Delete role
+                                                                            </button>
+                                                                            <button type="button" class="btn btn-info btn-sm" ng-click="cancelEditAssignedRole(assignedRole)">
+                                                                                Cancel
+                                                                            </button>
 																		</div>
 																	</div>
 																</div>
