@@ -299,6 +299,11 @@ angular.module('portfolio-status-updates').controller('PortfolioStatusUpdatesCon
 
         $scope.saveEditOverallStatus = function(statusUpdate){
 
+            // Avoid the "undefined" and make sure is "null" otherwise the gatePerformances groupBy considers them different
+            statusUpdate.status._id = (statusUpdate.status && statusUpdate.status._id) || null;
+            statusUpdate.status.name = (statusUpdate.status && statusUpdate.status.name) || null;
+            statusUpdate.status.color = (statusUpdate.status && statusUpdate.status.color) || null;
+
             $scope.error = null;
             $scope.isResolving = true;
             PortfolioStatusUpdates.updateOverallDeliveryStatus(
@@ -333,6 +338,11 @@ angular.module('portfolio-status-updates').controller('PortfolioStatusUpdatesCon
         };
 
         $scope.saveEditStatusArea = function(statusUpdate, statusAreaReview){
+
+            statusAreaReview.projectStatusArea.currentRecord.status._id = (statusAreaReview.projectStatusArea.currentRecord.status && statusAreaReview.projectStatusArea.currentRecord.status._id) || null;
+            statusAreaReview.projectStatusArea.currentRecord.status.color = (statusAreaReview.projectStatusArea.currentRecord.status && statusAreaReview.projectStatusArea.currentRecord.status.color) || null;
+            statusAreaReview.projectStatusArea.currentRecord.status.name = (statusAreaReview.projectStatusArea.currentRecord.status && statusAreaReview.projectStatusArea.currentRecord.status.name) || null;
+
             $scope.error = null;
             $scope.isResolving = true;
             PortfolioStatusUpdates.updateStatusAreaReview(

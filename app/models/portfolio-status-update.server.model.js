@@ -28,8 +28,8 @@ var PortfolioAreaReviewSchema = new Schema({
     portfolioStatusArea : {
         _id: {type: Schema.Types.ObjectId, ref: 'Portfolio.portfolioStatus.portfolioStatusAreas', $tenant:true},
         statusArea: {
-            _id: {type: Schema.Types.ObjectId, ref: 'LogStatusArea', $tenant:true},
-            name: {type: String}
+            _id: {type: Schema.Types.ObjectId, ref: 'LogStatusArea', default:null,  $tenant:true},
+            name: {type: String, default:null}
         },
         currentRecord: {
             status: {
@@ -45,7 +45,7 @@ var PortfolioAreaReviewSchema = new Schema({
         name : {type: String, default:null},
         color : {type: String, default: null}
     },
-    newComment : {type: String, trim: true}
+    newComment : {type: String, trim: true, default:''}
 });
 
 

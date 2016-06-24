@@ -610,7 +610,7 @@ var getPortfolioPerformances = function(user, portfolioId, callback){
                 .map(function(v, k){
                     return {
                         status: {
-                            _id : mongoose.Types.ObjectId.isValid(k) ? k : null,
+                            _id : mongoose.Types.ObjectId.isValid(k) ? mongoose.Types.ObjectId(k) : null,
                             name : v[0].process.currentGate.deliveryStatus.overallStatus.currentRecord.status.name,
                             color : v[0].process.currentGate.deliveryStatus.overallStatus.currentRecord.status.color
                         },
@@ -633,6 +633,19 @@ var getPortfolioPerformances = function(user, portfolioId, callback){
             // Status areas
 
             _.each(result.portfolio.status.portfolioStatusAreas, function(portfolioStatusArea){
+
+                console.log(_.chain(result.projects)
+                    .map(function(project){
+                        return {
+                            budget : project.cumulativeData.budget,
+                            projectStatusArea : _.find(project.process.currentGate.deliveryStatus.projectStatusAreas, function(projectStatusArea){
+                                return projectStatusArea.statusArea._id.equals(portfolioStatusArea.statusArea._id);
+                            })
+                        };
+                    })
+                    .filter(function(mapItem){ return !!mapItem.projectStatusArea; }) // Exclude no matches
+                    .groupBy(function(filterItem){ return filterItem.projectStatusArea.currentRecord.status._id; }).value());
+
                 var aggregatedStatuses = _.chain(result.projects)
                     .map(function(project){
                         return {
@@ -647,7 +660,7 @@ var getPortfolioPerformances = function(user, portfolioId, callback){
                     .map(function(v, k){
                         return {
                             status: {
-                                _id : mongoose.Types.ObjectId.isValid(k) ? k : null,
+                                _id : mongoose.Types.ObjectId.isValid(k) ? mongoose.Types.ObjectId(k) : null,
                                 name : v[0].projectStatusArea.currentRecord.status.name,
                                 color : v[0].projectStatusArea.currentRecord.status.color
                             },

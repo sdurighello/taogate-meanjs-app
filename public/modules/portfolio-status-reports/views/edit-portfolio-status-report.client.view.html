@@ -3,15 +3,42 @@
         <page size="A4">
             <div class="panel panel-default" style="max-width: 21cm; max-height: 29cm; overflow: auto">
                 <div class="panel-heading">
-                    <div class="row">
-                        <div class="col-xs-10 text-center" style="overflow: hidden;" data-ng-switch="vm.switchHeaderForm[vm.selectedDocument._id]">
+                    <div class="row" data-ng-switch="vm.switchHeaderTitleForm[vm.selectedDocument._id]">
+                        <div class="col-xs-9 text-center" style="overflow: hidden;">
                             <h6 class="panel-title" data-ng-switch-default="view">{{vm.selectedDocument.title}}</h6>
                             <h6 class="panel-title" data-ng-switch-when="edit"><input title="title" class="form-control input-sm" data-ng-model="vm.selectedDocument.title"></h6>
                         </div>
-                        <div class="col-xs-2">
-                            <a type="button" class="btn btn-info btn-xs" href="/#!/portfolio-status-reports">
-                                Back to list
-                            </a>
+                        <div class="col-xs-3 pull-right hidden-print">
+                            <div data-ng-switch-default="view">
+                                <button type="button" class="btn btn-xs btn-success"
+                                        data-ng-click="vm.editHeaderTitle(vm.selectedDocument)">
+                                    <span class="glyphicon glyphicon-pencil"></span>
+                                </button>
+                                <button type="button" class="btn btn-primary btn-xs" data-ng-click="vm.goToList(vm.selectedPortfolioId)">
+                                    <span class="glyphicon glyphicon-list"></span>
+                                </button>
+                                <button type="button" class="btn btn-xs btn-danger"
+                                        data-ng-click="vm.deleteDocument(vm.selectedDocument)">
+                                    <span class="glyphicon glyphicon-trash"></span>
+                                </button>
+                            </div>
+                            <div data-ng-switch-when="edit">
+                                <button type="button" class="btn btn-xs btn-success"
+                                        data-ng-click="vm.saveEditHeaderTitle(vm.selectedDocument)">
+                                    <span class="glyphicon glyphicon-ok"></span>
+                                </button>
+                                <button type="button" class="btn btn-xs btn-info"
+                                        data-ng-click="vm.cancelEditHeaderTitle(vm.selectedDocument)">
+                                    <span class="glyphicon glyphicon-remove"></span>
+                                </button>
+                                <a type="button" class="btn btn-primary btn-xs" href="/#!/portfolio-status-reports">
+                                    <span class="glyphicon glyphicon-list"></span>
+                                </a>
+                                <button type="button" class="btn btn-xs btn-danger"
+                                        data-ng-click="vm.deleteDocument(vm.selectedDocument)">
+                                    <span class="glyphicon glyphicon-trash"></span>
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -34,56 +61,64 @@
                     <!-- DATES, PORTFOLIO MANAGER -->
                     <div class="row">
                         <div class="col-xs-12">
-                            <div class="panel panel-default panel-heading" data-ng-switch="vm.switchHeaderForm[vm.selectedDocument._id]">
+                            <div class="panel panel-default panel-heading">
                                 <div class="row">
-                                    <div class="col-xs-3 " data-ng-switch-default="view">
-                                        <span data-ng-show="vm.selectedDocument.type.name">{{vm.selectedDocument.type.name}}</span>
-                                        <span data-ng-show="!vm.selectedDocument.type.name">--</span>
+                                    <div data-ng-switch="vm.switchHeaderTypeForm[vm.selectedDocument._id]">
+                                        <div class="col-xs-4 " data-ng-switch-default="view">
+                                            <span data-ng-show="vm.selectedDocument.type.name">{{vm.selectedDocument.type.name}}</span>
+                                            <span data-ng-show="!vm.selectedDocument.type.name">--</span>
+                                            <button type="button" class="btn btn-xs btn-success hidden-print"
+                                                    data-ng-click="vm.editHeaderType(vm.selectedDocument)">
+                                                <span class="glyphicon glyphicon-pencil"></span>
+                                            </button>
+                                        </div>
+                                        <div class="col-xs-4 " data-ng-switch-when="edit">
+                                            <select title="type" class="form-control input-sm" data-ng-model = "vm.selectedDocument.type"
+                                                    data-ng-options="type as type.name for type in vm.statusReportTypes track by type._id">
+                                                <option value="">--select report type</option>
+                                            </select>
+                                            <button type="button" class="btn btn-xs btn-success hidden-print"
+                                                    data-ng-click="vm.saveEditHeaderType(vm.selectedDocument)">
+                                                <span class="glyphicon glyphicon-ok"></span>
+                                            </button>
+                                            <button type="button" class="btn btn-xs btn-info hidden-print"
+                                                    data-ng-click="vm.cancelEditHeaderType(vm.selectedDocument)">
+                                                <span class="glyphicon glyphicon-remove"></span>
+                                            </button>
+                                        </div>
                                     </div>
-                                    <div class="col-xs-3 " data-ng-switch-when="edit">
-                                        <select title="type" class="form-control input-sm" data-ng-model = "vm.selectedDocument.type"
-                                                data-ng-options="type as type.name for type in vm.statusReportTypes track by type._id">
-                                            <option value="">--select report type</option>
-                                        </select>
-                                    </div>
-                                    <div class="col-xs-3 ">
+                                    <div class="col-xs-4 ">
                                         <b>From: </b>
                                         <span data-ng-show="vm.selectedDocument.previousReport.date">{{vm.selectedDocument.previousReport.date | date:'EEE d, MMM yyyy'}}</span>
                                         <span data-ng-show="!vm.selectedDocument.previousReport.date"> -- </span>
                                     </div>
-                                    <div class="col-xs-3 " data-ng-switch-default="view">
-                                        <b>To: </b>
-                                        <span>{{vm.selectedDocument.date | date:'EEE d, MMM yyyy'}}</span>
-                                    </div>
-                                    <div class="col-xs-3 " data-ng-switch-when="edit">
-                                        <b>To: </b>
-                                        <div class="input-group input-group-sm">
-                                            <input type="text" title="date" class="form-control" datepicker-popup="dd-MMMM-yyyy" data-ng-model="vm.selectedDocument.date"
-                                                   is-open="vm.newHeaderDateOpened[vm.selectedDocument._id]" required>
+                                    <div data-ng-switch="vm.switchHeaderDateForm[vm.selectedDocument._id]">
+                                        <div class="col-xs-4 " data-ng-switch-default="view">
+                                            <b>To: </b>
+                                            <span>{{vm.selectedDocument.date | date:'EEE d, MMM yyyy'}}</span>
+                                            <button type="button" class="btn btn-xs btn-success hidden-print"
+                                                    data-ng-click="vm.editHeaderDate(vm.selectedDocument)">
+                                                <span class="glyphicon glyphicon-pencil"></span>
+                                            </button>
+                                        </div>
+                                        <div class="col-xs-4 " data-ng-switch-when="edit">
+                                            <b>To: </b>
+                                            <div class="input-group input-group-sm">
+                                                <input type="text" title="date" class="form-control" datepicker-popup="dd-MMMM-yyyy" data-ng-model="vm.selectedDocument.date"
+                                                       is-open="vm.newHeaderDateOpened[vm.selectedDocument._id]" required>
                                                 <span class="input-group-btn">
                                                     <button type="button" class="btn btn-default btn-sm" ng-click="vm.openNewHeaderDate(vm.selectedDocument, $event)"><i class="glyphicon glyphicon-calendar"></i></button>
                                                 </span>
+                                            </div>
+                                            <button type="button" class="btn btn-xs btn-success hidden-print"
+                                                    data-ng-click="vm.saveEditHeaderDate(vm.selectedDocument)">
+                                                <span class="glyphicon glyphicon-ok"></span>
+                                            </button>
+                                            <button type="button" class="btn btn-xs btn-info hidden-print"
+                                                    data-ng-click="vm.cancelEditHeaderDate(vm.selectedDocument)">
+                                                <span class="glyphicon glyphicon-remove"></span>
+                                            </button>
                                         </div>
-                                    </div>
-                                    <div class="col-xs-3" data-ng-switch-default="view">
-                                        <button type="button" class="btn btn-xs btn-success pull-right"
-                                                data-ng-click="vm.editHeader(vm.selectedDocument)">
-                                            Edit
-                                        </button>
-                                    </div>
-                                    <div class="col-xs-3 pull-right" data-ng-switch-when="edit">
-                                        <button type="button" class="btn btn-xs btn-success"
-                                                data-ng-click="vm.saveEditHeader(vm.selectedDocument)">
-                                            Save
-                                        </button>
-                                        <button type="button" class="btn btn-xs btn-info"
-                                                data-ng-click="vm.cancelEditHeader(vm.selectedDocument)">
-                                            Cancel
-                                        </button>
-                                        <button type="button" class="btn btn-xs btn-danger"
-                                                data-ng-click="vm.deleteDocument(vm.selectedDocument)">
-                                            <span class="glyphicon glyphicon-trash"></span>
-                                        </button>
                                     </div>
                                 </div>
                             </div>
@@ -98,13 +133,13 @@
                                         <div class="col-xs-10">
                                             <h6 class="panel-title text-center">Overall status</h6>
                                         </div>
-                                        <div class="col-xs-2" data-ng-switch-default="view">
+                                        <div class="col-xs-2 hidden-print" data-ng-switch-default="view">
                                             <button type="button" class="btn btn-xs btn-success pull-right"
                                                     data-ng-click="vm.editOverallStatus(vm.selectedDocument)">
                                                 Edit
                                             </button>
                                         </div>
-                                        <div class="col-xs-2 pull-right" data-ng-switch-when="edit">
+                                        <div class="col-xs-2 pull-right hidden-print" data-ng-switch-when="edit">
                                             <button type="button" class="btn btn-xs btn-success"
                                                     data-ng-click="vm.saveEditOverallStatus(vm.selectedDocument)">
                                                 Save
@@ -121,12 +156,12 @@
                                         <div class="col-xs-5 form-group-sm">
                                             <label>Status previous period</label>
                                             <div class="panel panel-default panel-heading text-center" style="background-color: {{vm.selectedDocument.deliveryStatus.overallStatus.previousStatus.color}}">
-                                            <span data-ng-show="vm.selectedDocument.deliveryStatus.overallStatus.previousStatus.name">
-                                                {{vm.selectedDocument.deliveryStatus.overallStatus.previousStatus.name}}
-                                            </span>
-                                            <span data-ng-show="!vm.selectedDocument.deliveryStatus.overallStatus.previousStatus.name">
-                                                --
-                                            </span>
+                                                <span data-ng-show="vm.selectedDocument.deliveryStatus.overallStatus.previousStatus.name">
+                                                    {{vm.selectedDocument.deliveryStatus.overallStatus.previousStatus.name}}
+                                                </span>
+                                                <span data-ng-show="!vm.selectedDocument.deliveryStatus.overallStatus.previousStatus.name">
+                                                    No status
+                                                </span>
                                             </div>
                                         </div>
                                         <div class="col-xs-2 text-center">
@@ -136,18 +171,23 @@
                                         <div class="col-xs-5 form-group-sm">
                                             <label>Status this period</label>
                                             <div class="panel panel-default panel-heading text-center" style="background-color: {{vm.selectedDocument.deliveryStatus.overallStatus.currentStatus.color}}">
-                                                <span>{{vm.selectedDocument.deliveryStatus.overallStatus.currentStatus.name}}</span>
+                                                <span data-ng-show="vm.selectedDocument.deliveryStatus.overallStatus.currentStatus.name">
+                                                    {{vm.selectedDocument.deliveryStatus.overallStatus.currentStatus.name}}
+                                                </span>
+                                                <span data-ng-show="!vm.selectedDocument.deliveryStatus.overallStatus.currentStatus.name">
+                                                    No status
+                                                </span>
                                             </div>
                                         </div>
                                     </div>
                                     <div class="row">
                                         <div class="col-xs-12">
-                                            <div class="panel panel-default panel-heading text-center" style="height: 10cm"
+                                            <div class="panel panel-default panel-heading" style="height: 10cm"
                                                  data-ng-switch-default="view">
-                                                <span>{{vm.selectedDocument.deliveryStatus.overallStatus.currentStatus.comment}}</span>
+                                                <span>{{vm.selectedDocument.deliveryStatus.overallStatus.comment}}</span>
                                             </div>
                                             <textarea title="overallStatus" class="form-control panel panel-default panel-heading"
-                                                      data-ng-model="vm.selectedDocument.deliveryStatus.overallStatus.currentStatus.comment"
+                                                      data-ng-model="vm.selectedDocument.deliveryStatus.overallStatus.comment"
                                                       data-ng-switch-when="edit">
                                             </textarea>
                                         </div>
@@ -253,10 +293,10 @@
                                         <div class="col-xs-12">
                                             <div class="panel panel-default panel-heading" data-ng-switch-default="view"
                                                  style="max-height: 4cm; overflow: hidden">
-                                                <span>{{obj.currentStatus.comment}}</span>
+                                                <span>{{obj.comment}}</span>
                                             </div>
                                             <textarea title="statusArea" class="form-control panel panel-default panel-heading"
-                                                      data-ng-model="obj.currentStatus.comment"
+                                                      data-ng-model="obj.comment"
                                                       data-ng-switch-when="edit">
                                             </textarea>
                                         </div>

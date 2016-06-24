@@ -504,7 +504,13 @@ exports.create = function(req, res) {
                 var previousProjectStatus = null;
                 if(!_.isEmpty(inputObj.previousReport)){
                     previousProjectStatus = _.find(inputObj.previousReport.deliveryStatus.overallStatus.projectStatuses, function(ps){
-                        return (ps.status._id && projectStatus.status._id && ps.status._id.equals(projectStatus.status._id)) || true;
+                        if(projectStatus.status._id === null){
+                            return ps.status._id === null; // Both null then are the same, if one is and the other isn't then false
+                        }
+                        if(ps.status._id === null){
+                            return projectStatus.status._id === null; // Both null then are the same, if one is and the other isn't then false
+                        }
+                        return projectStatus.status._id.equals(ps.status._id);
                     });
                 }
 
@@ -544,12 +550,19 @@ exports.create = function(req, res) {
 
             });
 
-            var previousStatusesNotInCurrent = null;
+            var previousStatusesNotInCurrent = [];
+
             if(!_.isEmpty(inputObj.previousReport)){
                 previousStatusesNotInCurrent = _.filter(inputObj.previousReport.deliveryStatus.overallStatus.projectStatuses, function(ps){
-                    return !_.some(inputObj.performances.portfolio.status.overallStatus.projectStatuses, function(ps2){
-                        return (ps2.status._id && ps.status._id && ps2.status._id.equals(ps.status._id)) || true; // either both with id or both null
-                    });
+                    return !_.find(inputObj.performances.portfolio.status.overallStatus.projectStatuses, function(ps2){
+                        if(ps2.status._id === null){
+                            return ps.status._id === null; // Both null then are the same, if one is and the other isn't then false
+                        }
+                        if(ps.status._id === null){
+                            return ps2.status._id === null; // Both null then are the same, if one is and the other isn't then false
+                        }
+                        return ps2.status._id.equals(ps.status._id);
+                    }) && (ps.numberOfProjects.current !== 0);
                 });
             }
 
@@ -627,7 +640,13 @@ exports.create = function(req, res) {
 
                     if(previousPortfolioStatusArea && previousPortfolioStatusArea._id){
                         previousProjectStatus = _.find(previousPortfolioStatusArea.projectStatuses, function(ps){
-                            return (ps.status._id && projectStatus.status._id && ps.status._id.equals(projectStatus.status._id)) || true;
+                            if(projectStatus.status._id === null){
+                                return ps.status._id === null; // Both null then are the same, if one is and the other isn't then false
+                            }
+                            if(ps.status._id === null){
+                                return projectStatus.status._id === null; // Both null then are the same, if one is and the other isn't then false
+                            }
+                            return projectStatus.status._id.equals(ps.status._id);
                         });
                     }
 
@@ -671,9 +690,15 @@ exports.create = function(req, res) {
 
                 if(previousPortfolioStatusArea && previousPortfolioStatusArea._id){
                     previousStatusesNotInCurrent = _.filter(previousPortfolioStatusArea.projectStatuses, function(ps){
-                        return !_.some(portfolioStatusArea.projectStatuses, function(ps2){
-                            return (ps2.status && ps.status && ps2.status._id.equals(ps.status._id)) || true;
-                        });
+                        return !_.find(portfolioStatusArea.projectStatuses, function(ps2){
+                            if(ps2.status._id === null){
+                                return ps.status._id === null; // Both null then are the same, if one is and the other isn't then false
+                            }
+                            if(ps.status._id === null){
+                                return ps2.status._id === null; // Both null then are the same, if one is and the other isn't then false
+                            }
+                            return ps2.status._id.equals(ps.status._id);
+                        }) && (ps.numberOfProjects.current !== 0);
                     });
                 }
 

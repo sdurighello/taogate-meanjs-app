@@ -80,10 +80,10 @@
                                     <table class="table table-bordered table-condensed">
                                         <thead>
                                         <tr>
-                                            <th rowspan="2" class="text-center">N. of projects</th>
-                                            <th colspan="4" class="text-center">Project budgets</th>
+                                            <th colspan="5" class="text-center"><i>Project budgets distribution</i></th>
                                         </tr>
                                         <tr>
+                                            <th class="text-center">N. of projects</th>
                                             <th class="text-center">Total</th>
                                             <th class="text-center">Avg</th>
                                             <th class="text-center">Min</th>
@@ -105,7 +105,7 @@
                                     <table class="table table-bordered table-condensed">
                                         <thead>
                                         <tr>
-                                            <th colspan="2" class="text-center">Portfolio budget</th>
+                                            <th colspan="2" class="text-center"><i>Portfolio budget</i></th>
                                         </tr>
                                         <tr>
                                             <th class="text-center">Amount</th>
@@ -126,23 +126,23 @@
                                     <table class="table table-bordered table-condensed">
                                         <thead>
                                         <tr>
-                                            <th colspan="3" class="text-center">Portfolio status</th>
+                                            <th colspan="3" class="text-center"><i>Portfolio status</i></th>
                                         </tr>
                                         <tr>
-                                            <th> </th>
-                                            <th class="text-center">Portfolio</th>
-                                            <th class="text-center">Projects</th>
+                                            <th class="text-center col-xs-3">Status areas</th>
+                                            <th class="text-center col-xs-3">Portfolio</th>
+                                            <th class="text-center col-xs-6">Projects</th>
                                         </tr>
                                         </thead>
                                         <tbody>
                                         <tr class="text-center">
                                             <th class="text-center">Overall status</th>
                                             <td>
-                                                <div class="panel panel-default panel-heading text-center col-xs-12" data-ng-show="vm.portfolioPerformances.portfolio.status.overallStatus.currentRecord.status.name"
+                                                <div class="panel panel-default panel-heading text-center col-xs-12"
                                                      ng-style="{'background-color':vm.portfolioPerformances.portfolio.status.overallStatus.currentRecord.status.color, 'padding': '3px', 'margin': '0px'}">
-                                                    <span>{{vm.portfolioPerformances.portfolio.status.overallStatus.currentRecord.status.name}}</span>
+                                                    <span data-ng-show="vm.portfolioPerformances.portfolio.status.overallStatus.currentRecord.status.name">{{vm.portfolioPerformances.portfolio.status.overallStatus.currentRecord.status.name}}</span>
+                                                    <span data-ng-show="!vm.portfolioPerformances.portfolio.status.overallStatus.currentRecord.status.name">No status</span>
                                                 </div>
-                                                <span data-ng-show="!vm.portfolioPerformances.portfolio.status.overallStatus.currentRecord.status.name">No status</span>
                                             </td>
                                             <td>
                                                 <div class="panel panel-default panel-heading text-center col-xs-12" data-ng-repeat="projectStatus in vm.portfolioPerformances.portfolio.status.overallStatus.projectStatuses"
@@ -155,11 +155,11 @@
                                         <tr class="text-center" data-ng-repeat="portfolioStatusArea in vm.portfolioPerformances.portfolio.status.portfolioStatusAreas">
                                             <th class="text-center">{{portfolioStatusArea.statusArea.name}}</th>
                                             <td>
-                                                <div class="panel panel-default panel-heading text-center col-xs-12" data-ng-show="portfolioStatusArea.currentRecord.status.name"
+                                                <div class="panel panel-default panel-heading text-center col-xs-12"
                                                      ng-style="{'background-color':portfolioStatusArea.currentRecord.status.color, 'padding': '3px', 'margin': '0px'}">
-                                                    <span>{{portfolioStatusArea.currentRecord.status.name}}</span>
+                                                    <span data-ng-show="portfolioStatusArea.currentRecord.status.name">{{portfolioStatusArea.currentRecord.status.name}}</span>
+                                                    <span data-ng-show="!portfolioStatusArea.currentRecord.status.name">No status</span>
                                                 </div>
-                                                <span data-ng-show="!portfolioStatusArea.currentRecord.status.name">No status</span>
                                             </td>
                                             <td>
                                                 <div class="panel panel-default panel-heading text-center col-xs-12" data-ng-repeat="projectStatus in portfolioStatusArea.projectStatuses"
@@ -178,7 +178,7 @@
                                     <table class="table table-bordered table-condensed">
                                         <thead>
                                         <tr>
-                                            <th colspan="5" class="text-center">Projects aggregated performances</th>
+                                            <th colspan="5" class="text-center"><i>Projects aggregated performances</i></th>
                                         </tr>
                                         <tr>
                                             <th class="text-center"> </th>

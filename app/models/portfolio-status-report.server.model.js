@@ -24,9 +24,9 @@ var numberStatisticsRecord = {
 
 var ProjectStatusSchema = new Schema({
     status: {
-        _id : {type: Schema.Types.ObjectId, ref: 'LogStatusIndicator', $tenant:true},
-        name : {type: String},
-        color : {type: String}
+        _id : {type: Schema.Types.ObjectId, ref: 'LogStatusIndicator', default:null, $tenant:true},
+        name : {type: String, default:null},
+        color : {type: String, default:null}
     },
     numberOfProjects : numberStatisticsRecord,
     ratioOfProjects : numberStatisticsRecord,

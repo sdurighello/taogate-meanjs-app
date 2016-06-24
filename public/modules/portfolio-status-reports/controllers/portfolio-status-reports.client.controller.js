@@ -28,6 +28,15 @@ angular.module('portfolio-status-reports').controller('PortfolioStatusReportsCon
             Portfolios.query(function(portfolios){
                 vm.portfolios = portfolios;
                 vm.portfolioTrees = createNodeTrees(portfolios);
+                // If there is a stateParam _id , then select a portfolio
+                if($stateParams.portfolioId){
+                    var requestedPortfolio = _.find(vm.portfolios, _.matchesProperty('_id', $stateParams.portfolioId));
+                    if(requestedPortfolio){
+                        vm.selectPortfolio(requestedPortfolio);
+                    } else {
+                        vm.error = 'Cannot find Portfolio with id: ' + $stateParams.portfolioId;
+                    }
+                }
             }, function(err){
                 vm.initError.push(err.data.message);
             });
@@ -91,12 +100,28 @@ angular.module('portfolio-status-reports').controller('PortfolioStatusReportsCon
 
         // ------------------- NG-SWITCH ---------------------
 
-        // Header
+        // Title
 
-        vm.switchHeaderForm = {};
-        vm.selectHeaderForm = function(string, document){
-            if(string === 'view'){ vm.switchHeaderForm[document._id] = 'view';}
-            if(string === 'edit'){vm.switchHeaderForm[document._id] = 'edit';}
+        vm.switchHeaderTitleForm = {};
+        vm.selectHeaderTitleForm = function(string, document){
+            if(string === 'view'){ vm.switchHeaderTitleForm[document._id] = 'view';}
+            if(string === 'edit'){vm.switchHeaderTitleForm[document._id] = 'edit';}
+        };
+
+        // Type
+
+        vm.switchHeaderTypeForm = {};
+        vm.selectHeaderTypeForm = function(string, document){
+            if(string === 'view'){ vm.switchHeaderTypeForm[document._id] = 'view';}
+            if(string === 'edit'){vm.switchHeaderTypeForm[document._id] = 'edit';}
+        };
+
+        // Date
+
+        vm.switchHeaderDateForm = {};
+        vm.selectHeaderDateForm = function(string, document){
+            if(string === 'view'){ vm.switchHeaderDateForm[document._id] = 'view';}
+            if(string === 'edit'){vm.switchHeaderDateForm[document._id] = 'edit';}
         };
         
         // Delivery Status
@@ -182,8 +207,8 @@ angular.module('portfolio-status-reports').controller('PortfolioStatusReportsCon
                     name : portfolio.name
                 },
                 type : {
-                    _id: vm.newDocument.type._id,
-                    name: vm.newDocument.type.name
+                    _id: (vm.newDocument.type && vm.newDocument.type._id) || null,
+                    name: (vm.newDocument.type && vm.newDocument.type.name) || null
                 },
                 date : vm.newDocument.updateDate,
                 title : vm.newDocument.title,
@@ -220,11 +245,13 @@ angular.module('portfolio-status-reports').controller('PortfolioStatusReportsCon
         // ------------- VIEW STATUS REPORT ------------
         
         
-        vm.goToDocument = function(document){
-            $location.path('portfolio-status-reports/' + document._id);
+        vm.goToDocument = function(document, portfolio){
+            $location.path('portfolio-status-reports/document/' + document._id + '/list/' + portfolio._id);
         };
 
         vm.initDocumentDetails = function(){
+
+            vm.selectedPortfolioId = $stateParams.portfolioId;
 
             PortfolioStatusReports.get({
                 portfolioStatusReportId: $stateParams.portfolioStatusReportId
@@ -244,6 +271,10 @@ angular.module('portfolio-status-reports').controller('PortfolioStatusReportsCon
 
         };
 
+        vm.goToList = function(selectedPortfolioId){
+            $location.path('portfolio-status-reports/list/' + selectedPortfolioId);
+        };
+
 
 
         // -------------------------------------------------------- HEADER -------------------------------------------------
@@ -255,17 +286,32 @@ angular.module('portfolio-status-reports').controller('PortfolioStatusReportsCon
             vm.headerDateOpened[document._id] = true;
         };
 
-        var originalHeader = {};
+        var originalHeaderTitle = {};
+        var originalHeaderType = {};
+        var originalHeaderDate = {};
 
-        vm.editHeader = function(document){
-            originalHeader[document._id] = {
-                date: document.date,
+        vm.editHeaderTitle = function(document){
+            originalHeaderTitle[document._id] = {
                 title : document.title
             };
-            vm.selectHeaderForm('edit', document);
+            vm.selectHeaderTitleForm('edit', document);
         };
 
-        vm.saveEditHeader = function(document){
+        vm.editHeaderType = function(document){
+            originalHeaderType[document._id] = {
+                type : document.type
+            };
+            vm.selectHeaderTypeForm('edit', document);
+        };
+
+        vm.editHeaderDate = function(document){
+            originalHeaderDate[document._id] = {
+                date : document.date
+            };
+            vm.selectHeaderDateForm('edit', document);
+        };
+
+        vm.saveEditHeaderTitle = function(document){
             vm.error = null;
             vm.isResolving = true;
             PortfolioStatusReports.updateHeader(
@@ -275,7 +321,7 @@ angular.module('portfolio-status-reports').controller('PortfolioStatusReportsCon
                 function(res){
                     vm.isResolving = false;
                     // Close edit header form and back to view
-                    vm.selectHeaderForm('view', document);
+                    vm.selectHeaderTitleForm('view', document);
                 },
                 function(err){
                     vm.isResolving = false;
@@ -284,14 +330,65 @@ angular.module('portfolio-status-reports').controller('PortfolioStatusReportsCon
             );
         };
 
-        vm.cancelEditHeader = function(document){
+        vm.saveEditHeaderType = function(document){
             vm.error = null;
-            document.date = originalHeader[document._id].date;
-            document.title = originalHeader[document._id].title;
-            vm.selectHeaderForm('view', document);
+            vm.isResolving = true;
+            PortfolioStatusReports.updateHeader(
+                {
+                    portfolioStatusReportId : document._id
+                }, document,
+                function(res){
+                    vm.isResolving = false;
+                    // Close edit header form and back to view
+                    vm.selectHeaderTypeForm('view', document);
+                },
+                function(err){
+                    vm.isResolving = false;
+                    vm.error = err.data.message;
+                }
+            );
+        };
+
+        vm.saveEditHeaderDate = function(document){
+            vm.error = null;
+            vm.isResolving = true;
+            PortfolioStatusReports.updateHeader(
+                {
+                    portfolioStatusReportId : document._id
+                }, document,
+                function(res){
+                    vm.isResolving = false;
+                    // Close edit header form and back to view
+                    vm.selectHeaderDateForm('view', document);
+                },
+                function(err){
+                    vm.isResolving = false;
+                    vm.error = err.data.message;
+                }
+            );
+        };
+
+        vm.cancelEditHeaderTitle = function(document){
+            vm.error = null;
+            document.title = originalHeaderTitle[document._id].title;
+            vm.selectHeaderTitleForm('view', document);
+        };
+
+        vm.cancelEditHeaderType = function(document){
+            vm.error = null;
+            document.type = originalHeaderType[document._id].type;
+            vm.selectHeaderTypeForm('view', document);
+        };
+
+        vm.cancelEditHeaderDate = function(document){
+            vm.error = null;
+            document.date = originalHeaderDate[document._id].date;
+            vm.selectHeaderDateForm('view', document);
         };
 
 
+        // ------------- DELETE REPORT ----------------------------
+        
         vm.deleteDocument = function(document){
             vm.error = null;
             vm.isResolving = true;
@@ -303,6 +400,8 @@ angular.module('portfolio-status-reports').controller('PortfolioStatusReportsCon
                     vm.portfolioStatusReports = _.without(vm.portfolioStatusReports, document);
                     vm.cancelNewDocument();
                     vm.selectedDocument = null;
+                    // Redirect to list
+                    $location.path('portfolio-status-reports');
                 }, function(err){
                     vm.isResolving = false;
                     vm.error = err.data.message;
