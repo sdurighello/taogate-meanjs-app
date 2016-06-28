@@ -14,6 +14,62 @@ var mongoose = require('mongoose'),
 
 exports.getDefinitionRoadmap = function(req, res) {
 
+    var Project = mongoose.mtModel(req.user.tenantId + '.' + 'Project');
+
+    Project.find({'selection.active':true})
+        .exec(function(err, projects){
+            if (err) {
+                console.log(err);
+                return res.status(400).send({
+                    message: errorHandler.getErrorMessage(err)
+                });
+            }
+
+            var result = [];
+
+            _.each(projects, function(project){
+
+                var retProject = {
+                    _id : project._id,
+                    idNumber : project.idNumber,
+                    parent : project.parent,
+                    portfolio : project.portfolio,
+                    identification : project.identification,
+                    selection : project.selection,
+                    process : project.process,
+                    gateData : {
+                        start : null,
+                        end : null,
+                        status : null
+                    }
+                };
+
+                var currentGate = _.find(project.process.gates, function(gate){
+                    return gate.gateState.currentRecord.currentGate;
+                });
+
+                if(project.selection.selectedForDelivery && project.process.assignmentConfirmed && currentGate){
+
+                    retProject.gateData.start = _.find(currentGate.performances.duration.estimateDurations, function(estDur){
+                        return estDur.targetGate._id.equals(currentGate._id);
+                    }).gateDate;
+
+                    retProject.gateData.end = _.find(currentGate.performances.duration.estimateDurations, function(estDur){
+                        return estDur.targetGate._id.equals(project.process.endGate);
+                    }).gateDate;
+
+                    retProject.gateData.status = currentGate.deliveryStatus.overallStatus.currentRecord.status;
+
+                }
+
+                result.push(retProject);
+
+            });
+
+            res.jsonp(result);
+
+        });
+
     // var Project = mongoose.mtModel(req.user.tenantId + '.' + 'Project');
     // var GateProcess = mongoose.mtModel(req.user.tenantId + '.' + 'GateProcess');
     // var Gate = mongoose.mtModel(req.user.tenantId + '.' + 'Gate');

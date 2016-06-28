@@ -250,13 +250,13 @@
                                         <div class="col-xs-10">
                                             <h6 class="panel-title text-center">{{obj.statusArea.name}}</h6>
                                         </div>
-                                        <div class="col-xs-2" data-ng-switch-default="view">
+                                        <div class="col-xs-2 hidden-print" data-ng-switch-default="view">
                                             <button type="button" class="btn btn-xs btn-success pull-right"
                                                     data-ng-click="vm.editStatusArea(obj)">
                                                 Edit
                                             </button>
                                         </div>
-                                        <div class="col-xs-2 pull-right" data-ng-switch-when="edit">
+                                        <div class="col-xs-2 pull-right hidden-print" data-ng-switch-when="edit">
                                             <button type="button" class="btn btn-xs btn-success"
                                                     data-ng-click="vm.saveEditStatusArea(vm.selectedDocument, obj)">
                                                 Save
