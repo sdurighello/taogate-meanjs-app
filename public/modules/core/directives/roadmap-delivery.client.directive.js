@@ -35,8 +35,8 @@ angular.module('core').directive('roadmapDelivery', ['d3', '_', '$parse',
 
                 setChartParameters = function(){
 
-                    var minAbsolute = d3.min(data, function(d){if(d.identification.reqStartDate){return new Date(d.identification.reqStartDate);}});
-                    var maxAbsolute = d3.max(data, function(d){if(d.identification.reqEndDate){return new Date(d.identification.reqEndDate);}});
+                    var minAbsolute = d3.min(data, function(d){if(d.gateData.start){return new Date(d.gateData.start);}});
+                    var maxAbsolute = d3.max(data, function(d){if(d.gateData.end){return new Date(d.gateData.end);}});
 
                     x = d3.time.scale()
                         .domain([minAbsolute, maxAbsolute])
@@ -84,18 +84,19 @@ angular.module('core').directive('roadmapDelivery', ['d3', '_', '$parse',
                         })
                         .enter().append('g')
                         .attr('class', 'barDelivery')
-                        .attr('transform', function(d, i) { return 'translate('+ (x(new Date(d.identification.reqStartDate)) + margin.left) +',' + ((i * barHeight) + margin.top) + ')'; });
+                        .attr('transform', function(d, i) { return 'translate('+ (x(new Date(d.gateData.start)) + margin.left) +',' + ((i * barHeight) + margin.top) + ')'; });
 
                     bar.append('rect')
                         .attr('class', 'rectDelivery')
-                        .attr('width', function(d){ return x(new Date(d.identification.reqEndDate)) - x(new Date(d.identification.reqStartDate));})
+                        .attr('width', function(d){ return x(new Date(d.gateData.end)) - x(new Date(d.gateData.start));})
                         .attr('height', barHeight - 1)
+                        .attr('fill', function(d){ if(d.gateData.status.color){return d.gateData.status.color;} return baseColorRectDelivery; })
                         .on('mouseover', function(d) { onMouseover(this, d); })
                         .on('mouseout', function(d) { onMouseout(this, d); })
                         .on('click', function(d){ onClick(this, d); });
 
                     bar.append('text')
-                        .attr('x', function(d) { return (x(new Date(d.identification.reqEndDate)) - x(new Date(d.identification.reqStartDate)))/3; })
+                        .attr('x', function(d) { return (x(new Date(d.gateData.end)) - x(new Date(d.gateData.start)))/3; })
                         .attr('y', barHeight / 2)
                         .attr('dy', '.35em')
                         .text(function(d) { return d.identification.name; })
@@ -128,33 +129,35 @@ angular.module('core').directive('roadmapDelivery', ['d3', '_', '$parse',
 
                     newBars
                         .transition().duration(1000)
-                        .attr('transform', function(d, i) { return 'translate('+ (x(new Date(d.identification.reqStartDate)) + margin.left) +',' + ((i * barHeight) + margin.top) + ')'; });
+                        .attr('transform', function(d, i) { return 'translate('+ (x(new Date(d.gateData.start)) + margin.left) +',' + ((i * barHeight) + margin.top) + ')'; });
 
                     newBars.selectAll('.rectDelivery')
-                        .attr('width', function(d){ return x(new Date(d.identification.reqEndDate)) - x(new Date(d.identification.reqStartDate));});
+                        .attr('width', function(d){ return x(new Date(d.gateData.end)) - x(new Date(d.gateData.start));})
+                        .attr('fill', function(d){ if(d.gateData.status.color){return d.gateData.status.color;} return baseColorRectDelivery; });
 
                     newBars.selectAll('text')
-                        .attr('x', function(d) { return (x(new Date(d.identification.reqEndDate)) - x(new Date(d.identification.reqStartDate)))/3; });
+                        .attr('x', function(d) { return (x(new Date(d.gateData.end)) - x(new Date(d.gateData.start)))/3; });
 
 
                     // Draw the ones added
 
                     var newAppendedBar = newBars.enter().append('g')
                         .attr('class', 'barDelivery')
-                        .attr('transform', function(d, i) { return 'translate('+ (x(new Date(d.identification.reqStartDate)) + margin.left) +',' + ((i * barHeight) + margin.top) + ')'; });
+                        .attr('transform', function(d, i) { return 'translate('+ (x(new Date(d.gateData.start)) + margin.left) +',' + ((i * barHeight) + margin.top) + ')'; });
 
                     newAppendedBar.append('rect')
                         .attr('class', 'rectDelivery')
-                        .attr('width', function(d){ return x(new Date(d.identification.reqEndDate)) - x(new Date(d.identification.reqStartDate));})
+                        .attr('width', function(d){ return x(new Date(d.gateData.end)) - x(new Date(d.gateData.start));})
                         .attr('height', barHeight - 1)
+                        .attr('fill', function(d){ if(d.gateData.status.color){return d.gateData.status.color;} return baseColorRectDelivery; })
                         .on('mouseover', function(d) { onMouseover(this, d); })
                         .on('mouseout', function(d) { onMouseout(this, d); })
                         .on('click', function(d){ onClick(this, d); })
                         .append('title')
-                        .text(function(d){ return d.identification.name +' - '+'Start: '+d3.time.format('%b %a %e, %Y')(new Date(d.identification.reqStartDate))+' - '+'End: '+d3.time.format('%b %a %e, %Y')(new Date(d.identification.reqEndDate)); });
+                        .text(function(d){ return d.identification.name +' - '+'Start: '+d3.time.format('%b %a %e, %Y')(new Date(d.gateData.start))+' - '+'End: '+d3.time.format('%b %a %e, %Y')(new Date(d.gateData.end)); });
 
                     newAppendedBar.append('text')
-                        .attr('x', function(d) { return (x(new Date(d.identification.reqEndDate)) - x(new Date(d.identification.reqStartDate)))/3; })
+                        .attr('x', function(d) { return (x(new Date(d.gateData.end)) - x(new Date(d.gateData.start)))/3; })
                         .attr('y', barHeight / 2)
                         .attr('dy', '.35em')
                         .text(function(d) { return d.identification.name; })

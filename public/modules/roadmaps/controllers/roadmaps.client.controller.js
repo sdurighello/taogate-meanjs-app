@@ -164,6 +164,21 @@ angular.module('roadmaps').controller('RoadmapsController', ['$rootScope', '$sco
           return vm.portfoliosSelectedForRoadmap[portfolio._id]; 
         };
 
+        // ------- FILTERS FOR ROADMAP DIRECTIVES ----
+
+        vm.onlyDefinitionProjects = function(projects){
+            return _.filter(projects, function(project){
+                return project.identification.reqStartDate && project.identification.reqEndDate;
+            });
+        };
+
+        vm.onlyDeliveryProjects = function(projects){
+            return _.filter(projects, function(project){
+                return project.gateData.start && project.gateData.end;
+            });
+        };
+
+
         // ------ PROJECT SELECTION -----------
         
 
