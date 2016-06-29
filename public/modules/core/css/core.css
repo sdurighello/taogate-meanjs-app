@@ -280,7 +280,13 @@
 /* Roadmap */
 
 
-#chart text {
+#chartDefinition text {
+    fill: black;
+    font: 10px sans-serif;
+    text-anchor: left;
+}
+
+#chartDelivery text {
     fill: black;
     font: 10px sans-serif;
     text-anchor: left;
@@ -288,6 +294,16 @@
 
 
 .bar {
+    fill: steelblue;
+    pointer-events: all;
+}
+
+.barDefinition {
+    fill: steelblue;
+    pointer-events: all;
+}
+
+.barDelivery {
     fill: steelblue;
     pointer-events: all;
 }

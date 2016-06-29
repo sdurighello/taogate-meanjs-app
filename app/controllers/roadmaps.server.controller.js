@@ -50,13 +50,22 @@ exports.getDefinitionRoadmap = function(req, res) {
 
                 if(project.selection.selectedForDelivery && project.process.assignmentConfirmed && currentGate){
 
-                    retProject.gateData.start = _.find(currentGate.performances.duration.estimateDurations, function(estDur){
-                        return estDur.targetGate._id.equals(currentGate._id);
-                    }).gateDate;
+                    // Source: always startGate - Target: always startGate - Date: Either actual if it exists or estimate
+                    var startGate = _.find(project.process.gates, function(g){
+                        return g._id.equals(project.process.startGate);
+                    });
+                    retProject.gateData.start = startGate.gateState.currentRecord.completed ? _.find(currentGate.performances.duration.actualDurations, function(d){
+                        return d.targetGate._id.equals(currentGate._id);
+                    }).currentRecord.gateDate : _.find(currentGate.performances.duration.estimateDurations, function(d){
+                        return d.targetGate._id.equals(currentGate._id);
+                    }).currentRecord.gateDate;
 
-                    retProject.gateData.end = _.find(currentGate.performances.duration.estimateDurations, function(estDur){
-                        return estDur.targetGate._id.equals(project.process.endGate);
-                    }).gateDate;
+                    // Source: always current gate - Target: always endGate - Date: Either actual if it exists or estimate
+                    retProject.gateData.end = currentGate.gateState.currentRecord.completed ? _.find(currentGate.performances.duration.actualDurations, function(d){
+                        return d.targetGate._id.equals(project.process.endGate);
+                    }).currentRecord.gateDate : _.find(currentGate.performances.duration.estimateDurations, function(d){
+                        return d.targetGate._id.equals(project.process.endGate);
+                    }).currentRecord.gateDate;
 
                     retProject.gateData.status = currentGate.deliveryStatus.overallStatus.currentRecord.status;
 

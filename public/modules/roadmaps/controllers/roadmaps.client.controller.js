@@ -20,6 +20,8 @@ angular.module('roadmaps').controller('RoadmapsController', ['$rootScope', '$sco
 
         vm.init = function(){
 
+            vm.selectedRoadmapType = 'definition';
+
             Portfolios.query(function(portfolios){
                 vm.portfolios = portfolios;
                 vm.portfolioTrees = createNodeTrees(portfolios);
@@ -41,6 +43,7 @@ angular.module('roadmaps').controller('RoadmapsController', ['$rootScope', '$sco
 
             Roadmaps.getDefinitionRoadmap(function(res){
                 roadmaps = res;
+                console.log(res);
             }, function(err){
                 vm.initError.push(err.data.message);
             });
