@@ -1,0 +1,226 @@
+<section data-ng-controller="GateProcessAssignmentController as vm" data-ng-init="vm.init()" data-ng-show="vm.projects.$resolved">
+    <br>
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="panel-heading" style="padding: 0">
+                <ol class="breadcrumb">
+                    <li>Portfolio delivery</li>
+                    <li>Gate management</li>
+                    <li class="active">Gate process assignment</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+    <div data-ng-show="vm.initError" class="text-danger">
+        <strong data-ng-bind="vm.initError"></strong>
+    </div>
+    <div data-ng-show="vm.error" class="text-danger">
+        <strong data-ng-bind="vm.error"></strong>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <button class="btn-link" data-ng-click="vm.showFilters = true" data-ng-show="!vm.showFilters">
+                Show filters
+            </button>
+            <button class="btn-link" data-ng-click="vm.showFilters = false" data-ng-show="vm.showFilters">
+                Hide filters
+            </button>
+        </div>
+    </div>
+    <div class="row" data-ng-show="vm.showFilters">
+        <div class="col-xs-3">
+            <div class="form-group-sm" style="margin-bottom: 2px;">
+                <label>Identification data</label>
+            </div>
+            <div class="form-group-sm" style="margin-bottom: 2px;">
+                <input class="form-control" data-ng-model="vm.filterIdentification.idReference" placeholder="project id">
+            </div>
+            <div class="form-group-sm" style="margin-bottom: 4px;">
+                <input class="form-control" data-ng-model="vm.filterIdentification.name" placeholder="project name">
+            </div>
+            <div class="form-group-sm" style="margin-bottom: 2px;">
+                <label>Delivery process</label>
+            </div>
+            <div class="form-group-sm" style="margin-bottom: 2px;">
+                <select class="form-control" data-ng-model="vm.filterProcess.process"
+                        data-ng-options="process.name for process in vm.gateProcesses" data-ng-disabled="vm.filterProcess.unassigned">
+                    <option value="">--process</option>
+                </select>
+            </div>
+            <div class="form-group-sm" style="margin-bottom: 2px;">
+                <input type="checkbox" data-ng-model="vm.filterProcess.unassigned" data-ng-disabled="vm.filterProcess.process"> Only projects without process
+            </div>
+        </div>
+        <div class="col-xs-3">
+            <div class="form-group-sm" style="margin-bottom: 2px;">
+                <label>Categorization</label>
+            </div>
+            <div class="form-group-sm" style="margin-bottom: 2px;">
+                <select class="form-control" data-ng-model="vm.filterCategorization.group"
+                        data-ng-options="group.name for group in vm.categoryGroups" data-ng-disabled="!!vm.filterCategorization.category">
+                    <option value="">--group</option>
+                </select>
+            </div>
+            <div class="form-group-sm" style="margin-bottom: 2px;">
+                <select class="form-control" data-ng-model="vm.filterCategorization.category"
+                        data-ng-options="category.name for category in vm.filterCategorization.group.categories"
+                        data-ng-disabled="!!vm.filterCategorization.categoryValue">
+                    <option value="">--category</option>
+                </select>
+            </div>
+            <div class="form-group-sm" style="margin-bottom: 2px;">
+                <select class="form-control" data-ng-model="vm.filterCategorization.categoryValue"
+                        data-ng-options="catValue.name for catValue in vm.filterCategorization.category.categoryValues">
+                    <option value="">--value</option>
+                </select>
+            </div>
+        </div>
+        <div class="col-xs-3">
+            <div class="form-group-sm" style="margin-bottom: 2px;">
+                <label>Prioritization</label>
+            </div>
+            <div class="form-group-sm" style="margin-bottom: 2px;">
+                <select class="form-control" data-ng-model="vm.filterPrioritization.group"
+                        data-ng-options="group.name for group in vm.priorityGroups" data-ng-disabled="!!vm.filterPrioritization.priority">
+                    <option value="">--group</option>
+                </select>
+            </div>
+            <div class="form-group-sm" style="margin-bottom: 2px;">
+                <select class="form-control" data-ng-model="vm.filterPrioritization.priority"
+                        data-ng-options="priority.name for priority in vm.filterPrioritization.group.priorities">
+                    <option value="">--priority</option>
+                </select>
+            </div>
+            <div class="form-group-sm" style="margin-bottom: 2px;">
+                <select class="form-control" data-ng-model="vm.filterPrioritization.priorityValue"
+                        data-ng-options="prioValue.name for prioValue in vm.priorityValues">
+                    <option value="">--value</option>
+                </select>
+            </div>
+        </div>
+        <div class="col-xs-3">
+            <div class="form-group-sm" style="margin-bottom: 2px;">
+                <label>Hierarchy data</label>
+            </div>
+            <div class="form-group-sm" style="margin-bottom: 2px;">
+                <select class="form-control" data-ng-model="vm.filterHierarchy.portfolio"
+                        data-ng-options="portfolio.name for portfolio in vm.portfolios">
+                    <option value="">--portfolio</option>
+                </select>
+            </div>
+            <div class="form-group-sm" style="margin-bottom: 2px;">
+                <select class="form-control" data-ng-model="vm.filterHierarchy.strategyNode"
+                        data-ng-options="strategyNode.name for strategyNode in vm.strategyNodes">
+                    <option value="">--strategy node</option>
+                </select>
+            </div>
+        </div>
+    </div>
+    <hr>
+    <div class="row">
+        <div class="col-xs-12">
+            <div class="alert alert-warning text-center" data-ng-show="!vm.projects.length">
+                No projects to select
+            </div>
+            <form class="form" novalidate name="editProjectForm" data-ng-show="vm.projects.length">
+                <fieldset>
+                    <table class="table">
+                        <tr>
+                            <th class="text-center">ID</th>
+                            <th class="text-center">Ref.</th>
+                            <th class="text-center">Project</th>
+                            <th class="text-center">Assignment type</th>
+                            <th class="text-center">Gate process</th>
+                            <th class="text-center">Approval</th>
+                            <th class="text-center">Confirmation</th>
+                            <th class="text-center"> </th>
+                        </tr>
+                        <tr data-ng-repeat-start="project in vm.projects | projectsCategorization : vm.filterCategorization | projectsPrioritization : vm.filterPrioritization | filter:
+{
+	identification: ((!!vm.filterIdentification.name || !!vm.filterIdentification.idReference) || undefined) && {
+			name : (!!vm.filterIdentification.name || undefined) && vm.filterIdentification.name,
+			idReference : (!!vm.filterIdentification.idReference || undefined) && vm.filterIdentification.idReference
+			},
+	portfolio: (!!vm.filterHierarchy.portfolio || undefined) && {_id : vm.filterHierarchy.portfolio._id},
+	parent: vm.filterHierarchy.strategyNode._id
+} | projectsProcess : vm.filterProcess">
+                            <td class="text-center">
+                                <span>{{project.idNumber}}</span>
+                            </td>
+                            <td class="text-center">
+                                <span>{{project.identification.idReference}}</span>
+                            </td>
+                            <td class="text-center">
+                                <button class="btn-link" data-ng-click="vm.selectProjectProfile(vm.user, project)">{{project.identification.name}}</button>
+                            </td>
+                            <td class="text-center">
+                                <span data-ng-show="project.process.assignmentType === 'custom'">Custom</span>
+                                <span data-ng-show="project.process.assignmentType === 'standard'">Standard</span>
+                                <span data-ng-show="project.process.assignmentType === 'unassigned'" style="background-color: orange">Unassigned</span>
+                            </td>
+                            <td class="text-center">
+                                <span>{{project.process.name}}</span>
+                            </td>
+                            <td class="text-center">
+                                <span data-ng-show="project.process.assignmentType === 'unassigned'"> - </span>
+                                <span data-ng-show="(project.process.assignmentType !== 'unassigned') && (project.process.approval.currentRecord.approvalState === 'draft')">Drafted</span>
+                                <span data-ng-show="project.process.approval.currentRecord.approvalState === 'submitted'">Submitted</span>
+                                <span data-ng-show="project.process.approval.currentRecord.approvalState === 'approved'">Approved</span>
+                                <span data-ng-show="project.process.approval.currentRecord.approvalState === 'rejected'">Rejected</span>
+                            </td>
+                            <td class="text-center">
+                                <span data-ng-show="project.process.assignmentConfirmed && (project.process.assignmentType !== 'unassigned')">
+                                    Confirmed
+                                </span>
+                                <span data-ng-show="!project.process.assignmentConfirmed && (project.process.assignmentType !== 'unassigned')"
+                                      style="background-color: orange">
+                                    Not confirmed
+                                </span>
+                                <span data-ng-show="project.process.assignmentType === 'unassigned'">
+                                    -
+                                </span>
+                            </td>
+                            <td class="text-center">
+                                <button type="button" class="btn btn-success btn-sm"
+                                        data-ng-click="vm.selectProject(project)"
+                                        data-ng-show="vm.userHasAuthorization('edit', vm.user, project) && !vm.showEditProjectForm[project._id]">
+                                    <span class="glyphicon glyphicon-edit"></span>
+                                </button>
+                                <button type="button" class="btn btn-info btn-sm"
+                                        data-ng-click="vm.cancelEditProject(project)"
+                                        data-ng-show="vm.userHasAuthorization('edit', vm.user, project) && vm.showEditProjectForm[project._id]">
+                                    <span class="glyphicon glyphicon-remove"></span>
+                                </button>
+                            </td>
+                        </tr>
+                        <tr data-ng-repeat-end>
+                            <td data-ng-show="vm.showEditProjectForm[project._id]" colspan="7">
+                                <div class="btn-group btn-group-sm pull-right" role="group" data-ng-show="project.process.assignmentType !== 'unassigned'">
+                                    <button type="button" class="btn btn-danger" data-ng-click="vm.removeAssignment(project)">
+                                        Remove assignment
+                                    </button>
+                                    <button type="button" class="btn btn-success" data-ng-click="vm.confirmAssignment(project)">
+                                        Confirm assignment
+                                    </button>
+                                </div>
+                                <div class="btn-group btn-group-sm pull-right" role="group" data-ng-show="project.process.assignmentType === 'unassigned'">
+                                    <select title="process" class="form-control input-sm" data-ng-model="vm.selectedBlueprintProcess[project._id]"
+                                            data-ng-options="process as process.name for process in vm.gateProcesses">
+                                        <option value="">--select process</option>
+                                    </select>
+                                    <button type="button" class="btn btn-warning" data-ng-click="vm.customAssignment(project, vm.selectedBlueprintProcess[project._id])">
+                                        Assign as CUSTOM process
+                                    </button>
+                                    <button type="button" class="btn btn-success" data-ng-click="vm.standardAssignment(project, vm.selectedBlueprintProcess[project._id])"
+                                    data-ng-disabled="!vm.selectedBlueprintProcess[project._id]">
+                                        Assign as STANDARD process
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
+                </fieldset>
+            </form>
+        </div>
+    </div>
+</section>

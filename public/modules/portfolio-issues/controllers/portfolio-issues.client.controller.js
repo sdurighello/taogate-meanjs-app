@@ -2,10 +2,10 @@
 
 // PORTFOLIO ISSUES controller
 angular.module('portfolio-issues').controller('PortfolioIssuesController', ['$rootScope', '$scope', '$stateParams', '$location', '$q', '_', 'Authentication',
-	'Portfolios', 'Projects', 'ProjectIssues', 'PortfolioIssues', 'GateProcesses', 'LogReasons', 'IssueStates', 'IssueActionStates', 'LogPriorities', 'LogStatusIndicators',
+	'Portfolios', 'Projects', 'ProjectIssues', 'PortfolioIssues', 'GateProcessTemplates', 'LogReasons', 'IssueStates', 'IssueActionStates', 'LogPriorities', 'LogStatusIndicators',
     'People', '$modal', '$log',
 	function($rootScope, $scope, $stateParams, $location, $q, _, Authentication,
-			 Portfolios, Projects, ProjectIssues, PortfolioIssues, GateProcesses, LogReasons, IssueStates, IssueActionStates, LogPriorities, LogStatusIndicators, People, $modal, $log) {
+			 Portfolios, Projects, ProjectIssues, PortfolioIssues, GateProcessTemplates, LogReasons, IssueStates, IssueActionStates, LogPriorities, LogStatusIndicators, People, $modal, $log) {
 
 		$rootScope.staticMenu = false;
 
@@ -36,7 +36,7 @@ angular.module('portfolio-issues').controller('PortfolioIssuesController', ['$ro
 				vm.initErrors.push(err.data.message);
 			});
 
-			GateProcesses.query(function (gateProcesses) {
+			GateProcessTemplates.query(function (gateProcesses) {
 				vm.gateProcesses = gateProcesses;
 			}, function (err) {
 				vm.initErrors.push(err.data.message);

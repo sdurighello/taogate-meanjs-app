@@ -1,3 +1,15 @@
+/*
+  Allow angular.js to be loaded in body, hiding cloaked elements until
+  templates compile.  The !important is important given that there may be
+  other selectors that are more specific or come later and might alter display.
+ */
+[ng\:cloak], [ng-cloak], .ng-cloak {
+    display: none !important;
+}
+
+/* -------- */
+
+
 .content {
 	margin-top: 50px;
 }
@@ -268,7 +280,13 @@
 /* Roadmap */
 
 
-#chart text {
+#chartDefinition text {
+    fill: black;
+    font: 10px sans-serif;
+    text-anchor: left;
+}
+
+#chartDelivery text {
     fill: black;
     font: 10px sans-serif;
     text-anchor: left;
@@ -276,6 +294,16 @@
 
 
 .bar {
+    fill: steelblue;
+    pointer-events: all;
+}
+
+.barDefinition {
+    fill: steelblue;
+    pointer-events: all;
+}
+
+.barDelivery {
     fill: steelblue;
     pointer-events: all;
 }

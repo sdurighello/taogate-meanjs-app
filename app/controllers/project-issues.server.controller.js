@@ -99,7 +99,6 @@ exports.updateHeader = function(req, res) {
     projectIssue.user = req.user;
     projectIssue.created = Date.now();
 
-    projectIssue.gate = req.body.gate;
     projectIssue.raisedOnDate = req.body.raisedOnDate;
     projectIssue.title = req.body.title;
     projectIssue.description = req.body.description;
@@ -175,7 +174,7 @@ exports.delete = function(req, res) {
 exports.list = function(req, res) {
 	var ProjectIssue = mongoose.mtModel(req.user.tenantId + '.' + 'ProjectIssue');
 	ProjectIssue.find(req.query).deepPopulate([
-        'gate', 'reason', 'state', 'priority', 'statusReview.currentRecord.status'
+        'reason', 'state', 'priority', 'statusReview.currentRecord.status'
     ]).populate('user', 'displayName').exec(function(err, projectIssues) {
 		if (err) {
 			return res.status(400).send({

@@ -2,9 +2,9 @@
 
 // Project issues controller
 angular.module('project-issues').controller('ProjectIssuesController', ['$rootScope', '$scope', '$stateParams', '$location', '$q', '$modal', '$log', '_', 'Authentication',
-    'Portfolios', 'Projects', 'ProjectIssues', 'GateProcesses', 'LogReasons', 'IssueStates', 'LogPriorities', 'LogStatusIndicators',
+    'Portfolios', 'Projects', 'ProjectIssues', 'GateProcessTemplates', 'LogReasons', 'IssueStates', 'LogPriorities', 'LogStatusIndicators',
     function($rootScope, $scope, $stateParams, $location, $q, $modal, $log, _, Authentication,
-             Portfolios, Projects, ProjectIssues, GateProcesses, LogReasons, IssueStates, LogPriorities, LogStatusIndicators) {
+             Portfolios, Projects, ProjectIssues, GateProcessTemplates, LogReasons, IssueStates, LogPriorities, LogStatusIndicators) {
 
         $rootScope.staticMenu = false;
         
@@ -24,10 +24,8 @@ angular.module('project-issues').controller('ProjectIssuesController', ['$rootSc
 
             // For main controller
 
-            Projects.query({'selection.active': true, 'selection.selectedForDelivery': true}, function (projects) {
-                $scope.projects = _.filter(projects, function (project) {
-                    return project.process !== null;
-                });
+            Projects.query({'selection.active': true, 'selection.selectedForDelivery': true}, function (res) {
+                $scope.projects = res;
             }, function (err) {
                 $scope.initErrors.push(err.data.message);
             });
@@ -38,7 +36,7 @@ angular.module('project-issues').controller('ProjectIssuesController', ['$rootSc
                 $scope.initErrors.push(err.data.message);
             });
 
-            GateProcesses.query(function (gateProcesses) {
+            GateProcessTemplates.query(function (gateProcesses) {
                 $scope.gateProcesses = gateProcesses;
             }, function (err) {
                 $scope.initErrors.push(err.data.message);
@@ -151,7 +149,8 @@ angular.module('project-issues').controller('ProjectIssuesController', ['$rootSc
 
 
         // ------------- NEW ISSUE ------------
-
+        
+        
         $scope.newProjectIssueRaisedOnDateOpened = {};
 
         $scope.openNewProjectIssueRaisedOnDate = function (project, $event) {
@@ -165,7 +164,6 @@ angular.module('project-issues').controller('ProjectIssuesController', ['$rootSc
         $scope.createNewProjectIssue = function (user, project) {
             var newProjectIssue = new ProjectIssues({
                 project: project._id,
-                gate: allowNull($scope.newProjectIssue.gate),
                 raisedOnDate: $scope.newProjectIssue.raisedOnDate,
                 title: $scope.newProjectIssue.title
             });
@@ -173,15 +171,14 @@ angular.module('project-issues').controller('ProjectIssuesController', ['$rootSc
             $scope.isResolving = true;
             newProjectIssue.$save(function (res) {
                 $scope.isResolving = false;
-                // Refresh the list of gate reviews after populating project and gate
                 res.project = _.cloneDeep(project);
-                res.gate = _.cloneDeep($scope.newProjectIssue.gate);
                 $scope.projectIssues.push(res);
                 // Clear new form
                 $scope.newProjectIssue = {};
                 // Select in view mode the new review
                 $scope.selectProjectIssue(user, _.find($scope.projectIssues, _.matchesProperty('_id', res._id)), project);
-                // Close new review form done directly in the view's html
+                // Close new review form
+                $scope.showNewProjectIssueForm = false;
             }, function (err) {
                 $scope.isResolving = false;
                 $scope.error = err.data.message;
@@ -191,6 +188,7 @@ angular.module('project-issues').controller('ProjectIssuesController', ['$rootSc
         $scope.cancelNewProjectIssue = function () {
             $scope.error = null;
             $scope.newProjectIssue = {};
+            $scope.showNewProjectIssueForm = false;
         };
 
 
@@ -291,7 +289,6 @@ angular.module('project-issues').controller('ProjectIssuesController', ['$rootSc
             // Clean-up deepPopulate
             var copyProjectIssue = _.cloneDeep(projectIssue);
             copyProjectIssue.project = _.get(copyProjectIssue.project, '_id');
-            copyProjectIssue.gate = allowNull(copyProjectIssue.gate);
             copyProjectIssue.reason = allowNull(copyProjectIssue.reason);
             copyProjectIssue.priority = allowNull(copyProjectIssue.priority);
             copyProjectIssue.state = allowNull(copyProjectIssue.state);
@@ -306,7 +303,6 @@ angular.module('project-issues').controller('ProjectIssuesController', ['$rootSc
                 function (res) {
                     $scope.isResolving = false;
                     // Update details pane view with new saved details
-                    originalProjectIssue.gate = projectIssue.gate;
                     originalProjectIssue.raisedOnDate = projectIssue.raisedOnDate;
                     originalProjectIssue.title = projectIssue.title;
                     originalProjectIssue.description = projectIssue.description;
@@ -325,7 +321,6 @@ angular.module('project-issues').controller('ProjectIssuesController', ['$rootSc
 
         $scope.cancelEditHeader = function (projectIssue, originalProjectIssue) {
             $scope.error = null;
-            projectIssue.gate = originalProjectIssue.gate;
             projectIssue.raisedOnDate = originalProjectIssue.raisedOnDate;
             projectIssue.title = originalProjectIssue.title;
             projectIssue.description = originalProjectIssue.description;
@@ -377,7 +372,6 @@ angular.module('project-issues').controller('ProjectIssuesController', ['$rootSc
             // Clean-up deepPopulate
             var copyProjectIssue = _.cloneDeep(projectIssue);
             copyProjectIssue.project = _.get(copyProjectIssue.project, '_id');
-            copyProjectIssue.gate = allowNull(copyProjectIssue.gate);
             copyProjectIssue.reason = allowNull(copyProjectIssue.reason);
             copyProjectIssue.priority = allowNull(copyProjectIssue.priority);
             copyProjectIssue.state = allowNull(copyProjectIssue.state);

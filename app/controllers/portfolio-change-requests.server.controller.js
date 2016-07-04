@@ -150,30 +150,76 @@ exports.submit = function(req, res) {
 };
 
 exports.approve = function(req, res) {
-    var portfolioChangeRequest = req.portfolioChangeRequest;
-    if(portfolioChangeRequest.approval.currentRecord.approvalState === 'submitted'){
-        portfolioChangeRequest.approval.history.push({
-            approvalState : portfolioChangeRequest.approval.currentRecord.approvalState,
-            user : portfolioChangeRequest.approval.currentRecord.user,
-            created : portfolioChangeRequest.approval.currentRecord.created
-        });
-        portfolioChangeRequest.approval.currentRecord.approvalState = 'approved';
-        portfolioChangeRequest.approval.currentRecord.user = req.user;
-        portfolioChangeRequest.approval.currentRecord.created = Date.now();
 
-        portfolioChangeRequest.save(function(err){
-            if (err) {
-                console.log(err);
-                return res.status(400).send({
-                    message: errorHandler.getErrorMessage(err)
-                });
-            } else {
-                res.jsonp(portfolioChangeRequest);
-            }
-        });
-    } else {
-        res.status(403).send({message :'Current document is '+ portfolioChangeRequest.approval.currentRecord.approvalState +' and cannot be approved'});
+    var Portfolio = mongoose.mtModel(req.user.tenantId + '.' + 'Portfolio');
+
+    var portfolioChangeRequest = req.portfolioChangeRequest;
+
+    if(portfolioChangeRequest.approval.currentRecord.approvalState !== 'submitted'){
+        return res.status(403).send(
+            {message :'Current document is '+ portfolioChangeRequest.approval.currentRecord.approvalState +' and cannot be approved'}
+        );
     }
+
+    async.waterfall([
+        // Update portfolioChangeRequest
+        function(callback) {
+            portfolioChangeRequest.approval.history.push({
+                approvalState : portfolioChangeRequest.approval.currentRecord.approvalState,
+                user : portfolioChangeRequest.approval.currentRecord.user,
+                created : portfolioChangeRequest.approval.currentRecord.created
+            });
+            portfolioChangeRequest.approval.currentRecord.approvalState = 'approved';
+            portfolioChangeRequest.approval.currentRecord.user = req.user;
+            portfolioChangeRequest.approval.currentRecord.created = Date.now();
+
+            portfolioChangeRequest.save(function(err){
+                callback(err);
+            });
+        },
+        // Get portfolio
+        function(callback) {
+            Portfolio.findById(portfolioChangeRequest.portfolio).exec(function(err, portfolio){
+                if(err){
+                    return callback(err);
+                }
+                if(!portfolio){
+                    return callback({message: 'Cannot find portfolio with id: '+ portfolioChangeRequest.portfolio});
+                }
+                callback(null, portfolio);
+            });
+        },
+        // Update portfolio budget
+        function(portfolio, callback) {
+
+            portfolio.budget.history.push({
+                amount: portfolio.budget.currentRecord.amount,
+                sourceChangeRequest: portfolio.budget.currentRecord.sourceChangeRequest,
+                created: portfolio.budget.currentRecord.created,
+                user: portfolio.budget.currentRecord.user
+            });
+
+            portfolio.budget.currentRecord.amount = portfolio.budget.currentRecord.amount + portfolioChangeRequest.totalFunding.totalFundingPortfolioChangeRequest;
+            portfolio.budget.currentRecord.sourceChangeRequest = portfolioChangeRequest._id;
+            portfolio.budget.currentRecord.created = Date.now();
+            portfolio.budget.currentRecord.user = { _id: req.user._id, displayName : req.user.displayName };
+
+            portfolio.save(function(err){
+                callback(err);
+            });
+        }
+    ], function (err) {
+        if (err) {
+            console.log(err);
+            return res.status(400).send({
+                message: errorHandler.getErrorMessage(err)
+            });
+        } else {
+            res.jsonp(portfolioChangeRequest);
+        }
+    });
+
+
 };
 
 exports.reject = function(req, res) {
@@ -237,76 +283,171 @@ exports.draft = function(req, res) {
 exports.availableProjectChangeRequests = function(req, res) {
 
 	var Project = mongoose.mtModel(req.user.tenantId + '.' + 'Project');
-	var ProjectChangeRequest = mongoose.mtModel(req.user.tenantId + '.' + 'ProjectChangeRequest');
 
-	async.waterfall([
-		// Find all projects belonging to that portfolio
-		function(callback){
-			var projectIds = [];
-			Project.find({portfolio: req.params.portfolioId}).exec(function(err, projects){
-				if(err){ return callback(err); }
-				async.each(projects, function(project, callback){
-					projectIds.push(project._id);
-					callback();
-				});
-				callback(null, projectIds);
-			});
-		},
-		// For all projects, extract all the changes that: are "not draft", and aren't already associated
-		function(projectIds, callback){
-            ProjectChangeRequest.find({
-				_id: {$nin: req.portfolioChangeRequest.associatedProjectChangeRequests},
-				project: {$in: projectIds},
-				approval: {$ne: 'draft'}
-			}).exec(function(err, availableProjectChangeRequests){
-				if(err){
-					return callback(err);
-				}
-				callback(null, availableProjectChangeRequests);
-			});
-		}
-	], function(err, availableProjectChangeRequests){
-		if (err) {
-			return res.status(400).send({
-				message: errorHandler.getErrorMessage(err)
-			});
-		} else {
-			res.jsonp(availableProjectChangeRequests);
-		}
-	});
+    Project.find(
+        {
+            'selection.active': true, 'selection.selectedForDelivery': true, 
+            'process.assignmentConfirmed': true,
+            'portfolio': req.params.portfolioId
+        }
+    ).exec(function(err, projects){
+        if(err){
+            return res.status(400).send({
+                message: errorHandler.getErrorMessage(err)
+            }); 
+        }
+        var availableProjectChangeRequests = [];
+        _.each(projects, function(project){
+            _.each(project.process.gates, function(gate){
+                _.each(gate.projectChangeRequests, function(projectChangeRequest){
+                    var notAlreadyAssociated = !projectChangeRequest.associatedPortfolioChangeRequest;
+                    var isNotDraft = projectChangeRequest.approval.currentRecord.approvalState !== 'draft';
+                    var hasBudgetChange = projectChangeRequest.budgetReview.budgetChange && (projectChangeRequest.budgetReview.budgetChange !== 0);
+                    
+                    if(notAlreadyAssociated && isNotDraft && hasBudgetChange){
+                        availableProjectChangeRequests.push({
+                            _id : projectChangeRequest._id,
+                            project: {
+                                _id: project._id,
+                                name: project.identification.name
+                            },
+                            gate : {
+                                _id: gate._id,
+                                name: gate.name
+                            },
+                            raisedOnDate : projectChangeRequest.raisedOnDate,
+                            title : projectChangeRequest.title,
+                            description : projectChangeRequest.description,
 
+                            reason : {
+                                _id: projectChangeRequest.reason._id,
+                                name: projectChangeRequest.reason.name
+                            },
+                            state : {
+                                _id: projectChangeRequest.state._id,
+                                name: projectChangeRequest.state.name
+                            },
+                            priority : {
+                                _id: projectChangeRequest.priority._id,
+                                name: projectChangeRequest.priority.name
+                            },
+
+                            changeStatus : {
+                                currentRecord : {
+                                    baselineDeliveryDate : projectChangeRequest.changeStatus.currentRecord.baselineDeliveryDate,
+                                    estimateDeliveryDate : projectChangeRequest.changeStatus.currentRecord.estimateDeliveryDate,
+                                    actualDeliveryDate : projectChangeRequest.changeStatus.currentRecord.actualDeliveryDate,
+
+                                    completed : projectChangeRequest.changeStatus.currentRecord.completed,
+                                    status: {
+                                        _id: projectChangeRequest.changeStatus.currentRecord.status._id,
+                                        name: projectChangeRequest.changeStatus.currentRecord.status.name,
+                                        color: projectChangeRequest.changeStatus.currentRecord.status.color
+                                    },
+                                    comment : projectChangeRequest.changeStatus.currentRecord.comment
+                                }
+                            },
+
+                            approval : {
+                                currentRecord : {
+                                    approvalState: projectChangeRequest.changeStatus.currentRecord.approvalState
+                                }
+                            },
+
+                            budgetReview : {
+                                currentAmount: projectChangeRequest.budgetReview.currentAmount,
+                                newAmount: projectChangeRequest.budgetReview.newAmount,
+                                budgetChange : projectChangeRequest.budgetReview.budgetChange
+                            }
+                        });
+                    }
+                                        
+                });
+            });
+        });
+
+        res.jsonp(availableProjectChangeRequests);
+
+    });
 
 };
 
 
 exports.addProjectChangeRequest = function(req, res) {
 
-	var portfolioChangeRequest = req.portfolioChangeRequest;
-    portfolioChangeRequest.associatedProjectChangeRequests.push(req.params.projectChangeRequestId);
-    portfolioChangeRequest.save(function(err){
-		if (err) {
-			return res.status(400).send({
-				message: errorHandler.getErrorMessage(err)
-			});
-		} else {
-			res.jsonp(portfolioChangeRequest);
-		}
-	});
+    var Project = mongoose.mtModel(req.user.tenantId + '.' + 'Project');
 
+    var portfolioChangeRequest = req.portfolioChangeRequest;
+    
+    async.waterfall([
+        // Add projectCR to portfolioChangeRequest.associatedProjectCRs
+        function(callback) {
+            portfolioChangeRequest.associatedProjectChangeRequests.push(req.body);
+            portfolioChangeRequest.save(function(err){
+                callback(err);
+            });
+        },
+        // Set "associatedPortfolioCR" flag in projectCR to portfolioCRId
+        function(callback) {
+            Project.findById(req.body.project._id).exec(function(err, project){
+                if (err) {
+                    return callback(err);
+                }
+                var cr = project.process.gates.id(req.body.gate._id).projectChangeRequests.id(req.body._id);
+                cr.associatedPortfolioChangeRequest = portfolioChangeRequest._id;
+                project.save(function(err){
+                    callback(err);
+                });
+            });
+        }
+    ], function (err) {
+        if (err) {
+            console.log(err);
+            return res.status(400).send({
+                message: errorHandler.getErrorMessage(err)
+            });
+        }
+        res.jsonp(portfolioChangeRequest);
+    });
+    
 };
 
 exports.removeProjectChangeRequest = function(req, res) {
-	var portfolioChangeRequest = req.portfolioChangeRequest;
-    portfolioChangeRequest.associatedProjectChangeRequests.splice(portfolioChangeRequest.associatedProjectChangeRequests.indexOf(req.params.projectChangeRequestId), 1);
-    portfolioChangeRequest.save(function(err){
-		if (err) {
-			return res.status(400).send({
-				message: errorHandler.getErrorMessage(err)
-			});
-		} else {
-			res.jsonp(portfolioChangeRequest);
-		}
-	});
+
+    var Project = mongoose.mtModel(req.user.tenantId + '.' + 'Project');
+
+    var portfolioChangeRequest = req.portfolioChangeRequest;
+
+    async.waterfall([
+        // Remove projectCR to portfolioChangeRequest.associatedProjectCRs
+        function(callback) {
+            portfolioChangeRequest.associatedProjectChangeRequests.id(req.params.projectChangeRequestId).remove();
+            portfolioChangeRequest.save(function(err){
+                callback(err);
+            });
+        },
+        // Set "associatedPortfolioCR" flag in projectCR to null
+        function(callback) {
+            Project.findById(req.body.project._id).exec(function(err, project){
+                if (err) {
+                    return callback(err);
+                }
+                var cr = project.process.gates.id(req.body.gate._id).projectChangeRequests.id(req.body._id);
+                cr.associatedPortfolioChangeRequest = null;
+                project.save(function(err){
+                    callback(err);
+                });
+            });
+        }
+    ], function (err) {
+        if (err) {
+            console.log(err);
+            return res.status(400).send({
+                message: errorHandler.getErrorMessage(err)
+            });
+        }
+        res.jsonp(portfolioChangeRequest);
+    });
 
 };
 
@@ -372,7 +513,6 @@ exports.deleteFundingRequest = function(req, res) {
 
 
 
-
 // **************** MIDDLEWARE ******************
 
 
@@ -381,14 +521,10 @@ exports.deleteFundingRequest = function(req, res) {
  * Portfolio change request middleware
  */
 exports.portfolioChangeRequestByID = function(req, res, next, id) {
-    var ProjectChangeRequest = mongoose.mtModel(req.user.tenantId + '.' + 'ProjectChangeRequest');
-    var BaselineCost = mongoose.mtModel(req.user.tenantId + '.' + 'BaselineCost');
-    var ActualCost = mongoose.mtModel(req.user.tenantId + '.' + 'ActualCost');
 
     var PortfolioChangeRequest = mongoose.mtModel(req.user.tenantId + '.' + 'PortfolioChangeRequest');
-    PortfolioChangeRequest.findById(id).deepPopulate([
-        'associatedProjectChangeRequests'
-    ]).populate('user', 'displayName').populate('approval.currentRecord.user', 'displayName').populate('approval.history.user', 'displayName')
+
+    PortfolioChangeRequest.findById(id)
         .exec(function(err, portfolioChangeRequest) {
 		if (err){ return next(err); }
 		if (! portfolioChangeRequest){ return next(new Error({message:'Failed to load Portfolio change request ' + id})); }

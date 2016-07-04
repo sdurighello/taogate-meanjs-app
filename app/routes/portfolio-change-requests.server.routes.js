@@ -62,6 +62,7 @@ module.exports = function(app) {
     app.route('/portfolio-change-requests/:portfolioChangeRequestId/funding-requests/:fundingRequestId/updateFundingRequest')
         .put(users.requiresLogin, portfolioChangeRequests.hasEditAuthorization, portfolioChangeRequests.objectIsEditable, portfolioChangeRequests.updateFundingRequest);
 
+    
 // **************** MIDDLEWARE ******************
 
 	// Finish by binding the Portfolio change request middleware

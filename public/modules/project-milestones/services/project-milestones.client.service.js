@@ -8,16 +8,7 @@ angular.module('project-milestones').factory('ProjectMilestones', ['$resource',
 			update: {
 				method: 'PUT'
 			},
-
-			// --- Changes By Project --
-			getMilestonesForProject: {
-				method: 'GET',
-				isArray: true,
-				url: 'project-milestones-milestonesForProject'
-				// req.query: { project: project._id }
-				// Returns: [{gate: ... , projectMilestones: ... }]
-			},
-
+            
 			// --- Header --
 
 			updateHeader: {

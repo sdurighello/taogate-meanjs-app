@@ -58,7 +58,11 @@ exports.create = function(req, res) {
                         var foundPeople = _.map(foundGroup.roles, function(stakeholderRole){
                             return {
                                 peopleGroup : peopleGroup,
-                                peopleRole : stakeholderRole.role,
+                                peopleRole : {
+                                    _id: stakeholderRole.role._id,
+                                    name: stakeholderRole.role.name,
+                                    description: stakeholderRole.role.description
+                                },
                                 person : stakeholderRole.person,
                                 comment : '',
                                 score : null
@@ -94,6 +98,7 @@ exports.create = function(req, res) {
         }
     ], function (err, populatedResult) {
         if (err) {
+            console.log(err);
             return res.status(400).send({
                 message: errorHandler.getErrorMessage(err)
             });

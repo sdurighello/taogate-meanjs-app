@@ -219,7 +219,7 @@ angular.module('portfolio-setup').controller('PortfolioSetupController', ['$root
 			$scope.selectPortfolioForm('view');
 			Portfolios.get({
 				portfolioId:portfolioId,
-				retPropertiesString : 'user created name parent ancestors type portfolioManager backupPortfolioManager funds',
+				retPropertiesString : 'user created name parent ancestors type portfolioManager backupPortfolioManager earmarkedFunds budget',
 				deepPopulateArray : ['parent','type','portfolioManager','backupPortfolioManager']
 			}, function(portfolio){
 				masterPortfolio = portfolio;
@@ -263,7 +263,7 @@ angular.module('portfolio-setup').controller('PortfolioSetupController', ['$root
 			masterPortfolio.backupPortfolioManager = allowNull($scope.editPortfolio.backupPortfolioManager);
 			masterPortfolio.parent = editParent(_.get($scope.editPortfolio,'parent'));
 			masterPortfolio.type = allowNull($scope.editPortfolio.type);
-			masterPortfolio.funds = _.get($scope.editPortfolio,'funds');
+			masterPortfolio.earmarkedFunds = _.get($scope.editPortfolio,'earmarkedFunds');
 			masterPortfolio.ancestors = ancestorsArray(_.get($scope.editPortfolio,'parent'));
 
 			masterPortfolio.$update(function() {
@@ -318,7 +318,7 @@ angular.module('portfolio-setup').controller('PortfolioSetupController', ['$root
 			$scope.newPortfolio.backupPortfolioManager = null;
 			$scope.newPortfolio.type = null;
 			$scope.newPortfolio.parent = null;
-			$scope.newPortfolio.funds = null;
+			$scope.newPortfolio.earmarkedFunds = null;
 
 			// A new portfolio can be a child of:
 			// any root
@@ -350,7 +350,7 @@ angular.module('portfolio-setup').controller('PortfolioSetupController', ['$root
 				type: _.get($scope.newPortfolio,'type._id'),
 				parent: _.get($scope.newPortfolio,'parent._id'),
 				ancestors: ancestorsArray(_.get($scope.newPortfolio,'parent')),
-				funds: _.get($scope.newPortfolio,'funds')
+				earmarkedFunds: _.get($scope.newPortfolio,'earmarkedFunds')
 			});
 
 			portfolio.$save(function(response) {
@@ -365,7 +365,7 @@ angular.module('portfolio-setup').controller('PortfolioSetupController', ['$root
 				$scope.newPortfolio.backupPortfolioManager = null;
 				$scope.newPortfolio.type = null;
 				$scope.newPortfolio.parent = null;
-				$scope.newPortfolio.funds = null;
+				$scope.newPortfolio.earmarkedFunds = null;
 
 			}, function(errorResponse) {
 				$scope.error = errorResponse.data.message;

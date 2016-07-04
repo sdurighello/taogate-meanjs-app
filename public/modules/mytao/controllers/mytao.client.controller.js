@@ -26,7 +26,13 @@ angular.module('mytao').controller('MytaoController', ['$scope','$rootScope', '$
 
         // ----------- INIT ---------------
 
-        // No need for init() before rendering
+        vm.init = function(){
+            vm.user = Authentication.user;
+            if(!vm.user){
+                $location.path('/signin');
+                $rootScope.staticMenu = true;
+            }
+        };
         
         vm.error = {};
 
@@ -84,7 +90,7 @@ angular.module('mytao').controller('MytaoController', ['$scope','$rootScope', '$
             vm.error.userGateReviews = err.data.message;
         });
 
-        
+
         // ------ Authentication ----
 
         var d = $q.defer();

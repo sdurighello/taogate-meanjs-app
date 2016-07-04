@@ -2,7 +2,7 @@
     <br>
     <div class="row">
         <div class="col-sm-12">
-            <div class="panel-heading">
+            <div class="panel-heading" style="padding: 0">
                 <ol class="breadcrumb">
                     <li>Portfolio definition</li>
                     <li>Selection</li>
@@ -68,23 +68,50 @@
                     </div>
                 </div>
             </div>
-            <div class="row" data-ng-show="!vm.isPortfolioSelectionEmpty()">
+            <div class="row">
                 <div class="col-md-12">
-                    <div class="panel panel-default">
+                    <div class="panel panel-default" data-ng-show="!vm.isPortfolioSelectionEmpty()">
                         <div class="panel-heading">
-                            <h6 class="panel-title text-center">Roadmap</h6>
+                            <div class="row">
+                                <div class="col-xs-9 text-center">
+                                    <h6 class="panel-title" data-ng-show="vm.selectedRoadmapType === 'definition'">Definition roadmap</h6>
+                                    <h6 class="panel-title" data-ng-show="vm.selectedRoadmapType === 'delivery'">Delivery roadmap</h6>
+                                </div>
+                                <div class="col-xs-3 pull-right">
+                                    <div class="btn-group btn-group-xs" role="group">
+                                        <button type="button" class="btn btn-default btn-info"
+                                                data-ng-class="{'active': vm.selectedRoadmapType === 'definition'}"
+                                                data-ng-click="vm.selectedRoadmapType = 'definition'">
+                                            Definition
+                                        </button>
+                                        <button type="button" class="btn btn-default btn-info"
+                                                data-ng-class="{'active': vm.selectedRoadmapType === 'delivery'}"
+                                                data-ng-click="vm.selectedRoadmapType = 'delivery'">
+                                            Delivery
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                         <div class="panel-body" style="min-height: 545px;  max-height: 545px; overflow-y: auto; overflow-x: auto">
-                            <div class="row" data-ng-show="!vm.definitionRoadmaps.length">
-                                <div class="col-md-12">
+                            <div class="row" style="min-height: 325px; overflow-y: auto" data-ng-if="(vm.selectedRoadmapType === 'definition')">
+                                <div class="col-md-12" data-ng-show="vm.onlyDefinitionProjects(vm.definitionRoadmaps).length">
+                                    <roadmap data="vm.onlyDefinitionProjects(vm.definitionRoadmaps)" select-project="vm.selectProjectProfile"></roadmap>
+                                </div>
+                                <div class="col-md-12" data-ng-show="!vm.onlyDefinitionProjects(vm.definitionRoadmaps).length">
                                     <div class="alert alert-warning text-center">
                                         <span>No roadmap</span>
                                     </div>
                                 </div>
                             </div>
-                            <div class="row" style="min-height: 325px; overflow-y: auto" data-ng-show="vm.definitionRoadmaps.length">
-                                <div class="col-md-12">
-                                    <roadmap data="vm.definitionRoadmaps" select-project="vm.selectProjectProfile"></roadmap>
+                            <div class="row" style="min-height: 325px; overflow-y: auto" data-ng-if="(vm.selectedRoadmapType === 'delivery')">
+                                <div class="col-md-12" data-ng-show="vm.onlyDeliveryProjects(vm.definitionRoadmaps).length">
+                                    <roadmap-delivery data="vm.onlyDeliveryProjects(vm.definitionRoadmaps)" select-project="vm.selectProjectProfile"></roadmap-delivery>
+                                </div>
+                                <div class="col-md-12" data-ng-show="!vm.onlyDeliveryProjects(vm.definitionRoadmaps).length">
+                                    <div class="alert alert-warning text-center">
+                                        <span>No roadmap</span>
+                                    </div>
                                 </div>
                             </div>
                         </div>

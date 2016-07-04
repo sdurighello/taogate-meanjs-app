@@ -87,7 +87,6 @@ exports.update = function(req, res) {
 exports.delete = function(req, res) {
     var Project = mongoose.mtModel(req.user.tenantId + '.' + 'Project');
 	var PeopleProjectGroup = mongoose.mtModel(req.user.tenantId + '.' + 'PeopleProjectGroup');
-	var PeopleProjectRole = mongoose.mtModel(req.user.tenantId + '.' + 'PeopleProjectRole');
 	var peopleProjectGroup = req.peopleProjectGroup ;
 
     async.series([
@@ -96,15 +95,6 @@ exports.delete = function(req, res) {
             peopleProjectGroup.remove(function(err){
                 callback(err);
             });
-        },
-        // ROLES: Delete all roles (from "people-project-roles" collection) belonging to this Group
-        function(callback){
-            async.each(peopleProjectGroup.roles, function(item, callback){
-                PeopleProjectRole.findByIdAndRemove(item._id, function(err){
-                    if(err){callback(err);} else {callback();}
-                });
-            });
-            callback(null);
         },
         // PROJECTS: Delete group object from project.stakeholders
         function(callback){
@@ -145,7 +135,7 @@ exports.delete = function(req, res) {
  */
 exports.list = function(req, res) {
 	var PeopleProjectGroup = mongoose.mtModel(req.user.tenantId + '.' + 'PeopleProjectGroup');
-	PeopleProjectGroup.find().deepPopulate(['roles']).populate('user', 'displayName').exec(function(err, peopleProjectGroups) {
+	PeopleProjectGroup.find().populate('user', 'displayName').exec(function(err, peopleProjectGroups) {
 		if (err) {
 			return res.status(400).send({
 				message: errorHandler.getErrorMessage(err)
@@ -161,7 +151,7 @@ exports.list = function(req, res) {
  */
 exports.peopleProjectGroupByID = function(req, res, next, id) {
 	var PeopleProjectGroup = mongoose.mtModel(req.user.tenantId + '.' + 'PeopleProjectGroup');
-	PeopleProjectGroup.findById(id).deepPopulate(['roles']).populate('user', 'displayName').exec(function(err, peopleProjectGroup) {
+	PeopleProjectGroup.findById(id).populate('user', 'displayName').exec(function(err, peopleProjectGroup) {
 		if (err) return next(err);
 		if (! peopleProjectGroup) return next(new Error('Failed to load People Project group ' + id));
 		req.peopleProjectGroup = peopleProjectGroup ;

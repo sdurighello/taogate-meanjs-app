@@ -9,6 +9,7 @@ angular.module('project-change-requests').config(['$stateProvider',
 			url: '/project-change-requests',
 			templateUrl: 'modules/project-change-requests/views/project-change-requests.client.view.html'
 		})
+            // Route required from myTao
         .state('project-change-requests-id', {
             url: '/project-change-requests/:projectChangeRequestId/projects/:projectId/gates/:gateId',
             templateUrl: 'modules/project-change-requests/views/project-change-requests.client.view.html'

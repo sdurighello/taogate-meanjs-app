@@ -1,8 +1,8 @@
 'use strict';
 
 angular.module('project-identification').controller('ProjectIdentificationController', ['$rootScope', '$scope','$stateParams', '$location', 'Authentication',
-	'Projects', 'Portfolios', 'GateProcesses', 'Subusers', '_','$q',
-	function($rootScope, $scope, $stateParams, $location, Authentication, Projects, Portfolios, GateProcesses, Subusers, _ , $q) {
+	'Projects', 'Portfolios', 'GateProcessTemplates', 'Subusers', '_','$q',
+	function($rootScope, $scope, $stateParams, $location, Authentication, Projects, Portfolios, GateProcessTemplates, Subusers, _ , $q) {
 
         $rootScope.staticMenu = false;
 
@@ -46,7 +46,7 @@ angular.module('project-identification').controller('ProjectIdentificationContro
                 $scope.initErrors.push(err.data.message);
             });
 
-            GateProcesses.query(function(res){
+            GateProcessTemplates.query(function(res){
                 $scope.gateProcesses = res;
             }, function(err){
                 $scope.initErrors.push(err.data.message);

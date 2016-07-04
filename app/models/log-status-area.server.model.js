@@ -22,7 +22,10 @@ var LogStatusAreaSchema = new Schema({
         default: '',
         trim: true
     },
-	created: {
+
+    applicableTo: {type: String, enum: ['project', 'portfolio', 'both'], default:'both', required:'Applicability is required'},
+
+    created: {
 		type: Date,
 		default: Date.now
 	},

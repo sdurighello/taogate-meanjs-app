@@ -1,0 +1,565 @@
+<section data-ng-controller="PortfolioStatusReportsController as vm" data-ng-init="vm.initDocumentDetails()">
+    <div class="background-page">
+        <page size="A4">
+            <div class="panel panel-default" style="max-width: 21cm; max-height: 29cm; overflow: auto">
+                <div class="panel-heading">
+                    <div class="row" data-ng-switch="vm.switchHeaderTitleForm[vm.selectedDocument._id]">
+                        <div class="col-xs-9 text-center" style="overflow: hidden;">
+                            <h6 class="panel-title" data-ng-switch-default="view">{{vm.selectedDocument.title}}</h6>
+                            <h6 class="panel-title" data-ng-switch-when="edit"><input title="title" class="form-control input-sm" data-ng-model="vm.selectedDocument.title"></h6>
+                        </div>
+                        <div class="col-xs-3 pull-right hidden-print">
+                            <div data-ng-switch-default="view">
+                                <button type="button" class="btn btn-xs btn-success"
+                                        data-ng-click="vm.editHeaderTitle(vm.selectedDocument)">
+                                    <span class="glyphicon glyphicon-pencil"></span>
+                                </button>
+                                <button type="button" class="btn btn-primary btn-xs" data-ng-click="vm.goToList(vm.selectedPortfolioId)">
+                                    <span class="glyphicon glyphicon-list"></span>
+                                </button>
+                                <button type="button" class="btn btn-xs btn-danger"
+                                        data-ng-click="vm.deleteDocument(vm.selectedDocument)">
+                                    <span class="glyphicon glyphicon-trash"></span>
+                                </button>
+                            </div>
+                            <div data-ng-switch-when="edit">
+                                <button type="button" class="btn btn-xs btn-success"
+                                        data-ng-click="vm.saveEditHeaderTitle(vm.selectedDocument)">
+                                    <span class="glyphicon glyphicon-ok"></span>
+                                </button>
+                                <button type="button" class="btn btn-xs btn-info"
+                                        data-ng-click="vm.cancelEditHeaderTitle(vm.selectedDocument)">
+                                    <span class="glyphicon glyphicon-remove"></span>
+                                </button>
+                                <a type="button" class="btn btn-primary btn-xs" href="/#!/portfolio-status-reports">
+                                    <span class="glyphicon glyphicon-list"></span>
+                                </a>
+                                <button type="button" class="btn btn-xs btn-danger"
+                                        data-ng-click="vm.deleteDocument(vm.selectedDocument)">
+                                    <span class="glyphicon glyphicon-trash"></span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="panel-body">
+                    <!-- TITLE -->
+                    <div class="row">
+                        <div class="col-xs-6">
+                            <div class="panel panel-default panel-heading text-center">
+                                <h6 class="panel-title" style="overflow: hidden">{{vm.selectedDocument.portfolio.name}}</h6>
+                            </div>
+                        </div>
+                        <div class="col-xs-6">
+                            <div class="panel panel-default panel-heading text-center">
+                                <b>Portfolio Manager: </b>
+                                <span data-ng-show="vm.selectedDocument.portfolioManager.name">{{vm.selectedDocument.portfolioManager.name}}</span>
+                                <span data-ng-show="!vm.selectedDocument.portfolioManager.name"> -- </span>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- DATES, PORTFOLIO MANAGER -->
+                    <div class="row">
+                        <div class="col-xs-12">
+                            <div class="panel panel-default panel-heading">
+                                <div class="row">
+                                    <div data-ng-switch="vm.switchHeaderTypeForm[vm.selectedDocument._id]">
+                                        <div class="col-xs-4 " data-ng-switch-default="view">
+                                            <span data-ng-show="vm.selectedDocument.type.name">{{vm.selectedDocument.type.name}}</span>
+                                            <span data-ng-show="!vm.selectedDocument.type.name">--</span>
+                                            <button type="button" class="btn btn-xs btn-success hidden-print"
+                                                    data-ng-click="vm.editHeaderType(vm.selectedDocument)">
+                                                <span class="glyphicon glyphicon-pencil"></span>
+                                            </button>
+                                        </div>
+                                        <div class="col-xs-4 " data-ng-switch-when="edit">
+                                            <select title="type" class="form-control input-sm" data-ng-model = "vm.selectedDocument.type"
+                                                    data-ng-options="type as type.name for type in vm.statusReportTypes track by type._id">
+                                                <option value="">--select report type</option>
+                                            </select>
+                                            <button type="button" class="btn btn-xs btn-success hidden-print"
+                                                    data-ng-click="vm.saveEditHeaderType(vm.selectedDocument)">
+                                                <span class="glyphicon glyphicon-ok"></span>
+                                            </button>
+                                            <button type="button" class="btn btn-xs btn-info hidden-print"
+                                                    data-ng-click="vm.cancelEditHeaderType(vm.selectedDocument)">
+                                                <span class="glyphicon glyphicon-remove"></span>
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div class="col-xs-4 ">
+                                        <b>From: </b>
+                                        <span data-ng-show="vm.selectedDocument.previousReport.date">{{vm.selectedDocument.previousReport.date | date:'EEE d, MMM yyyy'}}</span>
+                                        <span data-ng-show="!vm.selectedDocument.previousReport.date"> -- </span>
+                                    </div>
+                                    <div data-ng-switch="vm.switchHeaderDateForm[vm.selectedDocument._id]">
+                                        <div class="col-xs-4 " data-ng-switch-default="view">
+                                            <b>To: </b>
+                                            <span>{{vm.selectedDocument.date | date:'EEE d, MMM yyyy'}}</span>
+                                            <button type="button" class="btn btn-xs btn-success hidden-print"
+                                                    data-ng-click="vm.editHeaderDate(vm.selectedDocument)">
+                                                <span class="glyphicon glyphicon-pencil"></span>
+                                            </button>
+                                        </div>
+                                        <div class="col-xs-4 " data-ng-switch-when="edit">
+                                            <b>To: </b>
+                                            <div class="input-group input-group-sm">
+                                                <input type="text" title="date" class="form-control" datepicker-popup="dd-MMMM-yyyy" data-ng-model="vm.selectedDocument.date"
+                                                       is-open="vm.newHeaderDateOpened[vm.selectedDocument._id]" required>
+                                                <span class="input-group-btn">
+                                                    <button type="button" class="btn btn-default btn-sm" ng-click="vm.openNewHeaderDate(vm.selectedDocument, $event)"><i class="glyphicon glyphicon-calendar"></i></button>
+                                                </span>
+                                            </div>
+                                            <button type="button" class="btn btn-xs btn-success hidden-print"
+                                                    data-ng-click="vm.saveEditHeaderDate(vm.selectedDocument)">
+                                                <span class="glyphicon glyphicon-ok"></span>
+                                            </button>
+                                            <button type="button" class="btn btn-xs btn-info hidden-print"
+                                                    data-ng-click="vm.cancelEditHeaderDate(vm.selectedDocument)">
+                                                <span class="glyphicon glyphicon-remove"></span>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- OVERALL STATUS -->
+                    <div class="row">
+                        <div class="col-xs-12">
+                            <div class="panel panel-default" data-ng-switch="vm.switchOverallStatusForm[vm.selectedDocument._id]">
+                                <div class="panel-heading">
+                                    <div class="row">
+                                        <div class="col-xs-10">
+                                            <h6 class="panel-title text-center">Overall status</h6>
+                                        </div>
+                                        <div class="col-xs-2 hidden-print" data-ng-switch-default="view">
+                                            <button type="button" class="btn btn-xs btn-success pull-right"
+                                                    data-ng-click="vm.editOverallStatus(vm.selectedDocument)">
+                                                Edit
+                                            </button>
+                                        </div>
+                                        <div class="col-xs-2 pull-right hidden-print" data-ng-switch-when="edit">
+                                            <button type="button" class="btn btn-xs btn-success"
+                                                    data-ng-click="vm.saveEditOverallStatus(vm.selectedDocument)">
+                                                Save
+                                            </button>
+                                            <button type="button" class="btn btn-xs btn-info"
+                                                    data-ng-click="vm.cancelEditOverallStatus(vm.selectedDocument)">
+                                                Cancel
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="panel-body">
+                                    <div class="row">
+                                        <div class="col-xs-5 form-group-sm">
+                                            <label>Status previous period</label>
+                                            <div class="panel panel-default panel-heading text-center" style="background-color: {{vm.selectedDocument.deliveryStatus.overallStatus.previousStatus.color}}">
+                                                <span data-ng-show="vm.selectedDocument.deliveryStatus.overallStatus.previousStatus.name">
+                                                    {{vm.selectedDocument.deliveryStatus.overallStatus.previousStatus.name}}
+                                                </span>
+                                                <span data-ng-show="!vm.selectedDocument.deliveryStatus.overallStatus.previousStatus.name">
+                                                    No status
+                                                </span>
+                                            </div>
+                                        </div>
+                                        <div class="col-xs-2 text-center">
+                                            <br>
+                                            <span class="glyphicon glyphicon-arrow-right"></span>
+                                        </div>
+                                        <div class="col-xs-5 form-group-sm">
+                                            <label>Status this period</label>
+                                            <div class="panel panel-default panel-heading text-center" style="background-color: {{vm.selectedDocument.deliveryStatus.overallStatus.currentStatus.color}}">
+                                                <span data-ng-show="vm.selectedDocument.deliveryStatus.overallStatus.currentStatus.name">
+                                                    {{vm.selectedDocument.deliveryStatus.overallStatus.currentStatus.name}}
+                                                </span>
+                                                <span data-ng-show="!vm.selectedDocument.deliveryStatus.overallStatus.currentStatus.name">
+                                                    No status
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-xs-12">
+                                            <div class="panel panel-default panel-heading" style="height: 10cm"
+                                                 data-ng-switch-default="view">
+                                                <span>{{vm.selectedDocument.deliveryStatus.overallStatus.comment}}</span>
+                                            </div>
+                                            <textarea title="overallStatus" class="form-control panel panel-default panel-heading"
+                                                      data-ng-model="vm.selectedDocument.deliveryStatus.overallStatus.comment"
+                                                      data-ng-switch-when="edit">
+                                            </textarea>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-xs-12">
+                                            <div class="panel panel-default panel-heading">
+                                                <table class="table table-bordered table-condensed">
+                                                    <thead>
+                                                    <tr>
+                                                        <td class="col-xs-2" rowspan="2"><i>Projects status</i></td>
+                                                        <th class="col-xs-2 text-center" colspan="3">Number of projects</th>
+                                                        <th class="col-xs-2 text-center" colspan="3">Budget by status</th>
+                                                    </tr>
+                                                    <tr>
+                                                        <th class="col-xs-2 text-center">Previous</th>
+                                                        <th class="col-xs-2 text-center">Current</th>
+                                                        <th class="col-xs-2 text-center">Change</th>
+                                                        <th class="col-xs-2 text-center">Previous</th>
+                                                        <th class="col-xs-2 text-center">Current</th>
+                                                        <th class="col-xs-2 text-center">Change</th>
+                                                    </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                    <tr class="text-center" data-ng-repeat="projectStatus in vm.selectedDocument.deliveryStatus.overallStatus.projectStatuses">
+                                                        <th>
+                                                            <div class="panel panel-default panel-heading" style="background-color: {{projectStatus.status.color}}; margin: 0; padding: 5px;">
+                                                                <span data-ng-show="projectStatus.status.name">{{projectStatus.status.name}}</span>
+                                                                <span data-ng-show="!projectStatus.status.name">No status</span>
+                                                            </div>
+                                                        </th>
+                                                        <td>{{projectStatus.numberOfProjects.previous | number:0}} ({{ 100 * projectStatus.ratioOfProjects.previous | number:1}}%)</td>
+                                                        <td>{{projectStatus.numberOfProjects.current | number:0}} ({{ 100 * projectStatus.ratioOfProjects.current | number:1}}%)</td>
+                                                        <td>{{projectStatus.numberOfProjects.change | number:0}} ({{ 100 * projectStatus.ratioOfProjects.changeOnPrevious | number:1}}%)</td>
+                                                        <td>{{projectStatus.amountOfBudget.previous | number:0}} ({{ 100 * projectStatus.ratioOfBudget.previous | number:1}}%)</td>
+                                                        <td>{{projectStatus.amountOfBudget.current | number:0}} ({{ 100 * projectStatus.ratioOfBudget.current | number:1}}%)</td>
+                                                        <td>{{projectStatus.amountOfBudget.change | number:0}} ({{ 100 * projectStatus.ratioOfBudget.changeOnPrevious | number:1}}%)</td>
+                                                    </tr>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </page>
+        <!-- STATUS AREAS -->
+        <page size="A4" data-ng-repeat="subArray in vm.selectedDocumentStatusAreas track by $index">
+            <div class="panel panel-default" style="width: 21cm; height: 29cm; overflow: hidden">
+                <div class="panel-body">
+                    <div class="row">
+                        <div class="col-xs-12" data-ng-repeat="obj in subArray track by $index">
+                            <div class="panel panel-default" style="height: 14cm; overflow: hidden" data-ng-switch="vm.switchStatusAreaForm[obj._id]">
+                                <div class="panel-heading">
+                                    <div class="row">
+                                        <div class="col-xs-10">
+                                            <h6 class="panel-title text-center">{{obj.statusArea.name}}</h6>
+                                        </div>
+                                        <div class="col-xs-2 hidden-print" data-ng-switch-default="view">
+                                            <button type="button" class="btn btn-xs btn-success pull-right"
+                                                    data-ng-click="vm.editStatusArea(obj)">
+                                                Edit
+                                            </button>
+                                        </div>
+                                        <div class="col-xs-2 pull-right hidden-print" data-ng-switch-when="edit">
+                                            <button type="button" class="btn btn-xs btn-success"
+                                                    data-ng-click="vm.saveEditStatusArea(vm.selectedDocument, obj)">
+                                                Save
+                                            </button>
+                                            <button type="button" class="btn btn-xs btn-info"
+                                                    data-ng-click="vm.cancelEditStatusArea(obj)">
+                                                Cancel
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="panel-body">
+                                    <div class="row">
+                                        <div class="col-xs-5 form-group-sm">
+                                            <label>Previous period</label>
+                                            <div class="panel panel-default panel-heading" style="background-color: {{obj.previousStatus.color}}">
+                                                <span data-ng-show="obj.previousStatus.name">{{obj.previousStatus.name}}</span>
+                                                <span data-ng-show="!obj.previousStatus.name">No status</span>
+                                            </div>
+                                        </div>
+                                        <div class="col-xs-2 text-center">
+                                            <br>
+                                            <span class="glyphicon glyphicon-arrow-right"></span>
+                                        </div>
+                                        <div class="col-xs-5 form-group-sm">
+                                            <label>This period</label>
+                                            <div class="panel panel-default panel-heading" style="background-color: {{obj.currentStatus.color}}">
+                                                <span data-ng-show="obj.currentStatus.name">{{obj.currentStatus.name}}</span>
+                                                <span data-ng-show="!obj.currentStatus.name">No status</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-xs-12">
+                                            <div class="panel panel-default panel-heading" data-ng-switch-default="view"
+                                                 style="max-height: 4cm; overflow: hidden">
+                                                <span>{{obj.comment}}</span>
+                                            </div>
+                                            <textarea title="statusArea" class="form-control panel panel-default panel-heading"
+                                                      data-ng-model="obj.comment"
+                                                      data-ng-switch-when="edit">
+                                            </textarea>
+                                        </div>
+                                    </div>
+                                    <div class="row" data-ng-show="obj.projectStatuses.length > 0">
+                                        <div class="col-xs-12">
+                                            <div class="panel panel-default panel-heading" style="max-height: 8cm; overflow: hidden">
+                                                <table class="table table-bordered table-condensed">
+                                                    <thead>
+                                                    <tr>
+                                                        <th class="col-xs-2" rowspan="2">Projects status</th>
+                                                        <th class="col-xs-2 text-center" colspan="3">Projects</th>
+                                                        <th class="col-xs-2 text-center" colspan="3">Budget</th>
+                                                    </tr>
+                                                    <tr>
+                                                        <th class="col-xs-2 text-center">Previous</th>
+                                                        <th class="col-xs-2 text-center">Current</th>
+                                                        <th class="col-xs-2 text-center">Change</th>
+                                                        <th class="col-xs-2 text-center">Previous</th>
+                                                        <th class="col-xs-2 text-center">Current</th>
+                                                        <th class="col-xs-2 text-center">Change</th>
+                                                    </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                    <tr class="text-center" data-ng-repeat="projectStatus in obj.projectStatuses">
+                                                        <th>
+                                                            <div class="panel panel-default panel-heading" style="background-color: {{projectStatus.status.color}}; margin: 0; padding: 5px;">
+                                                                <span data-ng-show="projectStatus.status.name">{{projectStatus.status.name}}</span>
+                                                                <span data-ng-show="!projectStatus.status.name">No status</span>
+                                                            </div>
+                                                        </th>
+                                                        <td>{{projectStatus.numberOfProjects.previous | number:0}} ({{ 100 * projectStatus.ratioOfProjects.previous | number:1}}%)</td>
+                                                        <td>{{projectStatus.numberOfProjects.current | number:0}} ({{ 100 * projectStatus.ratioOfProjects.current | number:1}}%)</td>
+                                                        <td>{{projectStatus.numberOfProjects.change | number:0}} ({{ 100 * projectStatus.ratioOfProjects.changeOnPrevious | number:1}}%)</td>
+                                                        <td>{{projectStatus.amountOfBudget.previous | number:0}} ({{ 100 * projectStatus.ratioOfBudget.previous | number:1}}%)</td>
+                                                        <td>{{projectStatus.amountOfBudget.current | number:0}} ({{ 100 * projectStatus.ratioOfBudget.current | number:1}}%)</td>
+                                                        <td>{{projectStatus.amountOfBudget.change | number:0}} ({{ 100 * projectStatus.ratioOfBudget.changeOnPrevious | number:1}}%)</td>
+                                                    </tr>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </page>
+        <!-- PORTFOLIO STATISTICS -->
+        <page size="A4">
+            <div class="panel panel-default panel-heading" style="max-width: 21cm; max-height: 29cm; overflow: hidden">
+                <div class="row">
+                    <div class="col-xs-12">
+                        <table class="table table-bordered table-condensed">
+                            <thead>
+                            <tr>
+                                <td class="col-xs-2 text-center"><i>Earmarked funds</i></td>
+                                <th class="col-xs-2 text-center">Previous period</th>
+                                <th class="col-xs-2 text-center">This period</th>
+                                <th class="col-xs-2 text-center">Change</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <!-- Earmarked funds -->
+                            <tr class="text-center">
+                                <th>Portfolio earmarked funds</th>
+                                <td>{{vm.selectedDocument.earmarkedFunds.portfolioAmount.previous | number:0}}</td>
+                                <td>{{vm.selectedDocument.earmarkedFunds.portfolioAmount.current | number:0}}</td>
+                                <td>{{vm.selectedDocument.earmarkedFunds.portfolioAmount.change | number:0}} ({{100 * vm.selectedDocument.earmarkedFunds.portfolioAmount.changeOnPrevious | number:1}}%)</td>
+                            </tr>
+                            <tr class="text-center">
+                                <th>Projects earmarked funds</th>
+                                <td>{{vm.selectedDocument.earmarkedFunds.projectsAmount.previous | number:0}}</td>
+                                <td>{{vm.selectedDocument.earmarkedFunds.projectsAmount.current | number:0}}</td>
+                                <td>{{vm.selectedDocument.earmarkedFunds.projectsAmount.change | number:0}} ({{100 * vm.selectedDocument.earmarkedFunds.projectsAmount.changeOnPrevious | number:1}}%)</td>
+                            </tr>
+                            <tr class="text-center text-muted">
+                                <th>Funds difference</th>
+                                <td>{{vm.selectedDocument.earmarkedFunds.variance.previous | number:0}} ({{100 * vm.selectedDocument.earmarkedFunds.variancePercent.previous | number:1}}%)</td>
+                                <td>{{vm.selectedDocument.earmarkedFunds.variance.current | number:0}} ({{100 * vm.selectedDocument.earmarkedFunds.variancePercent.current | number:1}}%)</td>
+                                <td>{{vm.selectedDocument.earmarkedFunds.variance.change | number:0}} ({{100 * vm.selectedDocument.earmarkedFunds.variance.changeOnPrevious | number:1}}%)</td>
+                            </tr>
+                            <tr class="text-center">
+                                <th>Active projects</th>
+                                <td>{{vm.selectedDocument.numberOfActiveProjects.previous | number:0}}</td>
+                                <td>{{vm.selectedDocument.numberOfActiveProjects.current | number:0}}</td>
+                                <td>{{vm.selectedDocument.numberOfActiveProjects.change | number:0}} ({{100 * vm.selectedDocument.numberOfActiveProjects.changeOnPrevious | number:1}}%)</td>
+                            </tr>
+                            <tr class="text-center">
+                                <th>Average earmarked funds</th>
+                                <td>{{vm.selectedDocument.earmarkedFunds.averageAmount.previous | number:0}}</td>
+                                <td>{{vm.selectedDocument.earmarkedFunds.averageAmount.current | number:0}}</td>
+                                <td>{{vm.selectedDocument.earmarkedFunds.averageAmount.change | number:0}} ({{100 * vm.selectedDocument.earmarkedFunds.averageAmount.changeOnPrevious | number:1}}%)</td>
+                            </tr>
+                            <tr class="text-center">
+                                <th>Lowest earmarked funds</th>
+                                <td>{{vm.selectedDocument.earmarkedFunds.minAmount.previous | number:0}}</td>
+                                <td>{{vm.selectedDocument.earmarkedFunds.minAmount.current | number:0}}</td>
+                                <td>{{vm.selectedDocument.earmarkedFunds.minAmount.change | number:0}} ({{100 * vm.selectedDocument.earmarkedFunds.minAmount.changeOnPrevious | number:1}}%)</td>
+                            </tr>
+                            <tr class="text-center">
+                                <th>Highest earmarked funds</th>
+                                <td>{{vm.selectedDocument.earmarkedFunds.maxAmount.previous | number:0}}</td>
+                                <td>{{vm.selectedDocument.earmarkedFunds.maxAmount.current | number:0}}</td>
+                                <td>{{vm.selectedDocument.earmarkedFunds.maxAmount.change | number:0}} ({{100 * vm.selectedDocument.earmarkedFunds.maxAmount.changeOnPrevious | number:1}}%)</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12">
+                        <table class="table table-bordered table-condensed">
+                            <thead>
+                            <tr>
+                                <td class="col-xs-2 text-center"><i>Portfolio budget</i></td>
+                                <th class="col-xs-2 text-center">Previous period</th>
+                                <th class="col-xs-2 text-center">This period</th>
+                                <th class="col-xs-2 text-center">Change</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <!-- Budget -->
+                            <tr class="text-center">
+                                <th>Portfolio budget</th>
+                                <td>{{vm.selectedDocument.performances.portfolioBudget.amount.previous | number:0}}</td>
+                                <td>{{vm.selectedDocument.performances.portfolioBudget.amount.current | number:0}}</td>
+                                <td>{{vm.selectedDocument.performances.portfolioBudget.amount.change | number:0}} ({{100 * vm.selectedDocument.performances.portfolioBudget.amount.changeOnPrevious | number:1}}%)</td>
+                            </tr>
+                            <tr class="text-center">
+                                <th>Projects budget</th>
+                                <td>{{vm.selectedDocument.performances.budget.amount.previous | number:0}}</td>
+                                <td>{{vm.selectedDocument.performances.budget.amount.current | number:0}}</td>
+                                <td>{{vm.selectedDocument.performances.budget.amount.change | number:0}} ({{100 * vm.selectedDocument.performances.budget.amount.changeOnPrevious | number:1}}%)</td>
+                            </tr>
+                            <tr class="text-center text-muted">
+                                <th>Budget difference</th>
+                                <td>{{vm.selectedDocument.performances.portfolioBudget.variance.previous | number:0}} ({{100 * vm.selectedDocument.performances.portfolioBudget.variancePercent.previous | number:1}}%)</td>
+                                <td>{{vm.selectedDocument.performances.portfolioBudget.variance.current | number:0}} ({{100 * vm.selectedDocument.performances.portfolioBudget.variancePercent.current | number:1}}%)</td>
+                                <td>{{vm.selectedDocument.performances.portfolioBudget.variance.change | number:0}} ({{100 * vm.selectedDocument.performances.portfolioBudget.variance.changeOnPrevious | number:1}}%)</td>
+                            </tr>
+                            <tr class="text-center">
+                                <th>Projects in delivery</th>
+                                <td>{{vm.selectedDocument.performances.numberOfProjects.previous | number:0}}</td>
+                                <td>{{vm.selectedDocument.performances.numberOfProjects.current | number:0}}</td>
+                                <td>{{vm.selectedDocument.performances.numberOfProjects.change | number:0}} ({{100 * vm.selectedDocument.performances.numberOfProjects.changeOnPrevious | number:1}}%)</td>
+                            </tr>
+                            <tr class="text-center">
+                                <th>Average budget</th>
+                                <td>{{vm.selectedDocument.performances.budget.averageAmount.previous | number:0}}</td>
+                                <td>{{vm.selectedDocument.performances.budget.averageAmount.current | number:0}}</td>
+                                <td>{{vm.selectedDocument.performances.budget.averageAmount.change | number:0}} ({{100 * vm.selectedDocument.performances.budget.averageAmount.changeOnPrevious | number:1}}%)</td>
+                            </tr>
+                            <tr class="text-center">
+                                <th>Lowest budget</th>
+                                <td>{{vm.selectedDocument.performances.budget.minAmount.previous | number:0}}</td>
+                                <td>{{vm.selectedDocument.performances.budget.minAmount.current | number:0}}</td>
+                                <td>{{vm.selectedDocument.performances.budget.minAmount.change | number:0}} ({{100 * vm.selectedDocument.performances.budget.minAmount.changeOnPrevious | number:1}}%)</td>
+                            </tr>
+                            <tr class="text-center">
+                                <th>Highest budget</th>
+                                <td>{{vm.selectedDocument.performances.budget.maxAmount.previous | number:0}}</td>
+                                <td>{{vm.selectedDocument.performances.budget.maxAmount.current | number:0}}</td>
+                                <td>{{vm.selectedDocument.performances.budget.maxAmount.change | number:0}} ({{100 * vm.selectedDocument.performances.budget.maxAmount.changeOnPrevious | number:1}}%)</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12">
+                        <table class="table table-bordered table-condensed">
+                            <thead>
+                            <tr>
+                                <td class="col-xs-2 text-center"><i>Performances</i></td>
+                                <th class="col-xs-2 text-center">Previous period</th>
+                                <th class="col-xs-2 text-center">This period</th>
+                                <th class="col-xs-2 text-center">Change</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr><th colspan="4" class="text-center" style="background-color: lightgray">Duration</th></tr>
+                            <tr class="text-center">
+                                <th>Baseline</th>
+                                <td>{{vm.selectedDocument.performances.duration.baselineDays.previous | number:0}}</td>
+                                <td>{{vm.selectedDocument.performances.duration.baselineDays.current | number:0}}</td>
+                                <td>{{vm.selectedDocument.performances.duration.baselineDays.change | number:0}} ({{100 * vm.selectedDocument.performances.duration.baselineDays.changeOnPrevious | number:1}}%)</td>
+                            </tr>
+                            <tr class="text-center">
+                                <th>Estimate</th>
+                                <td>{{vm.selectedDocument.performances.duration.estimateDays.previous | number:0}}</td>
+                                <td>{{vm.selectedDocument.performances.duration.estimateDays.current | number:0}}</td>
+                                <td>{{vm.selectedDocument.performances.duration.estimateDays.change | number:0}} ({{100 * vm.selectedDocument.performances.duration.estimateDays.changeOnPrevious | number:1}}%)</td>
+                            </tr>
+                            <tr class="text-center">
+                                <th>Actual</th>
+                                <td>{{vm.selectedDocument.performances.duration.actualDays.previous | number:0}}</td>
+                                <td>{{vm.selectedDocument.performances.duration.actualDays.current | number:0}}</td>
+                                <td>{{vm.selectedDocument.performances.duration.actualDays.change | number:0}} ({{100 * vm.selectedDocument.performances.duration.actualDays.changeOnPrevious | number:1}}%)</td>
+                            </tr>
+                            <tr class="text-center text-muted">
+                                <th>Variance</th>
+                                <td>{{vm.selectedDocument.performances.duration.variance.previous | number:0}} ({{100 * vm.selectedDocument.performances.duration.variance.previous | number:1}}%)</td>
+                                <td>{{vm.selectedDocument.performances.duration.variance.current | number:0}} ({{100 * vm.selectedDocument.performances.duration.variance.current | number:1}}%)</td>
+                                <td>{{vm.selectedDocument.performances.duration.variance.change | number:0}} ({{100 * vm.selectedDocument.performances.duration.variance.changeOnPrevious | number:1}}%)</td>
+                            </tr>
+                            <tr><th colspan="4" class="text-center" style="background-color: lightgray">Cost</th></tr>
+                            <tr class="text-center">
+                                <th>Baseline</th>
+                                <td>{{vm.selectedDocument.performances.cost.baseline.previous | number:0}}</td>
+                                <td>{{vm.selectedDocument.performances.cost.baseline.current | number:0}}</td>
+                                <td>{{vm.selectedDocument.performances.cost.baseline.change | number:0}} ({{100 * vm.selectedDocument.performances.cost.baseline.changeOnPrevious | number:1}}%)</td>
+                            </tr>
+                            <tr class="text-center">
+                                <th>Estimate</th>
+                                <td>{{vm.selectedDocument.performances.cost.estimate.previous | number:0}}</td>
+                                <td>{{vm.selectedDocument.performances.cost.estimate.current | number:0}}</td>
+                                <td>{{vm.selectedDocument.performances.cost.estimate.change | number:0}} ({{100 * vm.selectedDocument.performances.cost.estimate.changeOnPrevious | number:1}}%)</td>
+                            </tr>
+                            <tr class="text-center">
+                                <th>Actual</th>
+                                <td>{{vm.selectedDocument.performances.cost.actual.previous | number:0}}</td>
+                                <td>{{vm.selectedDocument.performances.cost.actual.current | number:0}}</td>
+                                <td>{{vm.selectedDocument.performances.cost.actual.change | number:0}} ({{100 * vm.selectedDocument.performances.cost.actual.changeOnPrevious | number:1}}%)</td>
+                            </tr>
+                            <tr class="text-center text-muted">
+                                <th>Variance</th>
+                                <td>{{vm.selectedDocument.performances.cost.variance.previous | number:0}} ({{100 * vm.selectedDocument.performances.cost.variance.previous | number:1}}%)</td>
+                                <td>{{vm.selectedDocument.performances.cost.variance.current | number:0}} ({{100 * vm.selectedDocument.performances.cost.variance.current | number:1}}%)</td>
+                                <td>{{vm.selectedDocument.performances.cost.variance.change | number:0}} ({{100 * vm.selectedDocument.performances.cost.variance.changeOnPrevious | number:1}}%)</td>
+                            </tr>
+                            <tr><th colspan="4" class="text-center" style="background-color: lightgray">Completion</th></tr>
+                            <tr class="text-center">
+                                <th>Baseline</th>
+                                <td>{{vm.selectedDocument.performances.completion.baseline.previous | number:0}}</td>
+                                <td>{{vm.selectedDocument.performances.completion.baseline.current | number:0}}</td>
+                                <td>{{vm.selectedDocument.performances.completion.baseline.change | number:0}} ({{100 * vm.selectedDocument.performances.completion.baseline.changeOnPrevious | number:1}}%)</td>
+                            </tr>
+                            <tr class="text-center">
+                                <th>Estimate</th>
+                                <td>{{vm.selectedDocument.performances.completion.estimate.previous | number:0}}</td>
+                                <td>{{vm.selectedDocument.performances.completion.estimate.current | number:0}}</td>
+                                <td>{{vm.selectedDocument.performances.completion.estimate.change | number:0}} ({{100 * vm.selectedDocument.performances.completion.estimate.changeOnPrevious | number:1}}%)</td>
+                            </tr>
+                            <tr class="text-center">
+                                <th>Actual</th>
+                                <td>{{vm.selectedDocument.performances.completion.actual.previous | number:0}}</td>
+                                <td>{{vm.selectedDocument.performances.completion.actual.current | number:0}}</td>
+                                <td>{{vm.selectedDocument.performances.completion.actual.change | number:0}} ({{100 * vm.selectedDocument.performances.completion.actual.changeOnPrevious | number:1}}%)</td>
+                            </tr>
+                            <tr class="text-center text-muted">
+                                <th>Variance</th>
+                                <td>{{vm.selectedDocument.performances.completion.variance.previous | number:0}} ({{100 * vm.selectedDocument.performances.completion.variance.previous | number:1}}%)</td>
+                                <td>{{vm.selectedDocument.performances.completion.variance.current | number:0}} ({{100 * vm.selectedDocument.performances.completion.variance.current | number:1}}%)</td>
+                                <td>{{vm.selectedDocument.performances.completion.variance.change | number:0}} ({{100 * vm.selectedDocument.performances.completion.variance.changeOnPrevious | number:1}}%)</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </page>
+    </div>
+</section>

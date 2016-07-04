@@ -13,12 +13,16 @@ require('mongoose-multitenant');
  */
 
 var PeopleReviewSchema = new Schema({
-	peopleGroup : {type: Schema.Types.ObjectId, ref: 'PeoplePortfolioGroup', default:null, $tenant:true},
-	peopleRole : {type: Schema.Types.ObjectId, ref: 'PeoplePortfolioRole', default:null, $tenant:true},
-	person : {type: Schema.Types.ObjectId, ref: 'Person', default:null, $tenant:true},
+    peopleGroup : {type: Schema.Types.ObjectId, ref: 'PeoplePortfolioGroup', default:null, $tenant:true},
+    peopleRole : {
+        _id: {type: Schema.Types.ObjectId, ref: 'Portfolio.stakeholders.roles', default:null, $tenant:true},
+        name: {type: String, default: null},
+        description: {type: String, default: null}
+    },
+    person : {type: Schema.Types.ObjectId, ref: 'Person', default:null, $tenant:true},
 
-	comment: {type: String, default: '', trim: true},
-	score : {type: Schema.Types.ObjectId, ref: 'ProjectReviewScore', default:null, $tenant:true},
+    comment: {type: String, default: '', trim: true},
+    score : {type: Schema.Types.ObjectId, ref: 'ProjectReviewScore', default:null, $tenant:true},
     submitted : {type: Boolean, default:false},
 
     created: {type: Date, default: Date.now},
@@ -30,10 +34,8 @@ var PortfolioReviewItemSchema = new Schema({
 	description: {type: String, default: '', trim: true},
 	weight: {type: Number, min: 0, max: 100, default: 0, required: 'Please fill review item weight'},
 
-	peopleReviews : [PeopleReviewSchema],
+    peopleReviews : [PeopleReviewSchema]
 
-	created: {type: Date, default: Date.now},
-	user: {type: Schema.ObjectId, ref: 'User'}
 });
 
 var PortfolioReviewGroupSchema = new Schema({
@@ -42,10 +44,7 @@ var PortfolioReviewGroupSchema = new Schema({
 	weight: {type: Number, min: 0, max: 100, default: 0, required: 'Please fill review group weight'},
 
 	peopleGroups : [{type: Schema.Types.ObjectId, ref: 'PeoplePortfolioGroup', $tenant:true}],
-	items : [PortfolioReviewItemSchema],
-
-	created: {type: Date, default: Date.now},
-	user: {type: Schema.ObjectId, ref: 'User'}
+	items : [PortfolioReviewItemSchema]
 });
 
 /**

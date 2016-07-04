@@ -1,8 +1,8 @@
 'use strict';
 
 angular.module('review-summaries').controller('ReviewSummariesController', ['$rootScope', '$scope', '$stateParams', '$location', 'Authentication',
-	'ReviewSummaries','Projects','Portfolios', 'GateProcesses', '_','$q','$modal',
-	function($rootScope, $scope, $stateParams, $location, Authentication, ReviewSummaries, Projects, Portfolios, GateProcesses, _, $q, $modal) {
+	'ReviewSummaries','Projects','Portfolios', 'GateProcessTemplates', '_','$q','$modal',
+	function($rootScope, $scope, $stateParams, $location, Authentication, ReviewSummaries, Projects, Portfolios, GateProcessTemplates, _, $q, $modal) {
 
 		$rootScope.staticMenu = false;
 
@@ -30,7 +30,7 @@ angular.module('review-summaries').controller('ReviewSummariesController', ['$ro
 				vm.initError.push(err.data.message);
 			});
 
-			GateProcesses.query(function(gateProcesses){
+			GateProcessTemplates.query(function(gateProcesses){
 				vm.gateProcesses = gateProcesses;
 			}, function(err){
 				vm.initError.push(err.data.message);

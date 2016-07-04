@@ -15,7 +15,11 @@ require('mongoose-multitenant');
 
 var PeopleReviewCopySchema = new Schema({
     peopleGroup : {type: Schema.Types.ObjectId, ref: 'PeoplePortfolioGroup', default:null, $tenant:true},
-    peopleRole : {type: Schema.Types.ObjectId, ref: 'PeoplePortfolioRole', default:null, $tenant:true},
+    peopleRole : {
+        _id: {type: Schema.Types.ObjectId, ref: 'Portfolio.stakeholders.roles', default:null, $tenant:true},
+        name: {type: String, default: null},
+        description: {type: String, default: null}
+    },
     person : {type: Schema.Types.ObjectId, ref: 'Person', default:null, $tenant:true},
 
     comment: {type: String, default: '', trim: true},
@@ -31,10 +35,7 @@ var PortfolioReviewItemCopySchema = new Schema({
     description: {type: String, default: '', trim: true},
     weight: {type: Number, min: 0, max: 100, default: 0, required: 'Please fill review item weight'},
 
-    peopleReviews : [PeopleReviewCopySchema],
-
-    created: {type: Date, default: Date.now},
-    user: {type: Schema.ObjectId, ref: 'User'}
+    peopleReviews : [PeopleReviewCopySchema]
 });
 
 var PortfolioReviewGroupCopySchema = new Schema({
@@ -43,10 +44,7 @@ var PortfolioReviewGroupCopySchema = new Schema({
     weight: {type: Number, min: 0, max: 100, default: 0, required: 'Please fill review group weight'},
 
     peopleGroups : [{type: Schema.Types.ObjectId, ref: 'PeoplePortfolioGroup', $tenant:true}],
-    items : [PortfolioReviewItemCopySchema],
-
-    created: {type: Date, default: Date.now},
-    user: {type: Schema.ObjectId, ref: 'User'}
+    items : [PortfolioReviewItemCopySchema]
 });
 
 var approvalRecord = {

@@ -87,7 +87,6 @@ exports.update = function(req, res) {
 exports.delete = function(req, res) {
     var Portfolio = mongoose.mtModel(req.user.tenantId + '.' + 'Portfolio');
     var PeoplePortfolioGroup = mongoose.mtModel(req.user.tenantId + '.' + 'PeoplePortfolioGroup');
-	var PeoplePortfolioRole = mongoose.mtModel(req.user.tenantId + '.' + 'PeoplePortfolioRole');
 	var peoplePortfolioGroup = req.peoplePortfolioGroup ;
 
     async.series([
@@ -96,15 +95,6 @@ exports.delete = function(req, res) {
             peoplePortfolioGroup.remove(function(err){
                 callback(err);
             });
-        },
-        // ROLES: Delete all roles (from "people-portfolio-roles" collection) belonging to this Group
-        function(callback){
-            async.each(peoplePortfolioGroup.roles, function(item, callback){
-                PeoplePortfolioRole.findByIdAndRemove(item._id, function(err){
-                    if(err){callback(err);} else {callback();}
-                });
-            });
-            callback(null);
         },
         // PORTFOLIOS: Delete group object from portfolio.stakeholders
         function(callback){
@@ -145,7 +135,7 @@ exports.delete = function(req, res) {
  */
 exports.list = function(req, res) {
 	var PeoplePortfolioGroup = mongoose.mtModel(req.user.tenantId + '.' + 'PeoplePortfolioGroup');
-	PeoplePortfolioGroup.find().deepPopulate(['roles']).sort('-created').populate('user', 'displayName').exec(function(err, peoplePortfolioGroups) {
+	PeoplePortfolioGroup.find().populate('user', 'displayName').exec(function(err, peoplePortfolioGroups) {
 		if (err) {
 			return res.status(400).send({
 				message: errorHandler.getErrorMessage(err)
@@ -161,7 +151,7 @@ exports.list = function(req, res) {
  */
 exports.peoplePortfolioGroupByID = function(req, res, next, id) {
 	var PeoplePortfolioGroup = mongoose.mtModel(req.user.tenantId + '.' + 'PeoplePortfolioGroup');
-	PeoplePortfolioGroup.findById(id).deepPopulate(['roles']).populate('user', 'displayName').exec(function(err, peoplePortfolioGroup) {
+	PeoplePortfolioGroup.findById(id).populate('user', 'displayName').exec(function(err, peoplePortfolioGroup) {
 		if (err) return next(err);
 		if (! peoplePortfolioGroup) return next(new Error('Failed to load People Portfolio group ' + id));
 		req.peoplePortfolioGroup = peoplePortfolioGroup ;

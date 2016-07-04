@@ -14,10 +14,15 @@ module.exports = function(app) {
 		.put(users.requiresLogin, portfolios.hasEditAuthorization, portfolios.update)
 		.delete(users.requiresLogin, portfolios.hasEditAuthorization, portfolios.delete);
 
-	// Stakeholders
-	app.route('/portfolios/:portfolioId/stakeholders/:assignedGroupId/:assignedRoleId')
-		.put(users.requiresLogin, portfolios.hasEditAuthorization, portfolios.updatePeopleAssignment);
+    // Stakeholders
+    app.route('/portfolios/:portfolioId/stakeholders/:assignedGroupId/assignedRoles')
+        .post(users.requiresLogin, portfolios.hasEditAuthorization, portfolios.createAssignedRole);
 
-	// Finish by binding the Portfolio middleware
+    app.route('/portfolios/:portfolioId/stakeholders/:assignedGroupId/assignedRoles/:assignedRoleId')
+        .put(users.requiresLogin, portfolios.hasEditAuthorization, portfolios.updateAssignedRole)
+        .delete(users.requiresLogin, portfolios.hasEditAuthorization, portfolios.deleteAssignedRole);
+
+
+    // Finish by binding the Portfolio middleware
 	app.param('portfolioId', portfolios.portfolioByID);
 };

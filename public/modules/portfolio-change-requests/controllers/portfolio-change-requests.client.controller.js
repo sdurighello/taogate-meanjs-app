@@ -1,10 +1,10 @@
 'use strict';
 
 angular.module('portfolio-change-requests').controller('PortfolioChangeRequestsController', ['$rootScope', '$scope', '$stateParams', '$location', '$q', '_', 'Authentication',
-	'Portfolios', 'PortfolioTypes', 'Projects', 'ProjectChangeRequests', 'PortfolioChangeRequests', 'GateProcesses', 'LogReasons', 'ChangeRequestStates', 'LogPriorities', 'LogStatusIndicators',
+	'Portfolios', 'PortfolioTypes', 'Projects', 'PortfolioChangeRequests', 'GateProcessTemplates', 'LogReasons', 'ChangeRequestStates', 'LogPriorities', 'LogStatusIndicators',
 	'People', '$modal', '$log',
 	function($rootScope, $scope, $stateParams, $location, $q, _, Authentication,
-			 Portfolios, PortfolioTypes, Projects, ProjectChangeRequests, PortfolioChangeRequests, GateProcesses, LogReasons, ChangeRequestStates, LogPriorities, LogStatusIndicators, People, $modal, $log) {
+			 Portfolios, PortfolioTypes, Projects, PortfolioChangeRequests, GateProcessTemplates, LogReasons, ChangeRequestStates, LogPriorities, LogStatusIndicators, People, $modal, $log) {
 
         $rootScope.staticMenu = false;
 
@@ -20,8 +20,8 @@ angular.module('portfolio-change-requests').controller('PortfolioChangeRequestsC
 
             vm.user = Authentication.user;
 
-			Projects.query({'selection.selectedForDelivery': true}, function(projects){
-				vm.projects = _.filter(projects, function(project){return project.process !== null;});
+			Projects.query({'selection.active': true, 'selection.selectedForDelivery': true, 'process.assignmentConfirmed': true}, function(res){
+				vm.projects = res;
 			}, function(err){
 				vm.initError.push(err.data.message);
 			});
@@ -39,7 +39,7 @@ angular.module('portfolio-change-requests').controller('PortfolioChangeRequestsC
                 vm.initError.push(err.data.message);
             });
 
-			GateProcesses.query(function(gateProcesses){
+			GateProcessTemplates.query(function(gateProcesses){
 				vm.gateProcesses = gateProcesses;
 			}, function(err){
 				vm.initError.push(err.data.message);
@@ -166,7 +166,7 @@ angular.module('portfolio-change-requests').controller('PortfolioChangeRequestsC
         vm.calculateTotalCRBudget = function(){
             if(vm.selectedPortfolioChangeRequest){
                 return _.reduce(vm.selectedPortfolioChangeRequest.associatedProjectChangeRequests, function(sum, request){
-                    return sum + request.gateAssignmentReview.budgetChange;
+                    return sum + request.budgetReview.budgetChange;
                 }, 0);
             } else {
                 return 0;
@@ -187,6 +187,8 @@ angular.module('portfolio-change-requests').controller('PortfolioChangeRequestsC
 		// ------------------- OTHER VARIABLES ---------------------
 
 		vm.portfolioChangeRequestDetails = 'header';
+        
+        vm.associatedChangeRequestDetails = 'associated';
 
 		// ------------- SELECT VIEW PORTFOLIO ------------
 
@@ -255,7 +257,8 @@ angular.module('portfolio-change-requests').controller('PortfolioChangeRequestsC
                 vm.portfolioChangeRequests.push(res);
 				// Select in view mode the new review
 				vm.selectPortfolioChangeRequest(portfolio, res);
-				// Close new review form done directly in the view's html
+				// Close new review form
+                vm.showNewPortfolioChangeRequestForm = false;
 			}, function(err) {
                 vm.isResolving = false;
 				vm.error = err.data.message;
@@ -265,6 +268,7 @@ angular.module('portfolio-change-requests').controller('PortfolioChangeRequestsC
 		vm.cancelNewPortfolioChangeRequest = function(){
             vm.error = null;
 			vm.newPortfolioChangeRequest = {};
+            vm.showNewPortfolioChangeRequestForm = false;
 		};
 
 
@@ -283,7 +287,7 @@ angular.module('portfolio-change-requests').controller('PortfolioChangeRequestsC
                 PortfolioChangeRequests.getAvailableProjectChangeRequests(
                     { portfolioId : portfolio._id, portfolioChangeRequestId: portfolioChangeRequest._id }).$promise,
                 Projects.query(
-                    { portfolio : portfolio._id }).$promise
+                    { portfolio : portfolio._id, 'selection.active': true, 'selection.selectedForDelivery': true, 'process.assignmentConfirmed': true }).$promise
             ]).then(function(data) {
                 vm.isResolving = false;
                 portfolioChangeRequestFromList[portfolioChangeRequest._id] = portfolioChangeRequest;
@@ -502,12 +506,8 @@ angular.module('portfolio-change-requests').controller('PortfolioChangeRequestsC
                 },
                 size: size,
                 resolve: {
-                    change: function (ProjectChangeRequests) {
-                        return ProjectChangeRequests.get(
-                            { projectChangeRequestId:change._id },
-                            function(res){ return res; },
-                            function(err){ return err; }
-                        );
+                    change: function () {
+                        return change;
                     },
                     logReasons: function () {
                         return logReasons;
@@ -537,7 +537,7 @@ angular.module('portfolio-change-requests').controller('PortfolioChangeRequestsC
             PortfolioChangeRequests.addProjectChangeRequest({
                 portfolioChangeRequestId : portfolioChange._id,
                 projectChangeRequestId : projectChange._id
-            }, portfolioChange, function(res){
+            }, projectChange, function(res){
                 vm.isResolving = false;
                 portfolioChange.associatedProjectChangeRequests.push(projectChange);
                 vm.availableProjectChangeRequests = _.without(vm.availableProjectChangeRequests, projectChange);
@@ -553,7 +553,7 @@ angular.module('portfolio-change-requests').controller('PortfolioChangeRequestsC
             PortfolioChangeRequests.removeProjectChangeRequest({
                 portfolioChangeRequestId : portfolioChange._id,
                 projectChangeRequestId : projectChange._id
-            }, portfolioChange, function(res){
+            }, projectChange, function(res){
                 vm.isResolving = false;
                 portfolioChange.associatedProjectChangeRequests = _.without(portfolioChange.associatedProjectChangeRequests, projectChange);
                 vm.availableProjectChangeRequests.push(projectChange);

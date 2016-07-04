@@ -197,7 +197,6 @@ exports.availableProjectMilestones = function(req, res) {
         }
     });
 
-
 };
 
 
@@ -215,6 +214,7 @@ exports.addProjectMilestone = function(req, res) {
             res.jsonp(portfolioMilestone);
         }
     });
+
 
 };
 
@@ -242,9 +242,7 @@ exports.removeProjectMilestone = function(req, res) {
  */
 exports.portfolioMilestoneByID = function(req, res, next, id) {
     var PortfolioMilestone = mongoose.mtModel(req.user.tenantId + '.' + 'PortfolioMilestone');
-    PortfolioMilestone.findById(id).deepPopulate([
-        'associatedProjectMilestones'
-    ]).populate('user', 'displayName').exec(function(err, portfolioMilestone) {
+    PortfolioMilestone.findById(id).populate('user', 'displayName').populate('associatedProjectMilestones').exec(function(err, portfolioMilestone) {
 		if (err) return next(err);
 		if (! portfolioMilestone) return next(new Error('Failed to load Portfolio milestone ' + id));
 		req.portfolioMilestone = portfolioMilestone ;

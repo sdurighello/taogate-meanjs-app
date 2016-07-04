@@ -9,10 +9,7 @@ var mongoose = require('mongoose'),
 	_ = require('lodash');
 
 
-
-/**
- * Create a Project
- */
+/* PROJECT */
 
 exports.create = function(req, res) {
     require('./projects/projects.create.server.controller').create(req.user, req.body, function (err, project) {
@@ -26,17 +23,10 @@ exports.create = function(req, res) {
     });
 };
 
-/**
- * Show the current Project
- */
 exports.read = function(req, res) {
 	res.jsonp(req.project);
 };
 
-
-/**
- * Update a Project
- */
 exports.update = function(req, res) {
 	var project = req.project ;
     project.user = req.user;
@@ -55,23 +45,13 @@ exports.update = function(req, res) {
 	});
 };
 
-
-/**
- * Delete a Project
- */
-
 exports.delete = require('./projects/projects.delete.server.controller').delete;
-
-
-/**
- * List of Projects
- */
 
 exports.list = function(req, res) {
 
     var Project = mongoose.mtModel(req.user.tenantId + '.' + 'Project');
 
-    Project.find(req.query).deepPopulate(['process.gates', 'portfolio']).populate('user', 'displayName').exec(function(err, projects) {
+    Project.find(req.query).populate('portfolio').populate('user', 'displayName').exec(function(err, projects) {
         if (err) {
             return res.status(400).send({
                 message: errorHandler.getErrorMessage(err)
@@ -100,19 +80,179 @@ exports.updateImpactAssignment = require('./projects/projects.qualitativeAnalysi
 
 exports.updateRiskAssignment = require('./projects/projects.riskAnalysis.server.controller').updateRiskAssignment;
 
-exports.updatePeopleAssignment = require('./projects/projects.stakeholderAnalysis.server.controller').updatePeopleAssignment;
 
-// ------------------------------ DELIVERY ------------------------------
+exports.createAssignedRole = require('./projects/projects.stakeholderAnalysis.server.controller').createAssignedRole;
 
-exports.updateProcessAssignment = require('./projects/projects.gateProcess.server.controller').updateProcessAssignment;
+exports.updateAssignedRole = require('./projects/projects.stakeholderAnalysis.server.controller').updateAssignedRole;
 
-
-// -----------------------------------------------------------------------
+exports.deleteAssignedRole = require('./projects/projects.stakeholderAnalysis.server.controller').deleteAssignedRole;
 
 
-/**
- * Project middleware
- */
+// ------------------------------ PROCESS ASSIGNMENT ------------------------------
+
+exports.confirmAssignment = require('./projects/projects.gateProcess.server.controller').confirmAssignment;
+
+exports.customAssignment = require('./projects/projects.gateProcess.server.controller').customAssignment;
+
+exports.standardAssignment = require('./projects/projects.gateProcess.server.controller').standardAssignment;
+
+exports.removeAssignment = require('./projects/projects.gateProcess.server.controller').removeAssignment;
+
+
+exports.updateProcess = require('./projects/projects.gateProcess.server.controller').updateProcess;
+
+
+exports.createGate = require('./projects/projects.gateProcess.server.controller').createGate;
+
+exports.updateGateHeader = require('./projects/projects.gateProcess.server.controller').updateGateHeader;
+
+exports.updateGatePosition = require('./projects/projects.gateProcess.server.controller').updateGatePosition;
+
+exports.deleteGate = require('./projects/projects.gateProcess.server.controller').deleteGate;
+
+
+exports.createOutcome = require('./projects/projects.gateProcess.server.controller').createOutcome;
+
+exports.updateOutcome = require('./projects/projects.gateProcess.server.controller').updateOutcome;
+
+exports.deleteOutcome = require('./projects/projects.gateProcess.server.controller').deleteOutcome;
+
+
+exports.submitProcess = require('./projects/projects.gateProcess.server.controller').submitProcess;
+
+exports.approveProcess = require('./projects/projects.gateProcess.server.controller').approveProcess;
+
+exports.rejectProcess = require('./projects/projects.gateProcess.server.controller').rejectProcess;
+
+exports.draftProcess = require('./projects/projects.gateProcess.server.controller').draftProcess;
+
+
+// ------------------------------ GATE REVIEWS ------------------------------
+
+exports.createGateReview = require('./projects/projects.gateReviews.server.controller').createGateReview;
+
+exports.deleteGateReview = require('./projects/projects.gateReviews.server.controller').deleteGateReview;
+
+
+exports.updateGateReviewHeader = require('./projects/projects.gateReviews.server.controller').updateGateReviewHeader;
+
+exports.updateGateStateReview = require('./projects/projects.gateReviews.server.controller').updateGateStateReview;
+
+exports.updateGateBudgetReview = require('./projects/projects.gateReviews.server.controller').updateGateBudgetReview;
+
+
+exports.updateOutcomeScoreReview = require('./projects/projects.gateReviews.server.controller').updateOutcomeScoreReview;
+
+
+exports.updateActualCompletionReview = require('./projects/projects.gateReviews.server.controller').updateActualCompletionReview;
+
+exports.updateActualCostReview = require('./projects/projects.gateReviews.server.controller').updateActualCostReview;
+
+exports.updateActualDurationReview = require('./projects/projects.gateReviews.server.controller').updateActualDurationReview;
+
+
+exports.updateEstimateCompletionReview = require('./projects/projects.gateReviews.server.controller').updateEstimateCompletionReview;
+
+exports.updateEstimateCostReview = require('./projects/projects.gateReviews.server.controller').updateEstimateCostReview;
+
+exports.updateEstimateDurationReview = require('./projects/projects.gateReviews.server.controller').updateEstimateDurationReview;
+
+
+exports.updateBaselineCompletionReview = require('./projects/projects.gateReviews.server.controller').updateBaselineCompletionReview;
+
+exports.updateBaselineCostReview = require('./projects/projects.gateReviews.server.controller').updateBaselineCostReview;
+
+exports.updateBaselineDurationReview = require('./projects/projects.gateReviews.server.controller').updateBaselineDurationReview;
+
+
+exports.submitGateReview = require('./projects/projects.gateReviews.server.controller').submitGateReview;
+
+exports.approveGateReview = require('./projects/projects.gateReviews.server.controller').approveGateReview;
+
+exports.rejectGateReview = require('./projects/projects.gateReviews.server.controller').rejectGateReview;
+
+exports.draftGateReview = require('./projects/projects.gateReviews.server.controller').draftGateReview;
+
+
+// ------------------------------ CHANGE REQUESTS ------------------------------
+
+exports.createChangeRequest = require('./projects/projects.changeRequests.server.controller').createChangeRequest;
+
+exports.deleteChangeRequest = require('./projects/projects.changeRequests.server.controller').deleteChangeRequest;
+
+
+exports.updateChangeRequestHeader = require('./projects/projects.changeRequests.server.controller').updateChangeRequestHeader;
+
+exports.updateChangeRequestStatus = require('./projects/projects.changeRequests.server.controller').updateChangeRequestStatus;
+
+exports.updateGateBudgetReviewForCR = require('./projects/projects.changeRequests.server.controller').updateGateBudgetReviewForCR;
+
+
+exports.updateActualCompletionReviewForCR = require('./projects/projects.changeRequests.server.controller').updateActualCompletionReviewForCR;
+
+exports.updateActualCostReviewForCR = require('./projects/projects.changeRequests.server.controller').updateActualCostReviewForCR;
+
+exports.updateActualDurationReviewForCR = require('./projects/projects.changeRequests.server.controller').updateActualDurationReviewForCR;
+
+
+exports.updateBaselineCompletionReviewForCR = require('./projects/projects.changeRequests.server.controller').updateBaselineCompletionReviewForCR;
+
+exports.updateBaselineCostReviewForCR = require('./projects/projects.changeRequests.server.controller').updateBaselineCostReviewForCR;
+
+exports.updateBaselineDurationReviewForCR = require('./projects/projects.changeRequests.server.controller').updateBaselineDurationReviewForCR;
+
+
+exports.submitChangeRequest = require('./projects/projects.changeRequests.server.controller').submitChangeRequest;
+
+exports.approveChangeRequest = require('./projects/projects.changeRequests.server.controller').approveChangeRequest;
+
+exports.rejectChangeRequest = require('./projects/projects.changeRequests.server.controller').rejectChangeRequest;
+
+exports.draftChangeRequest = require('./projects/projects.changeRequests.server.controller').draftChangeRequest;
+
+
+// ------------------------------ PROJECT STATUS UPDATES ------------------------------
+
+exports.createStatusUpdate = require('./projects/projects.statusUpdates.server.controller').createStatusUpdate;
+
+exports.deleteStatusUpdate = require('./projects/projects.statusUpdates.server.controller').deleteStatusUpdate;
+
+// Header
+
+exports.updateStatusUpdateHeader = require('./projects/projects.statusUpdates.server.controller').updateStatusUpdateHeader;
+
+// Delivery Status
+
+exports.updateOverallDeliveryStatus = require('./projects/projects.statusUpdates.server.controller').updateOverallDeliveryStatus;
+
+// Status Areas
+
+exports.updateStatusAreaReview = require('./projects/projects.statusUpdates.server.controller').updateStatusAreaReview;
+
+// Outcome Status
+
+exports.updateOutcomeStatusReview = require('./projects/projects.statusUpdates.server.controller').updateOutcomeStatusReview;
+
+// Estimates
+
+exports.updateEstimateCompletionReviewForSU = require('./projects/projects.statusUpdates.server.controller').updateEstimateCompletionReviewForSU;
+
+exports.updateEstimateCostReviewForSU = require('./projects/projects.statusUpdates.server.controller').updateEstimateCostReviewForSU;
+
+exports.updateEstimateDurationReviewForSU = require('./projects/projects.statusUpdates.server.controller').updateEstimateDurationReviewForSU;
+
+// Approval
+
+exports.submitStatusUpdate = require('./projects/projects.statusUpdates.server.controller').submitStatusUpdate;
+
+exports.approveStatusUpdate = require('./projects/projects.statusUpdates.server.controller').approveStatusUpdate;
+
+exports.rejectStatusUpdate = require('./projects/projects.statusUpdates.server.controller').rejectStatusUpdate;
+
+exports.draftStatusUpdate = require('./projects/projects.statusUpdates.server.controller').draftStatusUpdate;
+
+
+// ------------------------ MIDDLEWARE -----------------------------
 
 exports.projectByID = function(req, res, next, id) {
     var Project = mongoose.mtModel(req.user.tenantId + '.' + 'Project');
@@ -137,9 +277,7 @@ exports.projectByID = function(req, res, next, id) {
 
 };
 
-/**
- * Project authorization middleware
- */
+// ------------------------ AUTHORIZATION -----------------------------
 
 exports.hasCreateAuthorization = function(req, res, next) {
     if(!_.find(req.user.roles, function(role){
@@ -206,6 +344,7 @@ exports.hasEditAuthorization = function(req, res, next) {
     });
 };
 
+// Portfolio assignment
 exports.hasAssignmentAuthorization = function(req, res, next) {
     var Portfolio = mongoose.mtModel(req.user.tenantId + '.' + 'Portfolio');
 
@@ -316,4 +455,23 @@ exports.hasAssignmentAuthorization = function(req, res, next) {
         }
         next();
     });
+};
+
+// Gate Reviews approval
+exports.hasApproveAuthorization = function(req, res, next){
+    next();
+};
+
+// Editable Objects
+
+exports.isGateReviewEditable = function(req, res, next){
+    next();
+};
+
+exports.isChangeRequestEditable = function(req, res, next){
+    next();
+};
+
+exports.isStatusUpdateEditable = function(req, res, next){
+    next();
 };

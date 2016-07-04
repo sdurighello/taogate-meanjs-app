@@ -1,8 +1,8 @@
 'use strict';
 
 angular.module('category-assignment').controller('CategoryAssignmentController', ['$rootScope', '$scope','$stateParams', '$location', 'Authentication',
-	'Projects','Portfolios', 'GateProcesses', 'CategoryGroups', 'Categories', 'CategoryValues', '_','$q',
-	function($rootScope, $scope, $stateParams, $location, Authentication, Projects, Portfolios, GateProcesses, CategoryGroups, Categories, CategoryValues, _ , $q) {
+	'Projects','Portfolios', 'GateProcessTemplates', 'CategoryGroups', 'Categories', 'CategoryValues', '_','$q',
+	function($rootScope, $scope, $stateParams, $location, Authentication, Projects, Portfolios, GateProcessTemplates, CategoryGroups, Categories, CategoryValues, _ , $q) {
 
 		$rootScope.staticMenu = false;
 
@@ -26,7 +26,7 @@ angular.module('category-assignment').controller('CategoryAssignmentController',
 				$scope.initError.push(err.data.message);
 			});
 
-            GateProcesses.query(function(res){
+            GateProcessTemplates.query(function(res){
                 $scope.gateProcesses = res;
             }, function(err){
                 $scope.initError.push(err.data.message);

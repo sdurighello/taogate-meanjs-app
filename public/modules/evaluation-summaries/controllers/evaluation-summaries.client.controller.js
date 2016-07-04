@@ -1,8 +1,8 @@
 'use strict';
 
 angular.module('evaluation-summaries').controller('EvaluationSummaryController', ['$rootScope', '$scope', '$stateParams', '$location', 'Authentication',
-	'EvaluationSummaries', 'QualitativeImpactScores','RiskSeverities','Risks','Projects','Portfolios', 'GateProcesses', '_','$q','$modal',
-	function($rootScope, $scope, $stateParams, $location, Authentication, EvaluationSummaries, QualitativeImpactScores, RiskSeverities, Risks, Projects, Portfolios, GateProcesses, _, $q, $modal) {
+	'EvaluationSummaries', 'QualitativeImpactScores','RiskSeverities','Risks','Projects','Portfolios', 'GateProcessTemplates', '_','$q','$modal',
+	function($rootScope, $scope, $stateParams, $location, Authentication, EvaluationSummaries, QualitativeImpactScores, RiskSeverities, Risks, Projects, Portfolios, GateProcessTemplates, _, $q, $modal) {
 
         $rootScope.staticMenu = false;
 
@@ -29,7 +29,7 @@ angular.module('evaluation-summaries').controller('EvaluationSummaryController',
 				vm.initError.push(err.data.message);
 			});
 
-			GateProcesses.query(function(gateProcesses){
+			GateProcessTemplates.query(function(gateProcesses){
 				vm.gateProcesses = gateProcesses;
 			}, function(err){
 				vm.initError.push(err.data.message);

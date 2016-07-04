@@ -125,75 +125,6 @@ exports.updateStatus = function(req, res) {
     });
 };
 
-exports.milestonesForProject = function(req, res) {
-
-    var ProjectMilestone = mongoose.mtModel(req.user.tenantId + '.' + 'ProjectMilestone');
-    var Project = mongoose.mtModel(req.user.tenantId + '.' + 'Project');
-
-    async.waterfall([
-        // Get the project and populate its process's gates
-        function(callback) {
-            Project.findById(req.query.project).deepPopulate(['process.gates']).exec(function(err, project){
-                if(err){
-                    return callback(err);
-                }
-                if(!project){
-                    return callback(new Error('Failed to load project ' + req.query.project));
-                }
-                callback(null, project);
-            });
-        },
-        // Get all the milestones for that project
-        function(project, callback) {
-            ProjectMilestone.find(req.query).populate('user', 'displayName').exec(function(err, milestones) {
-                if (err) {
-                    return callback(err);
-                }
-                if(!milestones){
-                    return callback(new Error('Failed to load milestone for project ' + project._id));
-                }
-                callback(null, project, milestones);
-            });
-        },
-        // Create the projectMilestoneList array
-        function(project, milestones, callback) {
-
-            var projectMilestoneList = _.chain(project.process.gates)
-                .map(function (gate) {
-                    return {
-                        gate: gate,
-                        projectMilestones: _.filter(milestones, function(milestone){
-                            return milestone.gate.equals(gate._id);
-                        })
-                    };
-                })
-                .value();
-
-            callback(null, projectMilestoneList);
-        },
-        // Sort by gate position (since lodash sortBy in the chain doesn't seem to work ...
-        function(projectMilestoneList, callback) {
-
-            async.sortBy(projectMilestoneList, function(reviewObj, callback){
-                callback(null, reviewObj.gate.position);
-            }, function(err, projectMilestoneList){
-                if(err){
-                    return callback(err);
-                }
-                callback(null, projectMilestoneList);
-            });
-        }
-    ], function (err, projectMilestoneList) {
-        if (err) {
-            return res.status(400).send({
-                message: errorHandler.getErrorMessage(err)
-            });
-        } else {
-            res.jsonp(projectMilestoneList);
-        }
-    });
-};
-
 
 /**
  * Delete an Project milestone
@@ -217,6 +148,7 @@ exports.delete = function(req, res) {
  */
 exports.list = function(req, res) {
     var ProjectMilestone = mongoose.mtModel(req.user.tenantId + '.' + 'ProjectMilestone');
+
     ProjectMilestone.find(req.query).populate('user', 'displayName').exec(function(err, projectMilestones) {
 		if (err) {
 			return res.status(400).send({

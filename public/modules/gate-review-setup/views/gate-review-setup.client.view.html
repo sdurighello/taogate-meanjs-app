@@ -2,7 +2,7 @@
 	<br>
 	<div class="row">
 		<div class="col-sm-12">
-			<div class="panel-heading">
+			<div class="panel-heading" style="padding: 0">
 				<ol class="breadcrumb">
 					<li>Setup</li>
 					<li>Portfolio delivery</li>
@@ -105,23 +105,23 @@
 						</div>
 					</div>
 				</tab>
-				<tab heading="Gate statuses">
+				<tab heading="Gate states">
 					<br>
 					<div class="row" ng-show="userHasAuthorization">
 						<div class="col-md-3">
 							<br>
 							<button class="btn btn-primary"
 									ng-click="createStatus()">
-								New status
+								New state
 							</button>
 						</div>
 					</div>
 					<hr>
 					<div class="row">
-						<div class="alert alert-warning text-center" data-ng-hide="gateStatuses.length">
-							No gate statuses yet
+						<div class="alert alert-warning text-center" data-ng-hide="gateStates.length">
+							No gate states yet
 						</div>
-						<div class="col-md-4" data-ng-repeat="status in gateStatuses" data-ng-switch="switchStatusForm[status._id]" >
+						<div class="col-md-4" data-ng-repeat="status in gateStates" data-ng-switch="switchStatusForm[status._id]" >
 							<div class="panel panel-default" title="Last updated on {{status.created | date:'medium'}} by {{status.user.displayName}}">
 								<div class="panel-heading">
                                     <h6 class="panel-title text-center" data-ng-bind="status.name"></h6>

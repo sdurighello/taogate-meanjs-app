@@ -1,8 +1,8 @@
 'use strict';
 
 angular.module('gate-review-setup').controller('GateReviewSetupController', ['$rootScope', '$scope','$stateParams', '$location', 'Authentication',
-	'GateOutcomeScores','GateStatuses','_','$q',
-	function($rootScope, $scope, $stateParams, $location, Authentication, GateOutcomeScores, GateStatuses, _ , $q) {
+	'GateOutcomeScores','GateStates','_','$q',
+	function($rootScope, $scope, $stateParams, $location, Authentication, GateOutcomeScores, GateStates, _ , $q) {
 
         $rootScope.staticMenu = false;
 
@@ -16,8 +16,8 @@ angular.module('gate-review-setup').controller('GateReviewSetupController', ['$r
             }, function(err){
                 $scope.initError.push(err.data.message);
             });
-            GateStatuses.query(function(statuses){
-                $scope.gateStatuses = statuses;
+            GateStates.query(function(states){
+                $scope.gateStates = states;
             }, function(err){
                 $scope.initError.push(err.data.message);
             });
@@ -109,7 +109,7 @@ angular.module('gate-review-setup').controller('GateReviewSetupController', ['$r
 
 
 
-// ----------------------------------------------- GATE STATUSES ---------------------------------------
+// ----------------------------------------------- GATE STATES ---------------------------------------
 
 
 
@@ -127,8 +127,8 @@ angular.module('gate-review-setup').controller('GateReviewSetupController', ['$r
 
         $scope.findStatuses = function() {
             $scope.initError = [];
-            GateStatuses.query(function(statuses){
-                $scope.gateStatuses = _.clone(statuses);
+            GateStates.query(function(states){
+                $scope.gateStates = _.clone(states);
             }, function(err){
                 $scope.initError.push(err.data.message);
             });
@@ -167,8 +167,8 @@ angular.module('gate-review-setup').controller('GateReviewSetupController', ['$r
         // ------------------- NEW -----------------
 
         $scope.createStatus = function() {
-            var gateStatus = new GateStatuses ({
-                name: 'New gate status'
+            var gateStatus = new GateStates ({
+                name: 'New gate state'
             });
             gateStatus.$save(function(response) {
                 $scope.findStatuses();

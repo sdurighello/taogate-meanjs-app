@@ -2,7 +2,7 @@
     <br>
     <div class="row">
         <div class="col-sm-12">
-            <div class="panel-heading">
+            <div class="panel-heading" style="padding: 0">
                 <ol class="breadcrumb">
                     <li>Portfolio evaluation</li>
                     <li>Dependencies</li>
@@ -64,26 +64,26 @@
         <div class="col-sm-9">
             <div class="row">
                 <div class="col-md-12">
-                    <div data-ng-show="false" class="alert alert-warning text-center">
+                    <div data-ng-show="vm.isPortfolioSelectionEmpty()" class="alert alert-warning text-center">
                         <span>Select one or more portfolios to see the dependencies</span>
                     </div>
                 </div>
             </div>
-            <div class="row" data-ng-show="true">
+            <div class="row" data-ng-show="!vm.isPortfolioSelectionEmpty()">
                 <div class="col-md-12">
                     <div class="panel panel-default">
                         <div class="panel-heading">
                             <h6 class="panel-title text-center">Portfolio dependencies</h6>
                         </div>
                         <div class="panel-body" style="min-height: 545px;  max-height: 545px; overflow-y: auto; overflow-x: auto">
-                            <div class="row" data-ng-show="false">
+                            <div class="row" data-ng-show="!vm.dependenciesForGraphObject.nodes.length">
                                 <div class="col-md-12">
                                     <div class="alert alert-warning text-center">
                                         <span>No dependencies</span>
                                     </div>
                                 </div>
                             </div>
-                            <div class="row" style="min-height: 325px; overflow-y: auto" data-ng-show="true">
+                            <div class="row" style="min-height: 325px; overflow-y: auto" data-ng-show="vm.dependenciesForGraphObject.nodes.length">
                                 <div class="col-md-12">
                                     <graph data="vm.dependenciesForGraphObject" select-node="vm.selectNode" select-link="vm.selectLink" width="800" height="700"></graph>
                                 </div>

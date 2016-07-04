@@ -1,9 +1,9 @@
 'use strict';
 
 angular.module('people-portfolio-analysis').controller('PeoplePortfolioAnalysisController', ['$rootScope', '$scope','$stateParams', '$location', 'Authentication',
-	'Portfolios','PeoplePortfolioGroups', 'PeoplePortfolioRoles', 'PeopleCategories','PeopleCategoryValues', 'People', '_','$q',
+	'Portfolios','PeoplePortfolioGroups', 'PeopleCategories','PeopleCategoryValues', 'People', '_','$q',
 	function($rootScope, $scope, $stateParams, $location, Authentication, Portfolios,
-			 PeoplePortfolioGroups, PeoplePortfolioRoles, PeopleCategories, PeopleCategoryValues, People, _ , $q) {
+			 PeoplePortfolioGroups, PeopleCategories, PeopleCategoryValues, People, _ , $q) {
 
 		$rootScope.staticMenu = false;
 
@@ -24,12 +24,6 @@ angular.module('people-portfolio-analysis').controller('PeoplePortfolioAnalysisC
 
 			PeoplePortfolioGroups.query(function(groups){
 				$scope.groups = groups;
-			}, function(err){
-				$scope.initError.push(err.data.message);
-			});
-
-			PeoplePortfolioRoles.query(function(roles){
-				$scope.roles = roles;
 			}, function(err){
 				$scope.initError.push(err.data.message);
 			});
@@ -152,7 +146,7 @@ angular.module('people-portfolio-analysis').controller('PeoplePortfolioAnalysisC
 				retPropertiesString : 'user created name parent ancestors type portfolioManager backupPortfolioManager stakeholders',
 				deepPopulateArray : [
 					'parent','type','portfolioManager','backupPortfolioManager',
-                    'stakeholders.group','stakeholders.roles.role','stakeholders.roles.categorization.category.categoryValues'
+                    'stakeholders.group','stakeholders.roles.categorization.category.categoryValues'
 				]
 			}, function(res){
 				$scope.selectedPortfolio = res;
@@ -168,6 +162,21 @@ angular.module('people-portfolio-analysis').controller('PeoplePortfolioAnalysisC
 		};
 
 
+        // ------------- CREATE ROLE ASSIGNMENT ---------
+
+        $scope.createAssignedRole = function(portfolio, assignedGroup){
+
+            Portfolios.createAssignedRole({
+                portfolioId: portfolio._id,
+                assignedGroupId: assignedGroup._id
+            },{}, function(res){
+                assignedGroup.roles.push(res);
+            }, function(err){
+                $scope.error = err.data.message;
+            });
+        };
+        
+
 		// ------------- SELECT ROLE ASSIGNMENT ---------
 
 		$scope.selectRoleAssignment = function(assignedRole){
@@ -178,7 +187,7 @@ angular.module('people-portfolio-analysis').controller('PeoplePortfolioAnalysisC
 
 		// ------------- EDIT ROLE ASSIGNMENT ---------
 
-		$scope.saveAssignedRole = function(portfolio, assignedGroup, assignedRole){
+		$scope.saveEditAssignedRole = function(portfolio, assignedGroup, assignedRole){
 			// Clean deepPopulate
 			var copyAssignedRole = _.cloneDeep(assignedRole);
 			copyAssignedRole.role = copyAssignedRole.role._id;
@@ -187,7 +196,7 @@ angular.module('people-portfolio-analysis').controller('PeoplePortfolioAnalysisC
 				return assignedCategory;
 			});
 			// url: 'portfolios/:portfolioId/stakeholders/:assignedGroupId/:assignedRoleId'
-			Portfolios.updatePeopleAssignment(
+			Portfolios.updateAssignedRole(
 				{
 					portfolioId: portfolio._id,
 					assignedGroupId: assignedGroup._id,
@@ -201,11 +210,27 @@ angular.module('people-portfolio-analysis').controller('PeoplePortfolioAnalysisC
 		};
 
 		$scope.cancelEditAssignedRole = function(assignedRole){
+            assignedRole.role = originalRoleAssignment[assignedRole._id].role;
 			assignedRole.person = originalRoleAssignment[assignedRole._id].person;
 			assignedRole.categorization = originalRoleAssignment[assignedRole._id].categorization;
 			$scope.selectRoleForm(assignedRole, 'view');
 		};
 
+
+        // ------------- DELETE ROLE ASSIGNMENT ---------
+
+        $scope.deleteAssignedRole = function(portfolio, assignedGroup, assignedRole){
+
+            Portfolios.deleteAssignedRole({
+                portfolioId: portfolio._id,
+                assignedGroupId: assignedGroup._id,
+                assignedRoleId: assignedRole._id
+            }, assignedRole, function(res){
+                assignedGroup.roles = _.without(assignedGroup.roles, assignedRole);
+            }, function(err){
+                $scope.error = err.data.message;
+            });
+        };
 
 	}
 ]);

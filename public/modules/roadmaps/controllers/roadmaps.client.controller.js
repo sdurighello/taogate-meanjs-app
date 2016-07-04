@@ -1,8 +1,8 @@
 'use strict';
 
 angular.module('roadmaps').controller('RoadmapsController', ['$rootScope', '$scope', '$stateParams', '$location', 'Authentication',
-    'Projects','Portfolios', 'GateProcesses','Roadmaps', '_','$q','$modal',
-    function($rootScope, $scope, $stateParams, $location, Authentication, Projects, Portfolios, GateProcesses, Roadmaps, _, $q, $modal) {
+    'Projects','Portfolios', 'GateProcessTemplates','Roadmaps', '_','$q','$modal',
+    function($rootScope, $scope, $stateParams, $location, Authentication, Projects, Portfolios, GateProcessTemplates, Roadmaps, _, $q, $modal) {
 
         $rootScope.staticMenu = false;
 
@@ -20,6 +20,8 @@ angular.module('roadmaps').controller('RoadmapsController', ['$rootScope', '$sco
 
         vm.init = function(){
 
+            vm.selectedRoadmapType = 'definition';
+
             Portfolios.query(function(portfolios){
                 vm.portfolios = portfolios;
                 vm.portfolioTrees = createNodeTrees(portfolios);
@@ -33,7 +35,7 @@ angular.module('roadmaps').controller('RoadmapsController', ['$rootScope', '$sco
                 vm.initError.push(err.data.message);
             });
 
-            GateProcesses.query(function(gateProcesses){
+            GateProcessTemplates.query(function(gateProcesses){
                 vm.gateProcesses = gateProcesses;
             }, function(err){
                 vm.initError.push(err.data.message);
@@ -41,6 +43,7 @@ angular.module('roadmaps').controller('RoadmapsController', ['$rootScope', '$sco
 
             Roadmaps.getDefinitionRoadmap(function(res){
                 roadmaps = res;
+                console.log(res);
             }, function(err){
                 vm.initError.push(err.data.message);
             });
@@ -160,6 +163,21 @@ angular.module('roadmaps').controller('RoadmapsController', ['$rootScope', '$sco
             }
           return vm.portfoliosSelectedForRoadmap[portfolio._id]; 
         };
+
+        // ------- FILTERS FOR ROADMAP DIRECTIVES ----
+
+        vm.onlyDefinitionProjects = function(projects){
+            return _.filter(projects, function(project){
+                return project.identification.reqStartDate && project.identification.reqEndDate;
+            });
+        };
+
+        vm.onlyDeliveryProjects = function(projects){
+            return _.filter(projects, function(project){
+                return project.gateData.start && project.gateData.end;
+            });
+        };
+
 
         // ------ PROJECT SELECTION -----------
         

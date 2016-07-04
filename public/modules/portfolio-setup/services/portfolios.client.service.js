@@ -8,11 +8,27 @@ angular.module('portfolio-setup').factory('Portfolios', ['$resource',
 			update: {
 				method: 'PUT'
 			},
-			updatePeopleAssignment: {
-				method: 'PUT',
-				url: 'portfolios/:portfolioId/stakeholders/:assignedGroupId/:assignedRoleId'
-				// req.body: {the whole "assignedRole" object}
-			}
+
+            // Stakeholders
+
+            createAssignedRole: {
+                method: 'POST',
+                url: 'portfolios/:portfolioId/stakeholders/:assignedGroupId/assignedRoles'
+                // req.body: {the whole "assignedRole" object}
+            },
+
+            updateAssignedRole: {
+                method: 'PUT',
+                url: 'portfolios/:portfolioId/stakeholders/:assignedGroupId/assignedRoles/:assignedRoleId'
+                // req.body: {the whole "assignedRole" object}
+            },
+
+            deleteAssignedRole: {
+                method: 'DELETE',
+                url: 'portfolios/:portfolioId/stakeholders/:assignedGroupId/assignedRoles/:assignedRoleId'
+                // req.body: {the whole "assignedRole" object}
+            }
+            
 		});
 	}
 ]);

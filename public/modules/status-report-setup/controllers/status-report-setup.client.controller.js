@@ -1,8 +1,8 @@
 'use strict';
 
 angular.module('status-report-setup').controller('StatusReportSetupController', ['$rootScope', '$scope','$stateParams', '$location', 'Authentication',
-	'LogStatusIndicators', 'LogStatusAreas', '_','$q',
-	function($rootScope, $scope, $stateParams, $location, Authentication, LogStatusIndicators, LogStatusAreas, _ , $q) {
+	'LogStatusIndicators', 'LogStatusAreas', '_','$q', 'StatusReportTypes',
+	function($rootScope, $scope, $stateParams, $location, Authentication, LogStatusIndicators, LogStatusAreas, _ , $q, StatusReportTypes) {
 
 		$rootScope.staticMenu = false;
 
@@ -23,6 +23,12 @@ angular.module('status-report-setup').controller('StatusReportSetupController', 
 			}, function(err){
 				$scope.initError.push(err.data.message);
 			});
+
+            StatusReportTypes.query(function(res){
+                $scope.statusReportTypes = res;
+            }, function(err){
+                $scope.initError.push(err.data.message);
+            });
 		};
 
 
@@ -135,7 +141,11 @@ angular.module('status-report-setup').controller('StatusReportSetupController', 
 
 // ----------------------------------------------- STATUS-AREAS ---------------------------------------
 
-
+        $scope.applicableToList = [
+            {name: 'Project', text: 'project'},
+            {name: 'Portfolio', text: 'portfolio'},
+            {name: 'Project + Portfolio', text: 'both'}
+        ];
 
         // ------------------- NG-SWITCH ---------------------
 
@@ -180,6 +190,7 @@ angular.module('status-report-setup').controller('StatusReportSetupController', 
         $scope.cancelEditStatusArea = function(statusArea){
             statusArea.name = originalStatusArea[statusArea._id].name;
             statusArea.description = originalStatusArea[statusArea._id].description;
+            statusArea.applicableTo = originalStatusArea[statusArea._id].applicableTo;
             $scope.selectStatusAreaForm(statusArea, 'view');
         };
 
@@ -199,7 +210,8 @@ angular.module('status-report-setup').controller('StatusReportSetupController', 
         $scope.createStatusArea = function() {
             $scope.error = null;
             var statusArea = new LogStatusAreas ({
-                name: 'New status area'
+                name: 'New status area',
+                applicableTo : 'both'
             });
             statusArea.$save(function(res) {
                 $scope.findStatusAreas();
@@ -212,5 +224,84 @@ angular.module('status-report-setup').controller('StatusReportSetupController', 
 
 
 
-	}
+        // ----------------------------------------------- STATUS-TYPES ---------------------------------------
+
+
+        // ------------------- NG-SWITCH ---------------------
+
+        $scope.switchStatusTypeForm = {};
+
+        $scope.selectStatusTypeForm = function(status, string){
+            if(string === 'view'){ $scope.switchStatusTypeForm[status._id] = 'view';}
+            if(string === 'new'){$scope.switchStatusTypeForm[status._id] = 'new';}
+            if(string === 'edit'){$scope.switchStatusTypeForm[status._id] = 'edit';}
+        };
+
+        // ------------------- LIST OF TYPES -----------------
+
+        $scope.findStatusTypes = function() {
+            $scope.initError = [];
+            StatusReportTypes.query(function(statuses){
+                $scope.statusReportTypes = statuses;
+            }, function(err){
+                $scope.initError.push(err.data.message);
+            });
+        };
+
+        // ------------------- EDIT -----------------
+
+        var originalStatusType = {};
+        $scope.selectStatusType = function(statusType){
+            $scope.error = null;
+            originalStatusType[statusType._id] = _.clone(statusType);
+            $scope.selectStatusTypeForm(statusType, 'edit');
+        };
+
+        $scope.updateStatusType = function(statusType) {
+            $scope.error = null;
+            statusType.$update(function(res) {
+                $scope.findStatusTypes();
+                $scope.selectStatusTypeForm(statusType, 'view');
+            }, function(err) {
+                $scope.error = err.data.message;
+            });
+        };
+
+        $scope.cancelEditStatusType = function(statusType){
+            statusType.name = originalStatusType[statusType._id].name;
+            statusType.description = originalStatusType[statusType._id].description;
+            $scope.selectStatusTypeForm(statusType, 'view');
+        };
+
+        // ------------------- DELETE -----------------
+
+        $scope.removeStatusType = function(statusType) {
+            $scope.error = null;
+            statusType.$remove(function(res) {
+                $scope.findStatusTypes();
+            }, function(err) {
+                $scope.error = err.data.message;
+            });
+        };
+
+        // ------------------- NEW -----------------
+
+        $scope.createStatusType = function() {
+            $scope.error = null;
+            var statusType = new StatusReportTypes ({
+                name: 'New report type'
+            });
+            statusType.$save(function(res) {
+                $scope.findStatusTypes();
+                $scope.selectStatusTypeForm(res, 'view');
+
+            }, function(err) {
+                $scope.error = err.data.message;
+            });
+        };
+
+
+
+
+    }
 ]);

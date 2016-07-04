@@ -8,10 +8,17 @@ var mongoose = require('mongoose'),
     Schema = mongoose.Schema;
 require('mongoose-multitenant');
 
+/**
+ * Project review template Schema
+ */
 
 var PeopleReviewSchema = new Schema({
     peopleGroup : {type: Schema.Types.ObjectId, ref: 'PeopleProjectGroup', default:null, $tenant:true},
-    peopleRole : {type: Schema.Types.ObjectId, ref: 'PeopleProjectRole', default:null, $tenant:true},
+    peopleRole : {
+        _id: {type: Schema.Types.ObjectId, ref: 'Project.stakeholders.roles', default:null, $tenant:true},
+        name: {type: String, default: null},
+        description: {type: String, default: null}
+    },
     person : {type: Schema.Types.ObjectId, ref: 'Person', default:null, $tenant:true},
 
     comment: {type: String, default: '', trim: true},
@@ -27,13 +34,8 @@ var ProjectReviewItemSchema = new Schema({
     description: {type: String, default: '', trim: true},
     weight: {type: Number, min: 0, max: 100, default: 0, required: 'Please fill review item weight'},
 
-    peopleReviews : [PeopleReviewSchema],
-
-    created: {type: Date, default: Date.now},
-    user: {type: Schema.ObjectId, ref: 'User'}
+    peopleReviews : [PeopleReviewSchema]
 });
-
-
 
 var ProjectReviewGroupSchema = new Schema({
     name: {type: String, default: '', required: 'Please fill Project review group name', trim: true},
@@ -41,10 +43,7 @@ var ProjectReviewGroupSchema = new Schema({
     weight: {type: Number, min: 0, max: 100, default: 0, required: 'Please fill review group weight'},
 
     peopleGroups : [{type: Schema.Types.ObjectId, ref: 'PeopleProjectGroup', $tenant:true}],
-    items : [ProjectReviewItemSchema],
-
-    created: {type: Date, default: Date.now},
-    user: {type: Schema.ObjectId, ref: 'User'}
+    items : [ProjectReviewItemSchema]
 });
 
 /**
