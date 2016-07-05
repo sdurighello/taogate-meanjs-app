@@ -1150,11 +1150,10 @@ angular.module('core').config(['$stateProvider', '$urlRouterProvider',
                 }
             },
             onEnter: function(user, $location){
-                console.log(user);
                 if(user){
                     $location.path('/mytao');
                 } else {
-                    $location.path('/signup');
+                    $location.path('/signin');
                 }
             }
 		});
@@ -25154,16 +25153,13 @@ angular.module('subusers').config(['$stateProvider',
 			url: '/subusers/create',
 			templateUrl: 'modules/subusers/views/create-subuser.client.view.html'
 		}).
-		state('viewSubuser', {
-			url: '/subusers/:subuserId',
-			templateUrl: 'modules/subusers/views/view-subuser.client.view.html'
-		}).
 		state('editSubuser', {
-			url: '/subusers/:subuserId/edit',
+			url: '/subusers/:subuserId',
 			templateUrl: 'modules/subusers/views/edit-subuser.client.view.html'
 		});
 	}
 ]);
+
 'use strict';
 
 // Subusers controller
@@ -25212,6 +25208,7 @@ angular.module('subusers').controller('SubusersController', ['$rootScope', '$htt
 			roles : []
 		};
 
+        // Roles filter
 		$scope.hasRole = function(subuser){
             if($scope.subuserFilter.roles.length){
                 var foundRole = false;
@@ -25228,7 +25225,18 @@ angular.module('subusers').controller('SubusersController', ['$rootScope', '$htt
             }
         };
 
+        $scope.getDisplayRoleName = function (role) {
+            if(role){
+                return _.find($scope.roles, 'roleString', role).roleTitle;
+            }
+        };
+
 		// Create new Subuser
+        
+        $scope.hasNoRolesCheck = function(roles){
+            return _.isEmpty(roles);
+        };
+        
 		$scope.create = function() {
 			$http.post('/subusers', $scope.credentials).success(function(response) {
 				// If successful we assign the response to the global user model
@@ -25274,13 +25282,36 @@ angular.module('subusers').controller('SubusersController', ['$rootScope', '$htt
 		};
 
 		// Update existing Subuser
+        
+        $scope.switchUserForm = {};
+        
+        var originalSubuser = {};
+        
+        $scope.editSubuser = function (subuser) {
+            originalSubuser[subuser._id] = _.cloneDeep(subuser);
+            $scope.switchUserForm[subuser._id] = 'edit';
+        };
+
+        $scope.cancelEditSubuser = function (subuser) {
+            subuser.firstName = originalSubuser[subuser._id].firstName;
+            subuser.lastName = originalSubuser[subuser._id].lastName;
+            subuser.email = originalSubuser[subuser._id].email;
+            subuser.title = originalSubuser[subuser._id].title;
+            subuser.organization = originalSubuser[subuser._id].organization;
+            subuser.roles = originalSubuser[subuser._id].roles;
+            subuser.username = originalSubuser[subuser._id].username;
+            subuser.password = originalSubuser[subuser._id].password;
+            
+            $scope.switchUserForm[subuser._id] = 'view';
+        };
+        
 		$scope.update = function() {
 			var subuser = $scope.subuser;
 
-			subuser.$update(function() {
-				$location.path('subusers/' + subuser._id);
-			}, function(errorResponse) {
-				$scope.error = errorResponse.data.message;
+			subuser.$update(function(res) {
+                $scope.switchUserForm[subuser._id] = 'view';
+			}, function(err) {
+				$scope.error = err.data.message;
 			});
 		};
 
@@ -25401,8 +25432,11 @@ angular.module('users').config(['$stateProvider',
 
 'use strict';
 
-angular.module('users').controller('AuthenticationController', ['$scope', '$http', '$location', 'Authentication',
-	function($scope, $http, $location, Authentication) {
+angular.module('users').controller('AuthenticationController', ['$rootScope', '$scope', '$http', '$location', 'Authentication',
+	function($rootScope, $scope, $http, $location, Authentication) {
+
+        $rootScope.staticMenu = true;
+        
 		$scope.authentication = Authentication;
 
 		// If user is signed in then redirect back home
@@ -25440,8 +25474,11 @@ angular.module('users').controller('AuthenticationController', ['$scope', '$http
 
 'use strict';
 
-angular.module('users').controller('PasswordController', ['$scope', '$stateParams', '$http', '$location', 'Authentication',
-	function($scope, $stateParams, $http, $location, Authentication) {
+angular.module('users').controller('PasswordController', ['$rootScope', '$scope', '$stateParams', '$http', '$location', 'Authentication',
+	function($rootScope, $scope, $stateParams, $http, $location, Authentication) {
+
+        $rootScope.staticMenu = !!Authentication;
+        
 		$scope.authentication = Authentication;
 
 		//If user is signed in then redirect back home
@@ -25485,8 +25522,11 @@ angular.module('users').controller('PasswordController', ['$scope', '$stateParam
 
 'use strict';
 
-angular.module('users').controller('SettingsController', ['$scope', '$http', '$location', 'Users', 'Authentication',
-	function($scope, $http, $location, Users, Authentication) {
+angular.module('users').controller('SettingsController', ['$rootScope', '$scope', '$http', '$location', 'Users', 'Authentication',
+	function($rootScope, $scope, $http, $location, Users, Authentication) {
+
+        $rootScope.staticMenu = false;
+
 		$scope.user = Authentication.user;
 
         // SD: To see the roles in the 'view'

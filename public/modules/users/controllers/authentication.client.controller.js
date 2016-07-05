@@ -1,7 +1,10 @@
 'use strict';
 
-angular.module('users').controller('AuthenticationController', ['$scope', '$http', '$location', 'Authentication',
-	function($scope, $http, $location, Authentication) {
+angular.module('users').controller('AuthenticationController', ['$rootScope', '$scope', '$http', '$location', 'Authentication',
+	function($rootScope, $scope, $http, $location, Authentication) {
+
+        $rootScope.staticMenu = true;
+        
 		$scope.authentication = Authentication;
 
 		// If user is signed in then redirect back home

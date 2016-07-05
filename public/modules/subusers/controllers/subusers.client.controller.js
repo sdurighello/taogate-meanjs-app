@@ -46,6 +46,7 @@ angular.module('subusers').controller('SubusersController', ['$rootScope', '$htt
 			roles : []
 		};
 
+        // Roles filter
 		$scope.hasRole = function(subuser){
             if($scope.subuserFilter.roles.length){
                 var foundRole = false;
@@ -62,7 +63,18 @@ angular.module('subusers').controller('SubusersController', ['$rootScope', '$htt
             }
         };
 
+        $scope.getDisplayRoleName = function (role) {
+            if(role){
+                return _.find($scope.roles, 'roleString', role).roleTitle;
+            }
+        };
+
 		// Create new Subuser
+        
+        $scope.hasNoRolesCheck = function(roles){
+            return _.isEmpty(roles);
+        };
+        
 		$scope.create = function() {
 			$http.post('/subusers', $scope.credentials).success(function(response) {
 				// If successful we assign the response to the global user model
@@ -108,13 +120,36 @@ angular.module('subusers').controller('SubusersController', ['$rootScope', '$htt
 		};
 
 		// Update existing Subuser
+        
+        $scope.switchUserForm = {};
+        
+        var originalSubuser = {};
+        
+        $scope.editSubuser = function (subuser) {
+            originalSubuser[subuser._id] = _.cloneDeep(subuser);
+            $scope.switchUserForm[subuser._id] = 'edit';
+        };
+
+        $scope.cancelEditSubuser = function (subuser) {
+            subuser.firstName = originalSubuser[subuser._id].firstName;
+            subuser.lastName = originalSubuser[subuser._id].lastName;
+            subuser.email = originalSubuser[subuser._id].email;
+            subuser.title = originalSubuser[subuser._id].title;
+            subuser.organization = originalSubuser[subuser._id].organization;
+            subuser.roles = originalSubuser[subuser._id].roles;
+            subuser.username = originalSubuser[subuser._id].username;
+            subuser.password = originalSubuser[subuser._id].password;
+            
+            $scope.switchUserForm[subuser._id] = 'view';
+        };
+        
 		$scope.update = function() {
 			var subuser = $scope.subuser;
 
-			subuser.$update(function() {
-				$location.path('subusers/' + subuser._id);
-			}, function(errorResponse) {
-				$scope.error = errorResponse.data.message;
+			subuser.$update(function(res) {
+                $scope.switchUserForm[subuser._id] = 'view';
+			}, function(err) {
+				$scope.error = err.data.message;
 			});
 		};
 
