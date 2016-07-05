@@ -12,22 +12,29 @@
         </div>
     </div>
     <div class="row">
+        <div class="col-xs-12">
+            <a class="btn btn-primary" href="/#!/subusers/create">New Subuser</a>
+        </div>
+    </div>
+    <hr>
+    <div class="row" data-ng-show="subusers.length">
         <div class="col-md-12">
-            <div class="panel panel-default">
-                <div class="panel-body">
-                    <div class="row">
-                        <div class="col-md-12">
-                            <label>Filter by role</label>
-                        </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <a data-ng-click="showFilterByRole = !showFilterByRole">Filter by role</a>
+                </div>
+            </div>
+            <hr style="margin: 0.8%; padding: 0%">
+            <div class="row" data-ng-show="showFilterByRole">
+                <div class="col-md-2" ng-repeat="role in roles" >
+                    <div class="form-group">
+                        <input class="" required id="role" name="role" type="checkbox" checklist-model="subuserFilter.roles" checklist-value="role.roleString"> {{role.roleTitle}}
                     </div>
-                    <hr style="margin: 0.8%; padding: 0%">
-                    <div class="row">
-                        <div class="col-md-2" ng-repeat="role in roles" >
-                            <div class="form-group">
-                                <input class="" required id="role" name="role" type="checkbox" checklist-model="subuserFilter.roles" checklist-value="role.roleString"> {{role.roleTitle}}
-                            </div>
-                        </div>
-                    </div>
+                </div>
+            </div>
+            <div class="row" data-ng-show="!showFilterByRole">
+                <div class="col-xs-12 form-group">
+                    <span ng-repeat="role in subuserFilter.roles">| {{getDisplayRoleName(role)}} | </span>
                 </div>
             </div>
         </div>
@@ -87,11 +94,17 @@
                         </td>
                     </tr>
                     </tbody>
+                    <tbody data-ng-hide="!subusers.$resolved || subusers.length">
+                    <tr>
+                        <td colspan="5">
+                            <div class="alert alert-warning text-center">
+                                There are no Subusers
+                            </div>
+                        </td>
+                    </tr>
+                    </tbody>
                 </table>
             </div>
         </div>
-    </div>
-    <div class="alert alert-warning text-center" data-ng-hide="!subusers.$resolved || subusers.length">
-    	There are no Subusers
     </div>
 </section>

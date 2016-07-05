@@ -13,12 +13,8 @@ angular.module('subusers').config(['$stateProvider',
 			url: '/subusers/create',
 			templateUrl: 'modules/subusers/views/create-subuser.client.view.html'
 		}).
-		state('viewSubuser', {
-			url: '/subusers/:subuserId',
-			templateUrl: 'modules/subusers/views/view-subuser.client.view.html'
-		}).
 		state('editSubuser', {
-			url: '/subusers/:subuserId/edit',
+			url: '/subusers/:subuserId',
 			templateUrl: 'modules/subusers/views/edit-subuser.client.view.html'
 		});
 	}

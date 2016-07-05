@@ -1,7 +1,10 @@
 'use strict';
 
-angular.module('users').controller('SettingsController', ['$scope', '$http', '$location', 'Users', 'Authentication',
-	function($scope, $http, $location, Users, Authentication) {
+angular.module('users').controller('SettingsController', ['$rootScope', '$scope', '$http', '$location', 'Users', 'Authentication',
+	function($rootScope, $scope, $http, $location, Users, Authentication) {
+
+        $rootScope.staticMenu = false;
+
 		$scope.user = Authentication.user;
 
         // SD: To see the roles in the 'view'

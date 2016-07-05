@@ -17,11 +17,10 @@ angular.module('core').config(['$stateProvider', '$urlRouterProvider',
                 }
             },
             onEnter: function(user, $location){
-                console.log(user);
                 if(user){
                     $location.path('/mytao');
                 } else {
-                    $location.path('/signup');
+                    $location.path('/signin');
                 }
             }
 		});

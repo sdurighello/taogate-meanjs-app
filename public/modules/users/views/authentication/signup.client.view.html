@@ -1,48 +1,89 @@
 <section class="row" data-ng-controller="AuthenticationController">
-	<h3 class="col-md-12 text-center">Signup</h3>
-	<div class="col-xs-offset-2 col-xs-8 col-md-offset-5 col-md-2">
-		<form name="userForm" data-ng-submit="signup()" class="signin form-horizontal" novalidate autocomplete="off">
-			<fieldset>
-				<div class="form-group">
-					<label for="organization">Organization</label>
-					<input type="text" required id="organization" name="organization" class="form-control" data-ng-model="credentials.organization" placeholder="Organization">
-				</div>
-                <div class="form-group">
-                    <label for="organization">Title</label>
-                    <input type="text" id="title" name="title" class="form-control" data-ng-model="credentials.title" placeholder="Title">
+    <div class="col-xs-12">
+        <br>
+        <div class="panel panel-primary">
+            <div class="panel-heading">
+                <h1 class="panel-title text-center">Sign up</h1>
+            </div>
+            <div class="panel-body">
+                <div class="row">
+                    <div class="col-xs-12">
+                        <form name="userForm" data-ng-submit="signup()" novalidate autocomplete="off">
+                            <fieldset>
+                                <div class="row">
+                                    <div class="col-sm-4 col-xs-12">
+                                        <div class="form-group">
+                                            <label for="firstName">First Name</label>
+                                            <input type="text" required id="firstName" name="firstName" class="form-control" data-ng-model="credentials.firstName" placeholder="First Name">
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="lastName">Last Name</label>
+                                            <input type="text" required id="lastName" name="lastName" class="form-control" data-ng-model="credentials.lastName" placeholder="Last Name">
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="email">Email</label>
+                                            <input type="email" required id="email" name="email" class="form-control" data-ng-model="credentials.email" placeholder="Email">
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-4 col-xs-12">
+                                        <div class="form-group">
+                                            <label for="title">Title</label>
+                                            <input type="text" required id="title" name="title" class="form-control" data-ng-model="credentials.title" placeholder="Title">
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="organization">Organization</label>
+                                            <input type="text" required id="organization" name="organization" class="form-control" data-ng-model="credentials.organization" placeholder="Organization">
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-4 col-xs-12">
+                                        <div class="form-group">
+                                            <label for="username">Username</label>
+                                            <input type="text" required id="username" name="username" class="form-control" data-ng-model="credentials.username" placeholder="Username">
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="password">Password</label>
+                                            <input type="password" required id="password" name="password" class="form-control" data-ng-model="credentials.password" placeholder="Password">
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="confirmPassword">Confirm Password</label>
+                                            <input type="password" required id="confirmPassword" name="confirmPassword" class="form-control" data-ng-model="credentials.confirmPassword" placeholder="Confirm Password">
+                                        </div>
+                                        <div class="text-center text-danger"
+                                             data-ng-show="(credentials.password !== credentials.confirmPassword) && (userForm.confirmPassword.$dirty)">
+                                            Password mismatch
+                                        </div>
+                                        <div class="form-group">
+                                            <input type="checkbox" data-ng-model="credentials.seedData">
+                                            <span> Include setup data <i>(Recommended)</i></span>
+                                            <a href="" tooltip="This will pre-populate setup data based on prevalent best practices, such as categorization classes, risk indicators, maturity model dimensions, etc."
+                                               tooltip-trigger="focus">
+                                                <span class="glyphicon glyphicon-info-sign"></span>
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                                <hr>
+                                <div class="row">
+                                    <div class="col-xs-12">
+                                        <div class="text-center form-group">
+                                            <button type="submit" class="btn btn-large btn-success" data-ng-disabled="userForm.$invalid || (credentials.password !== credentials.confirmPassword)">
+                                                Sign up
+                                            </button>
+                                            &nbsp; or&nbsp;
+                                            <a href="/#!/signin" class="show-signup">
+                                                Sign in
+                                            </a>
+                                        </div>
+                                        <div data-ng-show="error" class="text-center text-danger">
+                                            <strong data-ng-bind="error"></strong>
+                                        </div>
+                                    </div>
+                                </div>
+                            </fieldset>
+                        </form>
+                    </div>
                 </div>
-				<div class="form-group">
-					<label for="firstName">First Name</label>
-					<input type="text" required id="firstName" name="firstName" class="form-control" data-ng-model="credentials.firstName" placeholder="First Name">
-				</div>
-				<div class="form-group">
-					<label for="lastName">Last Name</label>
-					<input type="text" id="lastName" name="lastName" class="form-control" data-ng-model="credentials.lastName" placeholder="Last Name">
-				</div>
-				<div class="form-group">
-					<label for="email">Email</label>
-					<input type="email" id="email" name="email" class="form-control" data-ng-model="credentials.email" placeholder="Email">
-				</div>
-				<div class="form-group">
-					<label for="username">Username</label>
-					<input type="text" id="username" name="username" class="form-control" data-ng-model="credentials.username" placeholder="Username">
-				</div>
-				<div class="form-group">
-					<label for="password">Password</label>
-					<input type="password" id="password" name="password" class="form-control" data-ng-model="credentials.password" placeholder="Password">
-				</div>
-                <div class="form-group">
-                    <input type="checkbox" data-ng-model="credentials.seedData">
-                    <span> Include setup data <i>(Recommended)</i></span>
-                </div>
-				<div class="text-center form-group">
-					<button type="submit" class="btn btn-large btn-primary">Sign up</button>&nbsp; or&nbsp;
-					<a href="/#!/signin" class="show-signup">Sign in</a>
-				</div>
-				<div data-ng-show="error" class="text-center text-danger">
-					<strong data-ng-bind="error"></strong>
-				</div>
-			</fieldset>
-		</form>
-	</div>
+            </div>
+        </div>
+    </div>
 </section>

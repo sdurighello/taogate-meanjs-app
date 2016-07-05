@@ -2,7 +2,7 @@
 
 module.exports = {
 	app: {
-		title: 'taoApp',
+		title: 'taoApp - taoPortfolio',
 		description: 'Project Portfolio Management',
 		keywords: 'Project, Portfolio, Management'
 	},

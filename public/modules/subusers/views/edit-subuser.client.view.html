@@ -6,58 +6,159 @@
                 <ol class="breadcrumb">
                     <li>Admin</li>
                     <li><a href="/#!/subusers">Subusers</a></li>
-                    <li class="active">Edit subuser</li>
+                    <li class="active">Subuser details</li>
                 </ol>
             </div>
         </div>
     </div>
     <div class="row">
-        <div class="col-xs-offset-2 col-xs-8 col-md-offset-4 col-md-4">
-            <form class="form-horizontal" data-ng-submit="update()" novalidate>
-                <fieldset>
-                    <div class="form-group">
-                        <label for="organization">Organization</label>
-                        <input type="text" required id="organization" name="organization" class="form-control" data-ng-model="subuser.organization" placeholder="Organization">
-                    </div>
-                    <div class="form-group">
-                        <label for="organization">Title</label>
-                        <input type="text" id="title" name="title" class="form-control" data-ng-model="subuser.title" placeholder="Title">
-                    </div>
-                    <div class="form-group">
-                        <label for="role">Roles</label>
-                        <div ng-repeat="role in roles">
-                            <input required id="role" name="role" type="checkbox" checklist-model="subuser.roles" checklist-value="role.roleString"> {{role.roleTitle}}
+        <div class="col-xs-12">
+            <div class="panel panel-primary">
+                <div class="panel-heading">
+                    <h1 class="panel-title text-center">Subuser details</h1>
+                </div>
+                <div class="panel-body" data-ng-switch="switchUserForm[subuser._id]">
+                    <div class="row" data-ng-switch-default="view">
+                        <div class="col-xs-12">
+                            <form name="userForm" data-ng-submit="update()" novalidate autocomplete="off">
+                                <fieldset>
+                                    <div class="row">
+                                        <div class="col-sm-4 col-xs-12">
+                                            <div class="form-group">
+                                                <label for="firstName">First Name</label>
+                                                <input type="text" disabled id="firstName" name="firstName" class="form-control" data-ng-model="subuser.firstName" placeholder="First Name">
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="lastName">Last Name</label>
+                                                <input type="text" disabled id="lastName" name="lastName" class="form-control" data-ng-model="subuser.lastName" placeholder="Last Name">
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="email">Email</label>
+                                                <input type="email" disabled id="email" name="email" class="form-control" data-ng-model="subuser.email" placeholder="Email">
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-4 col-xs-12">
+                                            <div class="form-group">
+                                                <label for="title">Title</label>
+                                                <input type="text" disabled id="title" name="title" class="form-control" data-ng-model="subuser.title" placeholder="Title">
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="organization">Organization</label>
+                                                <input type="text" disabled id="organization" name="organization" class="form-control" data-ng-model="subuser.organization" placeholder="Organization">
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="role">Roles</label>
+                                                <div ng-repeat="role in roles">
+                                                    <input disabled id="role" name="role" type="checkbox" checklist-model="subuser.roles" checklist-value="role.roleString"> {{role.roleTitle}}
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-4 col-xs-12">
+                                            <div class="form-group">
+                                                <label for="username">Username</label>
+                                                <input type="text" disabled id="username" name="username" class="form-control" data-ng-model="subuser.username" placeholder="Username">
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="password">Password</label>
+                                                <input type="password" disabled id="password" name="password" class="form-control" data-ng-model="subuser.password" placeholder="Password">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <hr>
+                                    <div class="row">
+                                        <div class="col-xs-12">
+                                            <div class="form-group text-center">
+                                                <button class="btn btn-success" data-ng-click="editSubuser(subuser)">
+                                                    Edit
+                                                </button>
+                                                <a class="btn btn-info" href="/#!/subusers">Back to list</a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </fieldset>
+                            </form>
                         </div>
                     </div>
-                    <div class="form-group">
-                        <label for="firstName">First Name</label>
-                        <input type="text" required id="firstName" name="firstName" class="form-control" data-ng-model="subuser.firstName" placeholder="First Name">
+                    <div class="row" data-ng-switch-when="edit">
+                        <div class="col-xs-12">
+                            <form name="userForm" data-ng-submit="update()" novalidate autocomplete="off">
+                                <fieldset>
+                                    <div class="row">
+                                        <div class="col-sm-4 col-xs-12">
+                                            <div class="form-group">
+                                                <label for="firstName">First Name</label>
+                                                <input type="text" required id="firstName" name="firstName" class="form-control" data-ng-model="subuser.firstName" placeholder="First Name">
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="lastName">Last Name</label>
+                                                <input type="text" required id="lastName" name="lastName" class="form-control" data-ng-model="subuser.lastName" placeholder="Last Name">
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="email">Email</label>
+                                                <input type="email" required id="email" name="email" class="form-control" data-ng-model="subuser.email" placeholder="Email">
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-4 col-xs-12">
+                                            <div class="form-group">
+                                                <label for="title">Title</label>
+                                                <input type="text" required id="title" name="title" class="form-control" data-ng-model="subuser.title" placeholder="Title">
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="organization">Organization</label>
+                                                <input type="text" required id="organization" name="organization" class="form-control" data-ng-model="subuser.organization" placeholder="Organization">
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="role">Roles</label>
+                                                <div ng-repeat="role in roles">
+                                                    <input id="role" name="role" type="checkbox" checklist-model="subuser.roles" checklist-value="role.roleString"> {{role.roleTitle}}
+                                                </div>
+                                                <div class="text-center text-danger" data-ng-show="hasNoRolesCheck(subuser.roles)">
+                                                    <span>At least one role is required</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-4 col-xs-12">
+                                            <div class="form-group">
+                                                <label for="username">Username</label>
+                                                <input type="text" required id="username" name="username" class="form-control" data-ng-model="subuser.username" placeholder="Username">
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="password">Password</label>
+                                                <input type="password" required id="password" name="password" class="form-control" data-ng-model="subuser.password" placeholder="Password">
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="confirmPassword">Confirm Password</label>
+                                                <input type="password" required id="confirmPassword" name="confirmPassword" class="form-control" data-ng-model="subuser.confirmPassword" placeholder="Confirm Password">
+                                            </div>
+                                            <div class="text-center text-danger"
+                                                 data-ng-show="(subuser.password !== subuser.confirmPassword) && (userForm.confirmPassword.$dirty)">
+                                                Password mismatch
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <hr>
+                                    <div class="row">
+                                        <div class="col-xs-12">
+                                            <div class="text-center form-group">
+                                                <button type="submit" class="btn btn-large btn-success">Save</button>
+                                                <a class="btn btn-danger" data-ng-click="remove();">
+                                                    Delete user
+                                                </a>
+                                                <button class="btn btn-large btn-info" data-ng-click="cancelEditSubuser(subuser)">
+                                                    Cancel
+                                                </button>
+                                            </div>
+                                            <div data-ng-show="error" class="text-center text-danger">
+                                                <strong data-ng-bind="error"></strong>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </fieldset>
+                            </form>
+                        </div>
                     </div>
-                    <div class="form-group">
-                        <label for="lastName">Last Name</label>
-                        <input type="text" id="lastName" name="lastName" class="form-control" data-ng-model="subuser.lastName" placeholder="Last Name">
-                    </div>
-                    <div class="form-group">
-                        <label for="email">Email</label>
-                        <input type="email" id="email" name="email" class="form-control" data-ng-model="subuser.email" placeholder="Email">
-                    </div>
-                    <div class="form-group">
-                        <label for="username">Username</label>
-                        <input type="text" id="username" name="username" class="form-control" data-ng-model="subuser.username" placeholder="Username">
-                    </div>
-                    <div class="form-group">
-                        <label for="password">Password</label>
-                        <input type="password" id="password" name="password" class="form-control" data-ng-model="subuser.password" placeholder="Password">
-                    </div>
-                    <div class="text-center form-group">
-                        <button type="submit" class="btn btn-large btn-success">Update</button>
-                        <a class="btn btn-large btn-info" href="/#!/subusers">Cancel</a>
-                    </div>
-                    <div data-ng-show="error" class="text-center text-danger">
-                        <strong data-ng-bind="error"></strong>
-                    </div>
-                </fieldset>
-            </form>
+                </div>
+            </div>
         </div>
     </div>
 </section>
