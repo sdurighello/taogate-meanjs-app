@@ -115,7 +115,7 @@ exports.seedProcesses = function(user, callback){
             createObjects(schema, 'GateOutcomeScore', seedArray, callback);
         },
         function(callback) {
-            var schema = mongoose.mtModel(user.tenantId + '.' + 'GateStatus');
+            var schema = mongoose.mtModel(user.tenantId + '.' + 'GateState');
             var seedArray =  [
                 {
                     _id: gStatus1,
@@ -160,265 +160,201 @@ exports.seedProcesses = function(user, callback){
                     created: Date.now()
                 }
             ];
-            createObjects(schema, 'GateStatus', seedArray, callback);
+            createObjects(schema, 'GateState', seedArray, callback);
         },
         function(callback) {
-            var schema = mongoose.mtModel(user.tenantId + '.' + 'GateProcess');
+            var schema = mongoose.mtModel(user.tenantId + '.' + 'GateProcessTemplate');
             var seedArray =  [
                 {
                     _id: w1,
+                    user:user._id,
+                    created: Date.now(),
                     name: 'Standard waterfall',
                     description:'Standard waterfall auditing process',
                     startupGate : w11,
                     closureGate : w16,
-                    gates: [w11, w12, w13, w14, w15, w16],
-                    isAssigned: false,
-                    user:user._id,
-                    created: Date.now()
+                    approval: {
+                        currentRecord: { approvalState: 'approved', created: Date.now(), user: user._id},
+                        history: [
+                            { approvalState: 'draft', created: Date.now(), user: user._id},
+                            { approvalState: 'submitted', created: Date.now(), user: user._id}
+                        ]
+                    },
+                    gates: [
+                        {
+                            _id: w11,
+                            name: 'Startup',
+                            description:'Project start',
+                            position: 1,
+                            outcomes: [
+                                {
+                                    _id: w111,
+                                    name: 'Project aligned to strategy',
+                                    description:'The initiative has been aligned to an approved strategic theme'
+                                },
+                                {
+                                    _id: w112,
+                                    name: 'Sponsorship in place',
+                                    description:'A sponsor for the initiative has been formally appointed'
+                                },
+                                {
+                                    _id: w113,
+                                    name: 'Project in roadmap',
+                                    description:'The initiative has been added to the delivery roadmap'
+                                },
+                                {
+                                    _id: w114,
+                                    name: 'Project Manager assigned',
+                                    description:'A project manager with suitable skills and availability to complete the project has been formally assigned'
+                                }
+                            ]
+                        },
+                        {
+                            _id: w12,
+                            name: 'Initiation',
+                            description:'Project initiation',
+                            position: 2,
+                            outcomes: [
+                                {
+                                    _id: w121,
+                                    name: 'Business justification agreed',
+                                    description:'The business justification has been agreed between stakeholders'
+                                },
+                                {
+                                    _id: w122,
+                                    name: 'Funding committed',
+                                    description:'Departmental budget has been made available and committed for the whole of the project'
+                                },
+                                {
+                                    _id: w123,
+                                    name: 'Strategic importance clear',
+                                    description:'The level of strategic importance of the project is clear in respect to other initiatives ' +
+                                    'so that resource prioritization decision can be easily made in case of bottlenecks'
+                                }
+                            ]
+                        },
+                        {
+                            _id: w13,
+                            name: 'Planning',
+                            description:'Project planning',
+                            position: 3,
+                            outcomes: [
+                                {
+                                    _id: w131,
+                                    name: 'Cost/Benefits ownership agreed',
+                                    description:'The business costs and benefits value, timing, ownership and tracking have been agreed between stakeholders'
+                                },
+                                {
+                                    _id: w132,
+                                    name: 'Clear requirements',
+                                    description:'There is a formal and approved set of clearly stated requirements'
+                                },
+                                {
+                                    _id: w133,
+                                    name: 'Impacts on systems identified',
+                                    description:'Impacts on other systems and interfaces identified'
+                                },
+                                {
+                                    _id: w134,
+                                    name: 'Impacts on processes and people identified',
+                                    description:'Impacts on business processes, organization and people has been identified'
+                                },
+                                {
+                                    _id: w135,
+                                    name: 'Risk mitigation in place',
+                                    description:'Project, market and operational risks have been identified, evaluated, accepted and sufficiently mitigated'
+                                }
+                            ]
+                        },
+                        {
+                            _id: w14,
+                            name: 'Execution',
+                            description:'Project execution',
+                            position: 4,
+                            outcomes: [
+                                {
+                                    _id: w141,
+                                    name: 'Business change validated',
+                                    description:'Changes to business processes, staff numbers/structure and training needs ' +
+                                    'are in formalized and validated by stakeholders'
+                                },
+                                {
+                                    _id: w142,
+                                    name: 'Functional behaviour detailed',
+                                    description:'System functional behaviour is clear enough to commence technical and process designs'
+                                },
+                                {
+                                    _id: w143,
+                                    name: 'Business case approved',
+                                    description:'Investment model, financial ratios and intangible benefits have been detailed and agreed'
+                                },
+                                {
+                                    _id: w144,
+                                    name: 'Testing strategy agreed',
+                                    description:'Testing strategy has been formalized and agreed'
+                                }
+                            ]
+                        },
+                        {
+                            _id: w15,
+                            name: 'Warranty',
+                            description:'Project in warranty support',
+                            position: 5,
+                            outcomes: [
+                                {
+                                    _id: w151,
+                                    name: 'Solution as built validated',
+                                    description:'Solution has been built as per design with variance to design documented and agreed'
+                                },
+                                {
+                                    _id: w152,
+                                    name: 'Production changes approved',
+                                    description:'Changes have been placed into production based on formal approval'
+                                },
+                                {
+                                    _id: w153,
+                                    name: 'User engagement in place',
+                                    description:'Users understand how changes to systems and processes will impact them, and where to go for support'
+                                },
+                                {
+                                    _id: w154,
+                                    name: 'Maintenance and support implemented',
+                                    description:'Maintenance of new systems, processes or required updates in place'
+                                }
+                            ]
+                        },
+                        {
+                            _id: w16,
+                            name: 'Closure',
+                            description:'Project end and final closure',
+                            position: 6,
+                            outcomes: [
+                                {
+                                    _id: w161,
+                                    name: 'Post implementation review completed',
+                                    description:'Post implementation review completed'
+                                },
+                                {
+                                    _id: w162,
+                                    name: 'Lessons learned captured',
+                                    description:'Lessons learned captured and embedded'
+                                },
+                                {
+                                    _id: w163,
+                                    name: 'Benefits realization initiated',
+                                    description:'Business benefits realization and tracking initiated'
+                                },
+                                {
+                                    _id: w164,
+                                    name: 'Project formally closed',
+                                    description:'Project formally closed in management systems'
+                                }
+                            ]
+                        }
+                    ]
                 }
             ];
-            createObjects(schema, 'GateProcess', seedArray, callback);
-        },
-        function(callback) {
-            var schema = mongoose.mtModel(user.tenantId + '.' + 'Gate');
-            var seedArray =  [
-                {
-                    _id: w11,
-                    name: 'Startup',
-                    description:'Project start',
-                    position: 1,
-                    gateOutcomes: [w111, w112, w113, w114],
-                    user:user._id,
-                    created: Date.now()
-                },
-                {
-                    _id: w12,
-                    name: 'Initiation',
-                    description:'Project initiation',
-                    position: 2,
-                    gateOutcomes: [w121, w122, w123],
-                    user:user._id,
-                    created: Date.now()
-                },
-                {
-                    _id: w13,
-                    name: 'Planning',
-                    description:'Project planning',
-                    position: 3,
-                    gateOutcomes: [w131, w132, w133, w134, w135],
-                    user:user._id,
-                    created: Date.now()
-                },
-                {
-                    _id: w14,
-                    name: 'Execution',
-                    description:'Project execution',
-                    position: 4,
-                    gateOutcomes: [w141, w142, w143, w144],
-                    user:user._id,
-                    created: Date.now()
-                },
-                {
-                    _id: w15,
-                    name: 'Warranty',
-                    description:'Project in warranty support',
-                    position: 5,
-                    gateOutcomes: [w151, w152, w153, w154],
-                    user:user._id,
-                    created: Date.now()
-                },
-                {
-                    _id: w16,
-                    name: 'Closure',
-                    description:'Project end and final closure',
-                    position: 6,
-                    gateOutcomes: [w161, w162, w163, w164],
-                    user:user._id,
-                    created: Date.now()
-                }
-            ];
-            createObjects(schema, 'Gate', seedArray, callback);
-        },
-        function(callback) {
-            var schema = mongoose.mtModel(user.tenantId + '.' + 'GateOutcome');
-            var seedArray =  [
-                {
-                    _id: w111,
-                    name: 'Project aligned to strategy',
-                    description:'The initiative has been aligned to an approved strategic theme',
-                    user:user._id,
-                    created: Date.now()
-                },
-                {
-                    _id: w112,
-                    name: 'Sponsorship in place',
-                    description:'A sponsor for the initiative has been formally appointed',
-                    user:user._id,
-                    created: Date.now()
-                },
-                {
-                    _id: w113,
-                    name: 'Project in roadmap',
-                    description:'The initiative has been added to the delivery roadmap',
-                    user:user._id,
-                    created: Date.now()
-                },
-                {
-                    _id: w114,
-                    name: 'Project Manager assigned',
-                    description:'A project manager with suitable skills and availability to complete the project has been formally assigned',
-                    user:user._id,
-                    created: Date.now()
-                },
-                // ----
-                {
-                    _id: w121,
-                    name: 'Business justification agreed',
-                    description:'The business justification has been agreed between stakeholders',
-                    user:user._id,
-                    created: Date.now()
-                },
-                {
-                    _id: w122,
-                    name: 'Funding committed',
-                    description:'Departmental budget has been made available and committed for the whole of the project',
-                    user:user._id,
-                    created: Date.now()
-                },
-                {
-                    _id: w123,
-                    name: 'Strategic importance clear',
-                    description:'The level of strategic importance of the project is clear in respect to other initiatives ' +
-                    'so that resource prioritization decision can be easily made in case of bottlenecks',
-                    user:user._id,
-                    created: Date.now()
-                },
-                // ----
-                {
-                    _id: w131,
-                    name: 'Cost/Benefits ownership agreed',
-                    description:'The business costs and benefits value, timing, ownership and tracking have been agreed between stakeholders',
-                    user:user._id,
-                    created: Date.now()
-                },
-                {
-                    _id: w132,
-                    name: 'Clear requirements',
-                    description:'There is a formal and approved set of clearly stated requirements',
-                    user:user._id,
-                    created: Date.now()
-                },
-                {
-                    _id: w133,
-                    name: 'Impacts on systems identified',
-                    description:'Impacts on other systems and interfaces identified',
-                    user:user._id,
-                    created: Date.now()
-                },
-                {
-                    _id: w134,
-                    name: 'Impacts on processes and people identified',
-                    description:'Impacts on business processes, organization and people has been identified',
-                    user:user._id,
-                    created: Date.now()
-                },
-                {
-                    _id: w135,
-                    name: 'Risk mitigation in place',
-                    description:'Project, market and operational risks have been identified, evaluated, accepted and sufficiently mitigated',
-                    user:user._id,
-                    created: Date.now()
-                },
-                // ----
-                {
-                    _id: w141,
-                    name: 'Business change validated',
-                    description:'Changes to business processes, staff numbers/structure and training needs ' +
-                    'are in formalized and validated by stakeholders',
-                    user:user._id,
-                    created: Date.now()
-                },
-                {
-                    _id: w142,
-                    name: 'Functional behaviour detailed',
-                    description:'System functional behaviour is clear enough to commence technical and process designs',
-                    user:user._id,
-                    created: Date.now()
-                },
-                {
-                    _id: w143,
-                    name: 'Business case approved',
-                    description:'Investment model, financial ratios and intangible benefits have been detailed and agreed',
-                    user:user._id,
-                    created: Date.now()
-                },
-                {
-                    _id: w144,
-                    name: 'Testing strategy agreed',
-                    description:'Testing strategy has been formalized and agreed',
-                    user:user._id,
-                    created: Date.now()
-                },
-                // ----
-                {
-                    _id: w151,
-                    name: 'Solution as built validated',
-                    description:'Solution has been built as per design with variance to design documented and agreed',
-                    user:user._id,
-                    created: Date.now()
-                },
-                {
-                    _id: w152,
-                    name: 'Production changes approved',
-                    description:'Changes have been placed into production based on formal approval',
-                    user:user._id,
-                    created: Date.now()
-                },
-                {
-                    _id: w153,
-                    name: 'User engagement in place',
-                    description:'Users understand how changes to systems and processes will impact them, and where to go for support',
-                    user:user._id,
-                    created: Date.now()
-                },
-                {
-                    _id: w154,
-                    name: 'Maintenance and support implemented',
-                    description:'Maintenance of new systems, processes or required updates in place',
-                    user:user._id,
-                    created: Date.now()
-                },
-                // ----
-                {
-                    _id: w161,
-                    name: 'Post implementation review completed',
-                    description:'Post implementation review completed',
-                    user:user._id,
-                    created: Date.now()
-                },
-                {
-                    _id: w162,
-                    name: 'Lessons learned captured',
-                    description:'Lessons learned captured and embedded',
-                    user:user._id,
-                    created: Date.now()
-                },
-                {
-                    _id: w163,
-                    name: 'Benefits realization initiated',
-                    description:'Business benefits realization and tracking initiated',
-                    user:user._id,
-                    created: Date.now()
-                },
-                {
-                    _id: w164,
-                    name: 'Project formally closed',
-                    description:'Project formally closed in management systems',
-                    user:user._id,
-                    created: Date.now()
-                }
-            ];
-            createObjects(schema, 'GateOutcome', seedArray, callback);
+            createObjects(schema, 'GateProcessTemplate', seedArray, callback);
         }
     ], function (err, result) {
         if( err ) {

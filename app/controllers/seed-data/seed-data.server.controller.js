@@ -127,6 +127,31 @@ exports.loadTrees = loadTrees;
 
 exports.loadProjects = loadProjects;
 
+exports.seedAtSignup = function(user, callback) {
+    async.series([
+        // 1) Create all seed setup data straight into the database
+        function(callback){
+            return loadSetupData(user, callback);
+        },
+        // 2) Create portfolio and strategy structure
+        function(callback){
+            return loadTrees(user, callback);
+        }
+        // 3) Create projects
+        // function(callback){
+        //     return loadProjects(req.user, callback);
+        // }
+    ], function(err, results){
+        if (err) {
+            callback(err);
+        } else {
+            callback(null, results);
+        }
+    });
+
+};
+
+// Seed from myTao button just for test after the user was created (and so here it can be called with req, res)
 exports.seed = function(req, res) {
     async.series([
         // 1) Create all seed setup data straight into the database
@@ -136,11 +161,11 @@ exports.seed = function(req, res) {
         // 2) Create portfolio and strategy structure
         function(callback){
             return loadTrees(req.user, callback);
-        },
-        // 3) Create projects
-        function(callback){
-            return loadProjects(req.user, callback);
         }
+        // 3) Create projects
+        // function(callback){
+        //     return loadProjects(req.user, callback);
+        // }
     ], function(err, results){
         if (err) {
             console.log(err);
