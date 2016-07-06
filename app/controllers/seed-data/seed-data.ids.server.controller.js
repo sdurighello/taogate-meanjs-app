@@ -223,17 +223,10 @@ var idObject = {
     PeoplePortfolioGroup: {
         group1 : mongoose.Types.ObjectId()
     },
-    PeoplePortfolioRole: {
-        role1 : mongoose.Types.ObjectId(), role2 : mongoose.Types.ObjectId(), role3 : mongoose.Types.ObjectId()
-    },
 
     // People Project
     PeopleProjectGroup: {
         group1 : mongoose.Types.ObjectId(), group2 : mongoose.Types.ObjectId()
-    },
-    PeopleProjectRole: {
-        role11 : mongoose.Types.ObjectId(), role12 : mongoose.Types.ObjectId(), role13 : mongoose.Types.ObjectId(), role14 : mongoose.Types.ObjectId(),
-        role21 : mongoose.Types.ObjectId(), role22 : mongoose.Types.ObjectId(), role23 : mongoose.Types.ObjectId(), role24 : mongoose.Types.ObjectId()
     },
 
     // Dependency

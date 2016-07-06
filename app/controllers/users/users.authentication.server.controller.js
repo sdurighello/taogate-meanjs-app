@@ -82,12 +82,13 @@ exports.signup = function(req, res) {
         // If 'seedData' checked, load setup data
         function(createdUser, callback) {
             if(req.body.seedData){
-                return seedData.loadSetupData(createdUser, callback);
+                return seedData.seedAtSignup(createdUser, callback);
             }
             callback(null);
         }
     ], function (err) {
         if (err) {
+            console.log(err);
             return res.status(400).send({
                 message: errorHandler.getErrorMessage(err)
             });

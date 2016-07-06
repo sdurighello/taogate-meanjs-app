@@ -60,58 +60,22 @@ var createPortfolio = function(user, body, callback){
                 });
             });
         },
-        // PORTFOLIO.STAKEHOLDERS: Add all existing groups/roles + categories/values to new portfolio
+        // PORTFOLIO.STAKEHOLDERS: Add all existing people groups to new portfolio
         function(callback){
-            async.waterfall([
-                // Create the "categorization" array [{category:<objectId>, categoryValue:null}] from all existing people-categories
-                function(callback){
-                    PeopleCategory.find().exec(function(err, categories) {
-                        if (err) {
-                            callback(err);
-                        } else {
-                            var retArray = [];
-                            async.each(categories, function(category, callback){
-                                retArray.push({
-                                    category: category._id,
-                                    categoryValue: null
-                                });
-                                callback();
-                            });
-                            callback(null, retArray);
-                        }
-                    });
-                },
-                // Add to portfolios all the people-groups/roles with the "categorization" array
-                function(retArray, callback){
-                    PeoplePortfolioGroup.find().exec(function(err, groups){
-                        if (err) {
-                            callback(err);
-                        } else {
-                            async.each(groups, function(group, callback){
-                                var obj = {group: group._id, roles: []};
-                                async.each(group.roles, function(role, callback){
-                                    obj.roles.push({
-                                        role: role,
-                                        person: null,
-                                        categorization: retArray
-                                    });
-                                    callback();
-                                });
-                                portfolio.stakeholders.push(obj);
-                                portfolio.save(function(err){
-                                    if(err){callback(err);} else {callback();}
-                                });
-                            });
-                            callback(null);
-                        }
-                    });
-                }
-            ],function(err){
+            PeoplePortfolioGroup.find().exec(function(err, groups){
                 if (err) {
-                    callback(err);
-                } else {
-                    callback(null);
+                    return callback(err);
                 }
+
+                _.each(groups, function(group){
+                    var newAssignedGroup = portfolio.stakeholders.create({group: group._id, roles: []});
+                    portfolio.stakeholders.push(newAssignedGroup);
+                });
+
+                portfolio.save(function(err){
+                    callback(err);
+                });
+
             });
         }
     ],function(err){
