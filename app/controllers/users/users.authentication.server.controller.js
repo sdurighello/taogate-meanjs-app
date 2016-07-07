@@ -7,6 +7,8 @@ var _ = require('lodash'),
 	errorHandler = require('../errors.server.controller'),
 	mongoose = require('mongoose'),
 	passport = require('passport'),
+    config = require('../../../config/config'),
+    nodemailer = require('nodemailer'),
 	async = require('async'),
     seedData = require('../seed-data/seed-data.server.controller.js'),
 	User = mongoose.model('User');
@@ -15,6 +17,7 @@ var _ = require('lodash'),
  * Signup
  */
 exports.signup = function(req, res) {
+
 	// For security measurement we remove the roles from the req.body object
 	delete req.body.roles;
 
@@ -37,6 +40,18 @@ exports.signup = function(req, res) {
     var OverallRanking = mongoose.mtModel(user.tenantId + '.' + 'OverallRanking');
 
     async.waterfall([
+        // Check the username is unique
+        function(callback){
+            User.findOne({username: req.body.username}, function(err, duplicateUser){
+                if(err){
+                    return callback(err);
+                }
+                if(duplicateUser){
+                    return callback({message: 'Username '+ req.body.username +' already taken'});
+                }
+                callback(null);
+            });
+        },
         // Save the new user
         function(callback) {
             user.save(function(err){
@@ -82,9 +97,38 @@ exports.signup = function(req, res) {
         // If 'seedData' checked, load setup data
         function(createdUser, callback) {
             if(req.body.seedData){
-                return seedData.seedAtSignup(createdUser, callback);
+                return seedData.seedAtSignup(createdUser, function(err, result){
+                    if(err){
+                        return callback(err);
+                    }
+                    callback(null, createdUser);
+                });
             }
-            callback(null);
+            callback(null, createdUser);
+        },
+        // Prepare sign-up EMAIL
+        function(createdUser, done) {
+            res.render('templates/signup-confirm-email', {
+                name: createdUser.displayName,
+                appName: config.app.title,
+                username: createdUser.username
+            }, function(err, emailHTML) {
+                done(err, emailHTML, createdUser);
+            });
+        },
+        // If valid email, send reset email using service
+        function(emailHTML, createdUser, done) {
+            var smtpTransport = nodemailer.createTransport(config.mailer.options);
+            var mailOptions = {
+                to: createdUser.email,
+                from: config.mailer.from,
+                subject: 'Welcome '+ createdUser.firstName +' to taoPortfolio!',
+                html: emailHTML
+            };
+
+            smtpTransport.sendMail(mailOptions, function(err) {
+                done(err);
+            });
         }
     ], function (err) {
         if (err) {
