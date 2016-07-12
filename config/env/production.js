@@ -34,7 +34,10 @@ module.exports = {
                 'public/lib/d3-plugins/sankey/sankey.js'
 			]
 		},
-		css: 'public/dist/application.min.css',
+		css: [
+      'https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css',
+			'public/dist/application.min.css'
+		],
 		js: 'public/dist/application.min.js'
 	}, 
 	facebook: {
