@@ -66,7 +66,7 @@
                                 <div class="row">
                                     <div class="col-xs-12">
                                         <div class="text-center form-group">
-                                            <button type="submit" class="btn btn-large btn-success" data-ng-disabled="userForm.$invalid || (credentials.password !== credentials.confirmPassword)">
+                                            <button type="submit" class="btn btn-large btn-success" data-ng-disabled="userForm.$invalid || (credentials.password !== credentials.confirmPassword) || isResolving">
                                                 Sign up
                                             </button>
                                             &nbsp; or already have an account?&nbsp;

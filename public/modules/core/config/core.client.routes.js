@@ -10,19 +10,7 @@ angular.module('core').config(['$stateProvider', '$urlRouterProvider',
 		$stateProvider.
 		state('home', {
 			url: '/',
-            // templateUrl: 'modules/core/views/home.client.view.html' ,
-            resolve: {
-                user : function(Authentication){
-                    return Authentication.user;
-                }
-            },
-            onEnter: function(user, $location){
-                if(user){
-                    $location.path('/mytao');
-                } else {
-                    $location.path('/signin');
-                }
-            }
+            templateUrl: 'modules/core/views/home.client.view.html'
 		});
 	}
 ]);

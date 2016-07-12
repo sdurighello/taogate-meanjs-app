@@ -164,7 +164,7 @@ angular.module('core').service('Menus', [
 		this.addMenu('topbar');
 
 		// taoPortfolio.com additions for menu
-		this.addMenuItem('topbar','My taoPortfolio','mytao','item','mytao',false,['superAdmin','admin','pmo','projectManager','portfolioManager','executive'],0);
+		this.addMenuItem('topbar','My Portfolios','mytao','item','mytao',false,['superAdmin','admin','pmo','projectManager','portfolioManager','executive'],0);
 		this.addMenuItem('topbar','Admin','admin','dropdown','admin',false,['superAdmin','admin'],1);
 
 		// SETUP
