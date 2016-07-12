@@ -1,41 +1,39 @@
 <section data-ng-controller="HomeController">
     <div class="row">
-        <div class="jumbotron-financials text-center col-xs-12">
+        <div class="jumbotron-home text-center col-xs-12">
             <div class="div" >
                 <div class="row">
                     <div class="col-xs-12">
-                        <h2>taoPortfolio Software</h2>
+                        <div class="logo-name center-block"></div>
+                        <h3 style="margin-top: 0">Project Portfolio Management made simple. </h3>
                     </div>
                 </div>
                 <br>
                 <div class="row">
                     <div class="col-xs-12">
                         <p class="lead" style="margin: 0;">
-                            Cloud-based. Optimized for governance and management control. No IT setup required
+                            A cloud-based software optimized for governance and management control.
+                            <br>
+                            Ideal for <em>PMO managers</em>, <em>business change executives</em> and <em>portfolio managers</em>.
+                            <br>
+                            Implements the <em>Agile Gate Management</em> approach popularized by the <a href="http://www.taoppm.com" style="color: lightblue">taoPPM methodology</a>.
                         </p>
                     </div>
                 </div>
                 <hr style="margin: 30px">
-                <div class="row">
-                    <div class="col-xs-12">
-                        <h4>See the important things</h4>
-                        <h4>Do the right things</h4>
-                        <h4>Do things right</h4>
-                    </div>
-                </div>
                 <br>
                 <div class="row">
                     <div class="col-xs-12 text-center">
-                        <a class="btn btn-lg"  style="background-color: transparent; border: 2px solid white">REGISTER AS EARLY ADOPTER</a>
-                        <a class="btn btn-success btn-lg" href="/#!/mytao">
-                            Login <small>| Free <b>Demo</b> version only</small>
+                        <a class="btn btn-lg" data-ng-click="goToRegistrationForm()"  style="background-color: transparent; border: 2px solid white; color: lightblue">REGISTER AS EARLY ADOPTER</a>
+                        <a class="btn btn-success btn-lg" style="border: 2px solid white" href="/#!/signup">
+                            Signup <small>| Free <b>Demo</b> version only</small>
                         </a>
                     </div>
                 </div>
             </div>
         </div>
         <div class="jumbotron-band center-block col-xs-12">
-            <h3 class="text-center">Define. Evaluate. Deliver.</h3>
+            <h3 class="text-center">Make change happen in a simpler way: Define. Evaluate. Deliver.</h3>
         </div>
         <div class="container">
             <!-- FEATURE LIST: DEFINITION-->
@@ -147,28 +145,28 @@
         <div class="container">
             <div class="row">
                 <div class="col-md-12">
-                    <h1>
+                    <h2>
                         <small>
                             Access to the Production version of this web app is currently only provided within the <strong>early adopter program</strong>
-                            <em>at no cost</em> to selected customers with at least 50+ projects and 3+ portfolios. The program includes:
+                            <em>at no cost</em> to selected customers with at least 20+ projects and 3+ portfolios. The program includes:
                         </small>
-                    </h1>
+                    </h2>
                     <ul>
-                        <li><h1><small>Software setup tailored to your processes</small></h1></li>
-                        <li><h1><small>Migration support of your project and portfolio data into the system</small></h1></li>
-                        <li><h1><small>Optional project portfolio maturity assessment and improvement roadmap</small></h1></li>
+                        <li><h2 style="margin: 0; padding: 0"><small>Software setup data tailored to your processes</small></h2></li>
+                        <li><h2 style="margin: 0; padding: 0"><small>Migration support of your project and portfolio data into the system</small></h2></li>
+                        <li><h2 style="margin: 0; padding: 0"><small>Optional maturity assessment and improvement roadmap (*based on availability)</small></h2></li>
                     </ul>
-                    <h1>
+                    <h2>
                         <small>
                             Register below to join the program or just to be notified when the app will be made available publicly
                         </small>
-                    </h1>
+                    </h2>
                 </div>
             </div>
             <hr>
             <div class="row">
                 <div class="col-md-6">
-                    <div class="panel panel-success">
+                    <div class="panel panel-danger">
                         <div class="panel-heading">
                             <h6 class="panel-title text-center">
                                 Registration form - Early Adopter Program
@@ -224,7 +222,7 @@
                                             </div>    <!-- real people should not fill this in and expect good things - do not remove this or risk form bot signups-->
                                             <div style="position: absolute; left: -5000px;"><input type="text" name="b_ced9af75b82724edde934c654_c4effe68f8" tabindex="-1" value=""></div>
                                             <div class="clear">
-                                                <input type="submit" value="Register" name="subscribe" id="mc-embedded-subscribe" class="btn btn-primary">
+                                                <input type="submit" value="Register" name="subscribe" id="mc-embedded-subscribe" class="btn btn-lg btn-primary">
                                             </div>
                                         </div>
                                     </div>
@@ -250,11 +248,12 @@
                                 <div class="col-xs-12">
                                     <h3>
                                         <small>
-                                            Signup for free to the pre-seeded <b>demo</b> version of the software to see its full features
+                                            <u>Signup for free</u> for a <em>temporary</em> account to the <b>demo</b> version.
+                                            This is a pre-seeded version of the software and will allow you to play with <em>all its features</em>.
                                         </small>
                                     </h3>
                                     <ul>
-                                        <li><em>All accounts in this version will be periodically deleted</em></li>
+                                        <li><em>All accounts in this version are temporary and are periodically deleted</em></li>
                                         <li><em>Access to this version is granted for demo purposes only</em></li>
                                         <li><em>This version is continuously upgraded and refreshed without warning and minor instability is expected</em></li>
                                         <li><em>If you like the software and wish Production version access, please enroll to the Early Adopter Program</em></li>
@@ -266,8 +265,8 @@
                             <br>
                             <div class="row">
                                 <div class="col-md-4 col-md-offset-1">
-                                    <a class="btn btn-success btn-lg" href="/#!/mytao">
-                                        Login <small>| Free <b>Demo</b> version only</small>
+                                    <a class="btn btn-success btn-lg" href="/#!/signup">
+                                        Signup <small>| Free <b>Demo</b> version only</small>
                                     </a>
                                 </div>
                             </div>
@@ -278,6 +277,7 @@
             </div>
         </div>
         <div class="jumbotron-social-icons text-center col-xs-12">
+            <p>Developed by <a href="http://www.taoportfolio.com"><b>taoPortfolio.com</b></a></p>
             <button type="button" class="btn btn-info">
                 <i class="fa fa-linkedin fa-lg"></i>
             </button>

@@ -15,14 +15,17 @@ angular.module('users').controller('AuthenticationController', ['$rootScope', '$
         $scope.credentials.seedData = true;
 
 		$scope.signup = function() {
+            $scope.isResolving = true;
 			$http.post('/auth/signup', $scope.credentials).success(function(response) {
 				// If successful we assign the response to the global user model
 				$scope.authentication.user = response;
+                $scope.isResolving = false;
 
 				// And redirect to the index page
 				$location.path('/mytao');
 			}).error(function(response) {
 				$scope.error = response.message;
+                $scope.isResolving = false;
 			});
 		};
 

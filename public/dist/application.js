@@ -1143,19 +1143,7 @@ angular.module('core').config(['$stateProvider', '$urlRouterProvider',
 		$stateProvider.
 		state('home', {
 			url: '/',
-            // templateUrl: 'modules/core/views/home.client.view.html' ,
-            resolve: {
-                user : function(Authentication){
-                    return Authentication.user;
-                }
-            },
-            onEnter: function(user, $location){
-                if(user){
-                    $location.path('/mytao');
-                } else {
-                    $location.path('/signin');
-                }
-            }
+            templateUrl: 'modules/core/views/home.client.view.html'
 		});
 	}
 ]);
@@ -1186,42 +1174,17 @@ angular.module('core').controller('HeaderController', ['$scope', 'Authentication
 angular.module('core').controller('HomeController', ['$scope','$rootScope', 'Authentication', '$stateParams','_','$anchorScroll','$location',
 	function($scope, $rootScope, Authentication, $stateParams, _, $anchorScroll, $location) {
 
-        // init main "Methodology" page
-        $scope.init = function(){
-            if($stateParams){
-                var partial = $stateParams.sectionName;
-                if(partial){
-                    $scope.setTemplate(partial);
-                } else {
-                    // set default template ng-if
-                    $scope.setTemplate('overview');
-                }
-            }
-        };
-
-        // Init article pages
-        $scope.initArticle = function(){
-            $location.hash('top');
-            $anchorScroll();
-        };
 
 
 		// This provides Authentication context.
 		$scope.authentication = Authentication;
 
-        // Hide the app menu and show only the static website navigation
-        $rootScope.staticMenu = true;
+		
 
-        // Hide/show method menu
-        $scope.showKnowledgeAreas = true;
-
-        // ----------- Methodology section --------------
-
-        $scope.setTemplate = function(partial){
-            $scope.includeTemplate = partial;
-            $location.hash('top');
-            $anchorScroll();
-        };
+		$scope.goToRegistrationForm = function(){
+				$location.hash('mc_embed_signup');
+				$anchorScroll();
+		};
 
 
 	}
@@ -2344,7 +2307,7 @@ angular.module('core').service('Menus', [
 		this.addMenu('topbar');
 
 		// taoPortfolio.com additions for menu
-		this.addMenuItem('topbar','My taoPortfolio','mytao','item','mytao',false,['superAdmin','admin','pmo','projectManager','portfolioManager','executive'],0);
+		this.addMenuItem('topbar','My Portfolios','mytao','item','mytao',false,['superAdmin','admin','pmo','projectManager','portfolioManager','executive'],0);
 		this.addMenuItem('topbar','Admin','admin','dropdown','admin',false,['superAdmin','admin'],1);
 
 		// SETUP
@@ -25447,14 +25410,17 @@ angular.module('users').controller('AuthenticationController', ['$rootScope', '$
         $scope.credentials.seedData = true;
 
 		$scope.signup = function() {
+            $scope.isResolving = true;
 			$http.post('/auth/signup', $scope.credentials).success(function(response) {
 				// If successful we assign the response to the global user model
 				$scope.authentication.user = response;
+                $scope.isResolving = false;
 
 				// And redirect to the index page
 				$location.path('/mytao');
 			}).error(function(response) {
 				$scope.error = response.message;
+                $scope.isResolving = false;
 			});
 		};
 
