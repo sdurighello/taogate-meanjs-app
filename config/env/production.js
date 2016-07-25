@@ -7,31 +7,25 @@ module.exports = {
 			css: [
 				'public/lib/bootstrap/dist/css/bootstrap.min.css',
 				'public/lib/bootstrap/dist/css/bootstrap-theme.min.css',
-                'public/lib/ng-sortable/dist/ng-sortable.min.css',
-                'public/lib/ng-sortable/dist/ng-sortable.style.min.css',
-                'public/lib/angular-loading-bar/build/loading-bar.min.css',
-                'public/lib/angular-chart.js/dist/angular-chart.min.css'
+				'public/lib/ng-sortable/dist/ng-sortable.min.css',
+				'public/lib/ng-sortable/dist/ng-sortable.style.min.css',
+				'public/lib/angular-loading-bar/build/loading-bar.min.css'
 			],
 			js: [
-                'public/lib/lodash/lodash.min.js',
-                'public/lib/angular/angular.min.js',
-                'public/lib/angular-resource/angular-resource.min.js',
-                'public/lib/angular-cookies/angular-cookies.min.js',
-                'public/lib/angular-animate/angular-animate.min.js',
-                'public/lib/angular-touch/angular-touch.min.js',
-                'public/lib/angular-sanitize/angular-sanitize.min.js',
-                'public/lib/angular-ui-router/release/angular-ui-router.min.js',
-                'public/lib/angular-ui-utils/ui-utils.min.js',
-                'public/lib/angular-bootstrap/ui-bootstrap-tpls.min.js',
-                'public/lib/checklist-model/checklist-model.js',
-                'public/lib/ng-sortable/dist/ng-sortable.min.js',
-                'public/lib/angular-loading-bar/build/loading-bar.min.js',
-                // Charts.js
-                'public/lib/Chart.js/Chart.min.js',
-                'public/lib/angular-chart.js/dist/angular-chart.min.js',
-                // D3
-                'public/lib/d3/d3.min.js',
-                'public/lib/d3-plugins/sankey/sankey.js'
+			'public/lib/lodash/lodash.min.js',
+			'public/lib/angular/angular.min.js',
+			'public/lib/angular-resource/angular-resource.min.js',
+			'public/lib/angular-cookies/angular-cookies.min.js',
+			'public/lib/angular-animate/angular-animate.min.js',
+			'public/lib/angular-touch/angular-touch.min.js',
+			'public/lib/angular-sanitize/angular-sanitize.min.js',
+			'public/lib/angular-ui-router/release/angular-ui-router.min.js',
+			'public/lib/angular-ui-utils/ui-utils.min.js',
+			'public/lib/angular-bootstrap/ui-bootstrap-tpls.min.js',
+			'public/lib/checklist-model/checklist-model.js',
+			'public/lib/ng-sortable/dist/ng-sortable.min.js',
+			'public/lib/angular-loading-bar/build/loading-bar.min.js',
+			'public/lib/d3/d3.min.js'
 			]
 		},
 		css: [
