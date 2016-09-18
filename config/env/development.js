@@ -31,12 +31,12 @@ module.exports = {
 		callbackURL: '/auth/github/callback'
 	},
 	mailer: {
-		from: process.env.MAILER_FROM || 'admin@taoportfolio.com',
+		from: process.env.MAILER_FROM || '?????',
 		options: {
-			service: process.env.MAILER_SERVICE_PROVIDER || 'zoho',
+			service: process.env.MAILER_SERVICE_PROVIDER || '????',
 			auth: {
-				user: process.env.MAILER_EMAIL_ID || 'admin@taoportfolio.com',
-				pass: process.env.MAILER_PASSWORD || 'Alpin7777'
+				user: process.env.MAILER_EMAIL_ID || '?????',
+				pass: process.env.MAILER_PASSWORD || '?????'
 			}
 		}
 	}
