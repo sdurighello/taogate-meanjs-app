@@ -261,6 +261,7 @@ exports.hasEditAuthorization = function(req, res, next) {
 ####Code examples - FRONT-END
 
 **Use of Angular's promises ($q)**
+
 ```javascript
 var d = $q.defer();
 d.resolve(Authentication);
