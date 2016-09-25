@@ -902,4 +902,20 @@ angular.module('gate-process-assignment').controller('GateProcessAssignmentContr
 
 ```
 
+##User validation
+
+This was achieved through a survey a small group of alpha users that was designed to validate how the app met the 
+critical success factors (CSF) captured in the requirements phase.
+
+_Example survey (Illustrative only)_
+
+After normalizing the scale of each individual answer to a uniform scale where 1 is bad and 5 is good, 
+we could have the following results:
+
+![alt text](./readme_images/survey_results.png "Survey results")
+
+![alt text](./readme_images/survey.png "Survey")
+
+
+
 _All rights reserved - taoPortfolio.com_
