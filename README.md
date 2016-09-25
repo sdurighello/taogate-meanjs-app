@@ -904,7 +904,7 @@ angular.module('gate-process-assignment').controller('GateProcessAssignmentContr
 
 ##User validation
 
-This was achieved through a survey a small group of alpha users that was designed to validate how the app met the 
+This was achieved through a survey of a small group of alpha users that was designed to validate how the app met the 
 critical success factors (CSF) captured in the requirements phase.
 
 _Example survey (Illustrative only)_
