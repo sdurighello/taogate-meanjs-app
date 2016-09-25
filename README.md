@@ -260,9 +260,6 @@ exports.hasEditAuthorization = function(req, res, next) {
 
 ####Code examples - FRONT-END
 
-Angular code is organized in self-contained modules (state/route, service/factory, controller, view partials) 
-by roughly following the entities structure.
-
 **Use of Angular's promises ($q)**
 ```javascript
 var d = $q.defer();
