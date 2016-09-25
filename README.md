@@ -20,7 +20,7 @@ Additional libraries and modules included:
 * [Lodash](https://lodash.com)
 * [mongoose-multitenant](https://www.npmjs.com/package/mongoose-multitenant)
 
-Continuous deployment to Heroku through Github using Grunt for building. Developed using Webstorm and Git.
+Continuous deployment to Heroku through Github using Grunt for building. Developed using Webstorm IDE and Git VCS.
 
 ## Key features
 
