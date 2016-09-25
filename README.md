@@ -20,8 +20,6 @@ Additional libraries and modules included:
 * [Lodash](https://lodash.com)
 * [mongoose-multitenant](https://www.npmjs.com/package/mongoose-multitenant)
 
-Continuous deployment to Heroku through Github using Grunt for building. Developed using Webstorm IDE and Git VCS.
-
 ## Key features
 
 * PORTFOLIO DEFINITION
@@ -44,6 +42,18 @@ Continuous deployment to Heroku through Github using Grunt for building. Develop
   * Delivery status
 
 * USER MANAGEMENT & MULTI-TENANCY
+
+## Tools overview
+
+Continuous deployment to Heroku through Github using Grunt for the building process (key tasks: test, minification, obfuscation). 
+Developed using Webstorm IDE and Git VCS.
+
+![alt text](./readme_images/tools_overview.png "Tools overview")
+
+## Database conceptual model
+_excerpt only_
+
+![alt text](./readme_images/db_erd.png "Database conceptual model")
 
 ## Code examples - BACK-END
 
