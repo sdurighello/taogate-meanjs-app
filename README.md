@@ -45,8 +45,7 @@ Additional libraries and modules included:
 
 ## Tools overview
 
-Continuous deployment to Heroku through Github using Grunt for the building process (key tasks: test, minification, obfuscation). 
-Developed using Webstorm IDE and Git VCS.
+Developed using Webstorm IDE and Git VCS. Continuous deployment to Heroku through Github using Grunt for the building process.
 
 ![alt text](./readme_images/tools_overview.png "Tools overview")
 
@@ -62,9 +61,10 @@ _excerpt only_
 ![alt text](./readme_images/subusers.png "Sub-users management")
 
 Each new user that signs up is given a `tenantId` that is created from his Mongo _id. 
-The role is by default set to `superAdmin`. This user will then be able to
-create new user in the `User` collection as sub-users for his organizations. 
-This is achieved by giving to all its new subusers the same `tenantId`.
+Its role is by default set to `superAdmin`. This user will then be able to
+create new users in the `User` collection as sub-users for his organization. 
+This is achieved by giving to all its new sub-users the same `tenantId`.
+
 ```javascript
 // New user signup
 exports.signup = function(req, res) {
@@ -93,12 +93,12 @@ exports.create = function(req, res) {
 
 Mongoose-multitenant is then configured to separate collections using the
 `tenantId` and allow access only to users belonging to that tenant.
+
 ```javascript
 var Portfolio = mongoose.mtModel(user.tenantId + '.' + 'Portfolio');
 ```
 
-In future, the tenantId should be hashed properly and not saved
-in the clear (e.g using bcrypt and salt).
+In future, the tenantId should be improved with several refactorings, including hashing (e.g using bcrypt and salt).
 
 ####Asynchronous programming with Async
 
@@ -232,8 +232,9 @@ Project.aggregate([
 ```
 ####Sever-side routing and authorization
 
-Each entity's routes are collected in a separate routing file. Routes as RESTful..ish
+Each entity's routes are collected in a separate routing file. Routes are RESTful..ish
 and accept authorization middleware
+
 ```
 app.route('/portfolios/:portfolioId')
     .get(users.requiresLogin, portfolios.read)
@@ -465,9 +466,9 @@ angular.module('core').directive('roadmap', ['d3', '_', '$parse',
 
 ```
 
-####Use case: while in parent's view partial, edit child by launching a modal
+####Use case: while in the parent's view, edit child by launching a modal
 
-*Parent/Child controller*
+*Parent/Child Controller*
 
 ```javascript
 angular.module('gate-process-assignment').controller('GateProcessAssignmentController', ['$rootScope', '$scope','$stateParams', '$location',
@@ -902,19 +903,6 @@ angular.module('gate-process-assignment').controller('GateProcessAssignmentContr
 
 ```
 
-##User validation
-
-This was achieved through a survey of a small group of alpha users that was designed to validate how the app met the 
-critical success factors (CSF) captured in the requirements phase.
-
-_Example survey (Illustrative only)_
-
-After normalizing the scale of each individual answer to a uniform scale where 1 is bad and 5 is good, 
-we could have the following results:
-
-![alt text](./readme_images/survey_results.png "Survey results")
-
-![alt text](./readme_images/survey.png "Survey")
 
 
 
