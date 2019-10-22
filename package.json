@@ -30,7 +30,7 @@
     "helmet": "~0.5.0",
     "lodash": "~2.4.1",
     "method-override": "~2.3.0",
-    "mongoose": "~3.8.8",
+    "mongoose": "~5.7.6",
     "mongoose-deep-populate": "^2.0.3",
     "mongoose-multitenant": "0.8.2",
     "morgan": "~1.4.1",
